@@ -1,5 +1,69 @@
 # SHINOBIWAN Studio Changelog
 
+## 0.7.0 — Build 13 — 2026-08-08
+
+Codename: `phase4-track-manager-complete`
+
+### Roadmap milestone
+
+- closes SHINOBIWAN Studio roadmap **Phase 4 — Track Manager integration**;
+- principal Track Manager operations are now represented directly in Studio;
+- standalone Track Manager remains the protected fallback;
+- Phase 5 is explicitly not started.
+
+### Added — Catalog / create
+
+- canonical draft creation from Catalog;
+- canonical kebab-case trackId/slug generation and validation;
+- duplicate-safe backend create contract;
+- creation forced to `draft`;
+- post-create canonical reread verification;
+- automatic navigation to the new track Assets workspace after verified creation.
+
+### Added — Assets Manager
+
+- one-asset-at-a-time upload/replace for Audio, Cover, Thumbnail, Lyrics TXT and Video/Canvas;
+- missing canonical `lyrics.txt` can now be uploaded from Studio;
+- XHR upload progress while retaining Cloudflare Access credentials;
+- multipart FormData without custom headers/preflight;
+- canonical `expectedUpdatedAt` stale protection;
+- explicit confirmation before upload/replace;
+- individual asset delete with destructive confirmation;
+- canonical reread verification after asset write/delete;
+- published-track quality guard remains authoritative;
+- whole-track deletion remains intentionally absent.
+
+### Added — Catalog management
+
+- explicit standalone canonical catalog rebuild from Administration;
+- user confirmation plus backend `confirm: REBUILD` contract;
+- private catalog reread verification after rebuild.
+
+### Backend dependency
+
+Build 13 is gated on Track Manager `v5.13` / Studio bridge `v1.5` source merge:
+
+```text
+df75509d89b1ed1477d4b249fab63a6bd41db311
+```
+
+The final Build 13 PR must not merge until the protected admin-only v5.13 deployment is verified and its workflow run + Cloudflare Worker Version ID are recorded.
+
+### Preserved
+
+- metadata validation/save and production proof;
+- canonical lyrics read/validate/save with manifest+ETag guard;
+- `lyrics.txt` as canonical source and timestamp-derived sync;
+- `.lrc` as optional compatibility/export only;
+- public LaunchPAD Build `2026.08.08.66` and public Worker `v2.6`;
+- exact-origin Cloudflare Access boundary;
+- Track Manager legacy fallback;
+- SonicTrace and LRC Maker runtime unchanged.
+
+### Stop line
+
+No Phase 5 code is added. SonicTrace persistence, fingerprints, embeddings, Catalog Intelligence, similarity/duplicate detection and outdated-analysis logic wait for new user instructions.
+
 ## 0.6.0 — Build 12 — 2026-08-08
 
 Codename: `guarded-lyrics-save`
