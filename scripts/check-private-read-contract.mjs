@@ -72,7 +72,7 @@ for (const required of [
 ]) assert.ok(assets.includes(required), `Assets Manager missing ${required}.`);
 
 for (const required of [
-  'TRACK MANAGER / CREATE', 'Create canonical draft', 'Create draft track', 'status', 'globalThis.confirm', 'createAdminTrack', "trackHref(effectiveSlug, 'assets')",
+  'TRACK MANAGER / CREATE', 'Create canonical draft', 'Create draft track', 'globalThis.confirm', 'createAdminTrack', "trackHref(effectiveSlug, 'assets')", 'always starts as <strong>draft</strong>',
 ]) assert.ok(create.includes(required), `Track create UI missing ${required}.`);
 
 for (const required of ['TRACK MANAGER / CATALOG', 'Explicit catalog rebuild', 'REBUILD the canonical catalog/index.json', 'globalThis.confirm', 'rebuildAdminCatalog']) assert.ok(rebuild.includes(required), `Catalog rebuild UI missing ${required}.`);
