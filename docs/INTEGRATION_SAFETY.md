@@ -1,7 +1,7 @@
 # SHINOBIWAN Studio — Integration Safety Policy
 
 Date established: 2026-08-08  
-Current release candidate: `0.7.0` / Build `13` / roadmap Phase 4 complete
+Current release: `0.7.0` / Build `13` / roadmap Phase 4 complete
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -54,19 +54,24 @@ public Worker v2.6
 
 No Audio Lab renderer, public player/media behavior, PWA cache contract, SonicTrace shortcut or LRC Maker shortcut is modified by Build 13/v5.13.
 
-## Track Manager backend dependency
+## Production Track Manager backend
 
-Final Phase 4 requires:
+Final Phase 4 consumes this already-deployed backend:
 
 ```text
-Track Manager v5.13
-Studio bridge v1.5
-source merge df75509d89b1ed1477d4b249fab63a6bd41db311
+Track Manager       v5.13
+Studio bridge       v1.5
+source SHA          df75509d89b1ed1477d4b249fab63a6bd41db311
+workflow run        31272655808
+deployment target   admin
+Worker Version ID   781f75f9-776c-4e39-90a7-5cdf34854599
+Access verification protected / HTTP 302 unauthenticated
+public Worker       skipped / remains v2.6
 ```
 
-The final Studio Build 13 must not merge until the protected admin-only v5.13 deployment has succeeded and its actual workflow run + Worker Version ID have been recorded.
+The deployment completed Worker source validation, bridge guards, Wrangler dry-run, private Worker upload and post-deploy Access verification before Build 13 was enabled.
 
-Last proven deployed backend before v5.13:
+Previous deployed backend:
 
 ```text
 Track Manager v5.12
@@ -158,6 +163,8 @@ For final Phase 4 management paths, acceptable pre-release proof is:
 - Worker assembly and syntax validation;
 - generated bundle verification;
 - Wrangler dry-run;
+- protected admin-only deployment;
+- Cloudflare Access verification;
 - LaunchPAD regression CI;
 - Studio TypeScript/Vite build;
 - capability gating;
