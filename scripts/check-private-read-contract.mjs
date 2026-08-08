@@ -41,7 +41,7 @@ for (const required of [
   assert.ok(admin.includes(required), `Track Manager Studio client is missing ${required}.`);
 }
 
-assert.equal((admin.match(/method:\s*'POST'/g) || []).length, 2, 'Studio Build 9 must expose exactly two explicit POST client paths: metadata validate and metadata save.');
+assert.equal((admin.match(/method:\s*'POST'/g) || []).length, 2, 'Studio Build 10 must preserve exactly two explicit POST client paths: metadata validate and metadata save.');
 assert.ok(!admin.includes("'X-Shinobiwan-Studio-Intent'"), 'Metadata POSTs must not reintroduce the custom header/preflight path.');
 assert.ok(!admin.includes("'Content-Type': 'application/json'"), 'Metadata POSTs must remain CORS-safelisted text/plain.');
 for (const forbiddenMethod of ['PUT', 'PATCH', 'DELETE']) {
@@ -80,7 +80,7 @@ for (const required of [
 ]) {
   assert.ok(metadata.includes(required), `Metadata guarded-write UI is missing ${required}.`);
 }
-assert.ok(!/Publish now|Delete track|Upload audio|Replace cover/.test(metadata), 'Build 9 metadata UI must not expose unrelated production write CTAs.');
+assert.ok(!/Publish now|Delete track|Upload audio|Replace cover/.test(metadata), 'Build 10 metadata UI must not expose unrelated production write CTAs.');
 
 for (const required of [
   "privateRead ? 'Track Manager v5.11 · bridge v1.3' : 'LaunchPAD public fallback'",
@@ -88,22 +88,24 @@ for (const required of [
   'async function refreshTrackAfterMetadataSave()',
   'Publishing writes still locked',
 ]) {
-  assert.ok(workspace.includes(required), `Workspace Build 9 contract is missing ${required}.`);
+  assert.ok(workspace.includes(required), `Workspace Build 10 contract is missing ${required}.`);
 }
 
 for (const required of [
   "Track Manager v5.11 · bridge v1.3",
-  'PHASE 4B.1B · METADATA SAVE',
+  'PHASE 4B.1B · PRODUCTION PROVEN',
   '<strong>Metadata</strong>',
   '1 guarded production write.',
+  'Guarded metadata save is production-proven.',
+  'Production-proven · everything else locked',
 ]) {
-  assert.ok(app.includes(required), `Dashboard Build 9 contract is missing ${required}.`);
+  assert.ok(app.includes(required), `Dashboard Build 10 contract is missing ${required}.`);
 }
 
-assert.ok(release.includes("version: '0.5.0'"), 'Studio release version must be 0.5.0.');
-assert.ok(release.includes('build: 9'), 'Studio release build must be 9.');
-assert.ok(release.includes("codename: 'guarded-metadata-save'"), 'Studio release codename must describe guarded metadata save.');
-assert.equal(pkg.version, '0.5.0', 'package.json must match Studio 0.5.0.');
+assert.ok(release.includes("version: '0.5.1'"), 'Studio release version must be 0.5.1.');
+assert.ok(release.includes('build: 10'), 'Studio release build must be 10.');
+assert.ok(release.includes("codename: 'metadata-save-production-proven'"), 'Studio release codename must describe the production-proven metadata save.');
+assert.equal(pkg.version, '0.5.1', 'package.json must match Studio 0.5.1.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'The production build must run the Studio bridge regression guard.');
 
-console.log('Studio 0.5.0 Build 9 exposes exactly one guarded production write capability (metadata) behind validate/review/confirm/save, while all media, delete, publish and standalone rebuild writes remain absent.');
+console.log('Studio 0.5.1 Build 10 preserves the production-proven metadata-only write contract while all media, delete, publish and standalone rebuild writes remain absent.');
