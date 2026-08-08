@@ -1,5 +1,47 @@
 # SHINOBIWAN Studio Changelog
 
+## 0.4.1 — Build 6 — 2026-08-08
+
+Codename: `metadata-validation-preview`
+
+### Added
+
+- local Metadata proposal editor inside the track workspace;
+- one credentialed validation-only `POST /api/studio/tracks/<trackId>/metadata/validate` client;
+- required `X-Shinobiwan-Studio-Intent: metadata-validate-v1` request header;
+- mandatory `expectedUpdatedAt` stale-manifest protection;
+- normalized metadata preview, changed-field list and Track Manager quality/publishability preview;
+- explicit `VALIDATION ONLY · NO WRITE` / `PREVIEW · NOT SAVED` UI states;
+- safe disablement of metadata validation while Studio is operating from public fallback data;
+- dedicated Phase 4B.1A integration documentation.
+
+### Changed
+
+- Studio release metadata advances to `0.4.1` / Build `6`;
+- Track Workspace identifies the private backend as Track Manager `v5.9`;
+- the production regression guard now permits exactly one explicit POST client path while continuing to forbid PUT/PATCH/DELETE and production mutation routes.
+
+### Security / safety
+
+- `adminService.writesEnabled` remains `false`;
+- Studio still exposes no manifest save, asset upload, delete, publish, thumbnail write or catalog rebuild wrapper;
+- the Metadata UI contains no production save CTA;
+- validation requires the existing Cloudflare Access browser session and exact upstream CORS/intent contract;
+- stale canonical revisions return `STALE_MANIFEST` and require reload before retry;
+- LaunchPAD public Worker `v2.6` remains untouched;
+- no R2 object, manifest, media file or `catalog/index.json` is modified by this Studio release;
+- SonicTrace and LRC Maker are unchanged.
+
+### Upstream dependency
+
+- LaunchPAD Build `2026.08.08.66` / release `studio-metadata-validation-20260808`;
+- LaunchPAD merge SHA `e30e6665566d5d1e4475ab24b92833a859e2d110`;
+- Track Manager `v5.9` / Studio bridge `v1.1`;
+- deployed private Worker Version ID `59ef19af-e189-42d3-ba08-bb5303bb75c1`;
+- public Worker deployment was skipped and R2/catalog was not rebuilt.
+
+Rollback target: normal revert of the Build 6 Studio PR; pre-Phase-4B.1A safety snapshots remain available and no R2 rollback is expected because Build 6 cannot save production state.
+
 ## 0.4.0 — Build 5 — 2026-08-08
 
 Codename: `private-read-bridge`
