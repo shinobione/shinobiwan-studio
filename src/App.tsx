@@ -138,7 +138,7 @@ export default function App() {
           <>
             <section className="hero-grid">
               <article className="hero-copy panel">
-                <span className="eyebrow">SHINOBIWAN STUDIO / 0.3.0</span>
+                <span className="eyebrow">SHINOBIWAN STUDIO / 0.3.1</span>
                 <h2>One track.<br /><em>One workspace.</em></h2>
                 <p>The global cockpit for catalog data, SonicTrace intelligence, synchronized lyrics, assets and publishing.</p>
                 <div className="hero-actions">

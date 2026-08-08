@@ -1,0 +1,42 @@
+/* Global readability floor for microcopy.
+   Any Studio text that was 8px or smaller is promoted to 11px.
+   Imported last so the rule also wins over responsive/mobile overrides. */
+:root {
+  --studio-micro-readable: 11px;
+}
+
+/* Core shell */
+.arch-head b,
+.track-core span,
+.arch-branches span,
+.metric span {
+  font-size: var(--studio-micro-readable);
+}
+
+/* Catalog */
+.catalog-kpis span,
+.catalog-toolbar label > span,
+.catalog-status,
+.catalog-card-title small,
+.catalog-tags span,
+.catalog-assets span,
+.track-read-facts span {
+  font-size: var(--studio-micro-readable);
+}
+
+/* Track Workspace */
+.workspace-header-tags > span,
+.workspace-summary > span,
+.workspace-summary small,
+.health-row-head span,
+.health-row small,
+.workspace-facts span,
+.workspace-gap-list span,
+.workspace-state-card b,
+.workspace-publish-state b,
+.workspace-asset-row span,
+.workspace-asset-meta a,
+.workspace-asset-meta b,
+.workspace-footnote {
+  font-size: var(--studio-micro-readable);
+}
