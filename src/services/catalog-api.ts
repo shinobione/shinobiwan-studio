@@ -180,9 +180,11 @@ export async function getCatalogTrack(trackId: string): Promise<StudioTrackDetai
   const payload = await fetchJson<PublicTrackResponse>(`${baseUrl()}/tracks/${encodeURIComponent(trackId)}`, 6000);
   if (payload.ok === false || !payload.track) throw new Error('LaunchPAD returned an invalid track response.');
   const track = mapTrack(payload.track);
+  const lyricSegments = mapLyricSegments(payload.track.lyrics);
   return {
     ...track,
+    timestampsAvailable: track.timestampsAvailable || lyricSegments.length > 0,
     lyricsRaw: typeof payload.track.lyrics?.raw === 'string' ? payload.track.lyrics.raw : null,
-    lyricSegments: mapLyricSegments(payload.track.lyrics),
+    lyricSegments,
   };
 }
