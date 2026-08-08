@@ -2,9 +2,9 @@
 
 Artist Content & Intelligence Manager.
 
-**Current release:** `0.3.2`  
-**Build:** `4`  
-**Current milestone:** Phase 3.1 — Track Workspace + timestamp-aware synchronized lyrics
+**Current release:** `0.4.0`  
+**Build:** `5`  
+**Current milestone:** Phase 4A — authenticated Track Manager private reads + safe public fallback
 
 ## Product role
 
@@ -15,25 +15,79 @@ Architecture rules:
 - one canonical track identity: `trackId = R2 manifest slug`;
 - LaunchPAD remains the public product;
 - R2 remains the catalog/media source of truth;
-- Track Manager remains the protected write backend/fallback until Phase 4 is proven;
+- Track Manager remains the protected catalog/admin backend and write fallback;
 - SonicTrace remains the audio-intelligence engine;
 - LRC Maker remains the lyrics editing/synchronization engine during migration;
-- Studio must remain usable when the optional local SonicTrace GPU node is offline.
+- Studio must remain usable when the optional local SonicTrace GPU node is offline or when the private Track Manager read session is unavailable.
 
 ## Current scope
 
 Implemented:
 
 - GitHub Pages shell;
-- live LaunchPAD catalog read layer;
+- LaunchPAD public catalog read layer;
+- Track Manager v5.8 authenticated **GET-only** Studio bridge support;
+- private-first catalog reads with automatic public fallback;
+- private canonical drafts/status/quality visibility when Cloudflare Access is usable from the browser;
+- public media/lyrics URL reuse for already-published tracks;
 - search, filters and sorting;
 - `#/track/<trackId>` Track Workspace;
 - Overview, Audio Intelligence, Lyrics, Assets, Versions, Metadata and Publishing sections;
 - deterministic Content Health;
-- global readability floor for microcopy;
-- timestamp-aware synchronized lyrics semantics.
+- timestamp-aware synchronized lyrics semantics;
+- explicit read provenance (`PRIVATE READ` / `PUBLIC FALLBACK`);
+- build-time regression guard forbidding Studio Phase 4A write plumbing.
 
-Production writes remain locked in Studio until Phase 4 security work is separately reviewed and validated.
+Studio production writes remain locked. Build 5 adds **no** POST/PUT/PATCH/DELETE wrapper.
+
+## Phase 4A private read architecture
+
+LaunchPAD Build 65 / Track Manager v5.8 exposes an additive bridge behind Cloudflare Access:
+
+```text
+OPTIONS /api/studio/*
+GET     /api/studio/health
+GET     /api/studio/tracks
+GET     /api/studio/tracks/<trackId>
+```
+
+Browser origin allowlist:
+
+```text
+https://shinobione.github.io
+```
+
+Studio calls these routes with browser credentials and never stores a Cloudflare secret or service token.
+
+Read strategy:
+
+```text
+Studio
+  |
+  +--> Track Manager private GET bridge
+  |      |
+  |      +--> canonical manifests / drafts / quality
+  |
+  +--> LaunchPAD public Worker
+         |
+         +--> published media URLs / public lyrics / safe fallback
+```
+
+If the private request cannot use a valid Cloudflare Access session, Studio does **not** weaken authentication or CORS. It automatically continues with the established LaunchPAD public read-only catalog.
+
+See [`docs/PHASE-4A-PRIVATE-READ.md`](docs/PHASE-4A-PRIVATE-READ.md).
+
+## Browser authentication note
+
+The Track Manager Worker remains protected by Cloudflare Access. A successful Worker deployment proves the backend contract and Access protection, but real-browser cookie behavior still depends on the active browser session and cross-site cookie policy.
+
+Therefore:
+
+- `PRIVATE READ` means Studio successfully reached the authenticated bridge;
+- `PUBLIC FALLBACK` is a valid safe operating mode, not a write/security failure;
+- if private reads are unavailable, open the existing Track Manager and authenticate normally, then retry Studio;
+- do **not** put Access credentials in `VITE_*` variables;
+- do **not** relax the Worker to wildcard authenticated CORS.
 
 ## Lyrics semantics
 
@@ -42,11 +96,11 @@ The canonical lyrics source may remain `tracks/<slug>/lyrics.txt`.
 Studio determines synchronization from **content**, not from the filename extension:
 
 - `lyrics.txt` present -> canonical lyrics source available;
-- timestamp segments detected -> `Synced Lyrics = Ready`;
+- timestamp segments or Track Manager timestamp quality state detected -> `Synced Lyrics = Ready`;
 - optional `.lrc` sidecar present -> also valid synchronized lyrics;
 - a separate `.lrc` file is **not required** when the canonical TXT already contains timestamps.
 
-This avoids duplicate lyric sources and prevents false `Lyrics LRC: Missing` warnings for already-synchronized tracks.
+This avoids duplicate lyric sources and false `Lyrics LRC: Missing` warnings for already-synchronized tracks.
 
 ## Safety / rollback policy
 
@@ -59,7 +113,9 @@ Before cross-repository integration work started on 2026-08-08, restoration bran
 
 The LaunchPAD snapshot also protects Track Manager because Track Manager lives inside `LaunchPAD-APP`.
 
-See `docs/INTEGRATION_SAFETY.md` for the mandatory change policy.
+Build 5 depends on the separately validated/deployed LaunchPAD Build 65 / Track Manager v5.8 bridge. It does not modify LaunchPAD, Track Manager, SonicTrace, LRC Maker or R2 data itself.
+
+See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md) for the mandatory change policy.
 
 ## Stack
 
@@ -79,11 +135,12 @@ npm run dev
 Validation:
 
 ```bash
+npm run check:private-read
 npm run typecheck
 npm run build
 ```
 
-Every implementation PR must pass the validation workflow before merge.
+`npm run build` runs the private-read guard before TypeScript/Vite compilation. Every implementation PR must pass the GitHub validation workflow before merge.
 
 ## Routes
 
@@ -113,7 +170,7 @@ For continuity with LaunchPAD conventions:
 ?admin=0
 ```
 
-This flag is **UI state only** and is not an authentication mechanism.
+This flag is **UI state only** and is not an authentication mechanism. Cloudflare Access remains the private API authentication boundary.
 
 ## Environment
 
@@ -137,5 +194,6 @@ Each release must update together:
 2. `src/release.ts` version/build/codename;
 3. visible Studio release label;
 4. `CHANGELOG.md`;
-5. README / architecture documentation affected by the change;
-6. PR description with validation and rollback scope.
+5. README / integration documentation affected by the change;
+6. regression guards for security-sensitive contracts;
+7. PR description with validation, dependency and rollback scope.
