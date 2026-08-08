@@ -1,9 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
+  AdminSaveError,
   AdminValidationError,
+  saveAdminTrackMetadata,
   validateAdminTrackMetadata,
   type AdminManifest,
   type AdminMetadataPatch,
+  type AdminMetadataSaveResponse,
   type AdminMetadataValidationResponse,
 } from '../services/admin-api';
 import { studioConfig } from '../services/config';
@@ -58,6 +61,31 @@ function initialForm(track: StudioTrackDetail): MetadataFormState {
     explicit: track.explicit == null ? 'unrated' : track.explicit ? 'explicit' : 'clean',
     accent: track.accent || '',
     accent2: track.accent2 || '',
+  };
+}
+
+function formFromManifest(manifest: AdminManifest): MetadataFormState {
+  return {
+    title: manifest.title || '',
+    status: manifest.status || 'draft',
+    type: manifest.type || '',
+    year: manifest.year == null ? '' : String(manifest.year),
+    releaseDate: manifest.releaseDate || '',
+    albumId: manifest.album?.id || '',
+    albumTitle: manifest.album?.title || '',
+    genres: csv(manifest.genres || []),
+    tags: csv(manifest.tags || []),
+    moods: csv(manifest.moods || []),
+    themes: csv(manifest.themes || []),
+    era: manifest.era || '',
+    energy: manifest.energy || '',
+    languages: csv(manifest.languages || []),
+    bpm: manifest.bpm == null ? '' : String(manifest.bpm),
+    key: manifest.key || '',
+    keyConfidence: manifest.keyConfidence == null ? '' : String(manifest.keyConfidence),
+    explicit: manifest.explicit == null ? 'unrated' : manifest.explicit ? 'explicit' : 'clean',
+    accent: manifest.accent || '',
+    accent2: manifest.accent2 || '',
   };
 }
 
@@ -120,26 +148,58 @@ function Field({ label, children, wide = false }: { label: string; children: Rea
   return <label className={`metadata-field${wide ? ' metadata-field-wide' : ''}`}><span>{label}</span>{children}</label>;
 }
 
-export function MetadataValidationPanel({ track }: { track: StudioTrackDetail }) {
+export function MetadataValidationPanel({
+  track,
+  onSaved,
+}: {
+  track: StudioTrackDetail;
+  onSaved?: () => Promise<void> | void;
+}) {
   const privateRead = track.readSource === 'private';
   const [form, setForm] = useState<MetadataFormState>(() => initialForm(track));
   const [validation, setValidation] = useState<AdminMetadataValidationResponse | null>(null);
+  const [saveResult, setSaveResult] = useState<AdminMetadataSaveResponse | null>(null);
   const [validating, setValidating] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [refreshWarning, setRefreshWarning] = useState<string | null>(null);
 
   useEffect(() => {
     setForm(initialForm(track));
     setValidation(null);
+    setSaveResult(null);
     setError(null);
-  }, [track.id, track.updatedAt, track.readSource]);
+    setRefreshWarning(null);
+  }, [track.id, track.readSource]);
 
   const patch = useMemo(() => buildPatch(form), [form]);
-  const canValidate = privateRead && Boolean(track.updatedAt) && !validating;
+  const changedFields = validation?.changedFields || [];
+  const validationRevision = validation?.expectedUpdatedAt || null;
+  const canValidate = privateRead && Boolean(track.updatedAt) && !validating && !saving;
+  const canSave = privateRead
+    && validation?.valid === true
+    && validation.validationOnly === true
+    && changedFields.length > 0
+    && Boolean(validationRevision)
+    && validationRevision === track.updatedAt
+    && !validating
+    && !saving
+    && !saveResult;
 
   function update<K extends keyof MetadataFormState>(key: K, value: MetadataFormState[K]) {
     setForm(current => ({ ...current, [key]: value }));
     setValidation(null);
+    setSaveResult(null);
     setError(null);
+    setRefreshWarning(null);
+  }
+
+  function resetProposal() {
+    setForm(initialForm(track));
+    setValidation(null);
+    setSaveResult(null);
+    setError(null);
+    setRefreshWarning(null);
   }
 
   async function validate() {
@@ -147,6 +207,8 @@ export function MetadataValidationPanel({ track }: { track: StudioTrackDetail })
     setValidating(true);
     setError(null);
     setValidation(null);
+    setSaveResult(null);
+    setRefreshWarning(null);
     try {
       const result = await validateAdminTrackMetadata(track.id, track.updatedAt, patch);
       setValidation(result);
@@ -161,30 +223,72 @@ export function MetadataValidationPanel({ track }: { track: StudioTrackDetail })
     }
   }
 
+  async function save() {
+    if (!canSave || !validationRevision) return;
+    const fieldList = changedFields.join(', ');
+    const confirmed = globalThis.confirm(
+      `Save metadata for "${track.title}"?\n\nChanged fields: ${fieldList}\n\nThis writes the canonical manifest metadata and rebuilds catalog/index.json. Audio, cover, thumbnail, lyrics and video assets are not touched.`,
+    );
+    if (!confirmed) return;
+
+    setSaving(true);
+    setError(null);
+    setSaveResult(null);
+    setRefreshWarning(null);
+    try {
+      const result = await saveAdminTrackMetadata(track.id, validationRevision, patch);
+      if (result.track) setForm(formFromManifest(result.track));
+      setSaveResult(result);
+      if (onSaved) {
+        try {
+          await onSaved();
+        } catch (reason) {
+          setRefreshWarning(`Metadata was saved, but the workspace refresh failed (${reason instanceof Error ? reason.message : String(reason)}). Reload before another edit.`);
+        }
+      }
+    } catch (reason) {
+      if (reason instanceof AdminSaveError) {
+        if (reason.code === 'STALE_MANIFEST') {
+          setError(`Save refused: the canonical manifest changed${reason.currentUpdatedAt ? ` (${reason.currentUpdatedAt})` : ''}. Reload the track, validate again, then save.`);
+        } else if (reason.code === 'QUALITY_BLOCKED') {
+          setError('Save refused by Track Manager quality control. Review the validation result before retrying.');
+        } else if (reason.code === 'SAVE_ROLLBACK') {
+          const rollback = reason.rollback;
+          setError(`Save failed after manifest write; rollback was attempted. Manifest restored: ${rollback?.manifestRestored ? 'yes' : 'no'}, catalog restored: ${rollback?.catalogRestored ? 'yes' : 'no'}. Stop editing and verify Track Manager before retrying.`);
+        } else {
+          setError(reason.message);
+        }
+      } else {
+        setError(reason instanceof Error ? reason.message : String(reason));
+      }
+    } finally {
+      setSaving(false);
+    }
+  }
+
   const quality = validation?.quality;
-  const changedFields = validation?.changedFields || [];
 
   return (
     <div className="metadata-validation-shell">
       <div className="metadata-validation-head">
         <div>
-          <span className="eyebrow">METADATA / VALIDATION PREVIEW</span>
-          <h3>Canonical metadata proposal</h3>
-          <p>Edit locally, then ask Track Manager v5.9 to normalize and quality-check the proposal. This screen cannot save it.</p>
+          <span className="eyebrow">METADATA / GUARDED WRITE</span>
+          <h3>Canonical metadata editor</h3>
+          <p>Edit locally, validate against Track Manager v5.11, review the normalized proposal, then save explicitly. Metadata save is the only production write exposed by this Studio build.</p>
         </div>
-        <b className="metadata-no-write">VALIDATION ONLY · NO WRITE</b>
+        <b className="metadata-no-write metadata-write-badge">METADATA WRITE · GUARDED</b>
       </div>
 
       {!privateRead && (
         <div className="workspace-note metadata-lock-note">
           <strong>Private Track Manager session required.</strong>
-          <p>The public fallback is intentionally insufficient for metadata validation because it does not guarantee the canonical manifest revision.</p>
+          <p>The public fallback is intentionally insufficient for metadata writes because it does not guarantee the canonical manifest revision.</p>
           <a className="ghost-btn" href={studioConfig.trackManagerUrl} target="_blank" rel="noreferrer">Authenticate in Track Manager ↗</a>
         </div>
       )}
 
       {privateRead && !track.updatedAt && (
-        <div className="workspace-note metadata-lock-note"><strong>Canonical revision unavailable.</strong><p>Validation stays locked because Build 6 refuses to submit metadata without expectedUpdatedAt stale-write protection.</p></div>
+        <div className="workspace-note metadata-lock-note"><strong>Canonical revision unavailable.</strong><p>Validation and save stay locked because Build 9 refuses to submit metadata without expectedUpdatedAt stale-write protection.</p></div>
       )}
 
       <div className="metadata-form-grid">
@@ -212,17 +316,22 @@ export function MetadataValidationPanel({ track }: { track: StudioTrackDetail })
 
       <div className="metadata-validation-actions">
         <div><span>Canonical revision</span><strong>{track.updatedAt || 'Unavailable'}</strong></div>
-        <button className="ghost-btn metadata-reset-btn" type="button" onClick={() => { setForm(initialForm(track)); setValidation(null); setError(null); }}>Reset proposal</button>
+        <button className="ghost-btn metadata-reset-btn" type="button" disabled={saving} onClick={resetProposal}>Reset proposal</button>
         <button className="metadata-validate-btn" type="button" disabled={!canValidate} onClick={validate}>{validating ? 'Validating…' : 'Validate metadata'}</button>
       </div>
 
-      {error && <div className="metadata-validation-result metadata-result-error"><b>VALIDATION ERROR</b><p>{error}</p></div>}
+      {error && (
+        <div className="metadata-validation-result metadata-result-error">
+          <b>METADATA ERROR</b><p>{error}</p>
+          <button className="ghost-btn metadata-reload-btn" type="button" onClick={() => globalThis.location.reload()}>Reload canonical workspace</button>
+        </div>
+      )}
 
       {validation && (
         <div className={`metadata-validation-result ${validation.valid ? 'metadata-result-ok' : 'metadata-result-blocked'}`}>
           <div className="metadata-result-title">
             <div><b>{validation.valid ? 'VALID PROPOSAL' : 'QUALITY BLOCKED'}</b><strong>{changedFields.length ? `${changedFields.length} changed field${changedFields.length > 1 ? 's' : ''}` : 'No metadata change'}</strong></div>
-            <span>{validation.validationOnly ? 'PREVIEW · NOT SAVED' : 'UNEXPECTED RESPONSE'}</span>
+            <span>{canSave ? 'PREVIEW · READY FOR SAVE' : 'PREVIEW · NOT SAVED'}</span>
           </div>
           <div className="metadata-result-grid">
             <div><span>Changed fields</span><strong>{changedFields.join(', ') || 'None'}</strong></div>
@@ -243,7 +352,31 @@ export function MetadataValidationPanel({ track }: { track: StudioTrackDetail })
               <div><dt>Key</dt><dd>{proposalValue(validation.proposed, 'key')}</dd></div>
             </dl>
           </details>
-          <p className="workspace-footnote">Validation completed against the current R2 objects. No manifest, media object or catalog index was written or rebuilt.</p>
+          {canSave && (
+            <div className="metadata-save-zone">
+              <div><strong>Review complete?</strong><p>Save writes metadata only, rebuilds the canonical catalog index, verifies the persisted revision and leaves every media object untouched.</p></div>
+              <button className="metadata-save-btn" type="button" onClick={save}>{saving ? 'Saving…' : 'Save metadata'}</button>
+            </div>
+          )}
+          <p className="workspace-footnote">Validation itself remains non-mutating. A save is possible only after this preview, against this exact canonical revision.</p>
+        </div>
+      )}
+
+      {saveResult && (
+        <div className="metadata-validation-result metadata-result-saved">
+          <div className="metadata-result-title">
+            <div><b>METADATA SAVED</b><strong>{saveResult.changedFields?.length ? `${saveResult.changedFields.length} field${saveResult.changedFields.length > 1 ? 's' : ''} persisted` : 'Canonical metadata already matched'}</strong></div>
+            <span>{saveResult.clientVerified ? 'CANONICAL REREAD · VERIFIED' : 'SERVER SAVED · REREAD WARNING'}</span>
+          </div>
+          <div className="metadata-result-grid">
+            <div><span>Changed fields</span><strong>{saveResult.changedFields?.join(', ') || 'None'}</strong></div>
+            <div><span>New revision</span><strong>{saveResult.updatedAt || saveResult.track?.updatedAt || '—'}</strong></div>
+            <div><span>Catalog rebuilt</span><strong>{saveResult.catalogRebuilt ? 'Yes' : saveResult.noChange ? 'Not needed' : 'No'}</strong></div>
+            <div><span>Browser reread</span><strong>{saveResult.clientVerified ? 'Verified' : 'Needs reload'}</strong></div>
+          </div>
+          {(saveResult.verificationWarning || refreshWarning) && <p className="metadata-save-warning">{saveResult.verificationWarning || refreshWarning}</p>}
+          <p className="workspace-footnote">Track Manager v5.11 performed the guarded metadata write. Audio, cover, thumbnail, lyrics and video assets were not modified.</p>
+          <button className="ghost-btn metadata-reload-btn" type="button" onClick={() => globalThis.location.reload()}>Reload canonical workspace</button>
         </div>
       )}
     </div>
