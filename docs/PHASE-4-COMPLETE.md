@@ -5,6 +5,21 @@ Studio release: `0.7.0` / Build `13` / `phase4-track-manager-complete`
 Backend: Track Manager `v5.13` / Studio bridge `v1.5`  
 Public LaunchPAD: Build `2026.08.08.66` / public Worker `v2.6` unchanged
 
+## Production backend proof
+
+```text
+Track Manager       v5.13
+Studio bridge       v1.5
+source SHA          df75509d89b1ed1477d4b249fab63a6bd41db311
+workflow run        31272655808
+deployment target   admin
+Worker Version ID   781f75f9-776c-4e39-90a7-5cdf34854599
+Access verification protected / HTTP 302 unauthenticated
+public Worker       deploy/record/verify skipped
+```
+
+The protected deployment completed Worker source validation, bridge guards, Wrangler dry-run, private Worker upload and Access verification before the final Studio release. Deploying the Worker itself did not rebuild the catalog or mutate R2 media.
+
 ## Roadmap criterion
 
 The Phase 4 completion criterion from `SHINOBIWAN_STUDIO_ROADMAP.txt` is:
@@ -133,7 +148,7 @@ Both:      safety/post-metadata-write-proven-20260808-1822
 
 Metadata write has a real reversible production smoke proof.
 
-The final asset/create management paths are covered by source guards, Track Manager bundle assembly, Wrangler dry-run, capability gating, stale checks, quality checks, transaction compensation and explicit UI confirmations. Phase 4 completion does **not** justify replacing or deleting an existing production WAV/cover merely to manufacture a smoke-test badge.
+The final asset/create management paths are covered by source guards, Track Manager bundle assembly, Wrangler dry-run, protected admin-only deployment, Access verification, capability gating, stale checks, quality checks, transaction compensation and explicit UI confirmations. Phase 4 completion does **not** justify replacing or deleting an existing production WAV/cover merely to manufacture a smoke-test badge.
 
 A future intentionally supplied disposable draft can be used for deeper destructive/media smoke testing without risking catalog assets.
 
