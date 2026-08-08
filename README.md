@@ -2,7 +2,7 @@
 
 Artist Content & Intelligence Manager.
 
-**Release candidate:** `0.7.0`  
+**Release:** `0.7.0`  
 **Build:** `13`  
 **Milestone:** Roadmap Phase 4 — Track Manager integration complete  
 **Stop line:** Phase 5 is not started.
@@ -51,22 +51,22 @@ Whole-track deletion is intentionally not exposed because the roadmap requires d
 
 See [`docs/PHASE-4-COMPLETE.md`](docs/PHASE-4-COMPLETE.md).
 
-## Backend dependency
+## Deployed backend dependency
 
-Build 13 requires:
-
-```text
-Track Manager v5.13
-Studio bridge v1.5
-```
-
-Source is merged in LaunchPAD at:
+Build 13 consumes the production-deployed backend:
 
 ```text
-df75509d89b1ed1477d4b249fab63a6bd41db311
+Track Manager       v5.13
+Studio bridge       v1.5
+source SHA          df75509d89b1ed1477d4b249fab63a6bd41db311
+workflow run        31272655808
+deployment target   admin
+Worker Version ID   781f75f9-776c-4e39-90a7-5cdf34854599
+Access verification protected / HTTP 302 unauthenticated
+public Worker       skipped / remains v2.6
 ```
 
-The final Studio PR must not merge until the protected **admin-only** Worker deployment of that exact source has succeeded and its real Cloudflare Version ID/run have been recorded in this documentation.
+The protected deployment passed Worker source validation, bridge regression guards, Wrangler dry-run, private Worker deployment and post-deploy Cloudflare Access verification before Studio Build 13 was released.
 
 Public LaunchPAD remains unchanged:
 
@@ -213,6 +213,8 @@ The final management code is protected by:
 - assembled Worker syntax checks;
 - generated bundle verification;
 - Wrangler dry-run;
+- protected admin-only production deployment;
+- Cloudflare Access post-deploy verification;
 - LaunchPAD regression CI;
 - Studio build-time integration guards;
 - TypeScript;
