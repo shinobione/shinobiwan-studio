@@ -129,7 +129,7 @@ export function LyricsEditorPanel({ track, onSaved }: { track: StudioTrackDetail
       <article className="panel lyrics-editor-panel">
         <span className="eyebrow">LYRICS / GUARDED WRITE</span>
         <h3>No canonical lyrics.txt yet</h3>
-        <p className="workspace-muted">Track Manager v5.12 only edits an existing canonical lyrics.txt. Creation/upload belongs to the remaining Phase 4 Assets integration.</p>
+        <p className="workspace-muted">Create the canonical lyrics.txt from Assets before opening the specialized synchronization workflow.</p>
         <a className="ghost-btn" href={studioConfig.trackManagerUrl} target="_blank" rel="noreferrer">Open Track Manager fallback ↗</a>
       </article>
     );

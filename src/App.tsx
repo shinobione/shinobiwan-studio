@@ -26,9 +26,9 @@ const NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
 
 const shellCopy: Record<Exclude<StudioRoute, 'catalog'>, { eyebrow: string; title: string; body: string }> = {
   dashboard: {
-    eyebrow: 'PHASE 5 / COMPLETE',
-    title: 'SonicTrace is now catalog-linked.',
-    body: 'Workspace analysis, review, R2 persistence, re-scan, outdated detection, 512D similarity, clusters and analysis history now share the canonical trackId.',
+    eyebrow: 'PHASE 6 / COMPLETE',
+    title: 'Canonical lyrics now have one protected workflow.',
+    body: 'Studio, LRC Maker and Track Manager share the canonical trackId while lyrics.txt remains the single source of truth for text and synchronization.',
   },
   intelligence: {
     eyebrow: 'SONICTRACE / PHASE 5',
@@ -53,7 +53,7 @@ const shellCopy: Record<Exclude<StudioRoute, 'catalog'>, { eyebrow: string; titl
   administration: {
     eyebrow: 'SYSTEM / ADMINISTRATION',
     title: 'Phase 4 operational fallback is preserved.',
-    body: 'The old Track Manager remains available as the protected fallback. The explicit canonical catalog rebuild is also available here. SonicTrace and LRC Maker remain separate and untouched.',
+    body: 'The old Track Manager remains available as the protected fallback. LRC Maker is context-linked for timing work while Track Manager remains the sole R2 write authority.',
   },
 };
 
@@ -97,14 +97,14 @@ export default function App() {
   const navTitle = trackId ? 'Track Workspace' : NAV.find(item => item.route === route)?.label;
   const privateRead = readSource === 'private';
   const readLayerLabel = privateRead ? 'Private' : readSource === 'public' ? 'Fallback' : '…';
-  const readLayerDetail = privateRead ? 'Track Manager v5.14 · bridge v1.6' : readSource === 'public' ? 'LaunchPAD public read-only' : 'Checking Access session';
+  const readLayerDetail = privateRead ? 'Track Manager v5.15 · bridge v1.7' : readSource === 'public' ? 'LaunchPAD public read-only' : 'Checking Access session';
 
   return (
     <div className="studio-shell">
       <aside className="sidebar">
         <a className="brand" href={routeHref('dashboard')} aria-label="SHINOBIWAN Studio home"><div className="brand-mark"><span>S</span></div><div><strong>SHINOBIWAN</strong><small>STUDIO</small></div></a>
         <nav className="nav-list" aria-label="Studio navigation">{NAV.map(item => <a key={item.route} className={route === item.route ? 'active' : ''} href={routeHref(item.route)}><span className="nav-glyph" aria-hidden="true">{item.glyph}</span><span>{item.label}</span></a>)}</nav>
-        <div className="sidebar-foot"><span className="phase-tag">PHASE 5 · COMPLETE</span><p>v{studioRelease.version} · Build {studioRelease.build}<br />SonicTrace catalog-linked.</p></div>
+        <div className="sidebar-foot"><span className="phase-tag">PHASE 6 · COMPLETE</span><p>v{studioRelease.version} · Build {studioRelease.build}<br />Canonical Lyrics workflow.</p></div>
       </aside>
 
       <main className="main-area">
@@ -116,7 +116,7 @@ export default function App() {
               <article className="hero-copy panel"><span className="eyebrow">SHINOBIWAN STUDIO / {studioRelease.version} · BUILD {studioRelease.build}</span><h2>One track.<br /><em>One workspace.</em></h2><p>The global cockpit for catalog data, canonical assets and durable SonicTrace Audio Intelligence.</p><div className="hero-actions"><a className="primary-btn" href={routeHref('catalog')}>Open Track Workspace <span>→</span></a><a className="ghost-btn" href={routeHref('intelligence')}>Catalog Intelligence →</a></div></article>
               <article className="architecture-card panel"><div className="arch-head"><span>ARCHITECTURE</span><b>TRACK-CENTRIC</b></div><div className="track-core"><span>TRACK ID</span><strong>canonical slug</strong><small>R2 source of truth</small></div><div className="arch-branches"><div><span>CATALOG</span><strong>R2</strong></div><div><span>TRACK MANAGER</span><strong>TM</strong></div><div><span>LYRICS</span><strong>TXT</strong></div></div></article>
             </section>
-            <section className="status-grid"><article className="metric panel"><span>READ LAYER</span><strong>{readLayerLabel}</strong><small>{readLayerDetail}</small></article><article className="metric panel"><span>WORKSPACE</span><strong>Live</strong><small>Catalog + operations + Audio Intelligence</small></article><article className="metric panel"><span>SONICTRACE</span><strong>V2-E</strong><small>R2 history · 512D · freshness</small></article><article className="metric panel"><span>PHASE</span><strong>5</strong><small>Complete · stop before Phase 6</small></article></section>
+            <section className="status-grid"><article className="metric panel"><span>READ LAYER</span><strong>{readLayerLabel}</strong><small>{readLayerDetail}</small></article><article className="metric panel"><span>WORKSPACE</span><strong>Live</strong><small>Catalog + operations + Audio Intelligence</small></article><article className="metric panel"><span>LYRICS</span><strong>TXT</strong><small>Context · timestamps · guarded save</small></article><article className="metric panel"><span>PHASE</span><strong>6</strong><small>Complete · stop before Phase 7</small></article></section>
             <EmptyState eyebrow={shellCopy.dashboard.eyebrow} title={shellCopy.dashboard.title} body={shellCopy.dashboard.body} />
           </>
         )}

@@ -3,6 +3,7 @@ import { computeContentHealth } from '../content-health';
 import { routeHref, trackHref } from '../router';
 import { getCatalogTrack } from '../services/catalog-api';
 import { studioConfig } from '../services/config';
+import { openContextualLrcMaker } from '../services/lrc-maker';
 import type { StudioAsset, StudioTrackDetail, WorkspaceSection } from '../types/studio';
 import { AssetsManager } from './AssetsManager';
 import { LyricsEditorPanel } from './LyricsEditorPanel';
@@ -82,6 +83,16 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
     setError(null);
   }
 
+  useEffect(() => {
+    const onLyricsSaved = (event: MessageEvent) => {
+      if (event.origin !== globalThis.location.origin) return;
+      const data = event.data as { type?: string; trackId?: string } | null;
+      if (data?.type === 'shinobiwan:lyrics-saved:v1' && data.trackId === trackId) void refreshTrackAfterWrite();
+    };
+    globalThis.addEventListener('message', onLyricsSaved);
+    return () => globalThis.removeEventListener('message', onLyricsSaved);
+  }, [trackId]);
+
   const health = useMemo(() => track ? computeContentHealth(track) : null, [track]);
   const lyricLines = useMemo(() => {
     if (!track?.lyricsRaw) return [];
@@ -94,7 +105,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
   }
 
   const artwork = fullArtwork(track);
-  const syncedLyrics = track.timestampsAvailable || Boolean(track.assets.lyricsLrc);
+  const syncedLyrics = track.timestampsAvailable;
   const privateRead = track.readSource === 'private';
   const qualityCounts = track.quality?.counts;
   const healthStyle = { '--health-angle': `${health.total * 3.6}deg` } as CSSProperties;
@@ -138,7 +149,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
       {section === 'lyrics' && (
         <>
           <div className="workspace-two-col workspace-lyrics-grid">
-            <WorkspacePanel eyebrow="LYRICS / STATE" title="Lyrics synchronization"><div className="workspace-facts"><div><span>Source</span><strong>{track.assets.lyricsTxt ? 'lyrics.txt' : 'Missing'}</strong></div><div><span>Timestamp data</span><strong>{track.timestampsAvailable ? 'Detected' : 'No'}</strong></div><div><span>Sync status</span><strong>{syncedLyrics ? 'Ready' : 'Not synced'}</strong></div><div><span>Segments</span><strong>{track.lyricSegments.length}</strong></div></div><div className="workspace-note workspace-tool-link"><strong>{track.assets.lyricsLrc ? 'Optional .lrc sidecar detected.' : 'No separate .lrc file required.'}</strong><p>Synchronization is derived from timestamp data. A timestamped canonical lyrics.txt is already considered synchronized.</p></div><a className="ghost-btn workspace-tool-link" href={studioConfig.lrcMakerUrl} target="_blank" rel="noreferrer">Open LRC Maker ↗</a></WorkspacePanel>
+            <WorkspacePanel eyebrow="LYRICS / STATE" title="Lyrics synchronization"><div className="workspace-facts"><div><span>Source</span><strong>{track.assets.lyricsTxt ? 'lyrics.txt' : 'Missing'}</strong></div><div><span>Timestamp data</span><strong>{track.timestampsAvailable ? 'Detected' : 'No'}</strong></div><div><span>Sync status</span><strong>{syncedLyrics ? 'Ready' : 'Not synced'}</strong></div><div><span>Segments</span><strong>{track.lyricSegments.length}</strong></div></div><div className="workspace-note workspace-tool-link"><strong>No separate .lrc file is required.</strong><p>Only timestamps inside canonical lyrics.txt define synchronized health. LRC export remains optional.</p></div><button className="primary-btn workspace-tool-link" type="button" disabled={!privateRead || !track.assets.audio || !track.assets.lyricsTxt} onClick={() => openContextualLrcMaker(track.id)}>Synchronize in LRC Maker ↗</button>{(!track.assets.audio || !track.assets.lyricsTxt) && <p className="workspace-muted">Canonical audio and lyrics.txt are required before synchronization.</p>}</WorkspacePanel>
             <WorkspacePanel eyebrow="LYRICS / PREVIEW" title={track.assets.lyricsTxt ? 'Catalog lyrics' : 'No lyrics'} className="workspace-lyrics-panel">{lyricLines.length ? <div className="workspace-lyrics-lines">{lyricLines.map((line, index) => <p key={`${index}-${line}`}>{line}</p>)}</div> : <p className="workspace-muted">No lyric text is exposed for this track. Missing canonical lyrics.txt can be uploaded from Assets.</p>}</WorkspacePanel>
           </div>
           <LyricsEditorPanel track={track} onSaved={refreshTrackAfterWrite} />
@@ -157,7 +168,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
 
       {section === 'versions' && (
         <div className="workspace-two-col">
-          <WorkspacePanel eyebrow="VERSIONS / CANONICAL" title="Current catalog source"><dl className="workspace-metadata-list"><div><dt>trackId</dt><dd>{track.id}</dd></div><div><dt>Audio filename</dt><dd>{track.assets.audio?.filename || 'Missing'}</dd></div><div><dt>{privateRead ? 'Canonical revision' : 'Public revision'}</dt><dd>{track.updatedAt || 'Not exposed'}</dd></div><div><dt>Read layer</dt><dd>{privateRead ? 'Track Manager v5.14 · bridge v1.6' : 'LaunchPAD public fallback'}</dd></div><div><dt>Master ID</dt><dd>Tracked by SonicTrace sourceVersion/history</dd></div></dl></WorkspacePanel>
+          <WorkspacePanel eyebrow="VERSIONS / CANONICAL" title="Current catalog source"><dl className="workspace-metadata-list"><div><dt>trackId</dt><dd>{track.id}</dd></div><div><dt>Audio filename</dt><dd>{track.assets.audio?.filename || 'Missing'}</dd></div><div><dt>{privateRead ? 'Canonical revision' : 'Public revision'}</dt><dd>{track.updatedAt || 'Not exposed'}</dd></div><div><dt>Read layer</dt><dd>{privateRead ? 'Track Manager v5.15 · bridge v1.7' : 'LaunchPAD public fallback'}</dd></div><div><dt>Master ID</dt><dd>Tracked by SonicTrace sourceVersion/history</dd></div></dl></WorkspacePanel>
           <WorkspacePanel eyebrow="VERSIONS / ROADMAP" title="Version model reserved"><div className="workspace-note"><strong>No fake version history.</strong><p>Dedicated masters/version identifiers remain reserved for later data modeling and stay subordinate to canonical trackId.</p></div></WorkspacePanel>
         </div>
       )}

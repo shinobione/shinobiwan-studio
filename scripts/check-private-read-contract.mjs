@@ -25,7 +25,7 @@ const pkg = JSON.parse(read('package.json'));
 for (const required of [
   "credentials: 'include'", "mode: 'cors'", "cache: 'no-store'", "'/api/studio/health'",
   '/metadata/validate', '/metadata/save',
-  "const ALLOWED_BRIDGE_WRITE_CAPABILITIES = new Set(['metadata', 'lyrics', 'sonictrace-analysis'])",
+  "const ALLOWED_BRIDGE_WRITE_CAPABILITIES = new Set(['metadata', 'lyrics', 'lyrics-sync', 'sonictrace-analysis'])",
   "'Content-Type': 'text/plain;charset=UTF-8'", "writeCapabilities.includes('metadata')", 'clientVerified',
 ]) assert.ok(admin.includes(required), `Metadata client contract is missing ${required}.`);
 
@@ -83,20 +83,20 @@ for (const required of [
 
 for (const required of ['TRACK MANAGER / CATALOG', 'Explicit catalog rebuild', 'REBUILD the canonical catalog/index.json', 'globalThis.confirm', 'rebuildAdminCatalog']) assert.ok(rebuild.includes(required), `Catalog rebuild UI missing ${required}.`);
 
-for (const required of ['<TrackCreatePanel privateRead={privateRead} onCreated={loadCatalog} />', 'Track Manager v5.14 / bridge v1.6', 'All mutations remain locked.']) assert.ok(catalog.includes(required), `Catalog Build 14 contract missing ${required}.`);
+for (const required of ['<TrackCreatePanel privateRead={privateRead} onCreated={loadCatalog} />', 'Track Manager v5.15 / bridge v1.7', 'All mutations remain locked.']) assert.ok(catalog.includes(required), `Catalog Build 15 contract missing ${required}.`);
 for (const required of [
   '<AssetsManager track={track} onChanged={refreshTrackAfterWrite} />',
   '<LyricsEditorPanel track={track} onSaved={refreshTrackAfterWrite} />',
   '<MetadataValidationPanel track={track} onSaved={refreshTrackAfterWrite} />',
   '<SonicTracePanel track={track} onSaved={refreshTrackAfterWrite} />',
-  'Track Manager v5.14 · bridge v1.6',
+  'Track Manager v5.15 · bridge v1.7',
   'PHASE 5 / COMPLETE',
-]) assert.ok(workspace.includes(required), `Workspace Build 14 contract missing ${required}.`);
+]) assert.ok(workspace.includes(required), `Workspace Build 15 contract missing ${required}.`);
 
 for (const required of [
-  'PHASE 5 · COMPLETE', 'SonicTrace catalog-linked.', 'Track Manager v5.14 · bridge v1.6', 'R2 history · 512D · freshness',
-  '<CatalogRebuildPanel privateRead={privateRead} />', '<CatalogIntelligenceView />', 'stop before Phase 6',
-]) assert.ok(app.includes(required), `Dashboard Build 14 contract missing ${required}.`);
+  'PHASE 6 · COMPLETE', 'Canonical Lyrics workflow.', 'Track Manager v5.15 · bridge v1.7', 'Context · timestamps · guarded save',
+  '<CatalogRebuildPanel privateRead={privateRead} />', '<CatalogIntelligenceView />', 'stop before Phase 7',
+]) assert.ok(app.includes(required), `Dashboard Build 15 contract missing ${required}.`);
 
 for (const required of [
   "const SAVE_INTENT = 'sonictrace-analysis-save-v1'", '/api/studio/analyze', '/analysis/sonictrace',
@@ -135,11 +135,11 @@ for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog 
   assert.ok(!phase4Api.toLowerCase().includes(forbiddenPhase5.toLowerCase()), `Phase 5 leaked into Phase 4 client: ${forbiddenPhase5}`);
 }
 
-assert.ok(release.includes("version: '0.8.0'"), 'Studio release version must be 0.8.0.');
-assert.ok(release.includes('build: 14'), 'Studio release build must be 14.');
-assert.ok(release.includes("codename: 'phase5-sonictrace-catalog-intelligence'"), 'Studio release codename must freeze Phase 5 completion.');
-assert.equal(pkg.version, '0.8.0', 'package.json must match Studio 0.8.0.');
+assert.ok(release.includes("version: '0.9.0'"), 'Studio release version must be 0.9.0.');
+assert.ok(release.includes('build: 15'), 'Studio release build must be 15.');
+assert.ok(release.includes("codename: 'phase6-canonical-lyrics-workflow'"), 'Studio release codename must freeze Phase 6 completion.');
+assert.equal(pkg.version, '0.9.0', 'package.json must match Studio 0.9.0.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'Production build must run the integration regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase5'), 'Production build must run the Phase 5 algorithm guard.');
 
-console.log('Studio 0.8.0 Build 14 completes roadmap Phase 5 with the 11px readability floor preserved: workspace analysis, browser fallback, guarded R2 persistence, history, freshness, 512D similarity and clusters.');
+console.log('Studio 0.9.0 Build 15 preserves prior contracts and completes the contextual canonical Lyrics workflow.');
