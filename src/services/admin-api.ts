@@ -2,7 +2,7 @@ import { studioConfig } from './config';
 
 const METADATA_VALIDATION_INTENT = 'metadata-validate-v1';
 const METADATA_SAVE_INTENT = 'metadata-save-v1';
-const ALLOWED_BRIDGE_WRITE_CAPABILITIES = new Set(['metadata']);
+const ALLOWED_BRIDGE_WRITE_CAPABILITIES = new Set(['metadata', 'lyrics']);
 
 export type AdminReadFailureKind = 'access-or-cors' | 'http' | 'timeout' | 'invalid-response';
 export type AdminAssetKind = 'audio' | 'cover' | 'thumbnail' | 'video' | 'lyrics';
@@ -476,9 +476,10 @@ export async function saveAdminTrackMetadata(
   return { ...payload, clientVerified, verificationWarning };
 }
 
-// Phase 4B.1B: Build 9 exposes exactly one production write client: metadata save.
-// Validation remains separate and non-mutating. Media, delete, publish shortcuts and
-// standalone catalog rebuild endpoints remain intentionally absent from Studio.
+// Phase 4B.2A: Build 11 recognizes the future lyrics bridge capability so a
+// v5.12/v1.4 backend can truthfully advertise write:["metadata","lyrics"]
+// without knocking private reads into fallback. No lyrics validation/save client
+// exists yet; metadata remains the only callable Studio production write.
 export const adminService = Object.freeze({
   fallbackUrl: studioConfig.trackManagerUrl,
   bridgeHealthUrl: `${baseUrl()}/api/studio/health`,
@@ -486,8 +487,9 @@ export const adminService = Object.freeze({
   metadataValidationTransport: 'text/plain-simple-request',
   metadataWriteIntent: METADATA_SAVE_INTENT,
   metadataWriteTransport: 'text/plain-simple-request',
-  recognizedWriteCapabilities: ['metadata'] as const,
+  recognizedWriteCapabilities: ['metadata', 'lyrics'] as const,
   validationEnabled: true,
   writesEnabled: true,
   writeCapabilities: ['metadata'] as const,
+  lyricsWriteEnabled: false,
 });

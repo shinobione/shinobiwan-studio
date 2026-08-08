@@ -25,8 +25,8 @@ const NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
 const shellCopy: Record<Exclude<StudioRoute, 'catalog'>, { eyebrow: string; title: string; body: string }> = {
   dashboard: {
     eyebrow: 'STUDIO / HOME',
-    title: 'Guarded metadata save is production-proven.',
-    body: 'Phase 4B.1B is now proven end-to-end against Track Manager v5.11 / bridge v1.3: validate, confirm, save, catalog rebuild, backend reread and browser canonical reread all passed in real production, including a clean restoration write.',
+    title: 'Lyrics capability prep is compatibility-only.',
+    body: 'Phase 4B.2A prepares Studio to tolerate a future Track Manager lyrics capability without exposing a lyrics write. Metadata save remains the only production write and stays production-proven.',
   },
   intelligence: {
     eyebrow: 'SONICTRACE / INTELLIGENCE',
@@ -35,8 +35,8 @@ const shellCopy: Record<Exclude<StudioRoute, 'catalog'>, { eyebrow: string; titl
   },
   lyrics: {
     eyebrow: 'LYRICS / SYNC',
-    title: 'Lyrics synchronization is content-driven.',
-    body: 'A timestamped canonical lyrics.txt is already synchronized. LRC Maker remains the editing/synchronization engine during migration; a separate .lrc sidecar is optional, not required.',
+    title: 'lyrics.txt stays canonical.',
+    body: 'Phase 4B.2A recognizes the future lyrics capability only. A timestamped canonical lyrics.txt is synchronized; LRC Maker stays the advanced editor and a separate .lrc sidecar remains optional.',
   },
   assets: {
     eyebrow: 'CONTENT / ASSETS',
@@ -46,12 +46,12 @@ const shellCopy: Record<Exclude<StudioRoute, 'catalog'>, { eyebrow: string; titl
   publishing: {
     eyebrow: 'CATALOG / PUBLISHING',
     title: 'Publishing remains protected.',
-    body: 'Build 10 keeps the production-proven metadata save unchanged. Publication shortcuts, media replacement, delete and standalone catalog rebuild actions remain intentionally locked in Studio.',
+    body: 'Build 11 keeps the production-proven metadata save unchanged. Lyrics save, publication shortcuts, media replacement, delete and standalone catalog rebuild actions remain locked in Studio.',
   },
   administration: {
     eyebrow: 'SYSTEM / ADMINISTRATION',
-    title: 'First scoped write proven. Recovery tools preserved.',
-    body: 'Track Manager remains the protected operational fallback, while SonicTrace and LRC Maker stay independently usable. Studio absorbs write workflows one by one behind separately versioned safety gates and real-browser proof.',
+    title: 'Lyrics capability recognized, not activated.',
+    body: 'Track Manager remains the protected operational fallback, while SonicTrace and LRC Maker stay independently usable. No lyrics validation or save client exists in Build 11.',
   },
 };
 
@@ -137,8 +137,8 @@ export default function App() {
         </nav>
 
         <div className="sidebar-foot">
-          <span className="phase-tag">PHASE 4B.1B · PRODUCTION PROVEN</span>
-          <p>v{studioRelease.version} · Build {studioRelease.build}<br />1 guarded production write.</p>
+          <span className="phase-tag">PHASE 4B.2A · LYRICS CAPABILITY PREP</span>
+          <p>v{studioRelease.version} · Build {studioRelease.build}<br />Lyrics writes remain locked.</p>
         </div>
       </aside>
 
@@ -182,8 +182,8 @@ export default function App() {
             <section className="status-grid">
               <article className="metric panel"><span>READ LAYER</span><strong>{readLayerLabel}</strong><small>{readLayerDetail}</small></article>
               <article className="metric panel"><span>WORKSPACE</span><strong>Live</strong><small>7 contextual sections per track</small></article>
-              <article className="metric panel"><span>CONTENT HEALTH</span><strong>V1.1</strong><small>Timestamp-aware lyrics completeness</small></article>
-              <article className="metric panel"><span>WRITES</span><strong>Metadata</strong><small>Production-proven · everything else locked</small></article>
+              <article className="metric panel"><span>LYRICS MODEL</span><strong>TXT</strong><small>Timestamps define synchronized state</small></article>
+              <article className="metric panel"><span>WRITES</span><strong>Metadata</strong><small>Lyrics capability recognized · not active</small></article>
             </section>
 
             <EmptyState eyebrow={shellCopy.dashboard.eyebrow} title={shellCopy.dashboard.title} body={shellCopy.dashboard.body} />

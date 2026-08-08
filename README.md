@@ -2,9 +2,9 @@
 
 Artist Content & Intelligence Manager.
 
-**Current release:** `0.5.1`  
-**Build:** `10`  
-**Current milestone:** Phase 4B.1B — metadata save production-proven
+**Current release:** `0.5.2`  
+**Build:** `11`  
+**Current milestone:** Phase 4B.2A — lyrics write capability awareness, lyrics writes still locked
 
 ## Product role
 
@@ -35,7 +35,58 @@ Implemented today:
 - one guarded production write: metadata save;
 - explicit validate → review → confirm → save flow;
 - backend manifest reread + browser canonical reread after save;
+- production proof + clean restoration of the metadata write;
+- Phase 4B.2 read-only lyrics audit completed;
+- future lyrics bridge capability recognized without activating a lyrics write client;
 - strict build-time bridge/write regression guard.
+
+## Phase 4B.2A — capability awareness only
+
+Build 11 is deliberately **not** a lyrics-write release.
+
+It solves the same safe-deployment ordering problem previously solved before metadata write: a future Track Manager backend must be able to truthfully advertise a new `lyrics` capability without an older Studio treating that capability as hostile and dropping into `PUBLIC FALLBACK`.
+
+Build 11 therefore recognizes:
+
+```text
+metadata
+lyrics
+```
+
+as allowed bridge write capability names, while its actually callable client surface remains:
+
+```text
+metadata only
+```
+
+The distinction is explicit:
+
+```text
+recognizedWriteCapabilities = ["metadata", "lyrics"]
+writeCapabilities           = ["metadata"]
+lyricsWriteEnabled          = false
+```
+
+Build 11 still has exactly two explicit POST clients:
+
+```text
+POST /api/studio/tracks/<trackId>/metadata/validate
+POST /api/studio/tracks/<trackId>/metadata/save
+```
+
+Build 11 has **no**:
+
+```text
+/lyrics/validate
+/lyrics/save
+PUT
+PATCH
+DELETE
+```
+
+and no asset upload, delete, publish shortcut or standalone catalog rebuild client.
+
+This means Build 11 can safely be deployed against the current Track Manager v5.11 / bridge v1.3, and later remain compatible if a separately reviewed v5.12 / bridge v1.4 begins advertising `write: ["metadata", "lyrics"]`.
 
 ## Phase 4B.1B — production proof
 
@@ -45,7 +96,7 @@ Build 9 introduced exactly one production write capability:
 write: ["metadata"]
 ```
 
-Build 10 does not broaden that surface. It records that the flow has now been proven end-to-end in real production and preserves the exact same guardrails.
+Build 10 recorded that the flow had been proven end-to-end in real production. Build 11 preserves that exact active write behavior while only widening future capability recognition.
 
 The proven Metadata sequence is:
 
@@ -110,6 +161,9 @@ Protected Track Manager backend:
 - public Worker deployment steps were skipped.
 
 Studio Build 9 merge SHA: `4737309b0d5c2814744d1ee999ce904af71ffcb7`.
+Studio Build 10 production-proof merge SHA: `a01634b0db78354d238f1b1d97e8b4bfe0bdab5b`.
+
+Build 11 itself requires **no Worker deployment** because the backend runtime is unchanged.
 
 ## Metadata endpoints
 
@@ -121,7 +175,7 @@ Content-Type: text/plain;charset=UTF-8
 credentials: include
 ```
 
-Save is the only mutating Studio route:
+Save remains the only mutating Studio route:
 
 ```text
 POST /api/studio/tracks/<trackId>/metadata/save
@@ -152,12 +206,12 @@ Preserved by the backend:
 - migration provenance;
 - `createdAt`.
 
-Still unavailable in Studio Build 10:
+Still unavailable in Studio Build 11:
 
 - audio upload/replace;
 - cover upload/replace;
 - thumbnail mutation;
-- lyrics save;
+- **lyrics validate/save**;
 - Canvas/video upload/replace;
 - track delete;
 - standalone publish shortcut;
@@ -167,7 +221,7 @@ A successful metadata change writes the canonical manifest and rebuilds `catalog
 
 ## Stale and quality guards
 
-Both validation and save require `expectedUpdatedAt`.
+Both metadata validation and save require `expectedUpdatedAt`.
 
 If another tool changes the manifest first, Track Manager returns `STALE_MANIFEST`; Studio requires reload + new validation instead of overwriting.
 
@@ -184,6 +238,7 @@ Track Manager v5.11 attempts transactional recovery if catalog publication fails
 Preferred rollback checkpoints:
 
 ```text
+safety/pre-4b2-lyrics-write-20260808-1837
 safety/post-metadata-write-proven-20260808-1822
 safety/post-v5.11-pre-build9-20260808-1732
 safety/pre-4b1b-metadata-write-20260808-1612
@@ -191,9 +246,9 @@ safety/pre-cors-hotfix-20260808-1540
 safety/pre-integration-20260808-1048
 ```
 
-The first checkpoint captures the exact state after the successful write + restoration smoke test.
+The first checkpoint is the immediate pre-4B.2 runtime boundary. The second is the last fully production-proven write boundary.
 
-See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md) and [`docs/PHASE-4B1B-METADATA-SAVE.md`](docs/PHASE-4B1B-METADATA-SAVE.md).
+See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md), [`docs/PHASE-4B1B-METADATA-SAVE.md`](docs/PHASE-4B1B-METADATA-SAVE.md) and [`docs/PHASE-4B2A-LYRICS-CAPABILITY-PREP.md`](docs/PHASE-4B2A-LYRICS-CAPABILITY-PREP.md).
 
 ## Lyrics semantics
 
@@ -203,18 +258,26 @@ Lyrics synchronization is content-driven:
 - timestamps detected in the canonical lyrics content = `Synced Lyrics`;
 - a separate `.lrc` sidecar is optional, not required.
 
-Phase 4B.2 must preserve this rule. If lyrics writing is introduced, the canonical write target is `lyrics.txt`; Studio must not create a mandatory second `.lrc` source of truth.
+The Phase 4B.2 audit confirmed this model is already native to Track Manager: canonical lyrics uploads are TXT-only and `timestampsAvailable` is derived from text parsing, not an `.lrc` filename.
 
-## Next safety gate — Phase 4B.2
+LRC Maker remains compatible because it can import `.txt`/`.lrc`, preserve timestamps and export plain text. No LRC Maker runtime change is needed before the first guarded Studio lyrics save.
 
-Before any lyrics write is opened:
+## Next safety gate — Phase 4B.2B
 
-1. audit the existing Track Manager/LRC Maker lyrics paths in read-only mode;
-2. create a dedicated backend/client contract;
-3. add a new capability without breaking Build 10;
-4. deploy backend/client in compatibility-safe order;
-5. prove a reversible real-browser write on lyrics content only;
-6. keep media, metadata, delete and publishing boundaries independently protected.
+Only after Build 11 is merged, deployed and verified `PRIVATE READ` may a backend lyrics capability be opened.
+
+The audited target design requires:
+
+1. a dedicated Track Manager lyrics contract, separate from metadata;
+2. `expectedUpdatedAt` plus a server-provided lyrics object revision/ETag;
+3. first implementation limited to updating an existing canonical `lyrics.txt`;
+4. no missing-file creation or filename migration in the first write subphase;
+5. no audio/cover/thumbnail/video/delete/arbitrary-metadata mutation;
+6. catalog refresh so timestamp/sync projection stays current;
+7. rollback of lyrics + manifest + catalog if publication fails;
+8. real-browser write + restoration proof before broadening scope.
+
+The backend audit/spec lives in `LaunchPAD-APP/docs/STUDIO-LYRICS-WRITE-AUDIT.md`.
 
 ## Readability rule
 

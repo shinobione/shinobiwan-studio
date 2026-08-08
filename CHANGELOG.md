@@ -1,5 +1,43 @@
 # SHINOBIWAN Studio Changelog
 
+## 0.5.2 — Build 11 — 2026-08-08
+
+Codename: `lyrics-write-capability-awareness`
+
+### Added
+
+- compatibility awareness for the future bridge write capability `lyrics`;
+- strict separation between **recognized** bridge writes (`metadata`, `lyrics`) and **active Studio write clients** (`metadata` only);
+- `lyricsWriteEnabled: false` as an explicit Build 11 contract;
+- fresh safety checkpoint `safety/pre-4b2-lyrics-write-20260808-1837` in Studio and LaunchPAD/Track Manager;
+- dedicated Phase 4B.2A capability-preparation documentation.
+
+### Unchanged runtime boundary
+
+- metadata remains the only active Studio production write;
+- exactly two explicit Studio POST clients remain: metadata validate + metadata save;
+- `/lyrics/validate` and `/lyrics/save` do not exist in Build 11;
+- no PUT/PATCH/DELETE;
+- no audio, cover, thumbnail, video, delete, publish or standalone catalog rebuild mutation client;
+- Track Manager production remains v5.11 / bridge v1.3;
+- no Worker redeploy is required;
+- no R2/catalog mutation occurs from deploying Build 11;
+- LRC Maker and SonicTrace are untouched.
+
+### Why
+
+Track Manager v5.12 / bridge v1.4 is expected to truthfully advertise `write: ["metadata", "lyrics"]`. Without Build 11, the current Studio health allowlist would classify `lyrics` as an unexpected production write and could drop private reads into fallback. Build 11 removes that deployment-order hazard **before** any lyrics endpoint exists.
+
+### Frozen lyrics contract
+
+The Phase 4B.2 read-only audit confirmed:
+
+- canonical R2 source is `tracks/<slug>/lyrics.txt`;
+- timestamp content defines synchronization;
+- `.lrc` is optional compatibility/export only;
+- Track Manager canonical lyrics uploads already accept TXT only;
+- LRC Maker can remain the external advanced editor for the first guarded save phase.
+
 ## 0.5.1 — Build 10 — 2026-08-08
 
 Codename: `metadata-save-production-proven`
@@ -34,7 +72,7 @@ Restoration write:
 - Studio advances to `0.5.1` / Build `10`;
 - visible milestone becomes `PHASE 4B.1B · PRODUCTION PROVEN`;
 - Dashboard records that metadata save has passed validate → confirm → save → catalog rebuild → backend reread → browser reread in production;
-- documentation now records the exact smoke and restoration revisions;
+- documentation records the exact smoke and restoration revisions;
 - new post-proof rollback checkpoint: `safety/post-metadata-write-proven-20260808-1822` in Studio and LaunchPAD/Track Manager.
 
 ### Safety

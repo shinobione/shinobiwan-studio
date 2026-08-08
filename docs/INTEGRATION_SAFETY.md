@@ -1,7 +1,7 @@
 # SHINOBIWAN Studio — Integration Safety Policy
 
 Date established: 2026-08-08  
-Current Studio milestone: `0.5.1` / Build `10` / Phase 4B.1B production-proven
+Current Studio milestone: `0.5.2` / Build `11` / Phase 4B.2A lyrics capability preparation
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -27,15 +27,16 @@ CORS hotfix checkpoint:
 - Studio: `safety/pre-cors-hotfix-20260808-1540`
 - LaunchPAD + Track Manager: `safety/pre-cors-hotfix-20260808-1540`
 
-Pre-first-write checkpoints:
+Metadata-write checkpoints:
 
 - Studio + LaunchPAD/Track Manager: `safety/pre-4b1b-metadata-write-20260808-1612`
 - Studio + LaunchPAD/Track Manager: `safety/post-v5.11-pre-build9-20260808-1732`
+- Studio + LaunchPAD/Track Manager: `safety/post-metadata-write-proven-20260808-1822`
 
-Preferred checkpoint after the successful production write + restoration cycle:
+Fresh pre-lyrics-runtime checkpoint:
 
-- Studio: `safety/post-metadata-write-proven-20260808-1822`
-- LaunchPAD + Track Manager: `safety/post-metadata-write-proven-20260808-1822`
+- Studio: `safety/pre-4b2-lyrics-write-20260808-1837`
+- LaunchPAD + Track Manager: `safety/pre-4b2-lyrics-write-20260808-1837`
 
 Safety branches are rollback references only and must never be used as development branches.
 
@@ -74,60 +75,66 @@ Private Track Manager:
 - Cloudflare Access protection confirmed (`302` unauthenticated);
 - public Worker deployment steps skipped.
 
-Studio guarded-write baseline:
-
-- Studio Build 9 merge SHA `4737309b0d5c2814744d1ee999ce904af71ffcb7`;
-- metadata only;
-- two POST clients: validate + save;
-- no PUT/PATCH/DELETE;
-- no media/delete/publish/standalone-rebuild mutation surface.
-
 ## Production proof — Phase 4B.1B
 
-Real-browser smoke test on `soft-addiction` completed successfully.
+Real-browser metadata smoke test on `soft-addiction` completed successfully and was restored cleanly.
 
-Temporary write:
+Temporary revision:
 
-- field `keyConfidence` only;
-- value `0.01`;
-- canonical revision `2026-08-08T16:21:15.503Z`;
-- catalog rebuilt;
-- browser canonical reread verified;
-- media untouched.
+```text
+2026-08-08T16:21:15.503Z
+```
 
-Restoration write:
+Restored revision:
 
-- `keyConfidence` returned to original empty/null state;
-- canonical revision `2026-08-08T16:22:10.890Z`;
-- catalog rebuilt;
-- browser canonical reread verified;
-- quality `ready`, publishable `Yes`, errors/warnings `0 / 0`;
-- media untouched.
+```text
+2026-08-08T16:22:10.890Z
+```
 
-Only after this restoration cycle is Phase 4B.1B considered production-proven.
+Final state: quality `ready`, publishable `Yes`, errors/warnings `0 / 0`, media untouched.
 
-## Data safety
+Metadata therefore remains the only production-proven Studio write.
 
-- R2 remains the canonical media/catalog source of truth.
-- Metadata is currently the only Studio production write capability.
-- Audio, cover, thumbnail, lyrics and video objects remain outside the current client surface.
-- `trackId`/slug is immutable in the metadata write route.
-- Existing asset filenames, migration provenance and `createdAt` are preserved.
-- `expectedUpdatedAt` is mandatory before every metadata validation or save.
-- stale state returns `STALE_MANIFEST`; Studio reloads rather than overwrites.
-- changing the form after validation invalidates the preview before save.
-- published proposals must pass Track Manager quality checks before persistence.
-- metadata save rebuilds `catalog/index.json` so LaunchPAD does not drift from the canonical manifest.
-- if catalog rebuild or backend reread fails after a manifest write, v5.11 attempts to restore the previous manifest and rebuild the restored catalog.
-- validation alone never writes R2 or rebuilds catalog.
+## Phase 4B.2A compatibility boundary
 
-## Lyrics safety rule — frozen before Phase 4B.2
+Build 11 changes capability recognition only.
+
+Allowed bridge write advertisements become:
+
+```text
+metadata
+lyrics
+```
+
+but active Studio write clients remain:
+
+```text
+metadata only
+```
+
+Required Build 11 invariants:
+
+- exactly two explicit POST clients remain: metadata validate + metadata save;
+- `/lyrics/validate` absent;
+- `/lyrics/save` absent;
+- `lyricsWriteEnabled: false`;
+- no PUT/PATCH/DELETE;
+- no media/delete/publish/standalone-rebuild mutation client;
+- deploying Build 11 must not mutate R2 or require a Worker deployment.
+
+This sequencing prevents a future v5.12/v1.4 backend from truthfully advertising a lyrics capability and accidentally pushing Build 10 into public fallback.
+
+## Lyrics safety rule — frozen
 
 - `lyrics.txt` is the canonical lyrics source.
 - Timestamp data inside canonical `lyrics.txt` means the lyrics are synchronized.
 - A separate `.lrc` sidecar is optional compatibility/export data, not a required second source of truth.
-- Phase 4B.2 must not introduce mandatory `.lrc` persistence merely because the UI uses LRC-style timestamps.
-- A future lyrics save must be independently stale-guarded and must not mutate audio, cover, thumbnail, video or arbitrary metadata.
+- Track Manager already accepts TXT only for canonical lyrics uploads.
+- LRC Maker can remain the advanced timestamp editor without a runtime change for the first Studio lyrics-write phase.
+- Future lyrics validation/save must be independently stale-guarded.
+- Proposed concurrency requires both manifest `expectedUpdatedAt` and a server-provided lyrics object revision/ETag.
+- First write scope should update an existing canonical `lyrics.txt` only; creation/migration is a later subphase.
+- A lyrics module must not mutate audio, cover, thumbnail, video, delete state or arbitrary metadata.
 
 ## Security safety
 
@@ -136,13 +143,9 @@ Only after this restoration cycle is Phase 4B.1B considered production-proven.
 - exact Studio origin remains `https://shinobione.github.io`;
 - credentialed CORS never uses `*`;
 - browser uses the existing Cloudflare Access session with `credentials: include`;
-- metadata POSTs use CORS-simple `text/plain` JSON transport to avoid the proven OPTIONS/Access preflight failure;
-- validation body intent is exactly `metadata-validate-v1`;
-- save body intent is exactly `metadata-save-v1`;
-- metadata fields are whitelist-only;
-- Studio rejects any bridge write capability other than currently approved capabilities;
-- before saving, Studio verifies the deployed bridge advertises the required capability;
-- no autosave, background write or keyboard shortcut save is permitted for guarded write phases.
+- guarded POSTs use CORS-simple `text/plain` JSON transport unless a later reviewed contract explicitly changes it;
+- no autosave, background write or keyboard-shortcut save is permitted for guarded write phases;
+- Studio verifies the deployed bridge advertises a capability before any corresponding save call is allowed.
 
 ## Real-browser gate for future writes
 
@@ -153,9 +156,9 @@ Before any new write capability becomes production-proven:
 1. authenticate in Track Manager;
 2. confirm Studio reports `PRIVATE READ`;
 3. exercise a reversible, narrow change;
-4. verify the exact intended changed field/object;
+4. verify the exact intended changed object/state;
 5. verify canonical reread;
-6. restore the temporary test change if applicable;
+6. restore the temporary test change;
 7. verify the final state is clean;
 8. verify LaunchPAD, Track Manager, SonicTrace and LRC Maker remain independently usable;
 9. create a post-proof safety checkpoint before opening the next write boundary.
@@ -168,7 +171,7 @@ If a regression appears:
 2. do not perform unrelated media/catalog edits to compensate;
 3. revert the affected Studio PR if the client/UI is at fault;
 4. if backend-only, redeploy the private/admin Worker from a known-good commit or safety branch;
-5. prefer `safety/post-metadata-write-proven-20260808-1822` as the current known-good checkpoint;
+5. prefer `safety/pre-4b2-lyrics-write-20260808-1837` for Phase 4B.2 runtime rollback and `safety/post-metadata-write-proven-20260808-1822` for the last fully production-proven write boundary;
 6. verify standalone Track Manager, LaunchPAD, LRC Maker and SonicTrace independently before resuming.
 
 The objective is simple: Studio integration may fail, but it must not take LaunchPAD, Track Manager, SonicTrace or LRC Maker down with it.
