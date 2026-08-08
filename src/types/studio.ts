@@ -7,6 +7,15 @@ export type StudioRoute =
   | 'publishing'
   | 'administration';
 
+export type WorkspaceSection =
+  | 'overview'
+  | 'intelligence'
+  | 'lyrics'
+  | 'assets'
+  | 'versions'
+  | 'metadata'
+  | 'publishing';
+
 export type ServiceState = 'checking' | 'online' | 'degraded' | 'offline';
 
 export interface ServiceStatus {
