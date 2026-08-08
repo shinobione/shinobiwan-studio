@@ -88,6 +88,12 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
     return () => { active = false; };
   }, [trackId]);
 
+  async function refreshTrackAfterMetadataSave() {
+    const item = await getCatalogTrack(trackId);
+    setTrack(item);
+    setError(null);
+  }
+
   const health = useMemo(() => track ? computeContentHealth(track) : null, [track]);
   const lyricLines = useMemo(() => {
     if (!track?.lyricsRaw) return [];
@@ -261,7 +267,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
             <AssetRow label="Video / Canvas" asset={track.assets.video} />
           </div>
           <p className="workspace-footnote">{privateRead
-            ? 'Read-only projection from the canonical Track Manager/R2 state. Published media keeps the proven public delivery URLs when available; private-only assets remain protected by Cloudflare Access.'
+            ? 'Read-only asset projection from the canonical Track Manager/R2 state. Published media keeps the proven public delivery URLs when available; private-only assets remain protected by Cloudflare Access.'
             : 'Safe public LaunchPAD fallback. Authenticate with Track Manager to expose private canonical state such as drafts.'} Synchronized lyrics are content-derived from timestamp data; a separate .lrc sidecar is optional. Replace/upload actions remain in Track Manager.</p>
         </WorkspacePanel>
       )}
@@ -273,7 +279,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
               <div><dt>trackId</dt><dd>{track.id}</dd></div>
               <div><dt>Audio filename</dt><dd>{track.assets.audio?.filename || 'Missing'}</dd></div>
               <div><dt>{privateRead ? 'Canonical revision' : 'Public revision'}</dt><dd>{track.updatedAt || 'Not exposed'}</dd></div>
-              <div><dt>Read layer</dt><dd>{privateRead ? 'Track Manager v5.10' : 'LaunchPAD public fallback'}</dd></div>
+              <div><dt>Read layer</dt><dd>{privateRead ? 'Track Manager v5.11 · bridge v1.3' : 'LaunchPAD public fallback'}</dd></div>
               <div><dt>Master ID</dt><dd>Not modeled yet</dd></div>
             </dl>
           </WorkspacePanel>
@@ -283,7 +289,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
         </div>
       )}
 
-      {section === 'metadata' && <MetadataValidationPanel track={track} />}
+      {section === 'metadata' && <MetadataValidationPanel track={track} onSaved={refreshTrackAfterMetadataSave} />}
 
       {section === 'publishing' && (
         <div className="workspace-two-col">
@@ -302,8 +308,8 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
             )}
             {track.publishing.catalogVisible && <a className="ghost-btn" href={studioConfig.launchpadUrl} target="_blank" rel="noreferrer">Open LaunchPAD ↗</a>}
           </WorkspacePanel>
-          <WorkspacePanel eyebrow="PUBLISHING / GUARD" title="Write actions locked">
-            <div className="workspace-note"><strong>Catalog rebuild is not exposed here.</strong><p>Build 7 can validate metadata proposals only. Publishing, save, delete, asset replacement and catalog rebuild remain in the protected Track Manager UI.</p></div>
+          <WorkspacePanel eyebrow="PUBLISHING / GUARD" title="Publishing writes still locked">
+            <div className="workspace-note"><strong>Only guarded metadata save is exposed in Studio.</strong><p>Build 9 can update canonical metadata after validation. Publication shortcuts, delete, asset replacement and standalone catalog rebuild remain in the protected Track Manager UI.</p></div>
           </WorkspacePanel>
         </div>
       )}
