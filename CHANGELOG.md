@@ -39,15 +39,20 @@ Codename: `phase4-track-manager-complete`
 - user confirmation plus backend `confirm: REBUILD` contract;
 - private catalog reread verification after rebuild.
 
-### Backend dependency
+### Production backend proof
 
-Build 13 is gated on Track Manager `v5.13` / Studio bridge `v1.5` source merge:
+Build 13 consumes the successfully deployed Track Manager `v5.13` / Studio bridge `v1.5` backend:
 
 ```text
-df75509d89b1ed1477d4b249fab63a6bd41db311
+source SHA          df75509d89b1ed1477d4b249fab63a6bd41db311
+workflow run        31272655808
+deployment target   admin
+Worker Version ID   781f75f9-776c-4e39-90a7-5cdf34854599
+Access verification protected / HTTP 302 unauthenticated
+public Worker       deploy/record/verify skipped
 ```
 
-The final Build 13 PR must not merge until the protected admin-only v5.13 deployment is verified and its workflow run + Cloudflare Worker Version ID are recorded.
+Worker source validation, bridge guards and Wrangler dry-run passed again immediately before deployment. Public LaunchPAD remained Build 66 / public Worker v2.6.
 
 ### Preserved
 
