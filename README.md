@@ -2,9 +2,9 @@
 
 Artist Content & Intelligence Manager.
 
-**Current release:** `0.4.1`  
-**Build:** `6`  
-**Current milestone:** Phase 4B.1A — metadata validation preview, production writes still locked
+**Current release:** `0.4.2`  
+**Build:** `7`  
+**Current milestone:** Phase 4B.1A — metadata validation preview, no-preflight browser transport, production writes still locked
 
 ## Product role
 
@@ -26,7 +26,7 @@ Implemented:
 
 - GitHub Pages shell;
 - LaunchPAD public catalog read layer;
-- Track Manager v5.9 authenticated Studio bridge support;
+- Track Manager v5.10 / Studio bridge v1.2 authenticated support;
 - private-first catalog reads with automatic public fallback;
 - private canonical drafts/status/quality visibility when Cloudflare Access is usable from the browser;
 - public media/lyrics URL reuse for already-published tracks;
@@ -39,16 +39,16 @@ Implemented:
 - local Metadata proposal editor;
 - validation-only metadata POST with stale-manifest protection;
 - normalized proposal + quality preview without saving;
-- build-time regression guard allowing exactly one validation POST while forbidding production write plumbing.
+- CORS-safelisted `text/plain` metadata-validation transport that avoids the browser OPTIONS preflight blocked by Cloudflare Access in the Build 6 real-browser path;
+- build-time regression guard allowing exactly one validation POST while forbidding production write plumbing and forbidding reintroduction of the preflight-triggering custom-header transport.
 
-Studio production writes remain locked. Build 6 exposes **no save, upload, delete, publish or catalog-rebuild wrapper**.
+Studio production writes remain locked. Build 7 exposes **no save, upload, delete, publish or catalog-rebuild wrapper**.
 
 ## Phase 4B.1A metadata validation architecture
 
-LaunchPAD Build 66 / Track Manager v5.9 / Studio bridge v1.1 keeps the private GET routes and adds exactly one validation-only endpoint:
+LaunchPAD public application code remains Build 66. The separately deployed private backend now runs Track Manager v5.10 / Studio bridge v1.2 and exposes the same validation-only endpoint:
 
 ```text
-OPTIONS /api/studio/*
 GET     /api/studio/health
 GET     /api/studio/tracks
 GET     /api/studio/tracks/<trackId>
@@ -61,18 +61,31 @@ Browser origin allowlist:
 https://shinobione.github.io
 ```
 
-The validation POST requires:
+Studio Build 7 sends the validation POST as a CORS **simple request**:
 
 ```text
-Content-Type: application/json
-X-Shinobiwan-Studio-Intent: metadata-validate-v1
+Content-Type: text/plain;charset=UTF-8
+Accept: application/json
 credentials: include
-expectedUpdatedAt: canonical manifest revision
 ```
+
+The body is still JSON text and must contain:
+
+```json
+{
+  "intent": "metadata-validate-v1",
+  "expectedUpdatedAt": "<canonical manifest revision>",
+  "metadata": {}
+}
+```
+
+Why `text/plain`? Build 6 used `application/json` plus `X-Shinobiwan-Studio-Intent`, which forces an OPTIONS preflight. Real Chrome testing proved that authenticated private GETs worked while Cloudflare Access could intercept that preflight before the Worker CORS handler. Build 7 keeps the same Access cookie, exact Origin, intent validation and stale-manifest protection, but removes the unnecessary preflight from the browser path.
+
+Track Manager v5.10 remains backward-compatible with the Build 6 JSON/custom-header validation mode, but Studio Build 7 deliberately uses only the simple transport. CI fails if the client reintroduces `X-Shinobiwan-Studio-Intent` or `Content-Type: application/json` on the validation POST.
 
 If the manifest changed since the workspace loaded, Track Manager returns `409 / STALE_MANIFEST`. Studio refuses to continue with that stale proposal until the track is reloaded.
 
-The response is a preview only: normalized proposed metadata, changed fields and Track Manager quality state. The endpoint and Studio Build 6 do not write the manifest, media or `catalog/index.json`.
+The response is a preview only: normalized proposed metadata, changed fields and Track Manager quality state. The endpoint and Studio Build 7 do not write the manifest, media or `catalog/index.json`.
 
 See [`docs/PHASE-4B1A-METADATA-VALIDATION.md`](docs/PHASE-4B1A-METADATA-VALIDATION.md).
 
@@ -97,19 +110,21 @@ If the private request cannot use a valid Cloudflare Access session, Studio does
 
 ## Production dependency
 
-Build 6 is aligned to the deployed upstream backend:
+Build 7 is aligned to the currently deployed upstream state:
 
-- LaunchPAD Build `2026.08.08.66`;
-- release `studio-metadata-validation-20260808`;
-- LaunchPAD merge SHA `e30e6665566d5d1e4475ab24b92833a859e2d110`;
-- Track Manager `v5.9`;
-- private Worker Version ID `59ef19af-e189-42d3-ba08-bb5303bb75c1`;
-- public Worker remains `v2.6` and was not deployed for Build 66;
-- no R2 migration or catalog rebuild was performed.
+- LaunchPAD public application stays Build `2026.08.08.66` / release `studio-metadata-validation-20260808`;
+- Track Manager hotfix merge SHA: `c7cf9ae7ad78e6407dfc6950b3c5a558e2f7bb0b`;
+- Track Manager `v5.10` / Studio bridge `v1.2`;
+- deployed private Worker Version ID: `5ac91e36-9060-4e05-a76c-67c46459c72d`;
+- protected deploy workflow run: `31260738818`;
+- deployment target was `admin` only;
+- public Worker remains `v2.6` and its deploy steps were skipped;
+- Cloudflare Access smoke test remained protected (`302` when unauthenticated);
+- no R2 migration, media mutation or `catalog/index.json` rebuild was performed.
 
 ## Browser authentication note
 
-The Track Manager Worker remains protected by Cloudflare Access. A successful Worker deployment proves the backend contract and Access protection, but real-browser cookie behavior still depends on the active browser session and cross-site cookie policy.
+The Track Manager Worker remains protected by Cloudflare Access. Build 5 real-browser testing proved credentialed private GETs from GitHub Pages. Build 6 then exposed a browser-specific preflight failure on metadata validation; Build 7 removes that preflight while preserving the same authenticated session and exact-origin boundary.
 
 Therefore:
 
@@ -117,7 +132,8 @@ Therefore:
 - `PUBLIC FALLBACK` is a valid safe operating mode, not a write/security failure;
 - if private reads are unavailable, open the existing Track Manager and authenticate normally, then retry Studio;
 - do **not** put Access credentials in `VITE_*` variables;
-- do **not** relax the Worker to wildcard authenticated CORS.
+- do **not** relax the Worker to wildcard authenticated CORS;
+- do **not** change the validation POST back to custom request headers unless the Cloudflare Access preflight model is deliberately redesigned and re-tested.
 
 ## Lyrics semantics
 
@@ -134,9 +150,15 @@ This avoids duplicate lyric sources and false `Lyrics LRC: Missing` warnings for
 
 ## Safety / rollback policy
 
-Cross-repository restoration branches created before Studio integration remain rollback references. Phase 4B.1A also has a dedicated pre-phase safety snapshot.
+Cross-repository restoration branches created before Studio integration remain rollback references. A fresh pre-hotfix snapshot also exists for both LaunchPAD/Track Manager and Studio:
 
-Build 6 changes only `shinobione/shinobiwan-studio`. It consumes the separately validated/deployed LaunchPAD Build 66 / Track Manager v5.9 bridge and does not modify LaunchPAD, Track Manager, SonicTrace, LRC Maker or R2 data itself.
+```text
+safety/pre-cors-hotfix-20260808-1540
+```
+
+Build 7 changes only `shinobione/shinobiwan-studio`. It consumes the separately validated/deployed Track Manager v5.10 bridge and does not modify LaunchPAD public runtime, Track Manager production data, SonicTrace, LRC Maker or R2 state itself.
+
+Backend rollback remains independently possible through the LaunchPAD safety snapshot and admin-only Worker deployment. Studio rollback is a normal revert of the Build 7 PR; because Build 7 cannot save production state, no R2 rollback is expected.
 
 See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md) for the mandatory change policy.
 
