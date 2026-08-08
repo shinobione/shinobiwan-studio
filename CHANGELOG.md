@@ -1,5 +1,48 @@
 # SHINOBIWAN Studio Changelog
 
+## 0.4.2 — Build 7 — 2026-08-08
+
+Codename: `metadata-validation-simple-transport`
+
+### Fixed
+
+- real Chrome metadata-validation failure where `PRIVATE READ` worked but the validation POST failed before reaching Track Manager;
+- removed the Build 6 browser preflight trigger (`Content-Type: application/json` + `X-Shinobiwan-Studio-Intent`) from the Studio client;
+- metadata validation now uses a CORS-safelisted `text/plain;charset=UTF-8` request body while preserving JSON payload semantics;
+- validation intent moves into the JSON body as `intent: "metadata-validate-v1"`;
+- Dashboard/Workspace static backend labels now identify Track Manager `v5.10` instead of older `v5.8/v5.9` text.
+
+### Security / safety
+
+- Cloudflare Access credentials remain browser-session based and `credentials: include` remains required;
+- exact-origin CORS remains upstream at `https://shinobione.github.io`;
+- `expectedUpdatedAt` stale-manifest protection remains mandatory;
+- `adminService.writesEnabled` remains `false`;
+- Studio still exposes exactly one explicit POST client path and no PUT/PATCH/DELETE wrapper;
+- no Save, asset upload/replace, delete, publish, thumbnail write or catalog rebuild CTA/path is exposed;
+- the build guard now fails if the validation client reintroduces `X-Shinobiwan-Studio-Intent` or `application/json`, because either would recreate the problematic preflight path;
+- no R2 object, manifest, media file or `catalog/index.json` is modified by this Studio release;
+- LaunchPAD public Worker `v2.6`, SonicTrace and LRC Maker are unchanged.
+
+### Upstream dependency
+
+- LaunchPAD public application remains Build `2026.08.08.66` / release `studio-metadata-validation-20260808`;
+- Track Manager hotfix PR `#159`, merge SHA `c7cf9ae7ad78e6407dfc6950b3c5a558e2f7bb0b`;
+- Track Manager `v5.10` / Studio bridge `v1.2`;
+- deployed private Worker Version ID `5ac91e36-9060-4e05-a76c-67c46459c72d`;
+- protected deployment workflow run `31260738818` targeted `admin` only;
+- public Worker deploy steps were skipped;
+- Cloudflare Access smoke test remained protected (`302` unauthenticated);
+- no R2/catalog rebuild was performed.
+
+### Rollback
+
+- Studio snapshot: `safety/pre-cors-hotfix-20260808-1540`;
+- LaunchPAD/Track Manager snapshot: `safety/pre-cors-hotfix-20260808-1540`;
+- Studio rollback is a normal revert of the Build 7 PR;
+- backend rollback is independent and requires an admin-only Worker deployment from the LaunchPAD safety snapshot;
+- no R2 rollback is expected because Build 7 and the v5.10 validation endpoint are non-mutating.
+
 ## 0.4.1 — Build 6 — 2026-08-08
 
 Codename: `metadata-validation-preview`
