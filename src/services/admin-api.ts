@@ -2,7 +2,7 @@ import { studioConfig } from './config';
 
 const METADATA_VALIDATION_INTENT = 'metadata-validate-v1';
 const METADATA_SAVE_INTENT = 'metadata-save-v1';
-const ALLOWED_BRIDGE_WRITE_CAPABILITIES = new Set(['metadata', 'lyrics', 'sonictrace-analysis']);
+const ALLOWED_BRIDGE_WRITE_CAPABILITIES = new Set(['metadata', 'lyrics', 'lyrics-sync', 'sonictrace-analysis']);
 
 export type AdminReadFailureKind = 'access-or-cors' | 'http' | 'timeout' | 'invalid-response';
 export type AdminAssetKind = 'audio' | 'cover' | 'thumbnail' | 'video' | 'lyrics';
@@ -490,7 +490,7 @@ export const adminService = Object.freeze({
   metadataValidationTransport: 'text/plain-simple-request',
   metadataWriteIntent: METADATA_SAVE_INTENT,
   metadataWriteTransport: 'text/plain-simple-request',
-  recognizedWriteCapabilities: ['metadata', 'lyrics', 'sonictrace-analysis'] as const,
+  recognizedWriteCapabilities: ['metadata', 'lyrics', 'lyrics-sync', 'sonictrace-analysis'] as const,
   validationEnabled: true,
   writesEnabled: true,
   writeCapabilities: ['metadata'] as const,

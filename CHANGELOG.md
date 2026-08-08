@@ -1,5 +1,25 @@
 # SHINOBIWAN Studio Changelog
 
+## 0.9.0 — Build 15 — 2026-08-09
+
+Codename: `phase6-canonical-lyrics-workflow`
+
+### Roadmap milestone
+
+- completes **Phase 6 — Lyrics/LRC integration**;
+- opens LRC Maker with minimal, track-bound context and preserves its standalone mode;
+- saves through Track Manager v5.15 / bridge v1.7 only;
+- keeps `tracks/<slug>/lyrics.txt` as the sole canonical lyrics source;
+- keeps `.lrc` optional and outside Content Health;
+- stops before Phase 7.
+
+### Verification
+
+- Studio contract, Phase 5 algorithm and Phase 6 regression suites pass;
+- TypeScript and Vite production build pass;
+- Track Manager strict timestamp/stale/rollback contract passes;
+- LRC Maker context, lint, format and production build pass.
+
 ## 0.8.0 — Build 14 — 2026-08-08
 
 Codename: `phase5-sonictrace-catalog-intelligence`

@@ -2,10 +2,10 @@
 
 Artist Content & Intelligence Manager.
 
-**Release:** `0.8.0`
-**Build:** `14`
-**Milestone:** Roadmap Phase 5 — SonicTrace + Catalog Intelligence complete
-**Stop line:** Do not begin Phase 6 without explicit authorization.
+**Release:** `0.9.0`
+**Build:** `15`
+**Milestone:** Roadmap Phase 6 — canonical Lyrics/LRC workflow complete
+**Stop line:** Do not begin Phase 7 without explicit authorization.
 
 ## Product role
 
@@ -20,6 +20,27 @@ Core rules:
 - SonicTrace stays the audio-intelligence engine;
 - LRC Maker stays the advanced lyrics editing/synchronization engine;
 - Studio degrades safely to public read-only behavior when private Track Manager access is unavailable.
+
+## Roadmap Phase 6 status
+
+Build 15 closes the Phase 6 criterion:
+
+> A canonical track can enter LRC Maker with its protected audio and `lyrics.txt`, synchronize timestamps, save through Track Manager and return to a refreshed Studio workspace without introducing a second source of truth.
+
+Implemented:
+
+- minimal URL context (`studio`, `trackId`, internal return path), with no audio/blob/lyrics payload;
+- protected canonical audio and `lyrics.txt` loading;
+- LRC Maker standalone mode preserved;
+- strict track-bound timestamp validation;
+- manifest revision + lyrics ETag stale protection;
+- UTF-8 `lyrics.txt` write through Track Manager only;
+- catalog rebuild, canonical reread and rollback;
+- automatic Studio refresh after save;
+- timestamps inside `lyrics.txt` as the only “Synced Lyrics” signal;
+- optional `.lrc` export kept outside persistence and Content Health.
+
+See [`docs/PHASE-6-LYRICS-COMPLETE.md`](docs/PHASE-6-LYRICS-COMPLETE.md).
 
 ## Roadmap Phase 5 status
 
@@ -249,16 +270,11 @@ The final management code is protected by:
 
 We do **not** replace or delete a production WAV/cover merely to manufacture a smoke test. A deliberately disposable draft can be used later if deeper destructive-media smoke testing is desired.
 
-## Phase 6 stop line
+## Phase 7 stop line
 
-**STOP after Build 14.**
+**STOP after Build 15.**
 
-Do not begin:
-
-- LRC Maker context integration;
-- direct LRC save to R2;
-- embedded LRC editor extraction;
-- any other Phase 6 item.
+Do not begin any Phase 7 item.
 
 Wait for new user instructions.
 

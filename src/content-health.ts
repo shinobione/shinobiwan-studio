@@ -43,12 +43,10 @@ export function computeContentHealth(track: StudioTrack): ContentHealth {
     Boolean(track.releaseDate || track.year),
   ];
   const metadataScore = metadataChecks.filter(Boolean).length * 3;
-  const syncedLyrics = track.timestampsAvailable || Boolean(track.assets.lyricsLrc);
+  const syncedLyrics = track.timestampsAvailable;
   const syncedLyricsDetail = track.timestampsAvailable
     ? 'Timestamped lyrics detected in the canonical lyrics source'
-    : track.assets.lyricsLrc
-      ? 'Synchronized lyrics available via optional LRC sidecar'
-      : 'No synchronized timestamp data detected';
+    : 'No synchronized timestamp data detected in canonical lyrics.txt';
   const sonicTraceScore = track.audioIntelligence.available ? track.audioIntelligence.outdated ? 10 : 20 : 0;
   const sonicTraceDetail = track.audioIntelligence.available
     ? track.audioIntelligence.outdated ? 'Saved analysis is outdated because canonical audio changed' : 'Catalog-linked analysis is current'
