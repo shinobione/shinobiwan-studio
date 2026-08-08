@@ -25,33 +25,33 @@ const NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
 const shellCopy: Record<Exclude<StudioRoute, 'catalog'>, { eyebrow: string; title: string; body: string }> = {
   dashboard: {
     eyebrow: 'STUDIO / HOME',
-    title: 'Lyrics capability prep is compatibility-only.',
-    body: 'Phase 4B.2A prepares Studio to tolerate a future Track Manager lyrics capability without exposing a lyrics write. Metadata save remains the only production write and stays production-proven.',
+    title: 'Metadata + canonical lyrics writes are online.',
+    body: 'Phase 4B.2C activates the guarded lyrics.txt editor against Track Manager v5.12 / bridge v1.4. The remaining Phase 4 scope is Track creation, asset operations and explicit catalog rebuild.',
   },
   intelligence: {
     eyebrow: 'SONICTRACE / INTELLIGENCE',
     title: 'Audio Intelligence boundary ready.',
-    body: 'Track Workspace has a dedicated intelligence section. Analysis persistence remains intentionally gated until the later SonicTrace catalog phase.',
+    body: 'Track Workspace has a dedicated intelligence section. Analysis persistence remains intentionally gated until Phase 5, which is outside the current delivery scope.',
   },
   lyrics: {
     eyebrow: 'LYRICS / SYNC',
-    title: 'lyrics.txt stays canonical.',
-    body: 'Phase 4B.2A recognizes the future lyrics capability only. A timestamped canonical lyrics.txt is synchronized; LRC Maker stays the advanced editor and a separate .lrc sidecar remains optional.',
+    title: 'lyrics.txt is now editable canonically.',
+    body: 'Build 12 reads the protected canonical lyrics object, validates against manifest revision + R2 ETag, saves only lyrics.txt and verifies a second canonical reread. A separate .lrc remains optional.',
   },
   assets: {
     eyebrow: 'CONTENT / ASSETS',
     title: 'Canonical assets are visible per track.',
-    body: 'Authenticated reads can inspect the canonical Track Manager state, including drafts. Replace/upload actions remain in the existing protected Track Manager write path.',
+    body: 'Authenticated reads inspect the canonical Track Manager state, including drafts. Upload/replace/delete is the next and final operational bridge required to finish Phase 4.',
   },
   publishing: {
     eyebrow: 'CATALOG / PUBLISHING',
     title: 'Publishing remains protected.',
-    body: 'Build 11 keeps the production-proven metadata save unchanged. Lyrics save, publication shortcuts, media replacement, delete and standalone catalog rebuild actions remain locked in Studio.',
+    body: 'Metadata and existing lyrics writes are guarded. Track creation, asset management and explicit catalog rebuild remain locked until the final Phase 4 operational bridge.',
   },
   administration: {
     eyebrow: 'SYSTEM / ADMINISTRATION',
-    title: 'Lyrics capability recognized, not activated.',
-    body: 'Track Manager remains the protected operational fallback, while SonicTrace and LRC Maker stay independently usable. No lyrics validation or save client exists in Build 11.',
+    title: 'Track Manager fallback stays available.',
+    body: 'Track Manager remains the protected operational fallback while Phase 4 is completed progressively. SonicTrace and LRC Maker remain separate and unchanged.',
   },
 };
 
@@ -114,7 +114,7 @@ export default function App() {
   const navTitle = trackId ? 'Track Workspace' : NAV.find(item => item.route === route)?.label;
   const readLayerLabel = readSource === 'private' ? 'Private' : readSource === 'public' ? 'Fallback' : '…';
   const readLayerDetail = readSource === 'private'
-    ? 'Track Manager v5.11 · bridge v1.3'
+    ? 'Track Manager v5.12 · bridge v1.4'
     : readSource === 'public'
       ? 'LaunchPAD public read-only'
       : 'Checking Access session';
@@ -137,8 +137,8 @@ export default function App() {
         </nav>
 
         <div className="sidebar-foot">
-          <span className="phase-tag">PHASE 4B.2A · LYRICS CAPABILITY PREP</span>
-          <p>v{studioRelease.version} · Build {studioRelease.build}<br />Lyrics writes remain locked.</p>
+          <span className="phase-tag">PHASE 4B.2C · GUARDED LYRICS SAVE</span>
+          <p>v{studioRelease.version} · Build {studioRelease.build}<br />Metadata + lyrics writes active.</p>
         </div>
       </aside>
 
@@ -183,7 +183,7 @@ export default function App() {
               <article className="metric panel"><span>READ LAYER</span><strong>{readLayerLabel}</strong><small>{readLayerDetail}</small></article>
               <article className="metric panel"><span>WORKSPACE</span><strong>Live</strong><small>7 contextual sections per track</small></article>
               <article className="metric panel"><span>LYRICS MODEL</span><strong>TXT</strong><small>Timestamps define synchronized state</small></article>
-              <article className="metric panel"><span>WRITES</span><strong>Metadata</strong><small>Lyrics capability recognized · not active</small></article>
+              <article className="metric panel"><span>WRITES</span><strong>Metadata + Lyrics</strong><small>Guarded revision + canonical reread</small></article>
             </section>
 
             <EmptyState eyebrow={shellCopy.dashboard.eyebrow} title={shellCopy.dashboard.title} body={shellCopy.dashboard.body} />
