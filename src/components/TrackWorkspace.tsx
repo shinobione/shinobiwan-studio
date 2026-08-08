@@ -7,6 +7,7 @@ import type { StudioAsset, StudioTrackDetail, WorkspaceSection } from '../types/
 import { AssetsManager } from './AssetsManager';
 import { LyricsEditorPanel } from './LyricsEditorPanel';
 import { MetadataValidationPanel } from './MetadataValidationPanel';
+import { SonicTracePanel } from './SonicTracePanel';
 
 const TABS: Array<{ id: WorkspaceSection; label: string }> = [
   { id: 'overview', label: 'Overview' },
@@ -131,10 +132,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
       )}
 
       {section === 'intelligence' && (
-        <div className="workspace-two-col">
-          <WorkspacePanel eyebrow="SONICTRACE / CATALOG" title="Audio Intelligence status"><div className="workspace-state-card"><b className={track.audioIntelligence.available ? 'ready' : 'pending'}>{track.audioIntelligence.available ? 'CATALOG-LINKED' : 'NOT SAVED'}</b><p>{track.audioIntelligence.available ? 'A persisted SonicTrace analysis is linked to this track.' : 'SonicTrace can analyze audio today, but catalog persistence belongs to Phase 5. Phase 5 is intentionally stopped until new instructions.'}</p></div><a className="ghost-btn" href={studioConfig.sonicTraceUrl} target="_blank" rel="noreferrer">Open SonicTrace ↗</a></WorkspacePanel>
-          <WorkspacePanel eyebrow="PROVENANCE / SOURCE" title="Canonical analysis input"><dl className="workspace-metadata-list"><div><dt>trackId</dt><dd>{track.id}</dd></div><div><dt>Audio</dt><dd>{track.assets.audio?.filename || 'Missing'}</dd></div><div><dt>Read layer</dt><dd>{privateRead ? 'Track Manager private' : 'LaunchPAD public fallback'}</dd></div><div><dt>Fingerprint</dt><dd>Phase 5</dd></div><div><dt>Analysis ID</dt><dd>{track.audioIntelligence.latestAnalysisId || '—'}</dd></div><div><dt>Outdated</dt><dd>{track.audioIntelligence.outdated ? 'Yes' : 'No persisted analysis'}</dd></div></dl></WorkspacePanel>
-        </div>
+        <SonicTracePanel track={track} onSaved={refreshTrackAfterWrite} />
       )}
 
       {section === 'lyrics' && (
@@ -159,7 +157,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
 
       {section === 'versions' && (
         <div className="workspace-two-col">
-          <WorkspacePanel eyebrow="VERSIONS / CANONICAL" title="Current catalog source"><dl className="workspace-metadata-list"><div><dt>trackId</dt><dd>{track.id}</dd></div><div><dt>Audio filename</dt><dd>{track.assets.audio?.filename || 'Missing'}</dd></div><div><dt>{privateRead ? 'Canonical revision' : 'Public revision'}</dt><dd>{track.updatedAt || 'Not exposed'}</dd></div><div><dt>Read layer</dt><dd>{privateRead ? 'Track Manager v5.13 · bridge v1.5' : 'LaunchPAD public fallback'}</dd></div><div><dt>Master ID</dt><dd>Not modeled yet</dd></div></dl></WorkspacePanel>
+          <WorkspacePanel eyebrow="VERSIONS / CANONICAL" title="Current catalog source"><dl className="workspace-metadata-list"><div><dt>trackId</dt><dd>{track.id}</dd></div><div><dt>Audio filename</dt><dd>{track.assets.audio?.filename || 'Missing'}</dd></div><div><dt>{privateRead ? 'Canonical revision' : 'Public revision'}</dt><dd>{track.updatedAt || 'Not exposed'}</dd></div><div><dt>Read layer</dt><dd>{privateRead ? 'Track Manager v5.14 · bridge v1.6' : 'LaunchPAD public fallback'}</dd></div><div><dt>Master ID</dt><dd>Tracked by SonicTrace sourceVersion/history</dd></div></dl></WorkspacePanel>
           <WorkspacePanel eyebrow="VERSIONS / ROADMAP" title="Version model reserved"><div className="workspace-note"><strong>No fake version history.</strong><p>Dedicated masters/version identifiers remain reserved for later data modeling and stay subordinate to canonical trackId.</p></div></WorkspacePanel>
         </div>
       )}
@@ -169,7 +167,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
       {section === 'publishing' && (
         <div className="workspace-two-col">
           <WorkspacePanel eyebrow="PUBLISHING / STATE" title="Catalog visibility"><div className="workspace-publish-state"><b className={track.publishing.catalogVisible ? 'ready' : 'pending'}>{track.publishing.catalogVisible ? 'PUBLISHED' : 'NOT PUBLIC'}</b><p>Status reported by the {privateRead ? 'canonical Track Manager manifest' : 'LaunchPAD public fallback'}: <strong>{track.status}</strong>.</p></div>{privateRead && track.quality && <div className="workspace-facts"><div><span>Quality</span><strong>{track.quality.state || '—'}</strong></div><div><span>Publishable</span><strong>{track.quality.publishable == null ? '—' : track.quality.publishable ? 'Yes' : 'No'}</strong></div><div><span>Errors</span><strong>{qualityCounts?.error ?? 0}</strong></div><div><span>Warnings</span><strong>{qualityCounts?.warning ?? 0}</strong></div></div>}{track.publishing.catalogVisible && <a className="ghost-btn" href={studioConfig.launchpadUrl} target="_blank" rel="noreferrer">Open LaunchPAD ↗</a>}</WorkspacePanel>
-          <WorkspacePanel eyebrow="PHASE 4 / COMPLETE" title="Track Manager integration"><div className="workspace-note phase4-complete-banner"><strong>Principal Track Manager operations are now available from Studio.</strong><p>Create tracks from Catalog, edit metadata and lyrics, manage canonical assets from this workspace, and rebuild the catalog from Administration. The standalone Track Manager remains the protected fallback. Phase 5 is intentionally not started.</p></div></WorkspacePanel>
+          <WorkspacePanel eyebrow="PHASE 5 / COMPLETE" title="Track Manager + SonicTrace"><div className="workspace-note phase4-complete-banner"><strong>Operational and intelligence workflows share this canonical trackId.</strong><p>Track Manager remains the R2 write authority; SonicTrace computes disposable audio scans; Studio reviews and persists only structured sidecars. Legacy tools remain available as fallbacks.</p></div></WorkspacePanel>
         </div>
       )}
     </section>

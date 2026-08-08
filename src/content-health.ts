@@ -49,6 +49,10 @@ export function computeContentHealth(track: StudioTrack): ContentHealth {
     : track.assets.lyricsLrc
       ? 'Synchronized lyrics available via optional LRC sidecar'
       : 'No synchronized timestamp data detected';
+  const sonicTraceScore = track.audioIntelligence.available ? track.audioIntelligence.outdated ? 10 : 20 : 0;
+  const sonicTraceDetail = track.audioIntelligence.available
+    ? track.audioIntelligence.outdated ? 'Saved analysis is outdated because canonical audio changed' : 'Catalog-linked analysis is current'
+    : 'Catalog-linked analysis not saved yet';
 
   const items: ContentHealthItem[] = [
     item('audio', 'Audio', track.assets.audio ? 15 : 0, 15, track.assets.audio ? 'Canonical audio available' : 'Canonical audio missing'),
@@ -56,7 +60,7 @@ export function computeContentHealth(track: StudioTrack): ContentHealth {
     item('metadata', 'Metadata', metadataScore, 15, `${metadataChecks.filter(Boolean).length}/5 core metadata fields complete`),
     item('lyricsTxt', 'Lyrics TXT', track.assets.lyricsTxt ? 10 : 0, 10, track.assets.lyricsTxt ? 'Canonical lyrics source available' : 'Canonical lyrics source missing'),
     item('syncedLyrics', 'Synced Lyrics', syncedLyrics ? 10 : 0, 10, syncedLyricsDetail),
-    item('sonicTrace', 'SonicTrace', track.audioIntelligence.available ? 20 : 0, 20, track.audioIntelligence.available ? 'Catalog-linked analysis available' : 'Catalog-linked analysis not saved yet'),
+    item('sonicTrace', 'SonicTrace', sonicTraceScore, 20, sonicTraceDetail),
     item('video', 'Canvas / Video', track.assets.video ? 10 : 0, 10, track.assets.video ? 'Video asset available' : 'Video asset missing'),
     item('publication', 'Publication', track.publishing.catalogVisible ? 10 : 0, 10, track.publishing.catalogVisible ? 'Visible in public catalog' : 'Not visible in public catalog'),
   ];

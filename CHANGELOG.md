@@ -1,5 +1,37 @@
 # SHINOBIWAN Studio Changelog
 
+## 0.8.0 — Build 14 — 2026-08-08
+
+Codename: `phase5-sonictrace-catalog-intelligence`
+
+### Roadmap milestone
+
+- completes **Phase 5 — SonicTrace + Catalog Intelligence**;
+- keeps R2/Track Manager as the only authoritative catalog persistence layer;
+- keeps SonicTrace source audio temporary and its standalone IndexedDB non-canonical;
+- stops before Phase 6.
+
+### Added
+
+- `SonicTraceAnalysis` schema v1 with canonical `trackId`, `analysisId`, source revision, engine versions and provenance;
+- one-upload `/api/studio/analyze` coordinator route with partial-layer warnings;
+- in-Studio Browser DSP fallback when the local Deep Audio node is unavailable;
+- review-before-save workflow and guarded Cloudflare Access persistence;
+- R2 `latest.json` plus append-only history with verification and rollback;
+- canonical-audio ETag/size freshness checks and outdated detection;
+- re-scan support without deleting history;
+- 512D embedding catalog index, cosine neighbors and deterministic sound clusters;
+- analysis/master comparison using source versions and mastering history;
+- Content Health partial state for outdated SonicTrace results.
+
+### Preserved
+
+- no WAV/MP3 duplication in the analysis directory;
+- manifest schema v1 remains unchanged;
+- public `catalog/index.json` remains unchanged by private analysis saves;
+- Phase 4 Track Manager operations and legacy fallbacks remain available;
+- LRC Maker remains unchanged until Phase 6 authorization.
+
 ## 0.7.0 — Build 13 — 2026-08-08
 
 Codename: `phase4-track-manager-complete`

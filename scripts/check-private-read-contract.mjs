@@ -12,6 +12,12 @@ const create = read('src/components/TrackCreatePanel.tsx');
 const rebuild = read('src/components/CatalogRebuildPanel.tsx');
 const catalog = read('src/components/CatalogView.tsx');
 const workspace = read('src/components/TrackWorkspace.tsx');
+const sonicApi = read('src/services/sonictrace-api.ts');
+const sonicPanel = read('src/components/SonicTracePanel.tsx');
+const intelligenceView = read('src/components/CatalogIntelligenceView.tsx');
+const intelligenceMath = read('src/catalog-intelligence.ts');
+const sonicCss = read('src/sonictrace.css');
+const readability = read('src/readability.css');
 const app = read('src/App.tsx');
 const release = read('src/release.ts');
 const pkg = JSON.parse(read('package.json'));
@@ -19,7 +25,7 @@ const pkg = JSON.parse(read('package.json'));
 for (const required of [
   "credentials: 'include'", "mode: 'cors'", "cache: 'no-store'", "'/api/studio/health'",
   '/metadata/validate', '/metadata/save',
-  "const ALLOWED_BRIDGE_WRITE_CAPABILITIES = new Set(['metadata', 'lyrics'])",
+  "const ALLOWED_BRIDGE_WRITE_CAPABILITIES = new Set(['metadata', 'lyrics', 'sonictrace-analysis'])",
   "'Content-Type': 'text/plain;charset=UTF-8'", "writeCapabilities.includes('metadata')", 'clientVerified',
 ]) assert.ok(admin.includes(required), `Metadata client contract is missing ${required}.`);
 
@@ -77,20 +83,44 @@ for (const required of [
 
 for (const required of ['TRACK MANAGER / CATALOG', 'Explicit catalog rebuild', 'REBUILD the canonical catalog/index.json', 'globalThis.confirm', 'rebuildAdminCatalog']) assert.ok(rebuild.includes(required), `Catalog rebuild UI missing ${required}.`);
 
-for (const required of ['<TrackCreatePanel privateRead={privateRead} onCreated={loadCatalog} />', 'Track Manager v5.13 / bridge v1.5', 'All mutations remain locked.']) assert.ok(catalog.includes(required), `Catalog Build 13 contract missing ${required}.`);
+for (const required of ['<TrackCreatePanel privateRead={privateRead} onCreated={loadCatalog} />', 'Track Manager v5.14 / bridge v1.6', 'All mutations remain locked.']) assert.ok(catalog.includes(required), `Catalog Build 14 contract missing ${required}.`);
 for (const required of [
   '<AssetsManager track={track} onChanged={refreshTrackAfterWrite} />',
   '<LyricsEditorPanel track={track} onSaved={refreshTrackAfterWrite} />',
   '<MetadataValidationPanel track={track} onSaved={refreshTrackAfterWrite} />',
-  'Track Manager v5.13 · bridge v1.5',
-  'PHASE 4 / COMPLETE',
-  'Phase 5 is intentionally not started.',
-]) assert.ok(workspace.includes(required), `Workspace Build 13 contract missing ${required}.`);
+  '<SonicTracePanel track={track} onSaved={refreshTrackAfterWrite} />',
+  'Track Manager v5.14 · bridge v1.6',
+  'PHASE 5 / COMPLETE',
+]) assert.ok(workspace.includes(required), `Workspace Build 14 contract missing ${required}.`);
 
 for (const required of [
-  'PHASE 4 · COMPLETE', 'Track Manager integrated.', 'Track Manager v5.13 · bridge v1.5', 'Create · Upload · Replace · Delete asset · Rebuild',
-  '<CatalogRebuildPanel privateRead={privateRead} />', 'Phase 5 waits for new instructions', 'SonicTrace and LRC Maker remain separate and untouched.',
-]) assert.ok(app.includes(required), `Dashboard Build 13 contract missing ${required}.`);
+  'PHASE 5 · COMPLETE', 'SonicTrace catalog-linked.', 'Track Manager v5.14 · bridge v1.6', 'R2 history · 512D · freshness',
+  '<CatalogRebuildPanel privateRead={privateRead} />', '<CatalogIntelligenceView />', 'stop before Phase 6',
+]) assert.ok(app.includes(required), `Dashboard Build 14 contract missing ${required}.`);
+
+for (const required of [
+  "const SAVE_INTENT = 'sonictrace-analysis-save-v1'", '/api/studio/analyze', '/analysis/sonictrace',
+  'fetchCanonicalAudio', 'analyzeBrowserDsp', 'runSonicTraceAnalysis', 'browserOnlyAnalysis',
+  'sourceAudioRetention: false', "credentials: 'include'", "'Content-Type': 'text/plain;charset=UTF-8'",
+]) assert.ok(sonicApi.includes(required), `SonicTrace client contract is missing ${required}.`);
+
+for (const required of [
+  'Analyze with SonicTrace', 'Re-scan with SonicTrace', 'Save analysis', 'REVIEW / NOT SAVED',
+  'SonicTrace Deep Audio is offline', 'Browser DSP', 'append-only history', 'never stores the audio',
+]) assert.ok(sonicPanel.includes(required), `SonicTrace workspace UI is missing ${required}.`);
+
+for (const required of ['Catalog Intelligence', '512D INDEX', 'SIMILARITY / NEIGHBORS', 'CLUSTERS / DETERMINISTIC']) assert.ok(intelligenceView.includes(required), `Catalog Intelligence UI is missing ${required}.`);
+for (const required of ['cosineSimilarity', 'nearestTracks', 'clusterTracks', 'vector.length === 512']) assert.ok(intelligenceMath.includes(required), `Catalog Intelligence engine is missing ${required}.`);
+
+const tinyPhase5Fonts = [...sonicCss.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)]
+  .map(match => Number(match[1]))
+  .filter(size => size < 11);
+assert.deepEqual(tinyPhase5Fonts, [], `Phase 5 UI must not reintroduce microcopy below 11px; found ${tinyPhase5Fonts.join(', ')}.`);
+for (const selector of [
+  '.sonic-status-grid span', '.sonic-alert', '.sonic-layers span', '.sonic-warnings',
+  '.sonic-history span', '.intelligence-track-list small', '.similarity-list span', '.cluster-grid small',
+]) assert.ok(readability.includes(selector), `Readability floor must explicitly cover new Phase 5 selector ${selector}.`);
+assert.ok(readability.includes('--studio-micro-readable: 11px'), 'Studio readability floor must remain 11px.');
 
 assert.equal((admin.match(/method:\s*'POST'/g) || []).length, 2, 'Metadata client must keep validate + save POSTs only.');
 assert.equal((lyricsApi.match(/method:\s*'POST'/g) || []).length, 1, 'Lyrics service must keep one generic POST transport.');
@@ -105,10 +135,11 @@ for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog 
   assert.ok(!phase4Api.toLowerCase().includes(forbiddenPhase5.toLowerCase()), `Phase 5 leaked into Phase 4 client: ${forbiddenPhase5}`);
 }
 
-assert.ok(release.includes("version: '0.7.0'"), 'Studio release version must be 0.7.0.');
-assert.ok(release.includes('build: 13'), 'Studio release build must be 13.');
-assert.ok(release.includes("codename: 'phase4-track-manager-complete'"), 'Studio release codename must freeze Phase 4 completion.');
-assert.equal(pkg.version, '0.7.0', 'package.json must match Studio 0.7.0.');
+assert.ok(release.includes("version: '0.8.0'"), 'Studio release version must be 0.8.0.');
+assert.ok(release.includes('build: 14'), 'Studio release build must be 14.');
+assert.ok(release.includes("codename: 'phase5-sonictrace-catalog-intelligence'"), 'Studio release codename must freeze Phase 5 completion.');
+assert.equal(pkg.version, '0.8.0', 'package.json must match Studio 0.8.0.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'Production build must run the integration regression guard.');
+assert.ok(String(pkg.scripts?.build || '').includes('check:phase5'), 'Production build must run the Phase 5 algorithm guard.');
 
-console.log('Studio 0.7.0 Build 13 completes roadmap Phase 4: guarded create, metadata, lyrics, per-asset upload/replace/delete with progress, explicit catalog rebuild and Track Manager fallback; Phase 5 remains blocked.');
+console.log('Studio 0.8.0 Build 14 completes roadmap Phase 5 with the 11px readability floor preserved: workspace analysis, browser fallback, guarded R2 persistence, history, freshness, 512D similarity and clusters.');
