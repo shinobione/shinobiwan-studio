@@ -3,13 +3,13 @@ import { resolveAdminMode } from './admin-mode';
 import { CatalogView } from './components/CatalogView';
 import { EmptyState } from './components/EmptyState';
 import { ServicePill } from './components/ServicePill';
-import { TrackReadView } from './components/TrackReadView';
-import { readRoute, readTrackId, routeHref } from './router';
+import { TrackWorkspace } from './components/TrackWorkspace';
+import { readRoute, readTrackId, readTrackSection, routeHref } from './router';
 import { adminService } from './services/admin-api';
 import { getCatalogHealth } from './services/catalog-api';
 import { studioConfig } from './services/config';
 import { getSonicTraceHealth } from './services/sonictrace-api';
-import type { ServiceStatus, StudioRoute } from './types/studio';
+import type { ServiceStatus, StudioRoute, WorkspaceSection } from './types/studio';
 
 const NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
   { route: 'dashboard', label: 'Dashboard', glyph: '◫' },
@@ -24,28 +24,28 @@ const NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
 const shellCopy: Record<Exclude<StudioRoute, 'catalog'>, { eyebrow: string; title: string; body: string }> = {
   dashboard: {
     eyebrow: 'STUDIO / HOME',
-    title: 'The catalog is connected.',
-    body: 'Phase 2 turns the shell into a live read-only catalog. Track Workspace and Content Health remain reserved for Phase 3.',
+    title: 'Track Workspace is online.',
+    body: 'Phase 3 turns every published catalog track into a read-only workspace with deterministic Content Health and dedicated operational sections.',
   },
   intelligence: {
     eyebrow: 'SONICTRACE / INTELLIGENCE',
     title: 'Audio Intelligence boundary ready.',
-    body: 'The Studio service layer can already probe SonicTrace. Track-scoped analysis and persistence remain intentionally gated until Phase 5.',
+    body: 'Track Workspace now has a dedicated intelligence section. Analysis persistence remains intentionally gated until Phase 5.',
   },
   lyrics: {
     eyebrow: 'LYRICS / LRC',
     title: 'Lyrics workspace boundary ready.',
-    body: 'LRC Maker remains the external synchronization engine until the context bridge and R2 LRC sidecar workflow are implemented.',
+    body: 'Each track can now expose catalog lyrics in context. The real LRC bridge and R2 sidecar workflow remain Phase 6 work.',
   },
   assets: {
     eyebrow: 'CONTENT / ASSETS',
-    title: 'Asset management remains protected.',
-    body: 'Phase 2 can see canonical audio, cover, thumbnail, video and lyrics. Browser writes remain disabled until the authenticated Phase 4 path.',
+    title: 'Canonical assets are visible per track.',
+    body: 'Track Workspace can inspect R2-backed public assets. Replace/upload actions remain protected until the authenticated Phase 4 path.',
   },
   publishing: {
     eyebrow: 'CATALOG / PUBLISHING',
-    title: 'Publishing stays protected.',
-    body: 'Catalog rebuild and publication actions remain in Track Manager until the authenticated Phase 4 write path is proven.',
+    title: 'Publishing status is visible, writes stay protected.',
+    body: 'Each track now has a Publishing section, while rebuild and publication writes remain in Track Manager until Phase 4.',
   },
   administration: {
     eyebrow: 'SYSTEM / ADMINISTRATION',
@@ -59,6 +59,7 @@ const checking: ServiceStatus = { state: 'checking', label: 'checking', detail: 
 export default function App() {
   const [route, setRoute] = useState<StudioRoute>(() => readRoute());
   const [trackId, setTrackId] = useState<string | null>(() => readTrackId());
+  const [trackSection, setTrackSection] = useState<WorkspaceSection>(() => readTrackSection());
   const [catalog, setCatalog] = useState<ServiceStatus>(checking);
   const [sonic, setSonic] = useState<ServiceStatus>(checking);
   const adminMode = useMemo(resolveAdminMode, []);
@@ -67,6 +68,7 @@ export default function App() {
     const syncLocation = () => {
       setRoute(readRoute());
       setTrackId(readTrackId());
+      setTrackSection(readTrackSection());
     };
     globalThis.addEventListener('hashchange', syncLocation);
     if (!globalThis.location.hash) globalThis.location.hash = routeHref('dashboard');
@@ -94,7 +96,7 @@ export default function App() {
     return () => { active = false; };
   }, []);
 
-  const navTitle = trackId ? 'Track' : NAV.find(item => item.route === route)?.label;
+  const navTitle = trackId ? 'Track Workspace' : NAV.find(item => item.route === route)?.label;
 
   return (
     <div className="studio-shell">
@@ -114,8 +116,8 @@ export default function App() {
         </nav>
 
         <div className="sidebar-foot">
-          <span className="phase-tag">PHASE 2 · CATALOG</span>
-          <p>Canonical read layer.<br />Production writes locked.</p>
+          <span className="phase-tag">PHASE 3 · WORKSPACE</span>
+          <p>Track-centric context.<br />Production writes locked.</p>
         </div>
       </aside>
 
@@ -136,11 +138,11 @@ export default function App() {
           <>
             <section className="hero-grid">
               <article className="hero-copy panel">
-                <span className="eyebrow">SHINOBIWAN STUDIO / 0.2.0</span>
+                <span className="eyebrow">SHINOBIWAN STUDIO / 0.3.0</span>
                 <h2>One track.<br /><em>One workspace.</em></h2>
                 <p>The global cockpit for catalog data, SonicTrace intelligence, synchronized lyrics, assets and publishing.</p>
                 <div className="hero-actions">
-                  <a className="primary-btn" href={routeHref('catalog')}>Open live catalog <span>→</span></a>
+                  <a className="primary-btn" href={routeHref('catalog')}>Open Track Workspace <span>→</span></a>
                   <a className="ghost-btn" href={studioConfig.launchpadUrl} target="_blank" rel="noreferrer">LaunchPAD ↗</a>
                 </div>
               </article>
@@ -158,16 +160,18 @@ export default function App() {
 
             <section className="status-grid">
               <article className="metric panel"><span>CATALOG</span><strong>{catalog.state === 'online' ? catalog.label : '—'}</strong><small>LaunchPAD public read layer</small></article>
-              <article className="metric panel"><span>SONICTRACE</span><strong>{sonic.state === 'online' ? sonic.label : 'Local node'}</strong><small>Optional GPU intelligence</small></article>
+              <article className="metric panel"><span>WORKSPACE</span><strong>Live</strong><small>7 contextual sections per track</small></article>
+              <article className="metric panel"><span>CONTENT HEALTH</span><strong>V1</strong><small>Deterministic completeness score</small></article>
               <article className="metric panel"><span>WRITES</span><strong>Locked</strong><small>Phase 4 security gate</small></article>
-              <article className="metric panel"><span>CATALOG UI</span><strong>Live</strong><small>Search · filter · track read</small></article>
             </section>
 
             <EmptyState eyebrow={shellCopy.dashboard.eyebrow} title={shellCopy.dashboard.title} body={shellCopy.dashboard.body} />
           </>
         )}
 
-        {route === 'catalog' && (trackId ? <TrackReadView trackId={trackId} /> : <CatalogView />)}
+        {route === 'catalog' && (trackId
+          ? <TrackWorkspace trackId={trackId} section={trackSection} />
+          : <CatalogView />)}
 
         {route !== 'dashboard' && route !== 'catalog' && (
           <>
