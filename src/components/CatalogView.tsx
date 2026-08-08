@@ -93,14 +93,18 @@ export function CatalogView() {
   }, [album, contentFilter, query, sortMode, tracks]);
 
   const syncedCount = tracks.filter(track => track.timestampsAvailable).length;
+  const privateRead = tracks.some(track => track.readSource === 'private');
+  const draftCount = tracks.filter(track => track.status === 'draft').length;
 
   return (
     <section className="catalog-surface">
       <div className="catalog-heading">
         <div>
-          <span className="eyebrow">CATALOG / CANONICAL READ LAYER</span>
+          <span className="eyebrow">{privateRead ? 'CATALOG / PRIVATE CANONICAL READ' : 'CATALOG / PUBLIC FALLBACK'}</span>
           <h2>One catalog. Every track.</h2>
-          <p>Live data from the LaunchPAD public catalog. Read-only by design during Phase 2.</p>
+          <p>{privateRead
+            ? `Authenticated Track Manager v5.8 read layer active. Canonical drafts and quality state are visible; Studio writes remain locked.${draftCount ? ` ${draftCount} draft${draftCount === 1 ? '' : 's'} currently included.` : ''}`
+            : 'Cloudflare Access private read is unavailable in this browser session, so Studio is safely using the proven LaunchPAD public read-only catalog.'}</p>
         </div>
         <div className="catalog-kpis" aria-label="Catalog summary">
           <div><strong>{tracks.length}</strong><span>tracks</span></div>
@@ -152,7 +156,7 @@ export function CatalogView() {
       {!loading && !error && (
         <>
           <div className="catalog-resultline">
-            <span>{filtered.length} of {tracks.length} tracks</span>
+            <span>{filtered.length} of {tracks.length} tracks · {privateRead ? 'private read' : 'public fallback'}</span>
             {(query || album !== 'all' || contentFilter !== 'all') && (
               <button type="button" onClick={() => { setQuery(''); setAlbum('all'); setContentFilter('all'); }}>Clear filters</button>
             )}
