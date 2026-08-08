@@ -4,99 +4,111 @@ import fs from 'node:fs';
 const read = path => fs.readFileSync(path, 'utf8');
 const admin = read('src/services/admin-api.ts');
 const lyricsApi = read('src/services/lyrics-admin-api.ts');
+const phase4Api = read('src/services/phase4-admin-api.ts');
 const metadata = read('src/components/MetadataValidationPanel.tsx');
 const lyrics = read('src/components/LyricsEditorPanel.tsx');
+const assets = read('src/components/AssetsManager.tsx');
+const create = read('src/components/TrackCreatePanel.tsx');
+const rebuild = read('src/components/CatalogRebuildPanel.tsx');
+const catalog = read('src/components/CatalogView.tsx');
 const workspace = read('src/components/TrackWorkspace.tsx');
 const app = read('src/App.tsx');
 const release = read('src/release.ts');
 const pkg = JSON.parse(read('package.json'));
 
 for (const required of [
-  "credentials: 'include'",
-  "mode: 'cors'",
-  "cache: 'no-store'",
-  "'/api/studio/health'",
-  '/metadata/validate',
-  '/metadata/save',
+  "credentials: 'include'", "mode: 'cors'", "cache: 'no-store'", "'/api/studio/health'",
+  '/metadata/validate', '/metadata/save',
   "const ALLOWED_BRIDGE_WRITE_CAPABILITIES = new Set(['metadata', 'lyrics'])",
-  "'Content-Type': 'text/plain;charset=UTF-8'",
-  "writeCapabilities.includes('metadata')",
-  'clientVerified',
+  "'Content-Type': 'text/plain;charset=UTF-8'", "writeCapabilities.includes('metadata')", 'clientVerified',
 ]) assert.ok(admin.includes(required), `Metadata client contract is missing ${required}.`);
 
 for (const required of [
-  "const LYRICS_VALIDATION_INTENT = 'lyrics-validate-v1'",
-  "const LYRICS_SAVE_INTENT = 'lyrics-save-v1'",
-  '/lyrics`',
-  '/lyrics/${suffix}',
-  "suffix: 'validate' | 'save'",
-  "'Content-Type': 'text/plain;charset=UTF-8'",
-  'expectedUpdatedAt',
-  'expectedLyricsEtag',
-  "health.capabilities?.read",
-  "health.capabilities?.validate",
-  "health.capabilities?.write",
-  "includes('lyrics')",
-  'getAdminTrackLyrics',
-  'validateAdminTrackLyrics',
-  'saveAdminTrackLyrics',
-  'getAdminTrack(trackId)',
-  'clientVerified',
-  "canonicalFilename: 'lyrics.txt'",
-  'separateLrcRequired: false',
+  "const LYRICS_VALIDATION_INTENT = 'lyrics-validate-v1'", "const LYRICS_SAVE_INTENT = 'lyrics-save-v1'",
+  '/lyrics`', '/lyrics/${suffix}', "'Content-Type': 'text/plain;charset=UTF-8'", 'expectedUpdatedAt', 'expectedLyricsEtag',
+  'getAdminTrackLyrics', 'validateAdminTrackLyrics', 'saveAdminTrackLyrics', 'getAdminTrack(trackId)', 'clientVerified',
+  "canonicalFilename: 'lyrics.txt'", 'separateLrcRequired: false',
 ]) assert.ok(lyricsApi.includes(required), `Lyrics client contract is missing ${required}.`);
 
-assert.equal((admin.match(/method:\s*'POST'/g) || []).length, 2, 'Metadata client must keep exactly validate + save POSTs.');
-assert.equal((lyricsApi.match(/method:\s*'POST'/g) || []).length, 1, 'Lyrics helper must use one generic POST transport for validate/save.');
-for (const source of [admin, lyricsApi]) {
-  assert.ok(!source.includes("'X-Shinobiwan-Studio-Intent'"), 'Studio writes must not reintroduce the custom-header preflight path.');
-  assert.ok(!source.includes("'Content-Type': 'application/json'"), 'Studio writes must remain CORS-simple text/plain.');
-  for (const forbiddenMethod of ['PUT', 'PATCH', 'DELETE']) assert.ok(!source.includes(`method: '${forbiddenMethod}'`), `Studio Build 12 must not expose ${forbiddenMethod}.`);
+for (const required of [
+  "const TRACK_CREATE_INTENT = 'track-create-v1'",
+  "const ASSET_UPLOAD_INTENT = 'asset-upload-v1'",
+  "const ASSET_DELETE_INTENT = 'asset-delete-v1'",
+  "const CATALOG_REBUILD_INTENT = 'catalog-rebuild-v1'",
+  "const REQUIRED_MANAGE_CAPABILITIES = new Set(['track-create', 'assets', 'catalog-rebuild'])",
+  "manage.includes(capability)",
+  "'/api/studio/tracks/create'",
+  '/assets/${kind}/upload',
+  '/assets/${kind}/delete',
+  "'/api/studio/catalog/rebuild'",
+  'new XMLHttpRequest()',
+  'xhr.withCredentials = true',
+  'xhr.upload.onprogress',
+  "formData.set('expectedUpdatedAt', expectedUpdatedAt)",
+  "formData.set('file', file)",
+  "'Content-Type': 'text/plain;charset=UTF-8'",
+  'getAdminTrack(slug)',
+  'getAdminTrack(trackId)',
+  'getAdminTracks()',
+  'clientVerified',
+  'wholeTrackDeleteEnabled: false',
+  'phase5Enabled: false',
+]) assert.ok(phase4Api.includes(required), `Phase 4 operations client is missing ${required}.`);
+
+assert.ok(!phase4Api.includes('setRequestHeader('), 'Multipart asset upload must not add custom request headers/preflight.');
+assert.ok(!phase4Api.includes("'Content-Type': 'application/json'"), 'Phase 4 JSON controls must keep the proven text/plain simple-request transport.');
+for (const forbiddenMethod of ['PUT', 'PATCH', 'DELETE']) {
+  assert.ok(!admin.includes(`method: '${forbiddenMethod}'`), `Metadata client must not expose ${forbiddenMethod}.`);
+  assert.ok(!lyricsApi.includes(`method: '${forbiddenMethod}'`), `Lyrics client must not expose ${forbiddenMethod}.`);
+  assert.ok(!phase4Api.includes(`method: '${forbiddenMethod}'`), `Phase 4 client must not expose ${forbiddenMethod}.`);
 }
 
-for (const required of [
-  'METADATA / GUARDED WRITE',
-  'Validate metadata',
-  'Save metadata',
-  'METADATA SAVED',
-]) assert.ok(metadata.includes(required), `Metadata UI is missing ${required}.`);
+for (const required of ['METADATA / GUARDED WRITE', 'Validate metadata', 'Save metadata', 'METADATA SAVED']) assert.ok(metadata.includes(required), `Metadata UI missing ${required}.`);
+for (const required of ['LYRICS / GUARDED WRITE', 'Canonical lyrics.txt editor', 'Validate lyrics', 'Save lyrics.txt', 'NO .LRC REQUIRED', 'CANONICAL REREAD · VERIFIED']) assert.ok(lyrics.includes(required), `Lyrics UI missing ${required}.`);
 
 for (const required of [
-  'LYRICS / GUARDED WRITE',
-  'Canonical lyrics.txt editor',
-  'Validate lyrics',
-  'Save lyrics.txt',
-  'exact manifest revision + lyrics ETag',
-  'NO .LRC REQUIRED',
-  'CANONICAL REREAD · VERIFIED',
-  'saveAdminTrackLyrics',
-]) assert.ok(lyrics.includes(required), `Lyrics UI is missing ${required}.`);
-assert.ok(lyrics.includes('globalThis.confirm'), 'Lyrics production save must require explicit confirmation.');
-assert.ok(!/Upload audio|Delete track|Replace cover|Publish now/.test(lyrics), 'Lyrics editor must not expose unrelated Track Manager operations.');
+  'TRACK MANAGER / ASSETS', 'Canonical Assets Manager', 'Upload', 'Replace', 'Delete asset', 'globalThis.confirm',
+  'uploadAdminTrackAsset', 'deleteAdminTrackAsset', 'phase4-upload-progress', 'One asset per operation', 'Whole-track deletion is intentionally not exposed.',
+]) assert.ok(assets.includes(required), `Assets Manager missing ${required}.`);
 
 for (const required of [
+  'TRACK MANAGER / CREATE', 'Create canonical draft', 'Create draft track', 'globalThis.confirm', 'createAdminTrack', "trackHref(effectiveSlug, 'assets')", 'always starts as <strong>draft</strong>',
+]) assert.ok(create.includes(required), `Track create UI missing ${required}.`);
+
+for (const required of ['TRACK MANAGER / CATALOG', 'Explicit catalog rebuild', 'REBUILD the canonical catalog/index.json', 'globalThis.confirm', 'rebuildAdminCatalog']) assert.ok(rebuild.includes(required), `Catalog rebuild UI missing ${required}.`);
+
+for (const required of ['<TrackCreatePanel privateRead={privateRead} onCreated={loadCatalog} />', 'Track Manager v5.13 / bridge v1.5', 'All mutations remain locked.']) assert.ok(catalog.includes(required), `Catalog Build 13 contract missing ${required}.`);
+for (const required of [
+  '<AssetsManager track={track} onChanged={refreshTrackAfterWrite} />',
   '<LyricsEditorPanel track={track} onSaved={refreshTrackAfterWrite} />',
   '<MetadataValidationPanel track={track} onSaved={refreshTrackAfterWrite} />',
-  "Track Manager v5.12 · bridge v1.4",
-  'Asset replace/upload/delete stays in Track Manager until the final Phase 4 Assets integration.',
-]) assert.ok(workspace.includes(required), `Workspace Build 12 contract is missing ${required}.`);
+  'Track Manager v5.13 · bridge v1.5',
+  'PHASE 4 / COMPLETE',
+  'Phase 5 is intentionally not started.',
+]) assert.ok(workspace.includes(required), `Workspace Build 13 contract missing ${required}.`);
 
 for (const required of [
-  'PHASE 4B.2C · GUARDED LYRICS SAVE',
-  'Metadata + lyrics writes active.',
-  'Track Manager v5.12 · bridge v1.4',
-  'Metadata + Lyrics',
-  'Phase 5, which is outside the current delivery scope.',
-]) assert.ok(app.includes(required), `Dashboard Build 12 contract is missing ${required}.`);
+  'PHASE 4 · COMPLETE', 'Track Manager integrated.', 'Track Manager v5.13 · bridge v1.5', 'Create · Upload · Replace · Delete asset · Rebuild',
+  '<CatalogRebuildPanel privateRead={privateRead} />', 'Phase 5 waits for new instructions', 'SonicTrace and LRC Maker remain separate and untouched.',
+]) assert.ok(app.includes(required), `Dashboard Build 13 contract missing ${required}.`);
 
-for (const forbiddenFutureRuntime of ['/catalog/rebuild', '/assets/upload', '/assets/delete', '/tracks/create']) {
-  assert.ok(!lyricsApi.includes(forbiddenFutureRuntime) && !admin.includes(forbiddenFutureRuntime), `Build 12 must not prematurely expose final Phase 4 operation ${forbiddenFutureRuntime}.`);
+assert.equal((admin.match(/method:\s*'POST'/g) || []).length, 2, 'Metadata client must keep validate + save POSTs only.');
+assert.equal((lyricsApi.match(/method:\s*'POST'/g) || []).length, 1, 'Lyrics service must keep one generic POST transport.');
+assert.equal((phase4Api.match(/method:\s*'POST'/g) || []).length, 1, 'Phase 4 service must keep one generic simple JSON POST transport; uploads use XHR/FormData.');
+for (const forbiddenWholeTrack of [
+  '/api/studio/tracks/${encodeURIComponent(trackId)}/delete',
+  '/api/studio/tracks/delete',
+  'wholeTrackDeleteEnabled: true',
+  'deleteWholeTrack(',
+]) assert.ok(!phase4Api.includes(forbiddenWholeTrack), `Whole-track delete must not be exposed by Studio Phase 4: ${forbiddenWholeTrack}`);
+for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog intelligence', 'saveSonicTrace', 'phase5Enabled: true']) {
+  assert.ok(!phase4Api.toLowerCase().includes(forbiddenPhase5.toLowerCase()), `Phase 5 leaked into Phase 4 client: ${forbiddenPhase5}`);
 }
 
-assert.ok(release.includes("version: '0.6.0'"), 'Studio release version must be 0.6.0.');
-assert.ok(release.includes('build: 12'), 'Studio release build must be 12.');
-assert.ok(release.includes("codename: 'guarded-lyrics-save'"), 'Studio release codename must describe guarded lyrics save.');
-assert.equal(pkg.version, '0.6.0', 'package.json must match Studio 0.6.0.');
+assert.ok(release.includes("version: '0.7.0'"), 'Studio release version must be 0.7.0.');
+assert.ok(release.includes('build: 13'), 'Studio release build must be 13.');
+assert.ok(release.includes("codename: 'phase4-track-manager-complete'"), 'Studio release codename must freeze Phase 4 completion.');
+assert.equal(pkg.version, '0.7.0', 'package.json must match Studio 0.7.0.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'Production build must run the integration regression guard.');
 
-console.log('Studio 0.6.0 Build 12 exposes only the production-proven metadata write and guarded canonical lyrics.txt read/validate/save; remaining Phase 4 operations stay locked.');
+console.log('Studio 0.7.0 Build 13 completes roadmap Phase 4: guarded create, metadata, lyrics, per-asset upload/replace/delete with progress, explicit catalog rebuild and Track Manager fallback; Phase 5 remains blocked.');

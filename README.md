@@ -2,9 +2,10 @@
 
 Artist Content & Intelligence Manager.
 
-**Current release:** `0.6.0`  
-**Build:** `12`  
-**Current milestone:** Phase 4B.2C — guarded canonical lyrics save
+**Release:** `0.7.0`  
+**Build:** `13`  
+**Milestone:** Roadmap Phase 4 — Track Manager integration complete  
+**Stop line:** Phase 5 is not started.
 
 ## Product role
 
@@ -15,264 +16,232 @@ Core rules:
 - `trackId = R2 manifest slug`;
 - LaunchPAD stays the public product;
 - R2 stays the catalog/media source of truth;
-- Track Manager stays the protected catalog/admin backend and full-write fallback until Phase 4 is fully migrated;
+- Track Manager stays the protected catalog/admin backend and legacy fallback;
 - SonicTrace stays the audio-intelligence engine;
 - LRC Maker stays the advanced lyrics editing/synchronization engine;
-- Studio must degrade safely when Track Manager private access or the SonicTrace GPU node is unavailable.
+- Studio degrades safely to public read-only behavior when private Track Manager access is unavailable.
 
-## Current scope
+## Roadmap Phase 4 status
 
-Implemented today:
+Build 13 closes the roadmap criterion:
 
-- GitHub Pages Studio shell;
-- LaunchPAD public catalog read + Track Manager private-first read;
-- automatic `PUBLIC FALLBACK` when private access is unavailable;
-- Track Workspace with Overview, Audio Intelligence, Lyrics, Assets, Versions, Metadata and Publishing;
-- Content Health with timestamp-aware synchronized lyrics semantics;
-- metadata proposal editor + non-mutating validation + guarded save;
-- real-browser production proof and clean restoration of metadata write;
-- canonical lyrics `GET` + R2 ETag read;
-- guarded lyrics validation with manifest revision + lyrics ETag concurrency protection;
-- guarded canonical `lyrics.txt` save with explicit confirmation;
-- backend lyrics/manifest/catalog rollback on publication failure;
-- backend reread + Studio browser canonical reread after lyrics save;
-- no-preflight `text/plain` POST transport proven with Cloudflare Access;
-- strict build-time bridge/write regression guard;
-- Track Manager remains available as fallback while the remaining Phase 4 asset/create/rebuild operations are integrated.
+> Principal Track Manager operations are achievable from the Studio workspace.
 
-## Phase 4B.2C — guarded lyrics save
+The complete Studio Phase 4 surface is:
 
-Build 12 activates the lyrics surface already deployed in Track Manager `v5.12` / Studio bridge `v1.4`.
+- private-first unified catalog read with public fallback;
+- Track Workspace;
+- canonical draft track creation;
+- metadata validation + guarded save;
+- canonical lyrics read + ETag + validation + guarded save;
+- `lyrics.txt` upload when missing;
+- audio upload / replace / delete asset;
+- cover upload / replace / delete asset;
+- thumbnail upload / replace / delete asset;
+- video/Canvas upload / replace / delete asset;
+- upload progress;
+- stale-manifest protection;
+- published-track quality protection;
+- explicit destructive confirmations;
+- explicit canonical catalog rebuild;
+- canonical reread verification after writes;
+- old Track Manager retained as protected fallback.
 
-The canonical model is fixed:
+Whole-track deletion is intentionally not exposed because the roadmap requires delete/replace **asset**, not deletion of the canonical track itself.
+
+See [`docs/PHASE-4-COMPLETE.md`](docs/PHASE-4-COMPLETE.md).
+
+## Deployed backend dependency
+
+Build 13 consumes the production-deployed backend:
+
+```text
+Track Manager       v5.13
+Studio bridge       v1.5
+source SHA          df75509d89b1ed1477d4b249fab63a6bd41db311
+workflow run        31272655808
+deployment target   admin
+Worker Version ID   781f75f9-776c-4e39-90a7-5cdf34854599
+Access verification protected / HTTP 302 unauthenticated
+public Worker       skipped / remains v2.6
+```
+
+The protected deployment passed Worker source validation, bridge regression guards, Wrangler dry-run, private Worker deployment and post-deploy Cloudflare Access verification before Studio Build 13 was released.
+
+Public LaunchPAD remains unchanged:
+
+```text
+Build 2026.08.08.66
+release studio-metadata-validation-20260808
+public Worker v2.6
+```
+
+## Bridge v1.5 capability contract
+
+```json
+{
+  "read": ["tracks", "track", "lyrics"],
+  "validate": ["metadata", "lyrics"],
+  "write": ["metadata", "lyrics"],
+  "manage": ["track-create", "assets", "catalog-rebuild"]
+}
+```
+
+`manage` is separate from the narrower metadata/lyrics write family.
+
+## Studio operations
+
+### Create track
+
+Catalog exposes **Create canonical draft**.
+
+Creation:
+
+- requires PRIVATE READ / bridge v1.5;
+- requires canonical lower-case kebab-case trackId;
+- rejects duplicates;
+- always starts as `draft`;
+- writes manifest only, then rebuilds catalog;
+- verifies the canonical draft reread;
+- navigates to Assets so media can be attached separately.
+
+### Metadata
+
+Metadata keeps the production-proven flow:
+
+```text
+Edit -> Validate -> Review -> Save -> confirm -> backend guard -> catalog rebuild -> canonical reread
+```
+
+The real `soft-addiction` smoke write and restoration remain documented:
+
+- temporary revision `2026-08-08T16:21:15.503Z`;
+- restored revision `2026-08-08T16:22:10.890Z`;
+- final quality `ready`, publishable `Yes`, errors/warnings `0 / 0`;
+- media untouched.
+
+### Lyrics
+
+Canonical rule:
 
 ```text
 tracks/<slug>/lyrics.txt = source of truth
 timestamps inside lyrics.txt = synchronized
-.lrc sidecar = optional compatibility/export only
+.lrc = optional compatibility/export only
 ```
 
-Studio now performs:
+Existing lyrics use manifest revision + R2 ETag concurrency. Missing lyrics can be created by uploading a `.txt` file through Assets Manager. LRC Maker remains unchanged.
+
+### Assets
+
+Assets Manager supports exactly:
 
 ```text
-GET canonical lyrics.txt + ETag
-  -> edit locally
-  -> Validate lyrics
-  -> Review normalized proposal + timestamp/quality state
-  -> Save lyrics.txt
-  -> explicit confirmation
-  -> backend stale/quality revalidation
-  -> canonical lyrics write
-  -> manifest revision update
-  -> catalog/index.json rebuild
-  -> backend reread verification
-  -> Studio canonical lyrics + manifest reread
-  -> Track Workspace refresh
+audio
+cover
+thumbnail
+lyrics
+video
 ```
 
-Both validate and save require:
+Each operation processes one asset kind only.
+
+Upload/replace:
+
+- uses multipart FormData with no custom request header;
+- exposes XHR upload progress;
+- requires `expectedUpdatedAt`;
+- reuses Track Manager extension/size validation;
+- temporarily backs up the previous R2 object outside the canonical track prefix;
+- updates manifest + catalog;
+- performs backend verification + Studio canonical reread;
+- performs compensating rollback on failure.
+
+Delete asset:
+
+- requires explicit confirmation;
+- requires canonical revision;
+- blocks destructive changes that make a published track non-publishable;
+- backs up before deletion;
+- updates and verifies manifest/catalog;
+- compensates on failure.
+
+### Catalog rebuild
+
+Administration exposes an explicit standalone catalog rebuild.
+
+It:
+
+- requires a user confirmation;
+- sends `confirm: REBUILD` to Track Manager;
+- rebuilds only `catalog/index.json` from current manifests;
+- performs a private catalog reread verification;
+- does not mutate track metadata or media.
+
+## Security
+
+- Cloudflare Access remains mandatory;
+- exact Studio origin remains `https://shinobione.github.io`;
+- no Access/R2 secret is shipped to GitHub Pages;
+- no wildcard credentialed CORS;
+- JSON mutation controls use CORS-simple `text/plain;charset=UTF-8`;
+- asset uploads use browser multipart FormData without custom headers;
+- no PUT/PATCH/DELETE client is introduced;
+- no generic legacy `saveTrack()` route is opened cross-origin;
+- no whole-track delete route is exposed;
+- every management call verifies the bridge `manage` capability first;
+- standalone Track Manager remains the fallback.
+
+## Safety / rollback
+
+Current relevant checkpoints:
 
 ```text
-expectedUpdatedAt
-expectedLyricsEtag
+Studio:    safety/pre-phase4-final-ui-20260808-2025
+LaunchPAD: safety/pre-v5.13-phase4-ops-20260808-1948
+Both:      safety/post-v5.12-pre-phase4-complete-20260808-1945
+Both:      safety/post-metadata-write-proven-20260808-1822
 ```
 
-A stale manifest or stale lyrics object is rejected rather than overwritten.
+See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md).
 
-Build 12 only edits an **existing** canonical `lyrics.txt`. Initial lyrics upload belongs to the remaining Phase 4 Assets integration, alongside audio, cover, thumbnail and video/Canvas.
+## Verification policy
 
-See [`docs/PHASE-4B2C-LYRICS-SAVE.md`](docs/PHASE-4B2C-LYRICS-SAVE.md).
+The final management code is protected by:
 
-## Phase 4B.1B — metadata production proof
+- Track Manager source guards;
+- assembled Worker syntax checks;
+- generated bundle verification;
+- Wrangler dry-run;
+- protected admin-only production deployment;
+- Cloudflare Access post-deploy verification;
+- LaunchPAD regression CI;
+- Studio build-time integration guards;
+- TypeScript;
+- Vite build;
+- capability gating;
+- stale checks;
+- rollback contracts;
+- explicit confirmations.
 
-Metadata remains the other production-proven Studio write.
+We do **not** replace or delete a production WAV/cover merely to manufacture a smoke test. A deliberately disposable draft can be used later if deeper destructive-media smoke testing is desired.
 
-The proven flow is:
+## Phase 5 stop line
 
-```text
-Edit locally
-  -> Validate metadata
-  -> Review normalized proposal + quality
-  -> Save metadata
-  -> explicit confirmation
-  -> backend stale/quality revalidation
-  -> canonical manifest metadata write
-  -> catalog/index.json rebuild
-  -> backend manifest reread
-  -> Studio canonical GET reread
-  -> Track Workspace refresh
-```
+**STOP after Build 13.**
 
-Real production smoke test on `soft-addiction` / **Soft Addiction**:
+Do not begin:
 
-- temporary `keyConfidence = 0.01` save revision: `2026-08-08T16:21:15.503Z`;
-- catalog rebuilt: yes;
-- browser canonical reread: verified;
-- restoration to original empty/null `keyConfidence` revision: `2026-08-08T16:22:10.890Z`;
-- final quality: `ready`, publishable `Yes`, errors/warnings `0 / 0`;
-- media untouched.
+- SonicTrace result persistence;
+- embeddings/fingerprints;
+- Catalog Intelligence;
+- similarity / duplicates;
+- outdated-analysis engine;
+- any other Phase 5 item.
 
-## Production dependencies
+Wait for new user instructions.
 
-Public LaunchPAD remains unchanged:
-
-- app Build `2026.08.08.66`;
-- release `studio-metadata-validation-20260808`;
-- public Worker `v2.6`.
-
-Protected Track Manager backend currently deployed:
-
-- Track Manager `v5.12`;
-- Studio bridge `v1.4`;
-- LaunchPAD merge SHA `98504263dac8a5f284337fe7e26fa6c808ad75e3`;
-- private Worker Version ID `3aa3136f-492d-46c5-af0a-fd3b048e8666`;
-- protected deployment workflow run `31270132063`;
-- deployment target `admin` only;
-- Cloudflare Access protection confirmed (`302` unauthenticated);
-- public Worker deployment steps were skipped.
-
-## Active Studio endpoints
-
-Private reads:
-
-```text
-GET /api/studio/health
-GET /api/studio/tracks
-GET /api/studio/tracks/<trackId>
-GET /api/studio/tracks/<trackId>/lyrics
-```
-
-Metadata:
-
-```text
-POST /api/studio/tracks/<trackId>/metadata/validate
-POST /api/studio/tracks/<trackId>/metadata/save
-```
-
-Lyrics:
-
-```text
-POST /api/studio/tracks/<trackId>/lyrics/validate
-POST /api/studio/tracks/<trackId>/lyrics/save
-```
-
-All Studio POSTs remain CORS-simple:
-
-```text
-Content-Type: text/plain;charset=UTF-8
-credentials: include
-```
-
-No custom request header is used.
-
-## Data safety
-
-Metadata save is whitelist-only and does not accept media or identity fields.
-
-Lyrics save is limited to the existing canonical `lyrics.txt` object and cannot mutate audio, cover, thumbnail or video.
-
-Preserved by the backend:
-
-- slug / canonical `trackId`;
-- unrelated asset filenames;
-- migration provenance;
-- `createdAt`;
-- existing Cloudflare Access boundary.
-
-Still intentionally outside Studio Build 12:
-
-- track creation;
-- audio upload/replace/delete;
-- cover upload/replace/delete;
-- thumbnail upload/replace/delete;
-- video/Canvas upload/replace/delete;
-- missing lyrics TXT creation/upload;
-- explicit standalone catalog rebuild UI;
-- track deletion;
-- Phase 5 SonicTrace catalog persistence.
-
-These are not forgotten: the applicable Track Manager operations are the remaining work required before **Phase 4** is declared complete.
-
-## Stale, quality and rollback guards
-
-Metadata validate/save requires `expectedUpdatedAt`.
-
-Lyrics validate/save requires both `expectedUpdatedAt` and `expectedLyricsEtag`.
-
-Track Manager v5.11 metadata save restores the previous manifest/catalog if publication fails after the manifest write.
-
-Track Manager v5.12 lyrics save attempts to restore:
-
-1. previous lyrics bytes/object metadata;
-2. previous manifest;
-3. previous catalog projection.
-
-Studio performs an additional canonical reread after successful metadata and lyrics saves.
-
-## Safety checkpoints
-
-Preferred rollback references, newest first:
-
-```text
-safety/post-v5.12-pre-phase4-complete-20260808-1945
-safety/pre-build12-lyrics-ui-20260808-1948
-safety/pre-4b2-lyrics-write-20260808-1837
-safety/post-metadata-write-proven-20260808-1822
-safety/post-v5.11-pre-build9-20260808-1732
-safety/pre-4b1b-metadata-write-20260808-1612
-safety/pre-cors-hotfix-20260808-1540
-safety/pre-integration-20260808-1048
-```
-
-Safety branches are rollback references only and must never become development branches.
-
-See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md), [`docs/PHASE-4B1B-METADATA-SAVE.md`](docs/PHASE-4B1B-METADATA-SAVE.md), [`docs/PHASE-4B2A-LYRICS-CAPABILITY-PREP.md`](docs/PHASE-4B2A-LYRICS-CAPABILITY-PREP.md) and [`docs/PHASE-4B2C-LYRICS-SAVE.md`](docs/PHASE-4B2C-LYRICS-SAVE.md).
-
-## Lyrics semantics
-
-Lyrics synchronization is content-driven:
-
-- `lyrics.txt` present = canonical lyrics source;
-- timestamps detected in canonical lyrics content = `Synced Lyrics`;
-- a separate `.lrc` sidecar is optional, not required.
-
-Track Manager canonical lyrics uploads accept TXT. LRC Maker can import `.txt`/`.lrc`, preserve timestamps and export plain text. Studio does not create a mandatory second source of truth.
-
-## Remaining Phase 4 gate
-
-After Build 12, Phase 4 is **not yet complete**. The roadmap criterion remains:
-
-> the principal Track Manager operations must be achievable from the Studio workspace.
-
-Remaining operational scope:
-
-- create track;
-- upload/replace audio;
-- upload/replace cover;
-- upload/replace thumbnail;
-- upload/replace video/Canvas;
-- upload/create lyrics TXT when missing;
-- delete/replace individual assets;
-- explicit catalog rebuild;
-- upload progress;
-- destructive confirmations;
-- keep Track Manager as fallback.
-
-Phase 5 is explicitly outside the current delivery and must not begin until new user instructions are provided.
-
-## Readability rule
-
-Studio keeps an 11px floor for previously microscopic status/microcopy roles.
-
-## Stack
-
-- React 18.2
-- TypeScript 5.8.3
-- Vite 6.3.5
-- GitHub Pages
-- Cloudflare Access-protected Track Manager Worker
-
-## Development and validation
+## Development
 
 ```bash
 npm install
@@ -282,7 +251,7 @@ npm run typecheck
 npm run build
 ```
 
-`npm run build` executes the Studio bridge/write regression guard before TypeScript/Vite compilation.
+`npm run build` runs the integration regression guard before TypeScript/Vite.
 
 ## Production URL
 
@@ -296,12 +265,10 @@ Every Studio release updates together:
 
 1. `package.json`;
 2. `src/release.ts`;
-3. visible version/build and phase copy;
+3. visible version/build/phase copy;
 4. `CHANGELOG.md`;
-5. README / affected `.md` documentation;
-6. security-sensitive regression guards;
-7. PR scope, dependency and rollback notes.
+5. README and affected docs;
+6. security/integration regression guards;
+7. PR dependency and rollback notes.
 
-A backend version/build is not bumped merely to document an already-deployed runtime when no backend code changed; unnecessary Worker redeploys are treated as risk, not progress.
-
-No risky cross-repository capability is considered complete until CI, deployment and the appropriate browser/contract verification have passed independently.
+Source merge, web deployment, Worker deployment and R2/catalog mutation remain separate facts.

@@ -4,6 +4,7 @@ import { routeHref, trackHref } from '../router';
 import { getCatalogTrack } from '../services/catalog-api';
 import { studioConfig } from '../services/config';
 import type { StudioAsset, StudioTrackDetail, WorkspaceSection } from '../types/studio';
+import { AssetsManager } from './AssetsManager';
 import { LyricsEditorPanel } from './LyricsEditorPanel';
 import { MetadataValidationPanel } from './MetadataValidationPanel';
 
@@ -20,9 +21,7 @@ const TABS: Array<{ id: WorkspaceSection; label: string }> = [
 function displayDate(value: string | null, year: number | null): string {
   if (value) {
     const parsed = Date.parse(value);
-    if (Number.isFinite(parsed)) {
-      return new Intl.DateTimeFormat('en', { year: 'numeric', month: 'long', day: '2-digit' }).format(parsed);
-    }
+    if (Number.isFinite(parsed)) return new Intl.DateTimeFormat('en', { year: 'numeric', month: 'long', day: '2-digit' }).format(parsed);
   }
   return year ? String(year) : 'Unknown';
 }
@@ -47,10 +46,7 @@ function fullArtwork(track: StudioTrackDetail): string | null {
 function AssetRow({ label, asset }: { label: string; asset: StudioAsset | null }) {
   return (
     <div className="workspace-asset-row">
-      <div>
-        <strong>{label}</strong>
-        <span>{asset?.filename || 'Missing'}</span>
-      </div>
+      <div><strong>{label}</strong><span>{asset?.filename || 'Missing'}</span></div>
       <div className="workspace-asset-meta">
         <span>{asset ? formatBytes(asset.size) : '—'}</span>
         {asset ? <a href={asset.fullUrl || asset.url} target="_blank" rel="noreferrer">Open ↗</a> : <b>Missing</b>}
@@ -60,13 +56,7 @@ function AssetRow({ label, asset }: { label: string; asset: StudioAsset | null }
 }
 
 function WorkspacePanel({ eyebrow, title, children, className = '' }: { eyebrow: string; title: string; children: ReactNode; className?: string }) {
-  return (
-    <article className={`panel workspace-panel ${className}`.trim()}>
-      <span className="eyebrow">{eyebrow}</span>
-      <h3>{title}</h3>
-      {children}
-    </article>
-  );
+  return <article className={`panel workspace-panel ${className}`.trim()}><span className="eyebrow">{eyebrow}</span><h3>{title}</h3>{children}</article>;
 }
 
 export function TrackWorkspace({ trackId, section }: { trackId: string; section: WorkspaceSection }) {
@@ -79,11 +69,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
     setLoading(true);
     setTrack(null);
     getCatalogTrack(trackId)
-      .then(item => {
-        if (!active) return;
-        setTrack(item);
-        setError(null);
-      })
+      .then(item => { if (!active) return; setTrack(item); setError(null); })
       .catch(reason => active && setError(reason instanceof Error ? reason.message : String(reason)))
       .finally(() => active && setLoading(false));
     return () => { active = false; };
@@ -98,25 +84,12 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
   const health = useMemo(() => track ? computeContentHealth(track) : null, [track]);
   const lyricLines = useMemo(() => {
     if (!track?.lyricsRaw) return [];
-    return track.lyricsRaw
-      .replace(/^\uFEFF/, '')
-      .split(/\r?\n/)
-      .map(line => line.trim())
-      .filter(Boolean)
-      .slice(0, 32);
+    return track.lyricsRaw.replace(/^\uFEFF/, '').split(/\r?\n/).map(line => line.trim()).filter(Boolean).slice(0, 32);
   }, [track]);
 
   if (loading) return <div className="catalog-message panel">Loading Track Workspace…</div>;
-
   if (error || !track || !health) {
-    return (
-      <section className="track-read-error panel">
-        <span className="eyebrow">WORKSPACE / READ ERROR</span>
-        <h2>Track unavailable.</h2>
-        <p>{error || 'The canonical read layer did not return this track.'}</p>
-        <a className="ghost-btn" href={routeHref('catalog')}>← Back to catalog</a>
-      </section>
-    );
+    return <section className="track-read-error panel"><span className="eyebrow">WORKSPACE / READ ERROR</span><h2>Track unavailable.</h2><p>{error || 'The canonical read layer did not return this track.'}</p><a className="ghost-btn" href={routeHref('catalog')}>← Back to catalog</a></section>;
   }
 
   const artwork = fullArtwork(track);
@@ -127,169 +100,67 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
 
   return (
     <section className="track-workspace">
-      <div className="workspace-breadcrumbs">
-        <a href={routeHref('catalog')}>Catalog</a><span>/</span><strong>{track.title}</strong>
-      </div>
+      <div className="workspace-breadcrumbs"><a href={routeHref('catalog')}>Catalog</a><span>/</span><strong>{track.title}</strong></div>
 
       <header className="workspace-header panel">
-        <div className="workspace-cover">
-          {artwork ? <img src={artwork} alt={`${track.title} cover`} /> : <span>{track.title.slice(0, 2).toUpperCase()}</span>}
-        </div>
+        <div className="workspace-cover">{artwork ? <img src={artwork} alt={`${track.title} cover`} /> : <span>{track.title.slice(0, 2).toUpperCase()}</span>}</div>
         <div className="workspace-title">
-          <span className="eyebrow">TRACK WORKSPACE / {track.id}</span>
-          <h2>{track.title}</h2>
-          <p>{track.album.title} · {displayDate(track.releaseDate, track.year)}</p>
-          <div className="workspace-header-tags">
-            <span className="workspace-status">{track.status}</span>
-            <span>{privateRead ? 'PRIVATE READ' : 'PUBLIC FALLBACK'}</span>
-            {(track.genres.length ? track.genres : ['Unclassified']).slice(0, 4).map(value => <span key={value}>{value}</span>)}
-          </div>
+          <span className="eyebrow">TRACK WORKSPACE / {track.id}</span><h2>{track.title}</h2><p>{track.album.title} · {displayDate(track.releaseDate, track.year)}</p>
+          <div className="workspace-header-tags"><span className="workspace-status">{track.status}</span><span>{privateRead ? 'PRIVATE READ' : 'PUBLIC FALLBACK'}</span>{(track.genres.length ? track.genres : ['Unclassified']).slice(0, 4).map(value => <span key={value}>{value}</span>)}</div>
         </div>
-        <div className="workspace-summary">
-          <span>CONTENT HEALTH</span>
-          <strong>{health.total}%</strong>
-          <small>Completeness, not artistic quality</small>
-        </div>
+        <div className="workspace-summary"><span>CONTENT HEALTH</span><strong>{health.total}%</strong><small>Completeness, not artistic quality</small></div>
       </header>
 
-      <nav className="workspace-tabs" aria-label="Track Workspace sections">
-        {TABS.map(tab => (
-          <a key={tab.id} className={section === tab.id ? 'active' : ''} href={trackHref(track.id, tab.id)}>{tab.label}</a>
-        ))}
-      </nav>
+      <nav className="workspace-tabs" aria-label="Track Workspace sections">{TABS.map(tab => <a key={tab.id} className={section === tab.id ? 'active' : ''} href={trackHref(track.id, tab.id)}>{tab.label}</a>)}</nav>
 
       {section === 'overview' && (
         <div className="workspace-overview-grid">
           <WorkspacePanel eyebrow="CONTENT / HEALTH" title="Track completeness" className="health-panel">
             <div className="health-layout">
-              <div className="health-ring" style={healthStyle}>
-                <div><strong>{health.total}</strong><span>/ 100</span></div>
-              </div>
-              <div className="health-list">
-                {health.items.map(current => (
-                  <div className={`health-row health-${current.state}`} key={current.id}>
-                    <div className="health-row-head"><strong>{current.label}</strong><span>{current.score}/{current.max}</span></div>
-                    <div className="health-bar"><i style={{ width: `${(current.score / current.max) * 100}%` }} /></div>
-                    <small>{current.detail}</small>
-                  </div>
-                ))}
-              </div>
+              <div className="health-ring" style={healthStyle}><div><strong>{health.total}</strong><span>/ 100</span></div></div>
+              <div className="health-list">{health.items.map(current => <div className={`health-row health-${current.state}`} key={current.id}><div className="health-row-head"><strong>{current.label}</strong><span>{current.score}/{current.max}</span></div><div className="health-bar"><i style={{ width: `${(current.score / current.max) * 100}%` }} /></div><small>{current.detail}</small></div>)}</div>
             </div>
           </WorkspacePanel>
-
           <WorkspacePanel eyebrow="TRACK / SNAPSHOT" title="Quick facts">
-            <div className="workspace-facts">
-              <div><span>BPM</span><strong>{track.bpm ?? '—'}</strong></div>
-              <div><span>Key</span><strong>{track.key || '—'}</strong></div>
-              <div><span>Duration</span><strong>{formatDuration(track.duration)}</strong></div>
-              <div><span>Language</span><strong>{track.languages.join(', ') || '—'}</strong></div>
-              <div><span>Lyrics</span><strong>{syncedLyrics ? 'Synced' : track.assets.lyricsTxt ? 'TXT ready' : 'Missing'}</strong></div>
-              <div><span>Canvas</span><strong>{track.assets.video ? 'Ready' : 'Missing'}</strong></div>
-            </div>
+            <div className="workspace-facts"><div><span>BPM</span><strong>{track.bpm ?? '—'}</strong></div><div><span>Key</span><strong>{track.key || '—'}</strong></div><div><span>Duration</span><strong>{formatDuration(track.duration)}</strong></div><div><span>Language</span><strong>{track.languages.join(', ') || '—'}</strong></div><div><span>Lyrics</span><strong>{syncedLyrics ? 'Synced' : track.assets.lyricsTxt ? 'TXT ready' : 'Missing'}</strong></div><div><span>Canvas</span><strong>{track.assets.video ? 'Ready' : 'Missing'}</strong></div></div>
             {track.assets.audio && <audio className="workspace-audio" controls preload="metadata" src={track.assets.audio.url} />}
           </WorkspacePanel>
-
-          <WorkspacePanel eyebrow="ACTIVITY / SOURCE" title="Recent activity">
-            <div className="workspace-note">
-              <strong>{track.updatedAt
-                ? privateRead ? 'Canonical manifest revision detected' : 'Latest public asset revision detected'
-                : 'Activity history unavailable'}</strong>
-              <p>{track.updatedAt
-                ? `${new Date(track.updatedAt).toLocaleString()} · ${privateRead ? 'Track Manager private read' : 'LaunchPAD public fallback'}`
-                : privateRead
-                  ? 'Track Manager did not expose an updatedAt value for this manifest.'
-                  : 'The public fallback does not expose admin activity history.'}</p>
-            </div>
-          </WorkspacePanel>
-
-          <WorkspacePanel eyebrow="NEXT / GAPS" title="What still needs attention">
-            <div className="workspace-gap-list">
-              {health.items.filter(current => current.state !== 'complete').map(current => (
-                <div key={current.id}><span>{current.label}</span><strong>{current.detail}</strong></div>
-              ))}
-              {health.items.every(current => current.state === 'complete') && <p>Everything tracked by Content Health is complete.</p>}
-            </div>
-          </WorkspacePanel>
+          <WorkspacePanel eyebrow="ACTIVITY / SOURCE" title="Recent activity"><div className="workspace-note"><strong>{track.updatedAt ? privateRead ? 'Canonical manifest revision detected' : 'Latest public asset revision detected' : 'Activity history unavailable'}</strong><p>{track.updatedAt ? `${new Date(track.updatedAt).toLocaleString()} · ${privateRead ? 'Track Manager private read' : 'LaunchPAD public fallback'}` : privateRead ? 'Track Manager did not expose an updatedAt value for this manifest.' : 'The public fallback does not expose admin activity history.'}</p></div></WorkspacePanel>
+          <WorkspacePanel eyebrow="NEXT / GAPS" title="What still needs attention"><div className="workspace-gap-list">{health.items.filter(current => current.state !== 'complete').map(current => <div key={current.id}><span>{current.label}</span><strong>{current.detail}</strong></div>)}{health.items.every(current => current.state === 'complete') && <p>Everything tracked by Content Health is complete.</p>}</div></WorkspacePanel>
         </div>
       )}
 
       {section === 'intelligence' && (
         <div className="workspace-two-col">
-          <WorkspacePanel eyebrow="SONICTRACE / CATALOG" title="Audio Intelligence status">
-            <div className="workspace-state-card">
-              <b className={track.audioIntelligence.available ? 'ready' : 'pending'}>{track.audioIntelligence.available ? 'CATALOG-LINKED' : 'NOT SAVED'}</b>
-              <p>{track.audioIntelligence.available
-                ? 'A persisted SonicTrace analysis is linked to this track.'
-                : 'SonicTrace can analyze audio today, but catalog persistence belongs to a later phase. The Studio will not invent a fake result here.'}</p>
-            </div>
-            <a className="ghost-btn" href={studioConfig.sonicTraceUrl} target="_blank" rel="noreferrer">Open SonicTrace ↗</a>
-          </WorkspacePanel>
-          <WorkspacePanel eyebrow="PROVENANCE / SOURCE" title="Canonical analysis input">
-            <dl className="workspace-metadata-list">
-              <div><dt>trackId</dt><dd>{track.id}</dd></div>
-              <div><dt>Audio</dt><dd>{track.assets.audio?.filename || 'Missing'}</dd></div>
-              <div><dt>Read layer</dt><dd>{privateRead ? 'Track Manager private' : 'LaunchPAD public fallback'}</dd></div>
-              <div><dt>Fingerprint</dt><dd>Later phase</dd></div>
-              <div><dt>Analysis ID</dt><dd>{track.audioIntelligence.latestAnalysisId || '—'}</dd></div>
-              <div><dt>Outdated</dt><dd>{track.audioIntelligence.outdated ? 'Yes' : 'No persisted analysis'}</dd></div>
-            </dl>
-          </WorkspacePanel>
+          <WorkspacePanel eyebrow="SONICTRACE / CATALOG" title="Audio Intelligence status"><div className="workspace-state-card"><b className={track.audioIntelligence.available ? 'ready' : 'pending'}>{track.audioIntelligence.available ? 'CATALOG-LINKED' : 'NOT SAVED'}</b><p>{track.audioIntelligence.available ? 'A persisted SonicTrace analysis is linked to this track.' : 'SonicTrace can analyze audio today, but catalog persistence belongs to Phase 5. Phase 5 is intentionally stopped until new instructions.'}</p></div><a className="ghost-btn" href={studioConfig.sonicTraceUrl} target="_blank" rel="noreferrer">Open SonicTrace ↗</a></WorkspacePanel>
+          <WorkspacePanel eyebrow="PROVENANCE / SOURCE" title="Canonical analysis input"><dl className="workspace-metadata-list"><div><dt>trackId</dt><dd>{track.id}</dd></div><div><dt>Audio</dt><dd>{track.assets.audio?.filename || 'Missing'}</dd></div><div><dt>Read layer</dt><dd>{privateRead ? 'Track Manager private' : 'LaunchPAD public fallback'}</dd></div><div><dt>Fingerprint</dt><dd>Phase 5</dd></div><div><dt>Analysis ID</dt><dd>{track.audioIntelligence.latestAnalysisId || '—'}</dd></div><div><dt>Outdated</dt><dd>{track.audioIntelligence.outdated ? 'Yes' : 'No persisted analysis'}</dd></div></dl></WorkspacePanel>
         </div>
       )}
 
       {section === 'lyrics' && (
         <>
           <div className="workspace-two-col workspace-lyrics-grid">
-            <WorkspacePanel eyebrow="LYRICS / STATE" title="Lyrics synchronization">
-              <div className="workspace-facts">
-                <div><span>Source</span><strong>{track.assets.lyricsTxt ? 'lyrics.txt' : 'Missing'}</strong></div>
-                <div><span>Timestamp data</span><strong>{track.timestampsAvailable ? 'Detected' : 'No'}</strong></div>
-                <div><span>Sync status</span><strong>{syncedLyrics ? 'Ready' : 'Not synced'}</strong></div>
-                <div><span>Segments</span><strong>{track.lyricSegments.length}</strong></div>
-              </div>
-              <div className="workspace-note workspace-tool-link">
-                <strong>{track.assets.lyricsLrc ? 'Optional .lrc sidecar detected.' : 'No separate .lrc file required.'}</strong>
-                <p>Synchronization is derived from timestamp data. A timestamped canonical lyrics.txt is already considered synchronized.</p>
-              </div>
-              <a className="ghost-btn workspace-tool-link" href={studioConfig.lrcMakerUrl} target="_blank" rel="noreferrer">Open LRC Maker ↗</a>
-            </WorkspacePanel>
-            <WorkspacePanel eyebrow="LYRICS / PREVIEW" title={track.assets.lyricsTxt ? 'Catalog lyrics' : 'No lyrics'} className="workspace-lyrics-panel">
-              {lyricLines.length ? <div className="workspace-lyrics-lines">{lyricLines.map((line, index) => <p key={`${index}-${line}`}>{line}</p>)}</div> : <p className="workspace-muted">No public lyric text is exposed for this track. The guarded editor below reads canonical lyrics directly when PRIVATE READ is active.</p>}
-            </WorkspacePanel>
+            <WorkspacePanel eyebrow="LYRICS / STATE" title="Lyrics synchronization"><div className="workspace-facts"><div><span>Source</span><strong>{track.assets.lyricsTxt ? 'lyrics.txt' : 'Missing'}</strong></div><div><span>Timestamp data</span><strong>{track.timestampsAvailable ? 'Detected' : 'No'}</strong></div><div><span>Sync status</span><strong>{syncedLyrics ? 'Ready' : 'Not synced'}</strong></div><div><span>Segments</span><strong>{track.lyricSegments.length}</strong></div></div><div className="workspace-note workspace-tool-link"><strong>{track.assets.lyricsLrc ? 'Optional .lrc sidecar detected.' : 'No separate .lrc file required.'}</strong><p>Synchronization is derived from timestamp data. A timestamped canonical lyrics.txt is already considered synchronized.</p></div><a className="ghost-btn workspace-tool-link" href={studioConfig.lrcMakerUrl} target="_blank" rel="noreferrer">Open LRC Maker ↗</a></WorkspacePanel>
+            <WorkspacePanel eyebrow="LYRICS / PREVIEW" title={track.assets.lyricsTxt ? 'Catalog lyrics' : 'No lyrics'} className="workspace-lyrics-panel">{lyricLines.length ? <div className="workspace-lyrics-lines">{lyricLines.map((line, index) => <p key={`${index}-${line}`}>{line}</p>)}</div> : <p className="workspace-muted">No lyric text is exposed for this track. Missing canonical lyrics.txt can be uploaded from Assets.</p>}</WorkspacePanel>
           </div>
           <LyricsEditorPanel track={track} onSaved={refreshTrackAfterWrite} />
         </>
       )}
 
       {section === 'assets' && (
-        <WorkspacePanel eyebrow="R2 / ASSETS" title="Canonical track assets">
-          <div className="workspace-asset-list">
-            <AssetRow label="Audio" asset={track.assets.audio} />
-            <AssetRow label="Cover" asset={track.assets.cover} />
-            <AssetRow label="Thumbnail" asset={track.assets.thumbnail} />
-            <AssetRow label="Lyrics TXT" asset={track.assets.lyricsTxt} />
-            <AssetRow label="Video / Canvas" asset={track.assets.video} />
-          </div>
-          <p className="workspace-footnote">{privateRead
-            ? 'Canonical Track Manager/R2 asset projection. Published media keeps the proven public delivery URLs when available; private-only assets remain protected by Cloudflare Access.'
-            : 'Safe public LaunchPAD fallback. Authenticate with Track Manager to expose private canonical state such as drafts.'} Synchronized lyrics are content-derived from timestamp data; a separate .lrc sidecar is optional. Asset replace/upload/delete stays in Track Manager until the final Phase 4 Assets integration.</p>
-        </WorkspacePanel>
+        <>
+          <WorkspacePanel eyebrow="R2 / ASSETS" title="Canonical track assets">
+            <div className="workspace-asset-list"><AssetRow label="Audio" asset={track.assets.audio} /><AssetRow label="Cover" asset={track.assets.cover} /><AssetRow label="Thumbnail" asset={track.assets.thumbnail} /><AssetRow label="Lyrics TXT" asset={track.assets.lyricsTxt} /><AssetRow label="Video / Canvas" asset={track.assets.video} /></div>
+            <p className="workspace-footnote">{privateRead ? 'Canonical Track Manager/R2 asset projection. Published media keeps the proven public delivery URLs when available; private-only assets remain protected by Cloudflare Access.' : 'Safe public LaunchPAD fallback. Authenticate with Track Manager to expose private canonical state.'} Synchronized lyrics remain content-derived from timestamps; a separate .lrc sidecar is optional.</p>
+          </WorkspacePanel>
+          <AssetsManager track={track} onChanged={refreshTrackAfterWrite} />
+        </>
       )}
 
       {section === 'versions' && (
         <div className="workspace-two-col">
-          <WorkspacePanel eyebrow="VERSIONS / CANONICAL" title="Current catalog source">
-            <dl className="workspace-metadata-list">
-              <div><dt>trackId</dt><dd>{track.id}</dd></div>
-              <div><dt>Audio filename</dt><dd>{track.assets.audio?.filename || 'Missing'}</dd></div>
-              <div><dt>{privateRead ? 'Canonical revision' : 'Public revision'}</dt><dd>{track.updatedAt || 'Not exposed'}</dd></div>
-              <div><dt>Read layer</dt><dd>{privateRead ? 'Track Manager v5.12 · bridge v1.4' : 'LaunchPAD public fallback'}</dd></div>
-              <div><dt>Master ID</dt><dd>Not modeled yet</dd></div>
-            </dl>
-          </WorkspacePanel>
-          <WorkspacePanel eyebrow="VERSIONS / ROADMAP" title="Version model reserved">
-            <div className="workspace-note"><strong>No fake version history.</strong><p>The workspace reserves the version slot only. Dedicated masters/version identifiers will remain subordinate to the canonical trackId when the data model is introduced.</p></div>
-          </WorkspacePanel>
+          <WorkspacePanel eyebrow="VERSIONS / CANONICAL" title="Current catalog source"><dl className="workspace-metadata-list"><div><dt>trackId</dt><dd>{track.id}</dd></div><div><dt>Audio filename</dt><dd>{track.assets.audio?.filename || 'Missing'}</dd></div><div><dt>{privateRead ? 'Canonical revision' : 'Public revision'}</dt><dd>{track.updatedAt || 'Not exposed'}</dd></div><div><dt>Read layer</dt><dd>{privateRead ? 'Track Manager v5.13 · bridge v1.5' : 'LaunchPAD public fallback'}</dd></div><div><dt>Master ID</dt><dd>Not modeled yet</dd></div></dl></WorkspacePanel>
+          <WorkspacePanel eyebrow="VERSIONS / ROADMAP" title="Version model reserved"><div className="workspace-note"><strong>No fake version history.</strong><p>Dedicated masters/version identifiers remain reserved for later data modeling and stay subordinate to canonical trackId.</p></div></WorkspacePanel>
         </div>
       )}
 
@@ -297,24 +168,8 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
 
       {section === 'publishing' && (
         <div className="workspace-two-col">
-          <WorkspacePanel eyebrow="PUBLISHING / STATE" title="Catalog visibility">
-            <div className="workspace-publish-state">
-              <b className={track.publishing.catalogVisible ? 'ready' : 'pending'}>{track.publishing.catalogVisible ? 'PUBLISHED' : 'NOT PUBLIC'}</b>
-              <p>Status reported by the {privateRead ? 'canonical Track Manager manifest' : 'LaunchPAD public fallback'}: <strong>{track.status}</strong>.</p>
-            </div>
-            {privateRead && track.quality && (
-              <div className="workspace-facts">
-                <div><span>Quality</span><strong>{track.quality.state || '—'}</strong></div>
-                <div><span>Publishable</span><strong>{track.quality.publishable == null ? '—' : track.quality.publishable ? 'Yes' : 'No'}</strong></div>
-                <div><span>Errors</span><strong>{qualityCounts?.error ?? 0}</strong></div>
-                <div><span>Warnings</span><strong>{qualityCounts?.warning ?? 0}</strong></div>
-              </div>
-            )}
-            {track.publishing.catalogVisible && <a className="ghost-btn" href={studioConfig.launchpadUrl} target="_blank" rel="noreferrer">Open LaunchPAD ↗</a>}
-          </WorkspacePanel>
-          <WorkspacePanel eyebrow="PUBLISHING / GUARD" title="Remaining Phase 4 operations">
-            <div className="workspace-note"><strong>Metadata + existing lyrics writes are now guarded in Studio.</strong><p>Track creation, asset upload/replace/delete and explicit catalog rebuild remain in the protected Track Manager fallback until the final Phase 4 operational bridge lands.</p></div>
-          </WorkspacePanel>
+          <WorkspacePanel eyebrow="PUBLISHING / STATE" title="Catalog visibility"><div className="workspace-publish-state"><b className={track.publishing.catalogVisible ? 'ready' : 'pending'}>{track.publishing.catalogVisible ? 'PUBLISHED' : 'NOT PUBLIC'}</b><p>Status reported by the {privateRead ? 'canonical Track Manager manifest' : 'LaunchPAD public fallback'}: <strong>{track.status}</strong>.</p></div>{privateRead && track.quality && <div className="workspace-facts"><div><span>Quality</span><strong>{track.quality.state || '—'}</strong></div><div><span>Publishable</span><strong>{track.quality.publishable == null ? '—' : track.quality.publishable ? 'Yes' : 'No'}</strong></div><div><span>Errors</span><strong>{qualityCounts?.error ?? 0}</strong></div><div><span>Warnings</span><strong>{qualityCounts?.warning ?? 0}</strong></div></div>}{track.publishing.catalogVisible && <a className="ghost-btn" href={studioConfig.launchpadUrl} target="_blank" rel="noreferrer">Open LaunchPAD ↗</a>}</WorkspacePanel>
+          <WorkspacePanel eyebrow="PHASE 4 / COMPLETE" title="Track Manager integration"><div className="workspace-note phase4-complete-banner"><strong>Principal Track Manager operations are now available from Studio.</strong><p>Create tracks from Catalog, edit metadata and lyrics, manage canonical assets from this workspace, and rebuild the catalog from Administration. The standalone Track Manager remains the protected fallback. Phase 5 is intentionally not started.</p></div></WorkspacePanel>
         </div>
       )}
     </section>

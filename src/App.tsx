@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { resolveAdminMode } from './admin-mode';
+import { CatalogRebuildPanel } from './components/CatalogRebuildPanel';
 import { CatalogView } from './components/CatalogView';
 import { EmptyState } from './components/EmptyState';
 import { ServicePill } from './components/ServicePill';
@@ -24,34 +25,34 @@ const NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
 
 const shellCopy: Record<Exclude<StudioRoute, 'catalog'>, { eyebrow: string; title: string; body: string }> = {
   dashboard: {
-    eyebrow: 'STUDIO / HOME',
-    title: 'Metadata + canonical lyrics writes are online.',
-    body: 'Phase 4B.2C activates the guarded lyrics.txt editor against Track Manager v5.12 / bridge v1.4. The remaining Phase 4 scope is Track creation, asset operations and explicit catalog rebuild.',
+    eyebrow: 'PHASE 4 / COMPLETE',
+    title: 'Track Manager is now integrated into Studio.',
+    body: 'Principal Track Manager operations are available from the Studio workspace: draft creation, metadata, canonical lyrics, asset upload/replace/delete and explicit catalog rebuild. The standalone Track Manager remains the protected fallback.',
   },
   intelligence: {
-    eyebrow: 'SONICTRACE / INTELLIGENCE',
-    title: 'Audio Intelligence boundary ready.',
-    body: 'Track Workspace has a dedicated intelligence section. Analysis persistence remains intentionally gated until Phase 5, which is outside the current delivery scope.',
+    eyebrow: 'SONICTRACE / STOP LINE',
+    title: 'Audio Intelligence remains deliberately unchanged.',
+    body: 'Phase 4 is complete. SonicTrace catalog persistence belongs to Phase 5 and is intentionally not started until new instructions are provided.',
   },
   lyrics: {
-    eyebrow: 'LYRICS / SYNC',
-    title: 'lyrics.txt is now editable canonically.',
-    body: 'Build 12 reads the protected canonical lyrics object, validates against manifest revision + R2 ETag, saves only lyrics.txt and verifies a second canonical reread. A separate .lrc remains optional.',
+    eyebrow: 'LYRICS / CANONICAL',
+    title: 'lyrics.txt is the single canonical source.',
+    body: 'Studio can upload missing lyrics TXT from Assets, edit existing canonical lyrics with manifest+ETag concurrency, and preserve timestamp-derived synchronization. .lrc remains optional compatibility/export only.',
   },
   assets: {
     eyebrow: 'CONTENT / ASSETS',
-    title: 'Canonical assets are visible per track.',
-    body: 'Authenticated reads inspect the canonical Track Manager state, including drafts. Upload/replace/delete is the next and final operational bridge required to finish Phase 4.',
+    title: 'Canonical asset management is operational.',
+    body: 'Per-track Audio, Cover, Thumbnail, Lyrics TXT and Canvas/video can be uploaded or replaced with progress. Individual asset deletion is guarded and confirmed explicitly.',
   },
   publishing: {
     eyebrow: 'CATALOG / PUBLISHING',
-    title: 'Publishing remains protected.',
-    body: 'Metadata and existing lyrics writes are guarded. Track creation, asset management and explicit catalog rebuild remain locked until the final Phase 4 operational bridge.',
+    title: 'Catalog operations stay explicit.',
+    body: 'Metadata, lyrics and assets rebuild the catalog as part of guarded writes. Administration also exposes an explicit standalone catalog rebuild. Published-track quality guards remain authoritative.',
   },
   administration: {
     eyebrow: 'SYSTEM / ADMINISTRATION',
-    title: 'Track Manager fallback stays available.',
-    body: 'Track Manager remains the protected operational fallback while Phase 4 is completed progressively. SonicTrace and LRC Maker remain separate and unchanged.',
+    title: 'Phase 4 operational fallback is preserved.',
+    body: 'The old Track Manager remains available as the protected fallback. The explicit canonical catalog rebuild is also available here. SonicTrace and LRC Maker remain separate and untouched.',
   },
 };
 
@@ -67,11 +68,7 @@ export default function App() {
   const adminMode = useMemo(resolveAdminMode, []);
 
   useEffect(() => {
-    const syncLocation = () => {
-      setRoute(readRoute());
-      setTrackId(readTrackId());
-      setTrackSection(readTrackSection());
-    };
+    const syncLocation = () => { setRoute(readRoute()); setTrackId(readTrackId()); setTrackSection(readTrackSection()); };
     globalThis.addEventListener('hashchange', syncLocation);
     if (!globalThis.location.hash) globalThis.location.hash = routeHref('dashboard');
     return () => globalThis.removeEventListener('hashchange', syncLocation);
@@ -84,126 +81,59 @@ export default function App() {
         if (!active) return;
         setReadSource(payload.readSource);
         const count = payload.canonicalTracks != null ? ` · ${payload.canonicalTracks} public tracks` : '';
-        if (payload.readSource === 'private') {
-          setCatalog({
-            state: 'online',
-            label: 'private read',
-            detail: `Track Manager v${payload.trackManagerVersion || payload.version || '?'} · bridge v${payload.bridgeVersion || '?'}${count}`,
-          });
-        } else {
-          setCatalog({
-            state: 'degraded',
-            label: 'public fallback',
-            detail: `${payload.service || 'LaunchPAD media'}${payload.version != null ? ` v${payload.version}` : ''}${count}`,
-          });
-        }
+        setCatalog(payload.readSource === 'private'
+          ? { state: 'online', label: 'private read', detail: `Track Manager v${payload.trackManagerVersion || payload.version || '?'} · bridge v${payload.bridgeVersion || '?'}${count}` }
+          : { state: 'degraded', label: 'public fallback', detail: `${payload.service || 'LaunchPAD media'}${payload.version != null ? ` v${payload.version}` : ''}${count}` });
       })
       .catch(error => active && setCatalog({ state: 'offline', label: 'offline', detail: String(error) }));
 
     getSonicTraceHealth()
-      .then(payload => active && setSonic({
-        state: payload.status === 'ok' ? 'online' : 'degraded',
-        label: payload.gpu_ready ? 'GPU ready' : (payload.status || 'online'),
-        detail: `${payload.node_name || payload.service || 'SonicTrace'}${payload.version ? ` · ${payload.version}` : ''}`,
-      }))
+      .then(payload => active && setSonic({ state: payload.status === 'ok' ? 'online' : 'degraded', label: payload.gpu_ready ? 'GPU ready' : (payload.status || 'online'), detail: `${payload.node_name || payload.service || 'SonicTrace'}${payload.version ? ` · ${payload.version}` : ''}` }))
       .catch(error => active && setSonic({ state: 'offline', label: 'local offline', detail: String(error) }));
-
     return () => { active = false; };
   }, []);
 
   const navTitle = trackId ? 'Track Workspace' : NAV.find(item => item.route === route)?.label;
-  const readLayerLabel = readSource === 'private' ? 'Private' : readSource === 'public' ? 'Fallback' : '…';
-  const readLayerDetail = readSource === 'private'
-    ? 'Track Manager v5.12 · bridge v1.4'
-    : readSource === 'public'
-      ? 'LaunchPAD public read-only'
-      : 'Checking Access session';
+  const privateRead = readSource === 'private';
+  const readLayerLabel = privateRead ? 'Private' : readSource === 'public' ? 'Fallback' : '…';
+  const readLayerDetail = privateRead ? 'Track Manager v5.13 · bridge v1.5' : readSource === 'public' ? 'LaunchPAD public read-only' : 'Checking Access session';
 
   return (
     <div className="studio-shell">
       <aside className="sidebar">
-        <a className="brand" href={routeHref('dashboard')} aria-label="SHINOBIWAN Studio home">
-          <div className="brand-mark"><span>S</span></div>
-          <div><strong>SHINOBIWAN</strong><small>STUDIO</small></div>
-        </a>
-
-        <nav className="nav-list" aria-label="Studio navigation">
-          {NAV.map(item => (
-            <a key={item.route} className={route === item.route ? 'active' : ''} href={routeHref(item.route)}>
-              <span className="nav-glyph" aria-hidden="true">{item.glyph}</span>
-              <span>{item.label}</span>
-            </a>
-          ))}
-        </nav>
-
-        <div className="sidebar-foot">
-          <span className="phase-tag">PHASE 4B.2C · GUARDED LYRICS SAVE</span>
-          <p>v{studioRelease.version} · Build {studioRelease.build}<br />Metadata + lyrics writes active.</p>
-        </div>
+        <a className="brand" href={routeHref('dashboard')} aria-label="SHINOBIWAN Studio home"><div className="brand-mark"><span>S</span></div><div><strong>SHINOBIWAN</strong><small>STUDIO</small></div></a>
+        <nav className="nav-list" aria-label="Studio navigation">{NAV.map(item => <a key={item.route} className={route === item.route ? 'active' : ''} href={routeHref(item.route)}><span className="nav-glyph" aria-hidden="true">{item.glyph}</span><span>{item.label}</span></a>)}</nav>
+        <div className="sidebar-foot"><span className="phase-tag">PHASE 4 · COMPLETE</span><p>v{studioRelease.version} · Build {studioRelease.build}<br />Track Manager integrated.</p></div>
       </aside>
 
       <main className="main-area">
-        <header className="topbar">
-          <div>
-            <span className="top-kicker">Artist Content & Intelligence Manager</span>
-            <h1>{navTitle}</h1>
-          </div>
-          <div className="top-actions">
-            <ServicePill name="Catalog" status={catalog} />
-            <ServicePill name="SonicTrace" status={sonic} />
-            {adminMode && <span className="admin-badge">ADMIN UI</span>}
-          </div>
-        </header>
+        <header className="topbar"><div><span className="top-kicker">Artist Content & Intelligence Manager</span><h1>{navTitle}</h1></div><div className="top-actions"><ServicePill name="Catalog" status={catalog} /><ServicePill name="SonicTrace" status={sonic} />{adminMode && <span className="admin-badge">ADMIN UI</span>}</div></header>
 
         {route === 'dashboard' && (
           <>
             <section className="hero-grid">
-              <article className="hero-copy panel">
-                <span className="eyebrow">SHINOBIWAN STUDIO / {studioRelease.version} · BUILD {studioRelease.build}</span>
-                <h2>One track.<br /><em>One workspace.</em></h2>
-                <p>The global cockpit for catalog data, SonicTrace intelligence, synchronized lyrics, assets and publishing.</p>
-                <div className="hero-actions">
-                  <a className="primary-btn" href={routeHref('catalog')}>Open Track Workspace <span>→</span></a>
-                  <a className="ghost-btn" href={studioConfig.launchpadUrl} target="_blank" rel="noreferrer">LaunchPAD ↗</a>
-                </div>
-              </article>
-
-              <article className="architecture-card panel">
-                <div className="arch-head"><span>ARCHITECTURE</span><b>TRACK-CENTRIC</b></div>
-                <div className="track-core"><span>TRACK ID</span><strong>canonical slug</strong><small>R2 source of truth</small></div>
-                <div className="arch-branches">
-                  <div><span>CATALOG</span><strong>R2</strong></div>
-                  <div><span>INTELLIGENCE</span><strong>ST</strong></div>
-                  <div><span>LYRICS</span><strong>SYNC</strong></div>
-                </div>
-              </article>
+              <article className="hero-copy panel"><span className="eyebrow">SHINOBIWAN STUDIO / {studioRelease.version} · BUILD {studioRelease.build}</span><h2>One track.<br /><em>One workspace.</em></h2><p>The global cockpit for catalog data, synchronized lyrics, canonical assets and publishing. Phase 4 Track Manager integration is complete.</p><div className="hero-actions"><a className="primary-btn" href={routeHref('catalog')}>Open Track Workspace <span>→</span></a><a className="ghost-btn" href={studioConfig.launchpadUrl} target="_blank" rel="noreferrer">LaunchPAD ↗</a></div></article>
+              <article className="architecture-card panel"><div className="arch-head"><span>ARCHITECTURE</span><b>TRACK-CENTRIC</b></div><div className="track-core"><span>TRACK ID</span><strong>canonical slug</strong><small>R2 source of truth</small></div><div className="arch-branches"><div><span>CATALOG</span><strong>R2</strong></div><div><span>TRACK MANAGER</span><strong>TM</strong></div><div><span>LYRICS</span><strong>TXT</strong></div></div></article>
             </section>
-
-            <section className="status-grid">
-              <article className="metric panel"><span>READ LAYER</span><strong>{readLayerLabel}</strong><small>{readLayerDetail}</small></article>
-              <article className="metric panel"><span>WORKSPACE</span><strong>Live</strong><small>7 contextual sections per track</small></article>
-              <article className="metric panel"><span>LYRICS MODEL</span><strong>TXT</strong><small>Timestamps define synchronized state</small></article>
-              <article className="metric panel"><span>WRITES</span><strong>Metadata + Lyrics</strong><small>Guarded revision + canonical reread</small></article>
-            </section>
-
+            <section className="status-grid"><article className="metric panel"><span>READ LAYER</span><strong>{readLayerLabel}</strong><small>{readLayerDetail}</small></article><article className="metric panel"><span>WORKSPACE</span><strong>Live</strong><small>Create + metadata + lyrics + assets</small></article><article className="metric panel"><span>OPERATIONS</span><strong>TM v5.13</strong><small>Create · Upload · Replace · Delete asset · Rebuild</small></article><article className="metric panel"><span>NEXT</span><strong>STOP</strong><small>Phase 5 waits for new instructions</small></article></section>
             <EmptyState eyebrow={shellCopy.dashboard.eyebrow} title={shellCopy.dashboard.title} body={shellCopy.dashboard.body} />
           </>
         )}
 
-        {route === 'catalog' && (trackId
-          ? <TrackWorkspace trackId={trackId} section={trackSection} />
-          : <CatalogView />)}
+        {route === 'catalog' && (trackId ? <TrackWorkspace trackId={trackId} section={trackSection} /> : <CatalogView />)}
 
         {route !== 'dashboard' && route !== 'catalog' && (
           <>
             <EmptyState eyebrow={shellCopy[route].eyebrow} title={shellCopy[route].title} body={shellCopy[route].body} />
-
             {route === 'administration' && (
-              <section className="tool-grid">
-                <a className="tool-card panel" href={adminService.fallbackUrl} target="_blank" rel="noreferrer"><b>LP</b><span>Track Manager</span><small>Protected fallback / full write surface ↗</small></a>
-                <a className="tool-card panel" href={studioConfig.sonicTraceUrl} target="_blank" rel="noreferrer"><b>ST</b><span>SonicTrace</span><small>Audio Intelligence ↗</small></a>
-                <a className="tool-card panel" href={studioConfig.lrcMakerUrl} target="_blank" rel="noreferrer"><b>LM</b><span>LRC Maker</span><small>Lyrics synchronization ↗</small></a>
-              </section>
+              <>
+                <CatalogRebuildPanel privateRead={privateRead} />
+                <section className="tool-grid">
+                  <a className="tool-card panel" href={adminService.fallbackUrl} target="_blank" rel="noreferrer"><b>LP</b><span>Track Manager</span><small>Protected fallback / legacy full surface ↗</small></a>
+                  <a className="tool-card panel" href={studioConfig.sonicTraceUrl} target="_blank" rel="noreferrer"><b>ST</b><span>SonicTrace</span><small>Phase 5 boundary · unchanged ↗</small></a>
+                  <a className="tool-card panel" href={studioConfig.lrcMakerUrl} target="_blank" rel="noreferrer"><b>LM</b><span>LRC Maker</span><small>Advanced lyrics synchronization ↗</small></a>
+                </section>
+              </>
             )}
           </>
         )}

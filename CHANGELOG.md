@@ -1,5 +1,74 @@
 # SHINOBIWAN Studio Changelog
 
+## 0.7.0 — Build 13 — 2026-08-08
+
+Codename: `phase4-track-manager-complete`
+
+### Roadmap milestone
+
+- closes SHINOBIWAN Studio roadmap **Phase 4 — Track Manager integration**;
+- principal Track Manager operations are now represented directly in Studio;
+- standalone Track Manager remains the protected fallback;
+- Phase 5 is explicitly not started.
+
+### Added — Catalog / create
+
+- canonical draft creation from Catalog;
+- canonical kebab-case trackId/slug generation and validation;
+- duplicate-safe backend create contract;
+- creation forced to `draft`;
+- post-create canonical reread verification;
+- automatic navigation to the new track Assets workspace after verified creation.
+
+### Added — Assets Manager
+
+- one-asset-at-a-time upload/replace for Audio, Cover, Thumbnail, Lyrics TXT and Video/Canvas;
+- missing canonical `lyrics.txt` can now be uploaded from Studio;
+- XHR upload progress while retaining Cloudflare Access credentials;
+- multipart FormData without custom headers/preflight;
+- canonical `expectedUpdatedAt` stale protection;
+- explicit confirmation before upload/replace;
+- individual asset delete with destructive confirmation;
+- canonical reread verification after asset write/delete;
+- published-track quality guard remains authoritative;
+- whole-track deletion remains intentionally absent.
+
+### Added — Catalog management
+
+- explicit standalone canonical catalog rebuild from Administration;
+- user confirmation plus backend `confirm: REBUILD` contract;
+- private catalog reread verification after rebuild.
+
+### Production backend proof
+
+Build 13 consumes the successfully deployed Track Manager `v5.13` / Studio bridge `v1.5` backend:
+
+```text
+source SHA          df75509d89b1ed1477d4b249fab63a6bd41db311
+workflow run        31272655808
+deployment target   admin
+Worker Version ID   781f75f9-776c-4e39-90a7-5cdf34854599
+Access verification protected / HTTP 302 unauthenticated
+public Worker       deploy/record/verify skipped
+```
+
+Worker source validation, bridge guards and Wrangler dry-run passed again immediately before deployment. Public LaunchPAD remained Build 66 / public Worker v2.6.
+
+### Preserved
+
+- metadata validation/save and production proof;
+- canonical lyrics read/validate/save with manifest+ETag guard;
+- `lyrics.txt` as canonical source and timestamp-derived sync;
+- `.lrc` as optional compatibility/export only;
+- public LaunchPAD Build `2026.08.08.66` and public Worker `v2.6`;
+- exact-origin Cloudflare Access boundary;
+- Track Manager legacy fallback;
+- SonicTrace and LRC Maker runtime unchanged.
+
+### Stop line
+
+No Phase 5 code is added. SonicTrace persistence, fingerprints, embeddings, Catalog Intelligence, similarity/duplicate detection and outdated-analysis logic wait for new user instructions.
+
 ## 0.6.0 — Build 12 — 2026-08-08
 
 Codename: `guarded-lyrics-save`
