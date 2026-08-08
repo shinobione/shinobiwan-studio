@@ -1,6 +1,8 @@
 # Phase 4A — Track Manager private read bridge
 
-Studio release: `0.4.0` / Build `5`  
+> Historical baseline document. Phase 4A originally shipped with Studio `0.4.0` / Build `5`, Track Manager `v5.8` and bridge `v1.0`. The current runtime has advanced to Studio `0.4.2` / Build `7` and Track Manager `v5.10` / bridge `v1.2`, while preserving this private-read/public-fallback foundation. Current metadata-validation details live in [`PHASE-4B1A-METADATA-VALIDATION.md`](PHASE-4B1A-METADATA-VALIDATION.md).
+
+Studio release at phase introduction: `0.4.0` / Build `5`  
 Date: 2026-08-08
 
 ## Goal
@@ -16,7 +18,7 @@ private read fails    -> keep LaunchPAD public catalog
 
 No automatic repair, migration or write is triggered by either state.
 
-## Upstream dependency
+## Upstream dependency at phase introduction
 
 The private bridge was implemented first in `shinobione/LaunchPAD-APP`:
 
@@ -29,6 +31,8 @@ The private bridge was implemented first in `shinobione/LaunchPAD-APP`:
 - production private Worker version: `b89fac19-78f8-4d39-abd5-76e93de976ae`
 
 The Cloudflare workflow was launched with target `admin` only. The public Worker was skipped. The workflow did not rebuild `catalog/index.json` and did not mutate R2 media.
+
+Current successor state is documented separately and must not be inferred from these historical version markers.
 
 ## Private bridge routes
 
@@ -47,14 +51,14 @@ Exact browser origin:
 https://shinobione.github.io
 ```
 
-CORS contract:
+Original Phase 4A CORS contract:
 
 - exact origin only;
 - credentials allowed;
 - methods `GET, OPTIONS` only;
 - no browser secret embedded in Studio.
 
-The bridge health response advertises:
+The bridge health response advertised:
 
 ```json
 {
@@ -65,13 +69,15 @@ The bridge health response advertises:
 }
 ```
 
+The current bridge still advertises `write: []`; later Phase 4B.1A adds a separate non-mutating validation capability without changing that production-write state.
+
 Studio rejects the health contract if a write capability unexpectedly appears.
 
-## Studio request behavior
+## Studio request behavior at Build 5
 
-`src/services/admin-api.ts` is the only Track Manager private browser client in Build 5.
+`src/services/admin-api.ts` was the only Track Manager private browser client in Build 5.
 
-Requests use:
+GET requests use:
 
 ```text
 Accept: application/json
@@ -80,9 +86,7 @@ mode: cors
 cache: no-store
 ```
 
-The client intentionally does not set an HTTP method, so browser fetch defaults to GET.
-
-It contains no FormData/write-payload path and exposes no POST/PUT/PATCH/DELETE wrapper.
+The private-read foundation remains in the current Studio runtime. Build 7 additionally contains one separately guarded validation-only POST; see the Phase 4B.1A document for its current transport contract.
 
 ## Data merge strategy
 
@@ -139,31 +143,27 @@ In these cases Studio shows:
 PUBLIC FALLBACK
 ```
 
-and continues using the Build 4-style LaunchPAD public catalog.
+and continues using the LaunchPAD public catalog.
 
 Only if **both** private and public reads fail does Studio surface a catalog/track read error.
 
-## Browser validation caveat
+## Real-browser validation result
 
-The production deployment smoke test confirmed that the private Worker remains protected by Cloudflare Access (`302` without a service token). It did not simulate the user's authenticated browser cookie from GitHub Pages.
+The original deployment smoke test confirmed that the private Worker remained protected by Cloudflare Access (`302` without authentication). Real-browser validation was then completed successfully:
 
-Therefore `PRIVATE READ` must be validated in a real browser after Build 5 deployment.
+1. Track Manager was authenticated normally;
+2. Studio Dashboard reported `PRIVATE READ`;
+3. Catalog reported the private canonical read layer;
+4. Track Workspace reported `PRIVATE READ` and exposed canonical quality state;
+5. public fallback remained available as the safe alternate path.
 
-Expected validation flow:
+This successful Phase 4A browser validation is the foundation on which Phase 4B.1A was allowed to proceed.
 
-1. open/authenticate Track Manager normally;
-2. open SHINOBIWAN Studio;
-3. Dashboard Catalog pill should report `private read`;
-4. Catalog should report `CATALOG / PRIVATE CANONICAL READ`;
-5. drafts, if present, should appear;
-6. a track workspace should show `PRIVATE READ` and Track Manager quality state;
-7. reload and confirm no production write/rebuild occurs.
+A later Build 6 browser test demonstrated a separate lesson: successful authenticated GETs do not guarantee that a preflighted cross-origin POST will traverse Cloudflare Access. That issue is documented and guarded in the Build 7 Phase 4B.1A contract.
 
-If the browser continues to show `PUBLIC FALLBACK`, keep the fallback. Do not weaken Cloudflare Access or broaden authenticated CORS merely to force the private state.
+## Write boundary at Phase 4A
 
-## Write boundary
-
-Phase 4A does **not** expose:
+Phase 4A did **not** expose:
 
 - metadata save;
 - asset upload/replacement/removal;
@@ -174,38 +174,29 @@ Phase 4A does **not** expose:
 - LRC save;
 - SonicTrace persistence.
 
-Those operations remain in their existing tools/backend paths until separate phases are designed and proven.
+The current Build 7 still exposes none of those production writes. It adds metadata validation only.
 
-## Regression guard
+## Regression evolution
 
-`npm run check:private-read` verifies that:
+The original Build 5 regression guard verified the GET-only private bridge and public fallback. That guard has since evolved with the product:
 
-- the browser client uses credentials and CORS;
-- the three GET bridge routes remain wired;
-- the bridge health write capability is checked;
-- `writesEnabled` remains false;
-- the admin client contains no `method:` override;
-- the admin client contains no write-payload plumbing;
-- public fallback remains present;
-- release metadata remains `0.4.0` / Build `5`;
-- production build runs this guard before TypeScript/Vite compilation.
+- Build 6 allowed exactly one non-mutating metadata-validation POST;
+- Build 7 additionally enforces the CORS-safelisted no-preflight transport for that validation POST;
+- `writesEnabled: false` and public fallback remain protected;
+- PUT/PATCH/DELETE and production mutation routes remain forbidden in the Studio client.
 
 ## Rollback
 
-Preferred rollback is a normal revert of the Studio Build 5 PR.
-
-That restores Studio Build 4 public-read behavior without touching:
-
-- LaunchPAD Build 65;
-- Track Manager v5.8;
-- the deployed additive private bridge;
-- public Worker v2.6;
-- R2;
-- SonicTrace;
-- LRC Maker.
-
-Last-resort Studio restoration reference:
+The historical Build 5 rollback reference remains:
 
 ```text
 safety/pre-integration-20260808-1048
 ```
+
+For the current Build 7 / v5.10 boundary, prefer the newer pre-hotfix references:
+
+```text
+safety/pre-cors-hotfix-20260808-1540
+```
+
+Rollback remains repository-scoped: Studio can be reverted independently, and a Track Manager backend rollback uses an admin-only Worker deployment. Neither rollback should require R2 mutation for this validation-only phase.
