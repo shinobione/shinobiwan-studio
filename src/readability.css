@@ -1,5 +1,5 @@
 /* Global readability floor for microcopy.
-   Any Studio text that was 8px or smaller is promoted to 11px.
+   Any Studio microcopy must remain at least 11px.
    Imported last so the rule also wins over responsive/mobile overrides. */
 :root {
   --studio-micro-readable: 11px;
@@ -38,5 +38,20 @@
 .workspace-asset-meta a,
 .workspace-asset-meta b,
 .workspace-footnote {
+  font-size: var(--studio-micro-readable);
+}
+
+/* Phase 5 — SonicTrace / Catalog Intelligence */
+.sonic-status-grid span,
+.sonic-alert,
+.sonic-layers span,
+.sonic-warnings,
+.sonic-history h4,
+.sonic-history span,
+.sonic-history strong,
+.intelligence-track-list small,
+.similarity-list span,
+.cluster-grid span,
+.cluster-grid small {
   font-size: var(--studio-micro-readable);
 }
