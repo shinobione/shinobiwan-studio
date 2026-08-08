@@ -96,7 +96,8 @@ function isJsonResponse(response: Response): boolean {
 
 async function requireManage(capability: Phase4ManageCapability): Promise<void> {
   const health = await getAdminBridgeHealth();
-  const manage = health.capabilities?.manage ?? [];
+  const capabilities = health.capabilities as (typeof health.capabilities & { manage?: string[] }) | undefined;
+  const manage = capabilities?.manage ?? [];
   const unexpected = manage.filter(item => !REQUIRED_MANAGE_CAPABILITIES.has(item));
   if (unexpected.length) throw new Phase4AdminError(`Track Manager advertises unexpected manage capability: ${unexpected.join(', ')}.`);
   if (!manage.includes(capability)) throw new Phase4AdminError(`Track Manager does not advertise ${capability}. This operation stays locked until bridge v1.5 is active.`);
