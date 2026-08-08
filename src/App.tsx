@@ -4,6 +4,7 @@ import { CatalogView } from './components/CatalogView';
 import { EmptyState } from './components/EmptyState';
 import { ServicePill } from './components/ServicePill';
 import { TrackWorkspace } from './components/TrackWorkspace';
+import { studioRelease } from './release';
 import { readRoute, readTrackId, readTrackSection, routeHref } from './router';
 import { adminService } from './services/admin-api';
 import { getCatalogHealth } from './services/catalog-api';
@@ -25,17 +26,17 @@ const shellCopy: Record<Exclude<StudioRoute, 'catalog'>, { eyebrow: string; titl
   dashboard: {
     eyebrow: 'STUDIO / HOME',
     title: 'Track Workspace is online.',
-    body: 'Phase 3 turns every published catalog track into a read-only workspace with deterministic Content Health and dedicated operational sections.',
+    body: 'Phase 3 provides a read-only workspace per track. Build 4 also treats timestamped canonical lyrics as synchronized content without requiring a duplicate .lrc file.',
   },
   intelligence: {
     eyebrow: 'SONICTRACE / INTELLIGENCE',
     title: 'Audio Intelligence boundary ready.',
-    body: 'Track Workspace now has a dedicated intelligence section. Analysis persistence remains intentionally gated until Phase 5.',
+    body: 'Track Workspace has a dedicated intelligence section. Analysis persistence remains intentionally gated until Phase 5.',
   },
   lyrics: {
-    eyebrow: 'LYRICS / LRC',
-    title: 'Lyrics workspace boundary ready.',
-    body: 'Each track can now expose catalog lyrics in context. The real LRC bridge and R2 sidecar workflow remain Phase 6 work.',
+    eyebrow: 'LYRICS / SYNC',
+    title: 'Lyrics synchronization is content-driven.',
+    body: 'A timestamped canonical lyrics.txt is already synchronized. LRC Maker remains the editing/synchronization engine during migration; a separate .lrc sidecar is optional, not required.',
   },
   assets: {
     eyebrow: 'CONTENT / ASSETS',
@@ -45,7 +46,7 @@ const shellCopy: Record<Exclude<StudioRoute, 'catalog'>, { eyebrow: string; titl
   publishing: {
     eyebrow: 'CATALOG / PUBLISHING',
     title: 'Publishing status is visible, writes stay protected.',
-    body: 'Each track now has a Publishing section, while rebuild and publication writes remain in Track Manager until Phase 4.',
+    body: 'Each track has a Publishing section, while rebuild and publication writes remain in Track Manager until Phase 4.',
   },
   administration: {
     eyebrow: 'SYSTEM / ADMINISTRATION',
@@ -116,8 +117,8 @@ export default function App() {
         </nav>
 
         <div className="sidebar-foot">
-          <span className="phase-tag">PHASE 3 · WORKSPACE</span>
-          <p>Track-centric context.<br />Production writes locked.</p>
+          <span className="phase-tag">PHASE 3.1 · SYNCED LYRICS</span>
+          <p>v{studioRelease.version} · Build {studioRelease.build}<br />Production writes locked.</p>
         </div>
       </aside>
 
@@ -138,7 +139,7 @@ export default function App() {
           <>
             <section className="hero-grid">
               <article className="hero-copy panel">
-                <span className="eyebrow">SHINOBIWAN STUDIO / 0.3.1</span>
+                <span className="eyebrow">SHINOBIWAN STUDIO / {studioRelease.version} · BUILD {studioRelease.build}</span>
                 <h2>One track.<br /><em>One workspace.</em></h2>
                 <p>The global cockpit for catalog data, SonicTrace intelligence, synchronized lyrics, assets and publishing.</p>
                 <div className="hero-actions">
@@ -153,7 +154,7 @@ export default function App() {
                 <div className="arch-branches">
                   <div><span>CATALOG</span><strong>R2</strong></div>
                   <div><span>INTELLIGENCE</span><strong>ST</strong></div>
-                  <div><span>LYRICS</span><strong>LRC</strong></div>
+                  <div><span>LYRICS</span><strong>SYNC</strong></div>
                 </div>
               </article>
             </section>
@@ -161,7 +162,7 @@ export default function App() {
             <section className="status-grid">
               <article className="metric panel"><span>CATALOG</span><strong>{catalog.state === 'online' ? catalog.label : '—'}</strong><small>LaunchPAD public read layer</small></article>
               <article className="metric panel"><span>WORKSPACE</span><strong>Live</strong><small>7 contextual sections per track</small></article>
-              <article className="metric panel"><span>CONTENT HEALTH</span><strong>V1</strong><small>Deterministic completeness score</small></article>
+              <article className="metric panel"><span>CONTENT HEALTH</span><strong>V1.1</strong><small>Timestamp-aware lyrics completeness</small></article>
               <article className="metric panel"><span>WRITES</span><strong>Locked</strong><small>Phase 4 security gate</small></article>
             </section>
 
