@@ -20,6 +20,7 @@ import type {
   StudioTrackDetail,
   StudioTrackQuality,
 } from '../types/studio';
+import { getSonicTraceAnalysisState, getSonicTraceCatalog } from './sonictrace-api';
 
 interface PublicHealth {
   ok?: boolean;
@@ -222,6 +223,8 @@ function mapPrivateAsset(
       filename: state.filename || publicAsset.filename,
       contentType: state.contentType || publicAsset.contentType || null,
       size: typeof state.size === 'number' ? state.size : publicAsset.size || null,
+      uploaded: state.uploaded || publicAsset.uploaded || null,
+      etag: state.etag || publicAsset.etag || null,
     };
   }
   const filename = state.filename || `${kind}.asset`;
@@ -231,10 +234,11 @@ function mapPrivateAsset(
     filename,
     contentType: state.contentType || null,
     size: typeof state.size === 'number' ? state.size : null,
-    uploaded: null,
+    uploaded: state.uploaded || null,
     url,
     fullUrl: url,
     optimized: false,
+    etag: state.etag || null,
   };
 }
 
@@ -432,12 +436,20 @@ export async function getCatalogHealth(): Promise<CatalogHealth> {
 
 export async function getCatalogTracks(): Promise<StudioTrack[]> {
   const publicResultPromise = settle(getPublicTracks());
+  const intelligencePromise = settle(getSonicTraceCatalog());
   try {
     const privatePayload = await getAdminTracks();
     const publicResult = await publicResultPromise;
     const publicTracks = publicResult.ok ? publicResult.value : [];
     const publicById = new Map(publicTracks.map(track => [track.id, track]));
-    return (privatePayload.tracks || []).map(item => mapPrivateSummary(item, item.slug ? publicById.get(item.slug) || null : null));
+    const intelligenceResult = await intelligencePromise;
+    const intelligence = new Map((intelligenceResult.ok ? intelligenceResult.value : []).map(entry => [entry.trackId, entry]));
+    return (privatePayload.tracks || []).map(item => {
+      const track = mapPrivateSummary(item, item.slug ? publicById.get(item.slug) || null : null);
+      const analysis = intelligence.get(track.id);
+      if (analysis) track.audioIntelligence = { available: true, outdated: analysis.outdated, latestAnalysisId: analysis.analysisId };
+      return track;
+    });
   } catch (adminError) {
     const publicResult = await publicResultPromise;
     if (publicResult.ok) return publicResult.value;
@@ -454,7 +466,18 @@ export async function getCatalogTrack(trackId: string): Promise<StudioTrackDetai
     const publicTrack = publicResult.ok ? publicResult.value : null;
     const privateTrack = privatePayload.track;
     if (!privateTrack?.manifest) throw new Error('Private Track Manager response is missing its manifest.');
-    return privateManifestTrack(privateTrack.manifest, privateTrack.assets, privateTrack.quality, publicTrack);
+    const mapped = privateManifestTrack(privateTrack.manifest, privateTrack.assets, privateTrack.quality, publicTrack);
+    try {
+      const analysis = await getSonicTraceAnalysisState(trackId);
+      mapped.audioIntelligence = {
+        available: Boolean(analysis.latest),
+        outdated: analysis.outdated,
+        latestAnalysisId: analysis.latest?.analysisId || null,
+      };
+    } catch {
+      // The additive sidecar must never make the canonical track read unavailable.
+    }
+    return mapped;
   } catch (adminError) {
     const publicResult = await publicResultPromise;
     if (publicResult.ok) return publicResult.value;

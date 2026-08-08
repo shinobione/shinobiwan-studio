@@ -34,6 +34,63 @@ export interface StudioAsset {
   url: string;
   fullUrl?: string | null;
   optimized?: boolean;
+  etag?: string | null;
+}
+
+export interface SonicTraceSourceVersion {
+  kind: string;
+  value: string;
+  sizeBytes: number;
+  filename?: string | null;
+  uploadedAt?: string | null;
+}
+
+export interface SonicTraceEmbedding {
+  model: string;
+  dimension: 512;
+  vector: number[];
+}
+
+export interface SonicTraceAnalysis {
+  schemaVersion: 1;
+  analysisId: string;
+  trackId: string;
+  sourceVersion: SonicTraceSourceVersion;
+  analyzedAt: string;
+  engineVersion: Record<string, unknown>;
+  dsp: Record<string, unknown> | null;
+  mastering: Record<string, unknown> | null;
+  neural: Record<string, unknown> | null;
+  embedding: SonicTraceEmbedding | null;
+  structure: Record<string, unknown> | null;
+  semanticSummary: Record<string, unknown> | null;
+  stemsSummary: Record<string, unknown> | null;
+  provenance: Record<string, unknown>;
+  warnings: string[];
+  privacy: { audioStored: false; temporaryProcessingOnly: true };
+}
+
+export interface SonicTraceAnalysisState {
+  ok?: boolean;
+  trackId: string;
+  latest: SonicTraceAnalysis | null;
+  history: SonicTraceAnalysis[];
+  currentSourceVersion: SonicTraceSourceVersion | null;
+  outdated: boolean;
+}
+
+export interface SonicTraceCatalogEntry {
+  trackId: string;
+  title: string;
+  analysisId: string;
+  analyzedAt: string;
+  sourceVersion: SonicTraceSourceVersion;
+  currentSourceVersion: SonicTraceSourceVersion | null;
+  outdated: boolean;
+  embedding: SonicTraceEmbedding | null;
+  semanticSummary: Record<string, unknown> | null;
+  mastering: Record<string, unknown> | null;
+  structure: Record<string, unknown> | null;
 }
 
 export interface StudioTrackQuality {

@@ -2,10 +2,10 @@
 
 Artist Content & Intelligence Manager.
 
-**Release:** `0.7.0`  
-**Build:** `13`  
-**Milestone:** Roadmap Phase 4 — Track Manager integration complete  
-**Stop line:** Phase 5 is not started.
+**Release:** `0.8.0`
+**Build:** `14`
+**Milestone:** Roadmap Phase 5 — SonicTrace + Catalog Intelligence complete
+**Stop line:** Do not begin Phase 6 without explicit authorization.
 
 ## Product role
 
@@ -21,7 +21,30 @@ Core rules:
 - LRC Maker stays the advanced lyrics editing/synchronization engine;
 - Studio degrades safely to public read-only behavior when private Track Manager access is unavailable.
 
-## Roadmap Phase 4 status
+## Roadmap Phase 5 status
+
+Build 14 closes the Phase 5 criterion:
+
+> A track can be analyzed from Studio and durably recover its SonicTrace profile in its workspace.
+
+Implemented:
+
+- canonical `SonicTraceAnalysis` schema v1;
+- canonical R2 source revision/ETag fingerprint;
+- one-upload SonicTrace coordinator endpoint;
+- Browser DSP retained when the Deep Audio node is offline;
+- explicit review before save;
+- guarded `latest.json` + append-only history persistence;
+- no retained/copy WAV in SonicTrace persistence;
+- re-scan and outdated detection;
+- 512D CLAP embedding index;
+- cross-track similarity and deterministic clusters;
+- analysis/master source-version history and comparison;
+- partial-layer warnings without breaking the Studio workspace.
+
+See [`docs/PHASE-5-SONICTRACE-COMPLETE.md`](docs/PHASE-5-SONICTRACE-COMPLETE.md).
+
+## Roadmap Phase 4 status (preserved)
 
 Build 13 closes the roadmap criterion:
 
@@ -226,18 +249,16 @@ The final management code is protected by:
 
 We do **not** replace or delete a production WAV/cover merely to manufacture a smoke test. A deliberately disposable draft can be used later if deeper destructive-media smoke testing is desired.
 
-## Phase 5 stop line
+## Phase 6 stop line
 
-**STOP after Build 13.**
+**STOP after Build 14.**
 
 Do not begin:
 
-- SonicTrace result persistence;
-- embeddings/fingerprints;
-- Catalog Intelligence;
-- similarity / duplicates;
-- outdated-analysis engine;
-- any other Phase 5 item.
+- LRC Maker context integration;
+- direct LRC save to R2;
+- embedded LRC editor extraction;
+- any other Phase 6 item.
 
 Wait for new user instructions.
 

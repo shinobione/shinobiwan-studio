@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { resolveAdminMode } from './admin-mode';
 import { CatalogRebuildPanel } from './components/CatalogRebuildPanel';
 import { CatalogView } from './components/CatalogView';
+import { CatalogIntelligenceView } from './components/CatalogIntelligenceView';
 import { EmptyState } from './components/EmptyState';
 import { ServicePill } from './components/ServicePill';
 import { TrackWorkspace } from './components/TrackWorkspace';
@@ -25,14 +26,14 @@ const NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
 
 const shellCopy: Record<Exclude<StudioRoute, 'catalog'>, { eyebrow: string; title: string; body: string }> = {
   dashboard: {
-    eyebrow: 'PHASE 4 / COMPLETE',
-    title: 'Track Manager is now integrated into Studio.',
-    body: 'Principal Track Manager operations are available from the Studio workspace: draft creation, metadata, canonical lyrics, asset upload/replace/delete and explicit catalog rebuild. The standalone Track Manager remains the protected fallback.',
+    eyebrow: 'PHASE 5 / COMPLETE',
+    title: 'SonicTrace is now catalog-linked.',
+    body: 'Workspace analysis, review, R2 persistence, re-scan, outdated detection, 512D similarity, clusters and analysis history now share the canonical trackId.',
   },
   intelligence: {
-    eyebrow: 'SONICTRACE / STOP LINE',
-    title: 'Audio Intelligence remains deliberately unchanged.',
-    body: 'Phase 4 is complete. SonicTrace catalog persistence belongs to Phase 5 and is intentionally not started until new instructions are provided.',
+    eyebrow: 'SONICTRACE / PHASE 5',
+    title: 'Audio Intelligence is catalog-linked.',
+    body: 'SonicTrace analyses are persisted as private R2 sidecars under the canonical trackId, with 512D similarity, clusters, history and source-version freshness checks.',
   },
   lyrics: {
     eyebrow: 'LYRICS / CANONICAL',
@@ -96,14 +97,14 @@ export default function App() {
   const navTitle = trackId ? 'Track Workspace' : NAV.find(item => item.route === route)?.label;
   const privateRead = readSource === 'private';
   const readLayerLabel = privateRead ? 'Private' : readSource === 'public' ? 'Fallback' : '…';
-  const readLayerDetail = privateRead ? 'Track Manager v5.13 · bridge v1.5' : readSource === 'public' ? 'LaunchPAD public read-only' : 'Checking Access session';
+  const readLayerDetail = privateRead ? 'Track Manager v5.14 · bridge v1.6' : readSource === 'public' ? 'LaunchPAD public read-only' : 'Checking Access session';
 
   return (
     <div className="studio-shell">
       <aside className="sidebar">
         <a className="brand" href={routeHref('dashboard')} aria-label="SHINOBIWAN Studio home"><div className="brand-mark"><span>S</span></div><div><strong>SHINOBIWAN</strong><small>STUDIO</small></div></a>
         <nav className="nav-list" aria-label="Studio navigation">{NAV.map(item => <a key={item.route} className={route === item.route ? 'active' : ''} href={routeHref(item.route)}><span className="nav-glyph" aria-hidden="true">{item.glyph}</span><span>{item.label}</span></a>)}</nav>
-        <div className="sidebar-foot"><span className="phase-tag">PHASE 4 · COMPLETE</span><p>v{studioRelease.version} · Build {studioRelease.build}<br />Track Manager integrated.</p></div>
+        <div className="sidebar-foot"><span className="phase-tag">PHASE 5 · COMPLETE</span><p>v{studioRelease.version} · Build {studioRelease.build}<br />SonicTrace catalog-linked.</p></div>
       </aside>
 
       <main className="main-area">
@@ -112,17 +113,19 @@ export default function App() {
         {route === 'dashboard' && (
           <>
             <section className="hero-grid">
-              <article className="hero-copy panel"><span className="eyebrow">SHINOBIWAN STUDIO / {studioRelease.version} · BUILD {studioRelease.build}</span><h2>One track.<br /><em>One workspace.</em></h2><p>The global cockpit for catalog data, synchronized lyrics, canonical assets and publishing. Phase 4 Track Manager integration is complete.</p><div className="hero-actions"><a className="primary-btn" href={routeHref('catalog')}>Open Track Workspace <span>→</span></a><a className="ghost-btn" href={studioConfig.launchpadUrl} target="_blank" rel="noreferrer">LaunchPAD ↗</a></div></article>
+              <article className="hero-copy panel"><span className="eyebrow">SHINOBIWAN STUDIO / {studioRelease.version} · BUILD {studioRelease.build}</span><h2>One track.<br /><em>One workspace.</em></h2><p>The global cockpit for catalog data, canonical assets and durable SonicTrace Audio Intelligence.</p><div className="hero-actions"><a className="primary-btn" href={routeHref('catalog')}>Open Track Workspace <span>→</span></a><a className="ghost-btn" href={routeHref('intelligence')}>Catalog Intelligence →</a></div></article>
               <article className="architecture-card panel"><div className="arch-head"><span>ARCHITECTURE</span><b>TRACK-CENTRIC</b></div><div className="track-core"><span>TRACK ID</span><strong>canonical slug</strong><small>R2 source of truth</small></div><div className="arch-branches"><div><span>CATALOG</span><strong>R2</strong></div><div><span>TRACK MANAGER</span><strong>TM</strong></div><div><span>LYRICS</span><strong>TXT</strong></div></div></article>
             </section>
-            <section className="status-grid"><article className="metric panel"><span>READ LAYER</span><strong>{readLayerLabel}</strong><small>{readLayerDetail}</small></article><article className="metric panel"><span>WORKSPACE</span><strong>Live</strong><small>Create + metadata + lyrics + assets</small></article><article className="metric panel"><span>OPERATIONS</span><strong>TM v5.13</strong><small>Create · Upload · Replace · Delete asset · Rebuild</small></article><article className="metric panel"><span>NEXT</span><strong>STOP</strong><small>Phase 5 waits for new instructions</small></article></section>
+            <section className="status-grid"><article className="metric panel"><span>READ LAYER</span><strong>{readLayerLabel}</strong><small>{readLayerDetail}</small></article><article className="metric panel"><span>WORKSPACE</span><strong>Live</strong><small>Catalog + operations + Audio Intelligence</small></article><article className="metric panel"><span>SONICTRACE</span><strong>V2-E</strong><small>R2 history · 512D · freshness</small></article><article className="metric panel"><span>PHASE</span><strong>5</strong><small>Complete · stop before Phase 6</small></article></section>
             <EmptyState eyebrow={shellCopy.dashboard.eyebrow} title={shellCopy.dashboard.title} body={shellCopy.dashboard.body} />
           </>
         )}
 
         {route === 'catalog' && (trackId ? <TrackWorkspace trackId={trackId} section={trackSection} /> : <CatalogView />)}
 
-        {route !== 'dashboard' && route !== 'catalog' && (
+        {route === 'intelligence' && <CatalogIntelligenceView />}
+
+        {route !== 'dashboard' && route !== 'catalog' && route !== 'intelligence' && (
           <>
             <EmptyState eyebrow={shellCopy[route].eyebrow} title={shellCopy[route].title} body={shellCopy[route].body} />
             {route === 'administration' && (
@@ -130,7 +133,7 @@ export default function App() {
                 <CatalogRebuildPanel privateRead={privateRead} />
                 <section className="tool-grid">
                   <a className="tool-card panel" href={adminService.fallbackUrl} target="_blank" rel="noreferrer"><b>LP</b><span>Track Manager</span><small>Protected fallback / legacy full surface ↗</small></a>
-                  <a className="tool-card panel" href={studioConfig.sonicTraceUrl} target="_blank" rel="noreferrer"><b>ST</b><span>SonicTrace</span><small>Phase 5 boundary · unchanged ↗</small></a>
+                  <a className="tool-card panel" href={studioConfig.sonicTraceUrl} target="_blank" rel="noreferrer"><b>ST</b><span>SonicTrace</span><small>Standalone engine fallback ↗</small></a>
                   <a className="tool-card panel" href={studioConfig.lrcMakerUrl} target="_blank" rel="noreferrer"><b>LM</b><span>LRC Maker</span><small>Advanced lyrics synchronization ↗</small></a>
                 </section>
               </>

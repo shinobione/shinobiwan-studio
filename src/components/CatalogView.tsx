@@ -92,7 +92,7 @@ export function CatalogView() {
           <span className="eyebrow">{privateRead ? 'CATALOG / PRIVATE CANONICAL' : 'CATALOG / PUBLIC FALLBACK'}</span>
           <h2>One catalog. Every track.</h2>
           <p>{privateRead
-            ? `Track Manager v5.13 / bridge v1.5 is the canonical admin backend. Draft creation, metadata, lyrics, assets and catalog operations are scoped through Studio.${draftCount ? ` ${draftCount} draft${draftCount === 1 ? '' : 's'} currently included.` : ''}`
+            ? `Track Manager v5.14 / bridge v1.6 is the canonical admin backend. Draft creation, metadata, lyrics, assets, SonicTrace sidecars and catalog operations are scoped through Studio.${draftCount ? ` ${draftCount} draft${draftCount === 1 ? '' : 's'} currently included.` : ''}`
             : 'Cloudflare Access private read is unavailable in this browser session, so Studio is safely using the proven LaunchPAD public read-only catalog. All mutations remain locked.'}</p>
         </div>
         <div className="catalog-kpis" aria-label="Catalog summary">
