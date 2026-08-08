@@ -1,6 +1,6 @@
 export const studioRelease = {
-  version: '0.4.0',
-  build: 5,
-  codename: 'private-read-bridge',
+  version: '0.4.1',
+  build: 6,
+  codename: 'metadata-validation-preview',
   releasedAt: '2026-08-08',
 } as const;
