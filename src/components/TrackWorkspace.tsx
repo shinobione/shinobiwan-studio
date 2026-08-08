@@ -112,6 +112,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
   }
 
   const artwork = fullArtwork(track);
+  const syncedLyrics = track.timestampsAvailable || Boolean(track.assets.lyricsLrc);
   const healthStyle = { '--health-angle': `${health.total * 3.6}deg` } as CSSProperties;
 
   return (
@@ -171,7 +172,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
               <div><span>Key</span><strong>{track.key || '—'}</strong></div>
               <div><span>Duration</span><strong>{formatDuration(track.duration)}</strong></div>
               <div><span>Language</span><strong>{track.languages.join(', ') || '—'}</strong></div>
-              <div><span>Lyrics</span><strong>{track.assets.lyricsTxt ? 'TXT ready' : 'Missing'}</strong></div>
+              <div><span>Lyrics</span><strong>{syncedLyrics ? 'Synced' : track.assets.lyricsTxt ? 'TXT ready' : 'Missing'}</strong></div>
               <div><span>Canvas</span><strong>{track.assets.video ? 'Ready' : 'Missing'}</strong></div>
             </div>
             {track.assets.audio && <audio className="workspace-audio" controls preload="metadata" src={track.assets.audio.url} />}
@@ -220,12 +221,16 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
 
       {section === 'lyrics' && (
         <div className="workspace-two-col workspace-lyrics-grid">
-          <WorkspacePanel eyebrow="LYRICS / STATE" title="Lyrics assets">
+          <WorkspacePanel eyebrow="LYRICS / STATE" title="Lyrics synchronization">
             <div className="workspace-facts">
-              <div><span>TXT</span><strong>{track.assets.lyricsTxt ? 'Available' : 'Missing'}</strong></div>
+              <div><span>Source</span><strong>{track.assets.lyricsTxt ? 'lyrics.txt' : 'Missing'}</strong></div>
               <div><span>Timestamp data</span><strong>{track.timestampsAvailable ? 'Detected' : 'No'}</strong></div>
-              <div><span>LRC sidecar</span><strong>{track.assets.lyricsLrc ? 'Available' : 'Phase 6'}</strong></div>
+              <div><span>Sync status</span><strong>{syncedLyrics ? 'Ready' : 'Not synced'}</strong></div>
               <div><span>Segments</span><strong>{track.lyricSegments.length}</strong></div>
+            </div>
+            <div className="workspace-note workspace-tool-link">
+              <strong>{track.assets.lyricsLrc ? 'Optional .lrc sidecar detected.' : 'No separate .lrc file required.'}</strong>
+              <p>Synchronization is derived from timestamp data. A timestamped canonical lyrics.txt is already considered synchronized.</p>
             </div>
             <a className="ghost-btn workspace-tool-link" href={studioConfig.lrcMakerUrl} target="_blank" rel="noreferrer">Open LRC Maker ↗</a>
           </WorkspacePanel>
@@ -242,10 +247,9 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
             <AssetRow label="Cover" asset={track.assets.cover} />
             <AssetRow label="Thumbnail" asset={track.assets.thumbnail} />
             <AssetRow label="Lyrics TXT" asset={track.assets.lyricsTxt} />
-            <AssetRow label="Lyrics LRC" asset={track.assets.lyricsLrc} />
             <AssetRow label="Video / Canvas" asset={track.assets.video} />
           </div>
-          <p className="workspace-footnote">Read-only projection from the canonical catalog. Replace/upload actions stay in Track Manager until Phase 4.</p>
+          <p className="workspace-footnote">Read-only projection from the canonical catalog. Synchronized lyrics are content-derived from timestamp data; a separate .lrc sidecar is optional. Replace/upload actions stay in Track Manager until Phase 4.</p>
         </WorkspacePanel>
       )}
 
