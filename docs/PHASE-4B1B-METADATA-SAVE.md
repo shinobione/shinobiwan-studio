@@ -1,11 +1,11 @@
 # Phase 4B.1B — Guarded Metadata Save
 
-Studio release: `0.5.0` / Build `9` / codename `guarded-metadata-save`  
+Studio release: `0.5.1` / Build `10` / codename `metadata-save-production-proven`  
 Date: 2026-08-08
 
-This is the first SHINOBIWAN Studio release allowed to mutate canonical production state.
+Phase 4B.1B is the first SHINOBIWAN Studio capability allowed to mutate canonical production state. Its scope remains intentionally narrow: **metadata only**.
 
-The scope is intentionally narrow: **metadata only**.
+Build 10 does not add another write path. It records the successful production proof of the Build 9 contract and preserves all existing guards.
 
 ## Production dependency
 
@@ -15,7 +15,7 @@ Public LaunchPAD remains unchanged:
 - release `studio-metadata-validation-20260808`;
 - public Worker `v2.6`.
 
-Protected Track Manager backend already deployed before Build 9:
+Protected Track Manager backend:
 
 - Track Manager `v5.11`;
 - Studio bridge `v1.3`;
@@ -26,7 +26,7 @@ Protected Track Manager backend already deployed before Build 9:
 - Cloudflare Access still protected (`302` unauthenticated smoke test);
 - public Worker deployment steps were skipped.
 
-Studio Build 8 was deployed first and proven `PRIVATE READ` against v5.11 before this client write was introduced.
+Studio Build 9 merge SHA: `4737309b0d5c2814744d1ee999ce904af71ffcb7`.
 
 ## Allowed production write
 
@@ -54,15 +54,13 @@ Body:
 }
 ```
 
-The existing validation endpoint remains separate and non-mutating:
+The validation endpoint remains separate and non-mutating:
 
 ```text
 POST /api/studio/tracks/<trackId>/metadata/validate
 ```
 
 ## Required user flow
-
-Build 9 deliberately does not offer a one-click save.
 
 ```text
 Edit locally
@@ -84,8 +82,6 @@ Changing any form field invalidates the previous validation preview and removes 
 
 `expectedUpdatedAt` is mandatory for both validate and save.
 
-A save is enabled only while the revision returned by validation still equals the revision currently loaded in the Track Workspace.
-
 If another process changes the manifest first, Track Manager returns:
 
 ```text
@@ -102,7 +98,7 @@ If the resulting manifest status is `published`, `quality.publishable` must be t
 
 ## Media isolation
 
-Build 9 must not expose or call any mutation path for:
+Build 10 does not expose or call mutation paths for:
 
 - audio;
 - cover;
@@ -114,14 +110,9 @@ Build 9 must not expose or call any mutation path for:
 - standalone publication shortcut;
 - standalone catalog rebuild.
 
-The backend metadata module preserves:
+The backend metadata module preserves canonical slug, asset filenames, migration provenance and `createdAt`.
 
-- canonical slug / `trackId`;
-- asset filenames;
-- migration provenance;
-- `createdAt`.
-
-The only R2 write triggered by a successful metadata change is the canonical manifest plus the required canonical `catalog/index.json` rebuild.
+The only R2 writes triggered by a successful metadata change are the canonical manifest plus the required canonical `catalog/index.json` rebuild.
 
 ## Rollback behavior
 
@@ -133,11 +124,11 @@ If the manifest was written but catalog rebuild or post-write verification fails
 2. rebuild the catalog from the restored state;
 3. return `SAVE_ROLLBACK` with rollback status.
 
-Studio treats `SAVE_ROLLBACK` as a stop condition. The user must verify Track Manager before retrying.
+Studio treats `SAVE_ROLLBACK` as a stop condition.
 
 ## Browser-side verification
 
-A successful backend response is not the end of the Build 9 flow.
+A successful backend response is not the end of the flow.
 
 Studio performs `GET /api/studio/tracks/<trackId>` again and compares the canonical `updatedAt` with the saved revision.
 
@@ -149,49 +140,73 @@ CANONICAL REREAD · VERIFIED
 
 or a warning requiring reload before another edit.
 
-The Track Workspace then refreshes through the normal private-first catalog service so the rest of the UI receives the new canonical metadata.
+## Production proof completed
+
+The first real write was intentionally harmless and reversible on `soft-addiction`.
+
+### Smoke write
+
+- field: `keyConfidence`;
+- previous state: empty/null;
+- temporary value: `0.01`;
+- validation reported exactly one changed field: `keyConfidence`;
+- quality state: `ready`;
+- publishable: `Yes`;
+- errors/warnings after temporary value: `0 / 1`;
+- saved canonical revision: `2026-08-08T16:21:15.503Z`;
+- catalog rebuilt: `Yes`;
+- browser reread: `Verified`;
+- media objects: untouched.
+
+### Restoration write
+
+- `keyConfidence` restored to the original empty/null state;
+- validation again reported exactly one changed field: `keyConfidence`;
+- final quality state: `ready`;
+- final publishable: `Yes`;
+- final errors/warnings: `0 / 0`;
+- restored canonical revision: `2026-08-08T16:22:10.890Z`;
+- catalog rebuilt: `Yes`;
+- browser reread: `Verified`;
+- media objects: untouched.
+
+This proves the entire production cycle, including restoration to a clean canonical state.
 
 ## Build-time regression guard
 
-`scripts/check-private-read-contract.mjs` must prove all of the following:
+`scripts/check-private-read-contract.mjs` must continue to prove:
 
 - exactly two explicit Studio POST client paths exist: metadata validate + metadata save;
-- both use the proven CORS-simple `text/plain` transport;
+- both use CORS-simple `text/plain` transport;
 - no custom intent header / forced preflight path returns;
 - no PUT/PATCH/DELETE client exists;
 - no asset/delete/publish/standalone-rebuild mutation path exists;
-- bridge write capabilities are allowlisted to `metadata` only;
-- save checks that the deployed bridge actually advertises metadata write before posting;
-- validation/review/confirmation/save UI exists;
-- canonical reread verification exists;
-- Studio release metadata is `0.5.0` / Build `9`.
+- bridge write capabilities remain allowlisted to `metadata` only;
+- save checks that the deployed bridge advertises metadata write before posting;
+- validation/review/confirmation/save UI remains present;
+- canonical reread verification remains present;
+- Studio release metadata is `0.5.1` / Build `10`.
 
 ## Safety snapshots
-
-Pre-first-write checkpoints:
 
 ```text
 safety/pre-4b1b-metadata-write-20260808-1612
 safety/post-v5.11-pre-build9-20260808-1732
+safety/post-metadata-write-proven-20260808-1822
 ```
 
-The second snapshot is the preferred rollback reference because it captures the exact state proven in the real browser after Track Manager v5.11 was deployed and before Studio exposed Save.
+The last snapshot is the preferred current rollback reference because it captures the exact known-good state after the successful write + restoration cycle.
 
-## First production smoke test
+## Handoff to Phase 4B.2
 
-After Build 9 is deployed, the first real write must be intentionally harmless and easy to verify.
+Phase 4B.2 may now be investigated, but only after a read-only audit.
 
-Recommended test:
+Frozen lyrics rule:
 
-1. open a known track in `PRIVATE READ`;
-2. change one non-destructive metadata field to a clearly reversible value;
-3. validate;
-4. confirm exactly one changed field;
-5. save;
-6. confirm `CANONICAL REREAD · VERIFIED`;
-7. confirm the new revision appears in Track Workspace;
-8. open Track Manager and verify the same value/revision;
-9. verify public LaunchPAD reflects the rebuilt catalog where applicable;
-10. revert the test value through the same validated save flow if it was only a smoke-test marker.
+```text
+canonical source = lyrics.txt
+timestamped lyrics.txt = synchronized
+.lrc sidecar = optional compatibility/export only
+```
 
-Do not use asset replacement, deletion or publication as the first Studio production-write test.
+A future lyrics save must not introduce a mandatory second `.lrc` source of truth and must be independently guarded from metadata, media, delete and publishing writes.

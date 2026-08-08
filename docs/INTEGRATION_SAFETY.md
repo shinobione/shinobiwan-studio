@@ -1,7 +1,7 @@
 # SHINOBIWAN Studio — Integration Safety Policy
 
 Date established: 2026-08-08  
-Current Studio milestone: `0.5.0` / Build `9` / Phase 4B.1B guarded metadata save
+Current Studio milestone: `0.5.1` / Build `10` / Phase 4B.1B production-proven
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -27,15 +27,15 @@ CORS hotfix checkpoint:
 - Studio: `safety/pre-cors-hotfix-20260808-1540`
 - LaunchPAD + Track Manager: `safety/pre-cors-hotfix-20260808-1540`
 
-Pre-first-write checkpoint:
+Pre-first-write checkpoints:
 
-- Studio: `safety/pre-4b1b-metadata-write-20260808-1612`
-- LaunchPAD + Track Manager: `safety/pre-4b1b-metadata-write-20260808-1612`
+- Studio + LaunchPAD/Track Manager: `safety/pre-4b1b-metadata-write-20260808-1612`
+- Studio + LaunchPAD/Track Manager: `safety/post-v5.11-pre-build9-20260808-1732`
 
-Preferred checkpoint immediately after Track Manager v5.11 was deployed and verified in the real browser, but before Studio exposed Save:
+Preferred checkpoint after the successful production write + restoration cycle:
 
-- Studio: `safety/post-v5.11-pre-build9-20260808-1732`
-- LaunchPAD + Track Manager: `safety/post-v5.11-pre-build9-20260808-1732`
+- Studio: `safety/post-metadata-write-proven-20260808-1822`
+- LaunchPAD + Track Manager: `safety/post-metadata-write-proven-20260808-1822`
 
 Safety branches are rollback references only and must never be used as development branches.
 
@@ -54,20 +54,6 @@ For every risky integration step:
 9. never merge red CI;
 10. keep source merge, web deployment, Worker deployment and R2/catalog mutation as distinct states;
 11. verify the deployed surface in a real browser before opening the next riskier capability.
-
-## Cross-repository deployment rule
-
-Breaking coordination between repositories is forbidden.
-
-Phase 4B.1B rollout order is deliberately asymmetric:
-
-1. Studio Build 8 learned to tolerate only `write: ["metadata"]` while exposing no save client;
-2. Build 8 was deployed and verified against Track Manager v5.10;
-3. Track Manager v5.11 / bridge v1.3 was merged and deployed `admin` only;
-4. Build 8 was verified `PRIVATE READ` against v5.11 in the real browser;
-5. only then was Studio Build 9 allowed to expose the real Save metadata client.
-
-This sequence prevents a truthful backend capability advertisement from breaking an older Studio and prevents the client from attempting a write against an older backend.
 
 ## Current production backend
 
@@ -88,23 +74,60 @@ Private Track Manager:
 - Cloudflare Access protection confirmed (`302` unauthenticated);
 - public Worker deployment steps skipped.
 
-Deployment of v5.11 itself did not invoke the metadata-save endpoint and therefore did not mutate R2/catalog/media.
+Studio guarded-write baseline:
+
+- Studio Build 9 merge SHA `4737309b0d5c2814744d1ee999ce904af71ffcb7`;
+- metadata only;
+- two POST clients: validate + save;
+- no PUT/PATCH/DELETE;
+- no media/delete/publish/standalone-rebuild mutation surface.
+
+## Production proof — Phase 4B.1B
+
+Real-browser smoke test on `soft-addiction` completed successfully.
+
+Temporary write:
+
+- field `keyConfidence` only;
+- value `0.01`;
+- canonical revision `2026-08-08T16:21:15.503Z`;
+- catalog rebuilt;
+- browser canonical reread verified;
+- media untouched.
+
+Restoration write:
+
+- `keyConfidence` returned to original empty/null state;
+- canonical revision `2026-08-08T16:22:10.890Z`;
+- catalog rebuilt;
+- browser canonical reread verified;
+- quality `ready`, publishable `Yes`, errors/warnings `0 / 0`;
+- media untouched.
+
+Only after this restoration cycle is Phase 4B.1B considered production-proven.
 
 ## Data safety
 
 - R2 remains the canonical media/catalog source of truth.
-- Build 9 may mutate metadata only.
-- Audio, cover, thumbnail, lyrics and video objects are outside the Build 9 client surface.
+- Metadata is currently the only Studio production write capability.
+- Audio, cover, thumbnail, lyrics and video objects remain outside the current client surface.
 - `trackId`/slug is immutable in the metadata write route.
 - Existing asset filenames, migration provenance and `createdAt` are preserved.
-- `expectedUpdatedAt` is mandatory before every validation or save.
-- stale state returns `STALE_MANIFEST`; Studio must reload rather than overwrite.
+- `expectedUpdatedAt` is mandatory before every metadata validation or save.
+- stale state returns `STALE_MANIFEST`; Studio reloads rather than overwrites.
 - changing the form after validation invalidates the preview before save.
 - published proposals must pass Track Manager quality checks before persistence.
-- metadata save rebuilds `catalog/index.json` so public LaunchPAD does not drift from the canonical manifest.
+- metadata save rebuilds `catalog/index.json` so LaunchPAD does not drift from the canonical manifest.
 - if catalog rebuild or backend reread fails after a manifest write, v5.11 attempts to restore the previous manifest and rebuild the restored catalog.
 - validation alone never writes R2 or rebuilds catalog.
-- LRC synchronization stays content-driven; timestamped `lyrics.txt` is already synchronized.
+
+## Lyrics safety rule — frozen before Phase 4B.2
+
+- `lyrics.txt` is the canonical lyrics source.
+- Timestamp data inside canonical `lyrics.txt` means the lyrics are synchronized.
+- A separate `.lrc` sidecar is optional compatibility/export data, not a required second source of truth.
+- Phase 4B.2 must not introduce mandatory `.lrc` persistence merely because the UI uses LRC-style timestamps.
+- A future lyrics save must be independently stale-guarded and must not mutate audio, cover, thumbnail, video or arbitrary metadata.
 
 ## Security safety
 
@@ -117,67 +140,35 @@ Deployment of v5.11 itself did not invoke the metadata-save endpoint and therefo
 - validation body intent is exactly `metadata-validate-v1`;
 - save body intent is exactly `metadata-save-v1`;
 - metadata fields are whitelist-only;
-- Studio rejects any bridge write capability other than `metadata`;
-- before saving, Studio verifies the deployed bridge actually advertises `metadata` write capability;
-- Build 9 exposes exactly two explicit POST clients: validation + metadata save;
-- no Studio PUT/PATCH/DELETE client exists;
-- asset upload, delete, publish shortcuts, thumbnail writes and standalone catalog rebuild endpoints stay outside Phase 4B.1B.
+- Studio rejects any bridge write capability other than currently approved capabilities;
+- before saving, Studio verifies the deployed bridge advertises the required capability;
+- no autosave, background write or keyboard shortcut save is permitted for guarded write phases.
 
-## Save confirmation policy
+## Real-browser gate for future writes
 
-A production metadata save must never happen directly from form editing.
+CI and Wrangler dry-run are necessary but not sufficient.
 
-Required browser path:
-
-1. edit locally;
-2. validate against the canonical revision;
-3. review normalized changed fields and quality;
-4. click `Save metadata`;
-5. accept an explicit confirmation that names the changed fields and states that manifest + catalog index will change while media stays untouched;
-6. wait for backend result;
-7. verify the canonical reread before another edit.
-
-No autosave, keyboard shortcut save or background write is permitted in Phase 4B.1B.
-
-## Double verification
-
-Track Manager v5.11 rereads the saved manifest after persistence.
-
-Studio Build 9 performs a second authenticated canonical GET after the successful save response and compares `updatedAt`.
-
-The UI may report a fully verified state only when this second reread matches the saved revision.
-
-If the second reread fails, the backend save result is not silently discarded; Studio reports a warning and requires reload before another edit to avoid accidental duplicate writes.
-
-## Real-browser gate
-
-CI and Wrangler dry-run are necessary but not sufficient for browser integration.
-
-For the first Build 9 production write:
+Before any new write capability becomes production-proven:
 
 1. authenticate in Track Manager;
 2. confirm Studio reports `PRIVATE READ`;
-3. choose a known track and one harmless reversible metadata field;
-4. validate;
-5. verify the preview reports exactly the expected changed field(s);
-6. save and confirm;
-7. require `CANONICAL REREAD · VERIFIED`;
-8. verify the new canonical revision in Studio;
-9. verify the same value in Track Manager;
-10. verify LaunchPAD reflects the rebuilt catalog where applicable;
-11. verify SonicTrace and LRC Maker remain independently usable.
-
-Only after that smoke test may Phase 4B.1B be considered proven in production.
+3. exercise a reversible, narrow change;
+4. verify the exact intended changed field/object;
+5. verify canonical reread;
+6. restore the temporary test change if applicable;
+7. verify the final state is clean;
+8. verify LaunchPAD, Track Manager, SonicTrace and LRC Maker remain independently usable;
+9. create a post-proof safety checkpoint before opening the next write boundary.
 
 ## Rollback principle
 
 If a regression appears:
 
 1. stop the next phase immediately;
-2. do not attempt unrelated media/catalog edits to compensate;
+2. do not perform unrelated media/catalog edits to compensate;
 3. revert the affected Studio PR if the client/UI is at fault;
 4. if backend-only, redeploy the private/admin Worker from a known-good commit or safety branch;
-5. prefer `safety/post-v5.11-pre-build9-20260808-1732` for client-write rollback because it represents the exact v5.11-compatible no-save state proven in Chrome;
+5. prefer `safety/post-metadata-write-proven-20260808-1822` as the current known-good checkpoint;
 6. verify standalone Track Manager, LaunchPAD, LRC Maker and SonicTrace independently before resuming.
 
 The objective is simple: Studio integration may fail, but it must not take LaunchPAD, Track Manager, SonicTrace or LRC Maker down with it.

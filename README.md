@@ -2,9 +2,9 @@
 
 Artist Content & Intelligence Manager.
 
-**Current release:** `0.5.0`  
-**Build:** `9`  
-**Current milestone:** Phase 4B.1B — first guarded production write, metadata only
+**Current release:** `0.5.1`  
+**Build:** `10`  
+**Current milestone:** Phase 4B.1B — metadata save production-proven
 
 ## Product role
 
@@ -34,20 +34,20 @@ Implemented today:
 - no-preflight `text/plain` metadata transport proven in real Chrome;
 - one guarded production write: metadata save;
 - explicit validate → review → confirm → save flow;
-- client-side canonical reread after successful save;
+- backend manifest reread + browser canonical reread after save;
 - strict build-time bridge/write regression guard.
 
-## Phase 4B.1B — first real Studio write
+## Phase 4B.1B — production proof
 
-Build 9 exposes exactly one production write capability:
+Build 9 introduced exactly one production write capability:
 
 ```text
 write: ["metadata"]
 ```
 
-Everything else remains locked.
+Build 10 does not broaden that surface. It records that the flow has now been proven end-to-end in real production and preserves the exact same guardrails.
 
-The Metadata workspace now follows this sequence:
+The proven Metadata sequence is:
 
 ```text
 Edit locally
@@ -63,7 +63,32 @@ Edit locally
   -> Track Workspace refresh
 ```
 
-Changing any form field invalidates the prior validation preview, so an old preview cannot be reused for a different save.
+### Real production smoke test
+
+Track: `soft-addiction` / **Soft Addiction**.
+
+First reversible write:
+
+- field: `keyConfidence`;
+- temporary value: `0.01`;
+- changed fields: exactly `keyConfidence`;
+- saved canonical revision: `2026-08-08T16:21:15.503Z`;
+- catalog rebuilt: yes;
+- browser canonical reread: verified;
+- quality remained publishable;
+- media objects were not modified.
+
+Restoration write:
+
+- `keyConfidence` restored to its original empty/null state;
+- changed fields: exactly `keyConfidence`;
+- restored canonical revision: `2026-08-08T16:22:10.890Z`;
+- catalog rebuilt: yes;
+- browser canonical reread: verified;
+- quality returned to `ready`, publishable `Yes`, errors/warnings `0 / 0`;
+- media objects were not modified.
+
+This completed an intentional write + restoration cycle without leaving the smoke-test marker in the canonical metadata.
 
 ## Production dependency
 
@@ -73,7 +98,7 @@ Public LaunchPAD remains unchanged:
 - release `studio-metadata-validation-20260808`;
 - public Worker `v2.6`.
 
-Protected Track Manager backend deployed before Build 9:
+Protected Track Manager backend:
 
 - Track Manager `v5.11`;
 - Studio bridge `v1.3`;
@@ -84,7 +109,7 @@ Protected Track Manager backend deployed before Build 9:
 - Cloudflare Access protection confirmed (`302` unauthenticated);
 - public Worker deployment steps were skipped.
 
-Studio Build 8 was deployed before v5.11 and then proven `PRIVATE READ` against v5.11 in the real browser before Build 9 development began.
+Studio Build 9 merge SHA: `4737309b0d5c2814744d1ee999ce904af71ffcb7`.
 
 ## Metadata endpoints
 
@@ -114,7 +139,7 @@ Save body:
 }
 ```
 
-Before posting, Build 9 rereads bridge health and refuses to save unless the deployed bridge actually advertises `write: ["metadata"]`.
+Before posting, Studio rereads bridge health and refuses to save unless the deployed bridge advertises `write: ["metadata"]`.
 
 ## Data safety
 
@@ -127,7 +152,7 @@ Preserved by the backend:
 - migration provenance;
 - `createdAt`.
 
-Unavailable in Studio Build 9:
+Still unavailable in Studio Build 10:
 
 - audio upload/replace;
 - cover upload/replace;
@@ -146,7 +171,7 @@ Both validation and save require `expectedUpdatedAt`.
 
 If another tool changes the manifest first, Track Manager returns `STALE_MANIFEST`; Studio requires reload + new validation instead of overwriting.
 
-Published proposals must still satisfy Track Manager quality rules. A non-publishable published proposal is rejected with `QUALITY_BLOCKED` before persistence.
+Published proposals must satisfy Track Manager quality rules. A non-publishable published proposal is rejected with `QUALITY_BLOCKED` before persistence.
 
 ## Rollback
 
@@ -156,21 +181,17 @@ Track Manager v5.11 attempts transactional recovery if catalog publication fails
 2. rebuild the catalog from the restored state;
 3. return `SAVE_ROLLBACK` with rollback status.
 
-Studio treats this as a hard stop and tells the user to verify Track Manager before any retry.
-
-Preferred source rollback checkpoint before the client write became available:
+Preferred rollback checkpoints:
 
 ```text
+safety/post-metadata-write-proven-20260808-1822
 safety/post-v5.11-pre-build9-20260808-1732
-```
-
-Earlier checkpoints remain available:
-
-```text
-safety/pre-integration-20260808-1048
-safety/pre-cors-hotfix-20260808-1540
 safety/pre-4b1b-metadata-write-20260808-1612
+safety/pre-cors-hotfix-20260808-1540
+safety/pre-integration-20260808-1048
 ```
+
+The first checkpoint captures the exact state after the successful write + restoration smoke test.
 
 See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md) and [`docs/PHASE-4B1B-METADATA-SAVE.md`](docs/PHASE-4B1B-METADATA-SAVE.md).
 
@@ -182,9 +203,22 @@ Lyrics synchronization is content-driven:
 - timestamps detected in the canonical lyrics content = `Synced Lyrics`;
 - a separate `.lrc` sidecar is optional, not required.
 
+Phase 4B.2 must preserve this rule. If lyrics writing is introduced, the canonical write target is `lyrics.txt`; Studio must not create a mandatory second `.lrc` source of truth.
+
+## Next safety gate — Phase 4B.2
+
+Before any lyrics write is opened:
+
+1. audit the existing Track Manager/LRC Maker lyrics paths in read-only mode;
+2. create a dedicated backend/client contract;
+3. add a new capability without breaking Build 10;
+4. deploy backend/client in compatibility-safe order;
+5. prove a reversible real-browser write on lyrics content only;
+6. keep media, metadata, delete and publishing boundaries independently protected.
+
 ## Readability rule
 
-Studio keeps an 11px floor for previously microscopic status/microcopy roles. Build 9 applies the same floor to the Metadata editor introduced after the original readability pass.
+Studio keeps an 11px floor for previously microscopic status/microcopy roles.
 
 ## Stack
 
@@ -214,7 +248,7 @@ https://shinobione.github.io/shinobiwan-studio/
 
 ## Versioning discipline
 
-Every release updates together:
+Every Studio release updates together:
 
 1. `package.json`;
 2. `src/release.ts`;
@@ -223,5 +257,7 @@ Every release updates together:
 5. README / affected `.md` documentation;
 6. security-sensitive regression guards;
 7. PR scope, dependency and rollback notes.
+
+A backend version/build is not bumped merely to document an already-deployed runtime when no backend code changed; unnecessary Worker redeploys are treated as risk, not progress.
 
 No risky cross-repository capability is considered complete until CI, deployment and a real-browser smoke test have all passed independently.
