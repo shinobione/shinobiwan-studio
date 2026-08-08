@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { resolveAdminMode } from './admin-mode';
+import { CatalogView } from './components/CatalogView';
 import { EmptyState } from './components/EmptyState';
 import { ServicePill } from './components/ServicePill';
-import { readRoute, routeHref } from './router';
+import { TrackReadView } from './components/TrackReadView';
+import { readRoute, readTrackId, routeHref } from './router';
 import { adminService } from './services/admin-api';
 import { getCatalogHealth } from './services/catalog-api';
 import { studioConfig } from './services/config';
@@ -19,16 +21,11 @@ const NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
   { route: 'administration', label: 'Administration', glyph: '⌘' },
 ];
 
-const shellCopy: Record<StudioRoute, { eyebrow: string; title: string; body: string }> = {
+const shellCopy: Record<Exclude<StudioRoute, 'catalog'>, { eyebrow: string; title: string; body: string }> = {
   dashboard: {
     eyebrow: 'STUDIO / HOME',
-    title: 'Your catalog command center.',
-    body: 'Phase 1 establishes the shell. Catalog intelligence, content health and recent activity arrive in their dedicated roadmap phases.',
-  },
-  catalog: {
-    eyebrow: 'CATALOG / READ LAYER',
-    title: 'Catalog surface reserved.',
-    body: 'Phase 2 will hydrate this view from the canonical LaunchPAD public catalog without enabling writes.',
+    title: 'The catalog is connected.',
+    body: 'Phase 2 turns the shell into a live read-only catalog. Track Workspace and Content Health remain reserved for Phase 3.',
   },
   intelligence: {
     eyebrow: 'SONICTRACE / INTELLIGENCE',
@@ -42,8 +39,8 @@ const shellCopy: Record<StudioRoute, { eyebrow: string; title: string; body: str
   },
   assets: {
     eyebrow: 'CONTENT / ASSETS',
-    title: 'Asset management boundary ready.',
-    body: 'Audio, cover, thumbnail, video and lyrics remain owned by R2. Destructive browser writes are disabled in this shell.',
+    title: 'Asset management remains protected.',
+    body: 'Phase 2 can see canonical audio, cover, thumbnail, video and lyrics. Browser writes remain disabled until the authenticated Phase 4 path.',
   },
   publishing: {
     eyebrow: 'CATALOG / PUBLISHING',
@@ -53,7 +50,7 @@ const shellCopy: Record<StudioRoute, { eyebrow: string; title: string; body: str
   administration: {
     eyebrow: 'SYSTEM / ADMINISTRATION',
     title: 'Legacy tools remain available as fallbacks.',
-    body: 'The new Studio does not rip out working tools. It will absorb their workflows progressively while preserving recovery paths.',
+    body: 'The Studio absorbs workflows progressively while Track Manager, SonicTrace and LRC Maker remain available as recovery paths.',
   },
 };
 
@@ -61,15 +58,19 @@ const checking: ServiceStatus = { state: 'checking', label: 'checking', detail: 
 
 export default function App() {
   const [route, setRoute] = useState<StudioRoute>(() => readRoute());
+  const [trackId, setTrackId] = useState<string | null>(() => readTrackId());
   const [catalog, setCatalog] = useState<ServiceStatus>(checking);
   const [sonic, setSonic] = useState<ServiceStatus>(checking);
   const adminMode = useMemo(resolveAdminMode, []);
 
   useEffect(() => {
-    const onHash = () => setRoute(readRoute());
-    globalThis.addEventListener('hashchange', onHash);
+    const syncLocation = () => {
+      setRoute(readRoute());
+      setTrackId(readTrackId());
+    };
+    globalThis.addEventListener('hashchange', syncLocation);
     if (!globalThis.location.hash) globalThis.location.hash = routeHref('dashboard');
-    return () => globalThis.removeEventListener('hashchange', onHash);
+    return () => globalThis.removeEventListener('hashchange', syncLocation);
   }, []);
 
   useEffect(() => {
@@ -93,7 +94,7 @@ export default function App() {
     return () => { active = false; };
   }, []);
 
-  const copy = shellCopy[route];
+  const navTitle = trackId ? 'Track' : NAV.find(item => item.route === route)?.label;
 
   return (
     <div className="studio-shell">
@@ -113,8 +114,8 @@ export default function App() {
         </nav>
 
         <div className="sidebar-foot">
-          <span className="phase-tag">PHASE 1 · SHELL</span>
-          <p>Read-first foundation.<br />No production writes.</p>
+          <span className="phase-tag">PHASE 2 · CATALOG</span>
+          <p>Canonical read layer.<br />Production writes locked.</p>
         </div>
       </aside>
 
@@ -122,7 +123,7 @@ export default function App() {
         <header className="topbar">
           <div>
             <span className="top-kicker">Artist Content & Intelligence Manager</span>
-            <h1>{NAV.find(item => item.route === route)?.label}</h1>
+            <h1>{navTitle}</h1>
           </div>
           <div className="top-actions">
             <ServicePill name="Catalog" status={catalog} />
@@ -131,43 +132,55 @@ export default function App() {
           </div>
         </header>
 
-        <section className="hero-grid">
-          <article className="hero-copy panel">
-            <span className="eyebrow">SHINOBIWAN STUDIO / 0.1.0</span>
-            <h2>One track.<br /><em>One workspace.</em></h2>
-            <p>The global cockpit for catalog data, SonicTrace intelligence, synchronized lyrics, assets and publishing.</p>
-            <div className="hero-actions">
-              <a className="primary-btn" href={routeHref('catalog')}>Open catalog <span>→</span></a>
-              <a className="ghost-btn" href={studioConfig.launchpadUrl} target="_blank" rel="noreferrer">LaunchPAD ↗</a>
-            </div>
-          </article>
+        {route === 'dashboard' && (
+          <>
+            <section className="hero-grid">
+              <article className="hero-copy panel">
+                <span className="eyebrow">SHINOBIWAN STUDIO / 0.2.0</span>
+                <h2>One track.<br /><em>One workspace.</em></h2>
+                <p>The global cockpit for catalog data, SonicTrace intelligence, synchronized lyrics, assets and publishing.</p>
+                <div className="hero-actions">
+                  <a className="primary-btn" href={routeHref('catalog')}>Open live catalog <span>→</span></a>
+                  <a className="ghost-btn" href={studioConfig.launchpadUrl} target="_blank" rel="noreferrer">LaunchPAD ↗</a>
+                </div>
+              </article>
 
-          <article className="architecture-card panel">
-            <div className="arch-head"><span>ARCHITECTURE</span><b>TRACK-CENTRIC</b></div>
-            <div className="track-core"><span>TRACK ID</span><strong>canonical slug</strong><small>R2 source of truth</small></div>
-            <div className="arch-branches">
-              <div><span>CATALOG</span><strong>R2</strong></div>
-              <div><span>INTELLIGENCE</span><strong>ST</strong></div>
-              <div><span>LYRICS</span><strong>LRC</strong></div>
-            </div>
-          </article>
-        </section>
+              <article className="architecture-card panel">
+                <div className="arch-head"><span>ARCHITECTURE</span><b>TRACK-CENTRIC</b></div>
+                <div className="track-core"><span>TRACK ID</span><strong>canonical slug</strong><small>R2 source of truth</small></div>
+                <div className="arch-branches">
+                  <div><span>CATALOG</span><strong>R2</strong></div>
+                  <div><span>INTELLIGENCE</span><strong>ST</strong></div>
+                  <div><span>LYRICS</span><strong>LRC</strong></div>
+                </div>
+              </article>
+            </section>
 
-        <section className="status-grid">
-          <article className="metric panel"><span>CATALOG</span><strong>{catalog.state === 'online' ? catalog.label : '—'}</strong><small>LaunchPAD public read layer</small></article>
-          <article className="metric panel"><span>SONICTRACE</span><strong>{sonic.state === 'online' ? sonic.label : 'Local node'}</strong><small>Optional GPU intelligence</small></article>
-          <article className="metric panel"><span>WRITES</span><strong>Locked</strong><small>Phase 4 security gate</small></article>
-          <article className="metric panel"><span>CONTRACT</span><strong>Frozen</strong><small>trackId = R2 slug</small></article>
-        </section>
+            <section className="status-grid">
+              <article className="metric panel"><span>CATALOG</span><strong>{catalog.state === 'online' ? catalog.label : '—'}</strong><small>LaunchPAD public read layer</small></article>
+              <article className="metric panel"><span>SONICTRACE</span><strong>{sonic.state === 'online' ? sonic.label : 'Local node'}</strong><small>Optional GPU intelligence</small></article>
+              <article className="metric panel"><span>WRITES</span><strong>Locked</strong><small>Phase 4 security gate</small></article>
+              <article className="metric panel"><span>CATALOG UI</span><strong>Live</strong><small>Search · filter · track read</small></article>
+            </section>
 
-        <EmptyState eyebrow={copy.eyebrow} title={copy.title} body={copy.body} />
+            <EmptyState eyebrow={shellCopy.dashboard.eyebrow} title={shellCopy.dashboard.title} body={shellCopy.dashboard.body} />
+          </>
+        )}
 
-        {route === 'administration' && (
-          <section className="tool-grid">
-            <a className="tool-card panel" href={adminService.fallbackUrl} target="_blank" rel="noreferrer"><b>LP</b><span>Track Manager</span><small>Protected write fallback ↗</small></a>
-            <a className="tool-card panel" href={studioConfig.sonicTraceUrl} target="_blank" rel="noreferrer"><b>ST</b><span>SonicTrace</span><small>Audio Intelligence ↗</small></a>
-            <a className="tool-card panel" href={studioConfig.lrcMakerUrl} target="_blank" rel="noreferrer"><b>LM</b><span>LRC Maker</span><small>Lyrics synchronization ↗</small></a>
-          </section>
+        {route === 'catalog' && (trackId ? <TrackReadView trackId={trackId} /> : <CatalogView />)}
+
+        {route !== 'dashboard' && route !== 'catalog' && (
+          <>
+            <EmptyState eyebrow={shellCopy[route].eyebrow} title={shellCopy[route].title} body={shellCopy[route].body} />
+
+            {route === 'administration' && (
+              <section className="tool-grid">
+                <a className="tool-card panel" href={adminService.fallbackUrl} target="_blank" rel="noreferrer"><b>LP</b><span>Track Manager</span><small>Protected write fallback ↗</small></a>
+                <a className="tool-card panel" href={studioConfig.sonicTraceUrl} target="_blank" rel="noreferrer"><b>ST</b><span>SonicTrace</span><small>Audio Intelligence ↗</small></a>
+                <a className="tool-card panel" href={studioConfig.lrcMakerUrl} target="_blank" rel="noreferrer"><b>LM</b><span>LRC Maker</span><small>Lyrics synchronization ↗</small></a>
+              </section>
+            )}
+          </>
         )}
       </main>
     </div>
