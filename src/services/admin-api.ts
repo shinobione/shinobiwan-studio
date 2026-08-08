@@ -1,6 +1,7 @@
 import { studioConfig } from './config';
 
 const METADATA_VALIDATION_INTENT = 'metadata-validate-v1';
+const ALLOWED_BRIDGE_WRITE_CAPABILITIES = new Set(['metadata']);
 
 export type AdminReadFailureKind = 'access-or-cors' | 'http' | 'timeout' | 'invalid-response';
 export type AdminAssetKind = 'audio' | 'cover' | 'thumbnail' | 'video' | 'lyrics';
@@ -288,7 +289,9 @@ export function adminMediaUrl(trackId: string, kind: AdminAssetKind): string {
 
 export async function getAdminBridgeHealth(): Promise<AdminBridgeHealth> {
   const payload = await fetchAdminJson<AdminBridgeHealth>('/api/studio/health');
-  if (payload.ok === false || payload.capabilities?.write?.length) {
+  const writeCapabilities = payload.capabilities?.write ?? [];
+  const unexpectedWrites = writeCapabilities.filter(capability => !ALLOWED_BRIDGE_WRITE_CAPABILITIES.has(capability));
+  if (payload.ok === false || unexpectedWrites.length) {
     throw new AdminReadError('invalid-response', 'Track Manager Studio bridge exposed an unexpected production write capability.');
   }
   return payload;
@@ -329,14 +332,15 @@ export async function validateAdminTrackMetadata(
   return payload;
 }
 
-// Phase 4B.1A keeps one validation-only POST. Build 7 uses a CORS-safelisted
-// text/plain transport so Cloudflare Access does not have to admit an OPTIONS preflight.
-// Production writes remain locked: no save, upload, delete, publish or catalog-rebuild wrapper exists in Studio.
+// Phase 4B.1B preparation: Build 8 recognizes the single future metadata write capability
+// so Track Manager v5.11 can be deployed without knocking PRIVATE READ into fallback.
+// Studio itself still exposes no production write wrapper or save CTA in this build.
 export const adminService = Object.freeze({
   fallbackUrl: studioConfig.trackManagerUrl,
   bridgeHealthUrl: `${baseUrl()}/api/studio/health`,
   metadataValidationIntent: METADATA_VALIDATION_INTENT,
   metadataValidationTransport: 'text/plain-simple-request',
+  recognizedWriteCapabilities: ['metadata'] as const,
   validationEnabled: true,
   writesEnabled: false,
 });
