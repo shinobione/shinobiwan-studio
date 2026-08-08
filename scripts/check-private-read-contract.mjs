@@ -18,30 +18,36 @@ for (const required of [
   "'/api/studio/tracks'",
   '/api/studio/tracks/${encodeURIComponent(trackId)}',
   '/metadata/validate',
-  "method: 'POST'",
+  '/metadata/save',
   "const METADATA_VALIDATION_INTENT = 'metadata-validate-v1'",
+  "const METADATA_SAVE_INTENT = 'metadata-save-v1'",
   "const ALLOWED_BRIDGE_WRITE_CAPABILITIES = new Set(['metadata'])",
   "'Content-Type': 'text/plain;charset=UTF-8'",
   'intent: METADATA_VALIDATION_INTENT',
+  'intent: METADATA_SAVE_INTENT',
   'JSON.stringify(body)',
   'expectedUpdatedAt',
   'validationOnly !== true',
   "metadataValidationTransport: 'text/plain-simple-request'",
+  "metadataWriteTransport: 'text/plain-simple-request'",
   "recognizedWriteCapabilities: ['metadata'] as const",
-  'unexpectedWrites',
+  "writeCapabilities: ['metadata'] as const",
+  "writeCapabilities.includes('metadata')",
+  'clientVerified',
+  'verificationWarning',
   'validationEnabled: true',
-  'writesEnabled: false',
+  'writesEnabled: true',
 ]) {
   assert.ok(admin.includes(required), `Track Manager Studio client is missing ${required}.`);
 }
 
-assert.equal((admin.match(/method:\s*'POST'/g) || []).length, 1, 'Studio must expose exactly one explicit POST client path.');
-assert.ok(!admin.includes("'X-Shinobiwan-Studio-Intent'"), 'Build 8 validation POST must not reintroduce the custom header/preflight path.');
-assert.ok(!admin.includes("'Content-Type': 'application/json'"), 'Build 8 validation POST must remain CORS-safelisted text/plain.');
+assert.equal((admin.match(/method:\s*'POST'/g) || []).length, 2, 'Studio Build 9 must expose exactly two explicit POST client paths: metadata validate and metadata save.');
+assert.ok(!admin.includes("'X-Shinobiwan-Studio-Intent'"), 'Metadata POSTs must not reintroduce the custom header/preflight path.');
+assert.ok(!admin.includes("'Content-Type': 'application/json'"), 'Metadata POSTs must remain CORS-safelisted text/plain.');
 for (const forbiddenMethod of ['PUT', 'PATCH', 'DELETE']) {
   assert.ok(!admin.includes(`method: '${forbiddenMethod}'`), `Studio must not expose ${forbiddenMethod}.`);
 }
-for (const forbiddenPath of ['/metadata/save', '/delete', '/publish', '/catalog/rebuild', '/thumbnail']) {
+for (const forbiddenPath of ['/delete', '/publish', '/catalog/rebuild', '/thumbnail', '/audio/upload', '/cover/upload', '/lyrics/save', '/video/upload']) {
   assert.ok(!admin.includes(forbiddenPath), `Studio admin client must not expose production mutation path ${forbiddenPath}.`);
 }
 
@@ -59,25 +65,45 @@ for (const required of [
 }
 
 for (const required of [
-  'VALIDATION ONLY · NO WRITE',
+  'METADATA / GUARDED WRITE',
   'Validate metadata',
-  'PREVIEW · NOT SAVED',
+  'PREVIEW · READY FOR SAVE',
+  'Save metadata',
+  'METADATA SAVED',
+  'CANONICAL REREAD · VERIFIED',
   'Canonical manifest changed since this workspace loaded',
   'validateAdminTrackMetadata(track.id, track.updatedAt, patch)',
-  'Authenticate in Track Manager',
+  'saveAdminTrackMetadata(track.id, validationRevision, patch)',
+  'globalThis.confirm(',
+  'Audio, cover, thumbnail, lyrics and video assets are not touched',
+  'Reload canonical workspace',
 ]) {
-  assert.ok(metadata.includes(required), `Metadata validation UI is missing ${required}.`);
+  assert.ok(metadata.includes(required), `Metadata guarded-write UI is missing ${required}.`);
 }
-assert.ok(!/Save metadata|Save changes|Publish now|Delete track/.test(metadata), 'Build 8 must not expose a production write CTA.');
-assert.ok(workspace.includes("privateRead ? 'Track Manager v5.10' : 'LaunchPAD public fallback'"), 'Workspace must remain compatible with currently deployed Track Manager v5.10.');
-assert.ok(workspace.includes('<MetadataValidationPanel track={track} />'), 'Metadata tab must keep the validation preview panel.');
-assert.ok(app.includes("Track Manager v5.10 · validation-only"), 'Dashboard must remain compatible with the currently deployed v5.10 backend before v5.11 rollout.');
-assert.ok(app.includes('PHASE 4B.1A · VALIDATION'), 'Sidebar remains validation-only until the real save client is deployed.');
+assert.ok(!/Publish now|Delete track|Upload audio|Replace cover/.test(metadata), 'Build 9 metadata UI must not expose unrelated production write CTAs.');
 
-assert.ok(release.includes("version: '0.4.3'"), 'Studio release version must be 0.4.3.');
-assert.ok(release.includes('build: 8'), 'Studio release build must be 8.');
-assert.ok(release.includes("codename: 'metadata-write-capability-awareness'"), 'Studio release codename must describe metadata write capability awareness.');
-assert.equal(pkg.version, '0.4.3', 'package.json must match Studio 0.4.3.');
+for (const required of [
+  "privateRead ? 'Track Manager v5.11 · bridge v1.3' : 'LaunchPAD public fallback'",
+  '<MetadataValidationPanel track={track} onSaved={refreshTrackAfterMetadataSave} />',
+  'async function refreshTrackAfterMetadataSave()',
+  'Publishing writes still locked',
+]) {
+  assert.ok(workspace.includes(required), `Workspace Build 9 contract is missing ${required}.`);
+}
+
+for (const required of [
+  "Track Manager v5.11 · bridge v1.3",
+  'PHASE 4B.1B · METADATA SAVE',
+  '<strong>Metadata</strong>',
+  '1 guarded production write.',
+]) {
+  assert.ok(app.includes(required), `Dashboard Build 9 contract is missing ${required}.`);
+}
+
+assert.ok(release.includes("version: '0.5.0'"), 'Studio release version must be 0.5.0.');
+assert.ok(release.includes('build: 9'), 'Studio release build must be 9.');
+assert.ok(release.includes("codename: 'guarded-metadata-save'"), 'Studio release codename must describe guarded metadata save.');
+assert.equal(pkg.version, '0.5.0', 'package.json must match Studio 0.5.0.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'The production build must run the Studio bridge regression guard.');
 
-console.log('Studio 0.4.3 Build 8 tolerates exactly the future metadata write capability while keeping validation-only UI and production writes disabled.');
+console.log('Studio 0.5.0 Build 9 exposes exactly one guarded production write capability (metadata) behind validate/review/confirm/save, while all media, delete, publish and standalone rebuild writes remain absent.');
