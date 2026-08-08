@@ -15,6 +15,17 @@ export interface ServiceStatus {
   detail: string;
 }
 
+export interface StudioAsset {
+  originalName?: string | null;
+  filename: string;
+  contentType?: string | null;
+  size?: number | null;
+  uploaded?: string | null;
+  url: string;
+  fullUrl?: string | null;
+  optimized?: boolean;
+}
+
 export interface StudioTrack {
   id: string;
   title: string;
@@ -27,6 +38,8 @@ export interface StudioTrack {
   tags: string[];
   moods: string[];
   themes: string[];
+  era: string | null;
+  energy: string | null;
   languages: string[];
   bpm: number | null;
   key: string | null;
@@ -35,13 +48,15 @@ export interface StudioTrack {
   duration: number | null;
   accent: string | null;
   accent2: string | null;
+  lyricsAvailable: boolean;
+  timestampsAvailable: boolean;
   assets: {
-    audio: unknown | null;
-    cover: unknown | null;
-    thumbnail: unknown | null;
-    video: unknown | null;
-    lyricsTxt: unknown | null;
-    lyricsLrc: unknown | null;
+    audio: StudioAsset | null;
+    cover: StudioAsset | null;
+    thumbnail: StudioAsset | null;
+    video: StudioAsset | null;
+    lyricsTxt: StudioAsset | null;
+    lyricsLrc: StudioAsset | null;
   };
   audioIntelligence: {
     available: boolean;
@@ -54,4 +69,14 @@ export interface StudioTrack {
   };
   createdAt: string | null;
   updatedAt: string | null;
+}
+
+export interface StudioLyricSegment {
+  time: number;
+  text: string;
+}
+
+export interface StudioTrackDetail extends StudioTrack {
+  lyricsRaw: string | null;
+  lyricSegments: StudioLyricSegment[];
 }

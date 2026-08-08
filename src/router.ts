@@ -10,11 +10,31 @@ const ROUTES = new Set<StudioRoute>([
   'administration',
 ]);
 
+function hashParts(): string[] {
+  return globalThis.location.hash
+    .replace(/^#\/?/, '')
+    .split('/')
+    .map(part => part.trim())
+    .filter(Boolean);
+}
+
 export function readRoute(): StudioRoute {
-  const value = globalThis.location.hash.replace(/^#\/?/, '').split('/')[0] as StudioRoute;
+  const [first] = hashParts();
+  if (first === 'track') return 'catalog';
+  const value = first as StudioRoute;
   return ROUTES.has(value) ? value : 'dashboard';
+}
+
+export function readTrackId(): string | null {
+  const [first, second] = hashParts();
+  if (first !== 'track' || !second || !/^[a-z0-9][a-z0-9-]{0,119}$/.test(second)) return null;
+  return second;
 }
 
 export function routeHref(route: StudioRoute): string {
   return `#/${route}`;
+}
+
+export function trackHref(trackId: string): string {
+  return `#/track/${encodeURIComponent(trackId)}`;
 }
