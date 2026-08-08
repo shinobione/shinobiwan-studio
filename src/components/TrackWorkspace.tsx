@@ -4,6 +4,7 @@ import { routeHref, trackHref } from '../router';
 import { getCatalogTrack } from '../services/catalog-api';
 import { studioConfig } from '../services/config';
 import type { StudioAsset, StudioTrackDetail, WorkspaceSection } from '../types/studio';
+import { LyricsEditorPanel } from './LyricsEditorPanel';
 import { MetadataValidationPanel } from './MetadataValidationPanel';
 
 const TABS: Array<{ id: WorkspaceSection; label: string }> = [
@@ -88,7 +89,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
     return () => { active = false; };
   }, [trackId]);
 
-  async function refreshTrackAfterMetadataSave() {
+  async function refreshTrackAfterWrite() {
     const item = await getCatalogTrack(trackId);
     setTrack(item);
     setError(null);
@@ -237,24 +238,27 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
       )}
 
       {section === 'lyrics' && (
-        <div className="workspace-two-col workspace-lyrics-grid">
-          <WorkspacePanel eyebrow="LYRICS / STATE" title="Lyrics synchronization">
-            <div className="workspace-facts">
-              <div><span>Source</span><strong>{track.assets.lyricsTxt ? 'lyrics.txt' : 'Missing'}</strong></div>
-              <div><span>Timestamp data</span><strong>{track.timestampsAvailable ? 'Detected' : 'No'}</strong></div>
-              <div><span>Sync status</span><strong>{syncedLyrics ? 'Ready' : 'Not synced'}</strong></div>
-              <div><span>Segments</span><strong>{track.lyricSegments.length}</strong></div>
-            </div>
-            <div className="workspace-note workspace-tool-link">
-              <strong>{track.assets.lyricsLrc ? 'Optional .lrc sidecar detected.' : 'No separate .lrc file required.'}</strong>
-              <p>Synchronization is derived from timestamp data. A timestamped canonical lyrics.txt is already considered synchronized.</p>
-            </div>
-            <a className="ghost-btn workspace-tool-link" href={studioConfig.lrcMakerUrl} target="_blank" rel="noreferrer">Open LRC Maker ↗</a>
-          </WorkspacePanel>
-          <WorkspacePanel eyebrow="LYRICS / PREVIEW" title={track.assets.lyricsTxt ? 'Catalog lyrics' : 'No lyrics'} className="workspace-lyrics-panel">
-            {lyricLines.length ? <div className="workspace-lyrics-lines">{lyricLines.map((line, index) => <p key={`${index}-${line}`}>{line}</p>)}</div> : <p className="workspace-muted">No lyric text is exposed for this track.</p>}
-          </WorkspacePanel>
-        </div>
+        <>
+          <div className="workspace-two-col workspace-lyrics-grid">
+            <WorkspacePanel eyebrow="LYRICS / STATE" title="Lyrics synchronization">
+              <div className="workspace-facts">
+                <div><span>Source</span><strong>{track.assets.lyricsTxt ? 'lyrics.txt' : 'Missing'}</strong></div>
+                <div><span>Timestamp data</span><strong>{track.timestampsAvailable ? 'Detected' : 'No'}</strong></div>
+                <div><span>Sync status</span><strong>{syncedLyrics ? 'Ready' : 'Not synced'}</strong></div>
+                <div><span>Segments</span><strong>{track.lyricSegments.length}</strong></div>
+              </div>
+              <div className="workspace-note workspace-tool-link">
+                <strong>{track.assets.lyricsLrc ? 'Optional .lrc sidecar detected.' : 'No separate .lrc file required.'}</strong>
+                <p>Synchronization is derived from timestamp data. A timestamped canonical lyrics.txt is already considered synchronized.</p>
+              </div>
+              <a className="ghost-btn workspace-tool-link" href={studioConfig.lrcMakerUrl} target="_blank" rel="noreferrer">Open LRC Maker ↗</a>
+            </WorkspacePanel>
+            <WorkspacePanel eyebrow="LYRICS / PREVIEW" title={track.assets.lyricsTxt ? 'Catalog lyrics' : 'No lyrics'} className="workspace-lyrics-panel">
+              {lyricLines.length ? <div className="workspace-lyrics-lines">{lyricLines.map((line, index) => <p key={`${index}-${line}`}>{line}</p>)}</div> : <p className="workspace-muted">No public lyric text is exposed for this track. The guarded editor below reads canonical lyrics directly when PRIVATE READ is active.</p>}
+            </WorkspacePanel>
+          </div>
+          <LyricsEditorPanel track={track} onSaved={refreshTrackAfterWrite} />
+        </>
       )}
 
       {section === 'assets' && (
@@ -267,8 +271,8 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
             <AssetRow label="Video / Canvas" asset={track.assets.video} />
           </div>
           <p className="workspace-footnote">{privateRead
-            ? 'Read-only asset projection from the canonical Track Manager/R2 state. Published media keeps the proven public delivery URLs when available; private-only assets remain protected by Cloudflare Access.'
-            : 'Safe public LaunchPAD fallback. Authenticate with Track Manager to expose private canonical state such as drafts.'} Synchronized lyrics are content-derived from timestamp data; a separate .lrc sidecar is optional. Replace/upload actions remain in Track Manager.</p>
+            ? 'Canonical Track Manager/R2 asset projection. Published media keeps the proven public delivery URLs when available; private-only assets remain protected by Cloudflare Access.'
+            : 'Safe public LaunchPAD fallback. Authenticate with Track Manager to expose private canonical state such as drafts.'} Synchronized lyrics are content-derived from timestamp data; a separate .lrc sidecar is optional. Asset replace/upload/delete stays in Track Manager until the final Phase 4 Assets integration.</p>
         </WorkspacePanel>
       )}
 
@@ -279,7 +283,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
               <div><dt>trackId</dt><dd>{track.id}</dd></div>
               <div><dt>Audio filename</dt><dd>{track.assets.audio?.filename || 'Missing'}</dd></div>
               <div><dt>{privateRead ? 'Canonical revision' : 'Public revision'}</dt><dd>{track.updatedAt || 'Not exposed'}</dd></div>
-              <div><dt>Read layer</dt><dd>{privateRead ? 'Track Manager v5.11 · bridge v1.3' : 'LaunchPAD public fallback'}</dd></div>
+              <div><dt>Read layer</dt><dd>{privateRead ? 'Track Manager v5.12 · bridge v1.4' : 'LaunchPAD public fallback'}</dd></div>
               <div><dt>Master ID</dt><dd>Not modeled yet</dd></div>
             </dl>
           </WorkspacePanel>
@@ -289,7 +293,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
         </div>
       )}
 
-      {section === 'metadata' && <MetadataValidationPanel track={track} onSaved={refreshTrackAfterMetadataSave} />}
+      {section === 'metadata' && <MetadataValidationPanel track={track} onSaved={refreshTrackAfterWrite} />}
 
       {section === 'publishing' && (
         <div className="workspace-two-col">
@@ -308,8 +312,8 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
             )}
             {track.publishing.catalogVisible && <a className="ghost-btn" href={studioConfig.launchpadUrl} target="_blank" rel="noreferrer">Open LaunchPAD ↗</a>}
           </WorkspacePanel>
-          <WorkspacePanel eyebrow="PUBLISHING / GUARD" title="Publishing writes still locked">
-            <div className="workspace-note"><strong>Only guarded metadata save is exposed in Studio.</strong><p>Build 9 can update canonical metadata after validation. Publication shortcuts, delete, asset replacement and standalone catalog rebuild remain in the protected Track Manager UI.</p></div>
+          <WorkspacePanel eyebrow="PUBLISHING / GUARD" title="Remaining Phase 4 operations">
+            <div className="workspace-note"><strong>Metadata + existing lyrics writes are now guarded in Studio.</strong><p>Track creation, asset upload/replace/delete and explicit catalog rebuild remain in the protected Track Manager fallback until the final Phase 4 operational bridge lands.</p></div>
           </WorkspacePanel>
         </div>
       )}
