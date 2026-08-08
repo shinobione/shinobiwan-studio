@@ -15,6 +15,20 @@ export class AdminReadError extends Error {
   }
 }
 
+export class AdminValidationError extends Error {
+  readonly status: number | null;
+  readonly code: string | null;
+  readonly currentUpdatedAt: string | null;
+
+  constructor(message: string, status: number | null = null, code: string | null = null, currentUpdatedAt: string | null = null) {
+    super(message);
+    this.name = 'AdminValidationError';
+    this.status = status;
+    this.code = code;
+    this.currentUpdatedAt = currentUpdatedAt;
+  }
+}
+
 export interface AdminBridgeHealth {
   ok?: boolean;
   service?: string;
@@ -24,6 +38,7 @@ export interface AdminBridgeHealth {
   allowedOrigin?: string;
   capabilities?: {
     read?: string[];
+    validate?: string[];
     write?: string[];
   };
 }
@@ -73,6 +88,43 @@ export interface AdminManifest {
   assets?: Partial<Record<AdminAssetKind, string | null>>;
   createdAt?: string | null;
   updatedAt?: string | null;
+}
+
+export type AdminMetadataPatch = Pick<AdminManifest,
+  | 'title'
+  | 'status'
+  | 'type'
+  | 'year'
+  | 'releaseDate'
+  | 'album'
+  | 'genres'
+  | 'tags'
+  | 'moods'
+  | 'themes'
+  | 'era'
+  | 'energy'
+  | 'languages'
+  | 'bpm'
+  | 'key'
+  | 'keyConfidence'
+  | 'explicit'
+  | 'accent'
+  | 'accent2'
+>;
+
+export interface AdminMetadataValidationResponse {
+  ok?: boolean;
+  validationOnly?: boolean;
+  valid?: boolean;
+  trackId?: string;
+  expectedUpdatedAt?: string;
+  changedFields?: string[];
+  proposed?: AdminManifest;
+  quality?: AdminQuality | null;
+  authenticatedEmail?: string | null;
+  code?: string;
+  currentUpdatedAt?: string | null;
+  error?: string;
 }
 
 export interface AdminTrackSummary {
@@ -176,6 +228,59 @@ async function fetchAdminJson<T>(path: string, timeoutMs = 4500): Promise<T> {
   }
 }
 
+async function postAdminValidation<T>(path: string, body: unknown, timeoutMs = 7000): Promise<T> {
+  const controller = new AbortController();
+  const timeout = globalThis.setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    let response: Response;
+    try {
+      response = await fetch(`${baseUrl()}${path}`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'X-Shinobiwan-Studio-Intent': 'metadata-validate-v1',
+        },
+        body: JSON.stringify(body),
+        cache: 'no-store',
+        credentials: 'include',
+        mode: 'cors',
+        signal: controller.signal,
+      });
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        throw new AdminValidationError('Track Manager metadata validation timed out.');
+      }
+      throw new AdminValidationError('Metadata validation is unavailable. Authenticate with Cloudflare Access and retry.');
+    }
+
+    if (!isWorkerJsonResponse(response)) {
+      throw new AdminValidationError('Cloudflare Access session is not available to Studio metadata validation.', response.status || null);
+    }
+
+    let payload: AdminMetadataValidationResponse;
+    try {
+      payload = (await response.json()) as AdminMetadataValidationResponse;
+    } catch {
+      throw new AdminValidationError('Track Manager metadata validation returned invalid JSON.', response.status || null);
+    }
+
+    if (!response.ok) {
+      throw new AdminValidationError(
+        payload.error || `Track Manager metadata validation returned HTTP ${response.status}.`,
+        response.status,
+        payload.code || null,
+        payload.currentUpdatedAt || null,
+      );
+    }
+
+    return payload as T;
+  } finally {
+    globalThis.clearTimeout(timeout);
+  }
+}
+
 export function adminMediaUrl(trackId: string, kind: AdminAssetKind): string {
   return `${baseUrl()}/api/media/${encodeURIComponent(trackId)}/${kind}`;
 }
@@ -183,7 +288,7 @@ export function adminMediaUrl(trackId: string, kind: AdminAssetKind): string {
 export async function getAdminBridgeHealth(): Promise<AdminBridgeHealth> {
   const payload = await fetchAdminJson<AdminBridgeHealth>('/api/studio/health');
   if (payload.ok === false || payload.capabilities?.write?.length) {
-    throw new AdminReadError('invalid-response', 'Track Manager Studio bridge did not advertise the expected GET-only contract.');
+    throw new AdminReadError('invalid-response', 'Track Manager Studio bridge exposed an unexpected production write capability.');
   }
   return payload;
 }
@@ -205,10 +310,30 @@ export async function getAdminTrack(trackId: string): Promise<AdminTrackResponse
   return payload;
 }
 
-// Phase 4A is intentionally read-only. Existing Track Manager write routes stay
-// same-origin protected and Studio exposes no POST/PUT/PATCH/DELETE wrapper.
+export async function validateAdminTrackMetadata(
+  trackId: string,
+  expectedUpdatedAt: string,
+  metadata: AdminMetadataPatch,
+): Promise<AdminMetadataValidationResponse> {
+  if (!/^[a-z0-9][a-z0-9-]{0,119}$/.test(trackId)) throw new Error('Invalid trackId.');
+  if (!expectedUpdatedAt.trim()) throw new AdminValidationError('Canonical updatedAt revision is required for validation.');
+
+  const payload = await postAdminValidation<AdminMetadataValidationResponse>(
+    `/api/studio/tracks/${encodeURIComponent(trackId)}/metadata/validate`,
+    { expectedUpdatedAt, metadata },
+  );
+  if (payload.ok === false || payload.validationOnly !== true || !payload.proposed) {
+    throw new AdminValidationError('Track Manager returned an invalid metadata validation response.');
+  }
+  return payload;
+}
+
+// Phase 4B.1A adds one validation-only POST. Production writes remain locked:
+// no save, upload, delete, publish or catalog-rebuild wrapper exists in Studio.
 export const adminService = Object.freeze({
   fallbackUrl: studioConfig.trackManagerUrl,
   bridgeHealthUrl: `${baseUrl()}/api/studio/health`,
+  metadataValidationIntent: 'metadata-validate-v1',
+  validationEnabled: true,
   writesEnabled: false,
 });
