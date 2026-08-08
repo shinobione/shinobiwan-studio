@@ -25,8 +25,8 @@ const NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
 const shellCopy: Record<Exclude<StudioRoute, 'catalog'>, { eyebrow: string; title: string; body: string }> = {
   dashboard: {
     eyebrow: 'STUDIO / HOME',
-    title: 'Private reads + metadata validation are online.',
-    body: 'Phase 4B.1A connects Studio to Track Manager v5.10 / bridge v1.2. Canonical reads remain private-first with public fallback, and metadata proposals can be validated without saving production state.',
+    title: 'Private reads + guarded metadata save are online.',
+    body: 'Phase 4B.1B connects Studio to Track Manager v5.11 / bridge v1.3. Canonical reads remain private-first with public fallback, while the Metadata workspace exposes one explicitly validated production write and nothing else.',
   },
   intelligence: {
     eyebrow: 'SONICTRACE / INTELLIGENCE',
@@ -45,13 +45,13 @@ const shellCopy: Record<Exclude<StudioRoute, 'catalog'>, { eyebrow: string; titl
   },
   publishing: {
     eyebrow: 'CATALOG / PUBLISHING',
-    title: 'Publishing status is visible, writes stay protected.',
-    body: 'Phase 4B.1A can validate metadata proposals against Track Manager quality rules, but publication, media replacement and catalog rebuild writes remain intentionally locked in Studio.',
+    title: 'Publishing remains protected.',
+    body: 'Build 9 can save validated metadata only. Publication shortcuts, media replacement, delete and standalone catalog rebuild actions remain intentionally locked in Studio.',
   },
   administration: {
     eyebrow: 'SYSTEM / ADMINISTRATION',
-    title: 'Validation bridge integrated. Recovery tools preserved.',
-    body: 'Track Manager remains the protected production-write fallback, while SonicTrace and LRC Maker stay independently usable. Studio only absorbs each write workflow after a separately versioned validation gate is proven.',
+    title: 'First scoped write integrated. Recovery tools preserved.',
+    body: 'Track Manager remains the protected operational fallback, while SonicTrace and LRC Maker stay independently usable. Studio absorbs write workflows one by one behind separately versioned safety gates.',
   },
 };
 
@@ -114,7 +114,7 @@ export default function App() {
   const navTitle = trackId ? 'Track Workspace' : NAV.find(item => item.route === route)?.label;
   const readLayerLabel = readSource === 'private' ? 'Private' : readSource === 'public' ? 'Fallback' : '…';
   const readLayerDetail = readSource === 'private'
-    ? 'Track Manager v5.10 · validation-only'
+    ? 'Track Manager v5.11 · bridge v1.3'
     : readSource === 'public'
       ? 'LaunchPAD public read-only'
       : 'Checking Access session';
@@ -137,8 +137,8 @@ export default function App() {
         </nav>
 
         <div className="sidebar-foot">
-          <span className="phase-tag">PHASE 4B.1A · VALIDATION</span>
-          <p>v{studioRelease.version} · Build {studioRelease.build}<br />Production writes locked.</p>
+          <span className="phase-tag">PHASE 4B.1B · METADATA SAVE</span>
+          <p>v{studioRelease.version} · Build {studioRelease.build}<br />1 guarded production write.</p>
         </div>
       </aside>
 
@@ -183,7 +183,7 @@ export default function App() {
               <article className="metric panel"><span>READ LAYER</span><strong>{readLayerLabel}</strong><small>{readLayerDetail}</small></article>
               <article className="metric panel"><span>WORKSPACE</span><strong>Live</strong><small>7 contextual sections per track</small></article>
               <article className="metric panel"><span>CONTENT HEALTH</span><strong>V1.1</strong><small>Timestamp-aware lyrics completeness</small></article>
-              <article className="metric panel"><span>WRITES</span><strong>Locked</strong><small>Metadata validation only · no production save</small></article>
+              <article className="metric panel"><span>WRITES</span><strong>Metadata</strong><small>Validate → confirm → save · everything else locked</small></article>
             </section>
 
             <EmptyState eyebrow={shellCopy.dashboard.eyebrow} title={shellCopy.dashboard.title} body={shellCopy.dashboard.body} />
@@ -200,7 +200,7 @@ export default function App() {
 
             {route === 'administration' && (
               <section className="tool-grid">
-                <a className="tool-card panel" href={adminService.fallbackUrl} target="_blank" rel="noreferrer"><b>LP</b><span>Track Manager</span><small>Authenticate private reads / protected writes ↗</small></a>
+                <a className="tool-card panel" href={adminService.fallbackUrl} target="_blank" rel="noreferrer"><b>LP</b><span>Track Manager</span><small>Protected fallback / full write surface ↗</small></a>
                 <a className="tool-card panel" href={studioConfig.sonicTraceUrl} target="_blank" rel="noreferrer"><b>ST</b><span>SonicTrace</span><small>Audio Intelligence ↗</small></a>
                 <a className="tool-card panel" href={studioConfig.lrcMakerUrl} target="_blank" rel="noreferrer"><b>LM</b><span>LRC Maker</span><small>Lyrics synchronization ↗</small></a>
               </section>

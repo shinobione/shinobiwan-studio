@@ -2,9 +2,9 @@
 
 Artist Content & Intelligence Manager.
 
-**Current release:** `0.4.3`  
-**Build:** `8`  
-**Current milestone:** Phase 4B.1B preparation — metadata write capability awareness, production writes still disabled
+**Current release:** `0.5.0`  
+**Build:** `9`  
+**Current milestone:** Phase 4B.1B — first guarded production write, metadata only
 
 ## Product role
 
@@ -15,7 +15,7 @@ Core rules:
 - `trackId = R2 manifest slug`;
 - LaunchPAD stays the public product;
 - R2 stays the catalog/media source of truth;
-- Track Manager stays the protected catalog/admin backend and write fallback;
+- Track Manager stays the protected catalog/admin backend and full-write fallback;
 - SonicTrace stays the audio-intelligence engine;
 - LRC Maker stays the lyrics editing/synchronization engine during migration;
 - Studio must degrade safely when Track Manager private access or the SonicTrace GPU node is unavailable.
@@ -30,87 +30,149 @@ Implemented today:
 - Track Workspace with Overview, Audio Intelligence, Lyrics, Assets, Versions, Metadata and Publishing;
 - Content Health with timestamp-aware synchronized lyrics semantics;
 - metadata proposal editor;
-- validation-only metadata POST with `expectedUpdatedAt` stale-manifest protection;
-- no-preflight `text/plain` validation transport proven in real Chrome;
-- strict build-time bridge regression guard.
+- non-mutating metadata validation with stale-manifest protection;
+- no-preflight `text/plain` metadata transport proven in real Chrome;
+- one guarded production write: metadata save;
+- explicit validate → review → confirm → save flow;
+- client-side canonical reread after successful save;
+- strict build-time bridge/write regression guard.
 
-Build 8 adds one compatibility rule only: Studio now recognizes **exactly one future bridge write capability**, `metadata`, so Track Manager v5.11 can advertise that capability without knocking Studio private reads into fallback.
+## Phase 4B.1B — first real Studio write
 
-Build 8 itself still exposes **no metadata save client, no Save CTA, no asset upload, no delete, no publish and no catalog rebuild action**. `adminService.writesEnabled` remains `false`.
-
-## Why Build 8 exists
-
-Build 7 deliberately rejected any non-empty `capabilities.write` list. That was correct while the bridge was validation-only, but it creates a deployment-order trap: deploying a future backend that truthfully advertises `write: ["metadata"]` would make the existing Studio reject the health response and fall back to the public catalog.
-
-Build 8 removes that trap safely:
+Build 9 exposes exactly one production write capability:
 
 ```text
-accepted bridge write capabilities:
-- []
-- ["metadata"]
-
-rejected:
-- any other write capability
+write: ["metadata"]
 ```
 
-This allows the safe rollout sequence:
+Everything else remains locked.
 
-1. deploy Studio Build 8 while Track Manager v5.10 still reports `write: []`;
-2. deploy Track Manager v5.11 / bridge v1.3 with `write: ["metadata"]`;
-3. verify PRIVATE READ still works;
-4. only then deploy the later Studio build that exposes the real Save metadata flow.
+The Metadata workspace now follows this sequence:
 
-## Current production dependency
+```text
+Edit locally
+  -> Validate metadata
+  -> Review normalized proposal + quality
+  -> Save metadata
+  -> explicit confirmation
+  -> backend stale/quality revalidation
+  -> canonical manifest metadata write
+  -> catalog/index.json rebuild
+  -> backend manifest reread
+  -> Studio canonical GET reread
+  -> Track Workspace refresh
+```
 
-At the time Build 8 is prepared, production still runs:
+Changing any form field invalidates the prior validation preview, so an old preview cannot be reused for a different save.
 
-- LaunchPAD public app: Build `2026.08.08.66` / release `studio-metadata-validation-20260808`;
-- Track Manager `v5.10` / Studio bridge `v1.2`;
-- private Worker Version ID `5ac91e36-9060-4e05-a76c-67c46459c72d`;
-- public Worker `v2.6` unchanged;
-- no R2 migration or catalog rebuild caused by Studio Build 8.
+## Production dependency
 
-The next backend release is planned as Track Manager `v5.11` / bridge `v1.3`, metadata-write only.
+Public LaunchPAD remains unchanged:
 
-## Metadata validation contract
+- app Build `2026.08.08.66`;
+- release `studio-metadata-validation-20260808`;
+- public Worker `v2.6`.
 
-Current browser validation request:
+Protected Track Manager backend deployed before Build 9:
+
+- Track Manager `v5.11`;
+- Studio bridge `v1.3`;
+- LaunchPAD merge SHA `49728e908fcfaff3f6edf9cf3f9b7d2bb23ce8a3`;
+- private Worker Version ID `8bd802ec-0c2b-47ce-aebb-83f6190d5b73`;
+- protected deployment workflow run `31264114407`;
+- deployment target `admin` only;
+- Cloudflare Access protection confirmed (`302` unauthenticated);
+- public Worker deployment steps were skipped.
+
+Studio Build 8 was deployed before v5.11 and then proven `PRIVATE READ` against v5.11 in the real browser before Build 9 development began.
+
+## Metadata endpoints
+
+Validation remains non-mutating:
 
 ```text
 POST /api/studio/tracks/<trackId>/metadata/validate
 Content-Type: text/plain;charset=UTF-8
-Accept: application/json
 credentials: include
 ```
 
-JSON text body:
+Save is the only mutating Studio route:
+
+```text
+POST /api/studio/tracks/<trackId>/metadata/save
+Content-Type: text/plain;charset=UTF-8
+credentials: include
+```
+
+Save body:
 
 ```json
 {
-  "intent": "metadata-validate-v1",
-  "expectedUpdatedAt": "<canonical updatedAt>",
+  "intent": "metadata-save-v1",
+  "expectedUpdatedAt": "<validated canonical revision>",
   "metadata": {}
 }
 ```
 
-The response is a preview only. No manifest, media object or catalog index is written by validation.
+Before posting, Build 9 rereads bridge health and refuses to save unless the deployed bridge actually advertises `write: ["metadata"]`.
 
-## Planned Phase 4B.1B write contract
+## Data safety
 
-The real metadata save path will remain deliberately narrow:
+Metadata save is whitelist-only and does not accept media or identity fields.
+
+Preserved by the backend:
+
+- slug / canonical `trackId`;
+- audio/cover/thumbnail/lyrics/video asset filenames;
+- migration provenance;
+- `createdAt`.
+
+Unavailable in Studio Build 9:
+
+- audio upload/replace;
+- cover upload/replace;
+- thumbnail mutation;
+- lyrics save;
+- Canvas/video upload/replace;
+- track delete;
+- standalone publish shortcut;
+- standalone catalog rebuild.
+
+A successful metadata change writes the canonical manifest and rebuilds `catalog/index.json` so LaunchPAD cannot drift from the canonical manifest.
+
+## Stale and quality guards
+
+Both validation and save require `expectedUpdatedAt`.
+
+If another tool changes the manifest first, Track Manager returns `STALE_MANIFEST`; Studio requires reload + new validation instead of overwriting.
+
+Published proposals must still satisfy Track Manager quality rules. A non-publishable published proposal is rejected with `QUALITY_BLOCKED` before persistence.
+
+## Rollback
+
+Track Manager v5.11 attempts transactional recovery if catalog publication fails after the manifest write:
+
+1. restore the previous manifest;
+2. rebuild the catalog from the restored state;
+3. return `SAVE_ROLLBACK` with rollback status.
+
+Studio treats this as a hard stop and tells the user to verify Track Manager before any retry.
+
+Preferred source rollback checkpoint before the client write became available:
 
 ```text
-Edit locally
-  -> Validate
-  -> Review normalized preview
-  -> explicit Save metadata confirmation
-  -> backend revalidates expectedUpdatedAt + quality
-  -> write manifest metadata only
-  -> rebuild catalog index
-  -> reread canonical manifest
+safety/post-v5.11-pre-build9-20260808-1732
 ```
 
-The write endpoint will not accept asset fields, slug replacement, media uploads, delete, thumbnail writes or publication shortcuts. Published metadata changes will still pass Track Manager quality checks.
+Earlier checkpoints remain available:
+
+```text
+safety/pre-integration-20260808-1048
+safety/pre-cors-hotfix-20260808-1540
+safety/pre-4b1b-metadata-write-20260808-1612
+```
+
+See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md) and [`docs/PHASE-4B1B-METADATA-SAVE.md`](docs/PHASE-4B1B-METADATA-SAVE.md).
 
 ## Lyrics semantics
 
@@ -120,28 +182,9 @@ Lyrics synchronization is content-driven:
 - timestamps detected in the canonical lyrics content = `Synced Lyrics`;
 - a separate `.lrc` sidecar is optional, not required.
 
-## Safety / rollback
+## Readability rule
 
-Current safety branches include:
-
-```text
-safety/pre-integration-20260808-1048
-safety/pre-cors-hotfix-20260808-1540
-safety/pre-4b1b-metadata-write-20260808-1612
-```
-
-Phase 4B.1B rollout rules:
-
-- separate PRs per repository;
-- no coordinated breaking merge;
-- backend and Studio releases validated independently;
-- no red CI merges;
-- admin Worker deploy only when a Track Manager backend release requires it;
-- public Worker stays untouched unless explicitly required;
-- no media mutation in the metadata-write phase;
-- Track Manager UI remains the operational fallback until Studio writes are proven in a real browser.
-
-See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md).
+Studio keeps an 11px floor for previously microscopic status/microcopy roles. Build 9 applies the same floor to the Metadata editor introduced after the original readability pass.
 
 ## Stack
 
@@ -161,7 +204,7 @@ npm run typecheck
 npm run build
 ```
 
-`npm run build` runs the Studio bridge security regression guard before TypeScript/Vite compilation.
+`npm run build` executes the Studio bridge/write regression guard before TypeScript/Vite compilation.
 
 ## Production URL
 
@@ -175,8 +218,10 @@ Every release updates together:
 
 1. `package.json`;
 2. `src/release.ts`;
-3. visible version/build;
+3. visible version/build and phase copy;
 4. `CHANGELOG.md`;
 5. README / affected `.md` documentation;
 6. security-sensitive regression guards;
 7. PR scope, dependency and rollback notes.
+
+No risky cross-repository capability is considered complete until CI, deployment and a real-browser smoke test have all passed independently.

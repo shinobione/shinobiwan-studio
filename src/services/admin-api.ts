@@ -1,6 +1,7 @@
 import { studioConfig } from './config';
 
 const METADATA_VALIDATION_INTENT = 'metadata-validate-v1';
+const METADATA_SAVE_INTENT = 'metadata-save-v1';
 const ALLOWED_BRIDGE_WRITE_CAPABILITIES = new Set(['metadata']);
 
 export type AdminReadFailureKind = 'access-or-cors' | 'http' | 'timeout' | 'invalid-response';
@@ -29,6 +30,28 @@ export class AdminValidationError extends Error {
     this.status = status;
     this.code = code;
     this.currentUpdatedAt = currentUpdatedAt;
+  }
+}
+
+export class AdminSaveError extends Error {
+  readonly status: number | null;
+  readonly code: string | null;
+  readonly currentUpdatedAt: string | null;
+  readonly rollback: AdminMetadataRollback | null;
+
+  constructor(
+    message: string,
+    status: number | null = null,
+    code: string | null = null,
+    currentUpdatedAt: string | null = null,
+    rollback: AdminMetadataRollback | null = null,
+  ) {
+    super(message);
+    this.name = 'AdminSaveError';
+    this.status = status;
+    this.code = code;
+    this.currentUpdatedAt = currentUpdatedAt;
+    this.rollback = rollback;
   }
 }
 
@@ -128,6 +151,33 @@ export interface AdminMetadataValidationResponse {
   code?: string;
   currentUpdatedAt?: string | null;
   error?: string;
+}
+
+export interface AdminMetadataRollback {
+  manifestRestored?: boolean;
+  catalogRestored?: boolean;
+}
+
+export interface AdminMetadataSaveResponse {
+  ok?: boolean;
+  saved?: boolean;
+  noChange?: boolean;
+  trackId?: string;
+  previousUpdatedAt?: string | null;
+  updatedAt?: string | null;
+  changedFields?: string[];
+  track?: AdminManifest;
+  quality?: AdminQuality | null;
+  catalogRebuilt?: boolean;
+  catalogGeneratedAt?: string | null;
+  catalogCount?: number | null;
+  authenticatedEmail?: string | null;
+  code?: string;
+  currentUpdatedAt?: string | null;
+  error?: string;
+  rollback?: AdminMetadataRollback | null;
+  clientVerified?: boolean;
+  verificationWarning?: string | null;
 }
 
 export interface AdminTrackSummary {
@@ -283,6 +333,59 @@ async function postAdminValidation<T>(path: string, body: unknown, timeoutMs = 7
   }
 }
 
+async function postAdminSave(path: string, body: unknown, timeoutMs = 12000): Promise<AdminMetadataSaveResponse> {
+  const controller = new AbortController();
+  const timeout = globalThis.setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    let response: Response;
+    try {
+      response = await fetch(`${baseUrl()}${path}`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'text/plain;charset=UTF-8',
+        },
+        body: JSON.stringify(body),
+        cache: 'no-store',
+        credentials: 'include',
+        mode: 'cors',
+        signal: controller.signal,
+      });
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        throw new AdminSaveError('Track Manager metadata save timed out. Do not retry blindly; reload the canonical workspace first.');
+      }
+      throw new AdminSaveError('Metadata save is unavailable. Authenticate with Cloudflare Access and reload the canonical workspace before retrying.');
+    }
+
+    if (!isWorkerJsonResponse(response)) {
+      throw new AdminSaveError('Cloudflare Access session is not available to Studio metadata save.', response.status || null);
+    }
+
+    let payload: AdminMetadataSaveResponse;
+    try {
+      payload = (await response.json()) as AdminMetadataSaveResponse;
+    } catch {
+      throw new AdminSaveError('Track Manager metadata save returned invalid JSON. Do not retry until the canonical track has been reloaded.', response.status || null);
+    }
+
+    if (!response.ok) {
+      throw new AdminSaveError(
+        payload.error || `Track Manager metadata save returned HTTP ${response.status}.`,
+        response.status,
+        payload.code || null,
+        payload.currentUpdatedAt || null,
+        payload.rollback || null,
+      );
+    }
+
+    return payload;
+  } finally {
+    globalThis.clearTimeout(timeout);
+  }
+}
+
 export function adminMediaUrl(trackId: string, kind: AdminAssetKind): string {
   return `${baseUrl()}/api/media/${encodeURIComponent(trackId)}/${kind}`;
 }
@@ -332,15 +435,59 @@ export async function validateAdminTrackMetadata(
   return payload;
 }
 
-// Phase 4B.1B preparation: Build 8 recognizes the single future metadata write capability
-// so Track Manager v5.11 can be deployed without knocking PRIVATE READ into fallback.
-// Studio itself still exposes no production write wrapper or save CTA in this build.
+export async function saveAdminTrackMetadata(
+  trackId: string,
+  expectedUpdatedAt: string,
+  metadata: AdminMetadataPatch,
+): Promise<AdminMetadataSaveResponse> {
+  if (!/^[a-z0-9][a-z0-9-]{0,119}$/.test(trackId)) throw new Error('Invalid trackId.');
+  if (!expectedUpdatedAt.trim()) throw new AdminSaveError('Canonical updatedAt revision is required for save.');
+
+  const health = await getAdminBridgeHealth();
+  const writeCapabilities = health.capabilities?.write ?? [];
+  if (!writeCapabilities.includes('metadata')) {
+    throw new AdminSaveError('Track Manager does not currently advertise the guarded metadata write capability. Save stays locked.');
+  }
+
+  const payload = await postAdminSave(
+    `/api/studio/tracks/${encodeURIComponent(trackId)}/metadata/save`,
+    { intent: METADATA_SAVE_INTENT, expectedUpdatedAt, metadata },
+  );
+
+  if (payload.ok === false || !payload.track || (payload.saved !== true && payload.noChange !== true)) {
+    throw new AdminSaveError('Track Manager returned an invalid metadata save response. Reload the canonical workspace before retrying.');
+  }
+
+  const expectedRevision = payload.updatedAt || payload.track.updatedAt || expectedUpdatedAt;
+  let clientVerified = false;
+  let verificationWarning: string | null = null;
+  try {
+    const reread = await getAdminTrack(trackId);
+    const rereadRevision = reread.track?.manifest?.updatedAt || null;
+    if (rereadRevision === expectedRevision) {
+      clientVerified = true;
+    } else {
+      verificationWarning = `Canonical reread returned revision ${rereadRevision || 'none'} instead of ${expectedRevision}. Reload before any further edit.`;
+    }
+  } catch (reason) {
+    verificationWarning = `Server reported the save as successful, but Studio could not complete its second canonical reread (${reason instanceof Error ? reason.message : String(reason)}). Reload before any further edit.`;
+  }
+
+  return { ...payload, clientVerified, verificationWarning };
+}
+
+// Phase 4B.1B: Build 9 exposes exactly one production write client: metadata save.
+// Validation remains separate and non-mutating. Media, delete, publish shortcuts and
+// standalone catalog rebuild endpoints remain intentionally absent from Studio.
 export const adminService = Object.freeze({
   fallbackUrl: studioConfig.trackManagerUrl,
   bridgeHealthUrl: `${baseUrl()}/api/studio/health`,
   metadataValidationIntent: METADATA_VALIDATION_INTENT,
   metadataValidationTransport: 'text/plain-simple-request',
+  metadataWriteIntent: METADATA_SAVE_INTENT,
+  metadataWriteTransport: 'text/plain-simple-request',
   recognizedWriteCapabilities: ['metadata'] as const,
   validationEnabled: true,
-  writesEnabled: false,
+  writesEnabled: true,
+  writeCapabilities: ['metadata'] as const,
 });
