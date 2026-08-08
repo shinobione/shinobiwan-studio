@@ -273,7 +273,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
               <div><dt>trackId</dt><dd>{track.id}</dd></div>
               <div><dt>Audio filename</dt><dd>{track.assets.audio?.filename || 'Missing'}</dd></div>
               <div><dt>{privateRead ? 'Canonical revision' : 'Public revision'}</dt><dd>{track.updatedAt || 'Not exposed'}</dd></div>
-              <div><dt>Read layer</dt><dd>{privateRead ? 'Track Manager v5.9' : 'LaunchPAD public fallback'}</dd></div>
+              <div><dt>Read layer</dt><dd>{privateRead ? 'Track Manager v5.10' : 'LaunchPAD public fallback'}</dd></div>
               <div><dt>Master ID</dt><dd>Not modeled yet</dd></div>
             </dl>
           </WorkspacePanel>
@@ -303,7 +303,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
             {track.publishing.catalogVisible && <a className="ghost-btn" href={studioConfig.launchpadUrl} target="_blank" rel="noreferrer">Open LaunchPAD ↗</a>}
           </WorkspacePanel>
           <WorkspacePanel eyebrow="PUBLISHING / GUARD" title="Write actions locked">
-            <div className="workspace-note"><strong>Catalog rebuild is not exposed here.</strong><p>Build 6 can validate metadata proposals only. Publishing, save, delete, asset replacement and catalog rebuild remain in the protected Track Manager UI.</p></div>
+            <div className="workspace-note"><strong>Catalog rebuild is not exposed here.</strong><p>Build 7 can validate metadata proposals only. Publishing, save, delete, asset replacement and catalog rebuild remain in the protected Track Manager UI.</p></div>
           </WorkspacePanel>
         </div>
       )}
