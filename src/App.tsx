@@ -25,8 +25,8 @@ const NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
 const shellCopy: Record<Exclude<StudioRoute, 'catalog'>, { eyebrow: string; title: string; body: string }> = {
   dashboard: {
     eyebrow: 'STUDIO / HOME',
-    title: 'Private catalog reads are online.',
-    body: 'Phase 4A connects Studio to the authenticated Track Manager v5.8 GET-only bridge. If the Cloudflare Access session is unavailable, Studio automatically keeps the proven LaunchPAD public catalog as a non-destructive fallback.',
+    title: 'Private reads + metadata validation are online.',
+    body: 'Phase 4B.1A connects Studio to Track Manager v5.10 / bridge v1.2. Canonical reads remain private-first with public fallback, and metadata proposals can be validated without saving production state.',
   },
   intelligence: {
     eyebrow: 'SONICTRACE / INTELLIGENCE',
@@ -46,12 +46,12 @@ const shellCopy: Record<Exclude<StudioRoute, 'catalog'>, { eyebrow: string; titl
   publishing: {
     eyebrow: 'CATALOG / PUBLISHING',
     title: 'Publishing status is visible, writes stay protected.',
-    body: 'Phase 4A reads publishability and canonical status from Track Manager when Access is available. Publication and catalog rebuild writes remain intentionally locked in Studio.',
+    body: 'Phase 4B.1A can validate metadata proposals against Track Manager quality rules, but publication, media replacement and catalog rebuild writes remain intentionally locked in Studio.',
   },
   administration: {
     eyebrow: 'SYSTEM / ADMINISTRATION',
-    title: 'Private reads integrated. Recovery tools preserved.',
-    body: 'Track Manager remains the protected write fallback, while SonicTrace and LRC Maker stay independently usable. Studio only absorbs workflows after each new path is proven.',
+    title: 'Validation bridge integrated. Recovery tools preserved.',
+    body: 'Track Manager remains the protected production-write fallback, while SonicTrace and LRC Maker stay independently usable. Studio only absorbs each write workflow after a separately versioned validation gate is proven.',
   },
 };
 
@@ -114,7 +114,7 @@ export default function App() {
   const navTitle = trackId ? 'Track Workspace' : NAV.find(item => item.route === route)?.label;
   const readLayerLabel = readSource === 'private' ? 'Private' : readSource === 'public' ? 'Fallback' : '…';
   const readLayerDetail = readSource === 'private'
-    ? 'Track Manager v5.8 · GET-only'
+    ? 'Track Manager v5.10 · validation-only'
     : readSource === 'public'
       ? 'LaunchPAD public read-only'
       : 'Checking Access session';
@@ -137,7 +137,7 @@ export default function App() {
         </nav>
 
         <div className="sidebar-foot">
-          <span className="phase-tag">PHASE 4A · PRIVATE READ</span>
+          <span className="phase-tag">PHASE 4B.1A · VALIDATION</span>
           <p>v{studioRelease.version} · Build {studioRelease.build}<br />Production writes locked.</p>
         </div>
       </aside>
@@ -183,7 +183,7 @@ export default function App() {
               <article className="metric panel"><span>READ LAYER</span><strong>{readLayerLabel}</strong><small>{readLayerDetail}</small></article>
               <article className="metric panel"><span>WORKSPACE</span><strong>Live</strong><small>7 contextual sections per track</small></article>
               <article className="metric panel"><span>CONTENT HEALTH</span><strong>V1.1</strong><small>Timestamp-aware lyrics completeness</small></article>
-              <article className="metric panel"><span>WRITES</span><strong>Locked</strong><small>Track Manager same-origin guard preserved</small></article>
+              <article className="metric panel"><span>WRITES</span><strong>Locked</strong><small>Metadata validation only · no production save</small></article>
             </section>
 
             <EmptyState eyebrow={shellCopy.dashboard.eyebrow} title={shellCopy.dashboard.title} body={shellCopy.dashboard.body} />
