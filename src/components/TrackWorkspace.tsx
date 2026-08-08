@@ -4,6 +4,7 @@ import { routeHref, trackHref } from '../router';
 import { getCatalogTrack } from '../services/catalog-api';
 import { studioConfig } from '../services/config';
 import type { StudioAsset, StudioTrackDetail, WorkspaceSection } from '../types/studio';
+import { MetadataValidationPanel } from './MetadataValidationPanel';
 
 const TABS: Array<{ id: WorkspaceSection; label: string }> = [
   { id: 'overview', label: 'Overview' },
@@ -272,7 +273,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
               <div><dt>trackId</dt><dd>{track.id}</dd></div>
               <div><dt>Audio filename</dt><dd>{track.assets.audio?.filename || 'Missing'}</dd></div>
               <div><dt>{privateRead ? 'Canonical revision' : 'Public revision'}</dt><dd>{track.updatedAt || 'Not exposed'}</dd></div>
-              <div><dt>Read layer</dt><dd>{privateRead ? 'Track Manager v5.8' : 'LaunchPAD public fallback'}</dd></div>
+              <div><dt>Read layer</dt><dd>{privateRead ? 'Track Manager v5.9' : 'LaunchPAD public fallback'}</dd></div>
               <div><dt>Master ID</dt><dd>Not modeled yet</dd></div>
             </dl>
           </WorkspacePanel>
@@ -282,29 +283,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
         </div>
       )}
 
-      {section === 'metadata' && (
-        <WorkspacePanel eyebrow="METADATA / READ ONLY" title="Canonical metadata">
-          <dl className="workspace-metadata-list metadata-wide">
-            <div><dt>trackId</dt><dd>{track.id}</dd></div>
-            <div><dt>Title</dt><dd>{track.title}</dd></div>
-            <div><dt>Album</dt><dd>{track.album.title}</dd></div>
-            <div><dt>Type</dt><dd>{track.type}</dd></div>
-            <div><dt>Release</dt><dd>{displayDate(track.releaseDate, track.year)}</dd></div>
-            <div><dt>Genres</dt><dd>{track.genres.join(', ') || '—'}</dd></div>
-            <div><dt>Tags</dt><dd>{track.tags.join(', ') || '—'}</dd></div>
-            <div><dt>Moods</dt><dd>{track.moods.join(', ') || '—'}</dd></div>
-            <div><dt>Themes</dt><dd>{track.themes.join(', ') || '—'}</dd></div>
-            <div><dt>Era</dt><dd>{track.era || '—'}</dd></div>
-            <div><dt>Energy</dt><dd>{track.energy || '—'}</dd></div>
-            <div><dt>Languages</dt><dd>{track.languages.join(', ') || '—'}</dd></div>
-            <div><dt>BPM</dt><dd>{track.bpm ?? '—'}</dd></div>
-            <div><dt>Key</dt><dd>{track.key || '—'}</dd></div>
-            <div><dt>Explicit</dt><dd>{track.explicit == null ? '—' : track.explicit ? 'Yes' : 'No'}</dd></div>
-            <div><dt>Read source</dt><dd>{privateRead ? 'Track Manager private bridge' : 'LaunchPAD public fallback'}</dd></div>
-          </dl>
-          <p className="workspace-footnote">Metadata is read-only in Studio 0.4.0. Existing Track Manager writes remain same-origin protected and are not proxied or duplicated here.</p>
-        </WorkspacePanel>
-      )}
+      {section === 'metadata' && <MetadataValidationPanel track={track} />}
 
       {section === 'publishing' && (
         <div className="workspace-two-col">
@@ -324,7 +303,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
             {track.publishing.catalogVisible && <a className="ghost-btn" href={studioConfig.launchpadUrl} target="_blank" rel="noreferrer">Open LaunchPAD ↗</a>}
           </WorkspacePanel>
           <WorkspacePanel eyebrow="PUBLISHING / GUARD" title="Write actions locked">
-            <div className="workspace-note"><strong>Catalog rebuild is not exposed here.</strong><p>Publishing, delete, asset replacement and manifest edits remain in the protected Track Manager UI. Phase 4A deliberately adds no browser write method.</p></div>
+            <div className="workspace-note"><strong>Catalog rebuild is not exposed here.</strong><p>Build 6 can validate metadata proposals only. Publishing, save, delete, asset replacement and catalog rebuild remain in the protected Track Manager UI.</p></div>
           </WorkspacePanel>
         </div>
       )}

@@ -2,9 +2,9 @@
 
 Artist Content & Intelligence Manager.
 
-**Current release:** `0.4.0`  
-**Build:** `5`  
-**Current milestone:** Phase 4A — authenticated Track Manager private reads + safe public fallback
+**Current release:** `0.4.1`  
+**Build:** `6`  
+**Current milestone:** Phase 4B.1A — metadata validation preview, production writes still locked
 
 ## Product role
 
@@ -26,7 +26,7 @@ Implemented:
 
 - GitHub Pages shell;
 - LaunchPAD public catalog read layer;
-- Track Manager v5.8 authenticated **GET-only** Studio bridge support;
+- Track Manager v5.9 authenticated Studio bridge support;
 - private-first catalog reads with automatic public fallback;
 - private canonical drafts/status/quality visibility when Cloudflare Access is usable from the browser;
 - public media/lyrics URL reuse for already-published tracks;
@@ -36,19 +36,23 @@ Implemented:
 - deterministic Content Health;
 - timestamp-aware synchronized lyrics semantics;
 - explicit read provenance (`PRIVATE READ` / `PUBLIC FALLBACK`);
-- build-time regression guard forbidding Studio Phase 4A write plumbing.
+- local Metadata proposal editor;
+- validation-only metadata POST with stale-manifest protection;
+- normalized proposal + quality preview without saving;
+- build-time regression guard allowing exactly one validation POST while forbidding production write plumbing.
 
-Studio production writes remain locked. Build 5 adds **no** POST/PUT/PATCH/DELETE wrapper.
+Studio production writes remain locked. Build 6 exposes **no save, upload, delete, publish or catalog-rebuild wrapper**.
 
-## Phase 4A private read architecture
+## Phase 4B.1A metadata validation architecture
 
-LaunchPAD Build 65 / Track Manager v5.8 exposes an additive bridge behind Cloudflare Access:
+LaunchPAD Build 66 / Track Manager v5.9 / Studio bridge v1.1 keeps the private GET routes and adds exactly one validation-only endpoint:
 
 ```text
 OPTIONS /api/studio/*
 GET     /api/studio/health
 GET     /api/studio/tracks
 GET     /api/studio/tracks/<trackId>
+POST    /api/studio/tracks/<trackId>/metadata/validate
 ```
 
 Browser origin allowlist:
@@ -57,25 +61,51 @@ Browser origin allowlist:
 https://shinobione.github.io
 ```
 
-Studio calls these routes with browser credentials and never stores a Cloudflare secret or service token.
+The validation POST requires:
 
-Read strategy:
+```text
+Content-Type: application/json
+X-Shinobiwan-Studio-Intent: metadata-validate-v1
+credentials: include
+expectedUpdatedAt: canonical manifest revision
+```
+
+If the manifest changed since the workspace loaded, Track Manager returns `409 / STALE_MANIFEST`. Studio refuses to continue with that stale proposal until the track is reloaded.
+
+The response is a preview only: normalized proposed metadata, changed fields and Track Manager quality state. The endpoint and Studio Build 6 do not write the manifest, media or `catalog/index.json`.
+
+See [`docs/PHASE-4B1A-METADATA-VALIDATION.md`](docs/PHASE-4B1A-METADATA-VALIDATION.md).
+
+## Read architecture and fallback
+
+Studio continues to call private routes with browser credentials and never stores a Cloudflare secret or service token.
 
 ```text
 Studio
   |
-  +--> Track Manager private GET bridge
+  +--> Track Manager private bridge
   |      |
   |      +--> canonical manifests / drafts / quality
+  |      +--> metadata validation preview
   |
   +--> LaunchPAD public Worker
          |
          +--> published media URLs / public lyrics / safe fallback
 ```
 
-If the private request cannot use a valid Cloudflare Access session, Studio does **not** weaken authentication or CORS. It automatically continues with the established LaunchPAD public read-only catalog.
+If the private request cannot use a valid Cloudflare Access session, Studio does **not** weaken authentication or CORS. It automatically continues with the established LaunchPAD public read-only catalog. Metadata validation is disabled in that fallback mode because the public projection cannot guarantee canonical `updatedAt`.
 
-See [`docs/PHASE-4A-PRIVATE-READ.md`](docs/PHASE-4A-PRIVATE-READ.md).
+## Production dependency
+
+Build 6 is aligned to the deployed upstream backend:
+
+- LaunchPAD Build `2026.08.08.66`;
+- release `studio-metadata-validation-20260808`;
+- LaunchPAD merge SHA `e30e6665566d5d1e4475ab24b92833a859e2d110`;
+- Track Manager `v5.9`;
+- private Worker Version ID `59ef19af-e189-42d3-ba08-bb5303bb75c1`;
+- public Worker remains `v2.6` and was not deployed for Build 66;
+- no R2 migration or catalog rebuild was performed.
 
 ## Browser authentication note
 
@@ -104,16 +134,9 @@ This avoids duplicate lyric sources and false `Lyrics LRC: Missing` warnings for
 
 ## Safety / rollback policy
 
-Before cross-repository integration work started on 2026-08-08, restoration branches were created:
+Cross-repository restoration branches created before Studio integration remain rollback references. Phase 4B.1A also has a dedicated pre-phase safety snapshot.
 
-- `shinobione/shinobiwan-studio` -> `safety/pre-integration-20260808-1048`
-- `shinobione/LaunchPAD-APP` -> `safety/pre-studio-integration-20260808-1048`
-- `shinobione/LM-IA-Analayse` -> `safety/pre-studio-integration-20260808-1048`
-- `shinobione/lrc-maker` -> `safety/pre-studio-integration-20260808-1048`
-
-The LaunchPAD snapshot also protects Track Manager because Track Manager lives inside `LaunchPAD-APP`.
-
-Build 5 depends on the separately validated/deployed LaunchPAD Build 65 / Track Manager v5.8 bridge. It does not modify LaunchPAD, Track Manager, SonicTrace, LRC Maker or R2 data itself.
+Build 6 changes only `shinobione/shinobiwan-studio`. It consumes the separately validated/deployed LaunchPAD Build 66 / Track Manager v5.9 bridge and does not modify LaunchPAD, Track Manager, SonicTrace, LRC Maker or R2 data itself.
 
 See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md) for the mandatory change policy.
 
@@ -140,7 +163,7 @@ npm run typecheck
 npm run build
 ```
 
-`npm run build` runs the private-read guard before TypeScript/Vite compilation. Every implementation PR must pass the GitHub validation workflow before merge.
+`npm run build` runs the Studio bridge security regression guard before TypeScript/Vite compilation. Every implementation PR must pass the GitHub validation workflow before merge.
 
 ## Routes
 

@@ -4,6 +4,7 @@ import App from './App';
 import './styles.css';
 import './catalog.css';
 import './workspace.css';
+import './metadata-validation.css';
 import './readability.css';
 
 createRoot(document.getElementById('root')!).render(
