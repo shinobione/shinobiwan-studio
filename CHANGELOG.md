@@ -1,5 +1,36 @@
 # SHINOBIWAN Studio Changelog
 
+## 0.4.3 — Build 8 — 2026-08-08
+
+Codename: `metadata-write-capability-awareness`
+
+### Added
+
+- explicit recognition of the future Track Manager bridge capability `write: ["metadata"]`;
+- strict allowlist logic that accepts only `metadata` as a known future write capability while rejecting any other write capability;
+- regression coverage proving Build 8 still exposes no metadata save route or production write CTA.
+
+### Why
+
+Build 7 rejected any non-empty `capabilities.write` list. Deploying the next truthful backend contract first would therefore have forced Studio into `PUBLIC FALLBACK`. Build 8 removes that deployment-order hazard before the backend write capability is enabled.
+
+### Safety
+
+- `adminService.writesEnabled` remains `false`;
+- no `/metadata/save` client exists yet;
+- no Save metadata CTA exists yet;
+- validation stays the only explicit POST in Studio;
+- no PUT/PATCH/DELETE path exists;
+- LaunchPAD, Track Manager production data, R2, SonicTrace and LRC Maker are untouched by Build 8;
+- new safety snapshot: `safety/pre-4b1b-metadata-write-20260808-1612`.
+
+### Rollout sequence
+
+1. deploy Build 8 against current Track Manager v5.10 / bridge v1.2;
+2. deploy Track Manager v5.11 / bridge v1.3 with metadata-only write capability;
+3. verify PRIVATE READ remains healthy;
+4. only then expose real metadata saving in the following Studio build.
+
 ## 0.4.2 — Build 7 — 2026-08-08
 
 Codename: `metadata-validation-simple-transport`
