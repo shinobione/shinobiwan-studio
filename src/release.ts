@@ -1,6 +1,6 @@
 export const studioRelease = {
-  version: '0.5.2',
-  build: 11,
-  codename: 'lyrics-write-capability-awareness',
+  version: '0.6.0',
+  build: 12,
+  codename: 'guarded-lyrics-save',
   releasedAt: '2026-08-08',
 } as const;
