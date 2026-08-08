@@ -1,7 +1,7 @@
 # SHINOBIWAN Studio — Integration Safety Policy
 
 Date established: 2026-08-08  
-Current Studio integration milestone: `0.4.0` / Build `5` / Phase 4A private reads
+Current Studio integration milestone: `0.4.2` / Build `7` / Phase 4B.1A metadata validation preview
 
 This policy is mandatory for all work that can affect LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -15,12 +15,17 @@ This policy is mandatory for all work that can affect LaunchPAD, Track Manager, 
 
 ## 2. Restoration snapshots
 
-Created before Phase 4 integration work:
+Baseline snapshots created before Studio integration:
 
 - Studio: `safety/pre-integration-20260808-1048`
 - LaunchPAD + Track Manager: `safety/pre-studio-integration-20260808-1048`
 - SonicTrace: `safety/pre-studio-integration-20260808-1048`
 - LRC Maker: `safety/pre-studio-integration-20260808-1048`
+
+Fresh snapshots created immediately before the metadata-validation CORS hotfix:
+
+- Studio: `safety/pre-cors-hotfix-20260808-1540`
+- LaunchPAD + Track Manager: `safety/pre-cors-hotfix-20260808-1540`
 
 These branches are rollback references and must not be used as development branches.
 
@@ -29,29 +34,42 @@ These branches are rollback references and must not be used as development branc
 For every integration step:
 
 1. inspect the current production branch and its version/build rules;
-2. create a dedicated feature branch;
-3. make the smallest independently reversible change;
-4. update version/build metadata and documentation in the affected repository;
-5. add or extend a regression guard when the step affects an API/security boundary;
-6. open a dedicated PR describing scope, risks, dependencies and rollback;
-7. run repository-native validation/CI;
-8. do not merge on red CI;
-9. merge only the validated PR;
-10. wait for deployment completion;
-11. verify the deployed surface before starting the next risky dependency.
+2. create or refresh a safety snapshot before a new risky boundary;
+3. create a dedicated feature/fix branch from the current production branch;
+4. make the smallest independently reversible change;
+5. update version/build metadata and documentation in the affected repository;
+6. add or extend a regression guard when the step affects an API/security boundary;
+7. open a dedicated PR describing scope, risks, dependencies and rollback;
+8. run repository-native validation/CI;
+9. do not merge on red CI;
+10. merge only the validated PR;
+11. keep source merge, web deployment, Worker deployment and R2/catalog publication as distinct states;
+12. verify the deployed surface before starting the next risky dependency.
 
 ## 4. Cross-repository rule
 
-A feature requiring changes in several repositories must be split into separate PRs.
+A feature requiring changes in several repositories must be split into separate PRs and deployed in dependency order.
 
-The Phase 4A sequence is the reference pattern:
+Reference sequence already proven:
+
+### Phase 4A — private reads
 
 1. LaunchPAD/Track Manager Build 65 added the GET-only bridge in PR #157;
 2. all LaunchPAD/Worker CI passed;
-3. Build 65 merged and GitHub Pages deployed;
-4. only the private/admin Worker was deployed and verified as Access-protected;
-5. Studio Build 5 consumes that already-deployed contract in a separate PR;
-6. no coordinated breaking merge is required.
+3. only the private/admin Worker was deployed and verified as Access-protected;
+4. Studio Build 5 consumed that already-deployed contract in its own PR;
+5. real Chrome testing confirmed `PRIVATE READ`.
+
+### Phase 4B.1A — metadata validation
+
+1. LaunchPAD Build 66 / Track Manager v5.9 added one exact non-mutating metadata-validation POST in PR #158;
+2. Worker CI, bundle verification and Wrangler dry-run passed before merge;
+3. only the private/admin Worker was deployed;
+4. Studio Build 6 consumed the endpoint in a separate PR;
+5. real Chrome testing then exposed a preflight-specific failure while private GETs remained healthy;
+6. LaunchPAD/Track Manager PR #159 introduced the backward-compatible v5.10 / bridge v1.2 no-preflight transport;
+7. the v5.10 private Worker was deployed admin-only and verified Access-protected;
+8. Studio Build 7 consumes that already-deployed transport in a separate PR.
 
 Never merge coordinated breaking changes in two repositories at the same time.
 
@@ -63,8 +81,10 @@ Never merge coordinated breaking changes in two repositories at the same time.
 - Existing Track Manager workflows remain available as fallback until the replacement path is proven.
 - SonicTrace analysis persistence must not duplicate source WAV files unnecessarily.
 - Lyrics synchronization must not create two competing canonical lyric files.
-- A Studio read failure must not trigger a catalog rebuild, manifest rewrite or media repair automatically.
-- Phase 4A is read-only and must remain capable of falling back to the public LaunchPAD catalog without mutating production state.
+- A Studio read/validation failure must not trigger a catalog rebuild, manifest rewrite or media repair automatically.
+- Timestamped canonical `lyrics.txt` is already synchronized; `.lrc` is optional compatibility/export data.
+- Phase 4B.1A is validation-only: metadata proposals may be normalized/quality-checked but must not be persisted.
+- `catalog/index.json` must not be rebuilt as a side effect of validation.
 
 ## 6. Security safety
 
@@ -72,38 +92,71 @@ Never merge coordinated breaking changes in two repositories at the same time.
 - no permanent admin token in browser code;
 - CORS changes must use explicit allowed origins, never `*` for credentialed private access;
 - current Track Manager Studio origin is exactly `https://shinobione.github.io`;
-- Phase 4A browser calls may send the user's existing Access cookies with `credentials: include`, but Studio must not manufacture or store those credentials;
-- private bridge routes are GET/OPTIONS only;
-- existing Track Manager POST/PUT/PATCH/DELETE routes remain same-origin protected;
-- Studio Build 5 exposes no HTTP method override or write-payload plumbing in its admin client;
-- destructive actions require a future separate security-reviewed phase, explicit UI confirmation and backend authorization.
+- browser calls may send the user's existing Access cookies with `credentials: include`, but Studio must not manufacture or store those credentials;
+- existing Track Manager production writes remain protected by their historical same-origin boundary unless a future route is separately reviewed and versioned;
+- current Studio bridge advertises `write: []`;
+- current Studio client keeps `adminService.writesEnabled = false`;
+- Phase 4B.1A exposes exactly one cross-origin POST and it is validation-only: `/api/studio/tracks/<trackId>/metadata/validate`;
+- metadata validation requires `expectedUpdatedAt` and rejects stale canonical state with `STALE_MANIFEST`;
+- metadata fields are whitelist-only;
+- Studio Build 7 uses `Content-Type: text/plain;charset=UTF-8` and places `intent: metadata-validate-v1` in the JSON-text body so the browser request remains CORS-safelisted;
+- Studio Build 7 must not send `X-Shinobiwan-Studio-Intent` or validation `Content-Type: application/json`, because those recreate the OPTIONS preflight that failed behind Cloudflare Access in real Chrome;
+- destructive actions require a future separate security-reviewed phase, explicit UI confirmation, server-side authorization and rollback plan.
 
-## 7. Phase 4A production boundary
+## 7. Current production boundary
 
-Upstream production state validated before Studio Build 5:
+Public application:
 
-- LaunchPAD Build: `2026.08.08.65`;
-- Track Manager contract: `v5.8`;
-- Studio bridge contract: `v1.0`;
-- LaunchPAD PR: `#157`;
-- LaunchPAD merge commit: `d74e37ef69ebd4801d922ab22262332468178c49`;
-- deployed private Worker version: `b89fac19-78f8-4d39-abd5-76e93de976ae`;
+- LaunchPAD build: `2026.08.08.66`;
+- LaunchPAD release: `studio-metadata-validation-20260808`;
+- public Worker: `v2.6`;
+- public Worker was not redeployed for the v5.10 hotfix.
+
+Private Track Manager:
+
+- Track Manager contract: `v5.10`;
+- Studio bridge contract: `v1.2`;
+- hotfix PR: `#159`;
+- merge commit: `c7cf9ae7ad78e6407dfc6950b3c5a558e2f7bb0b`;
+- deployed private Worker Version ID: `5ac91e36-9060-4e05-a76c-67c46459c72d`;
+- deployment workflow run: `31260738818`;
 - deployment target: `admin` only;
-- public Worker: not deployed by this change;
+- public Worker deploy steps: skipped;
 - R2/catalog rebuild: not performed;
-- post-deploy smoke: Cloudflare Access protection confirmed (`302`).
+- post-deploy smoke: Cloudflare Access protection confirmed (`302` unauthenticated).
 
-An authenticated data read from a real Studio browser session is still a separate runtime validation. If browser cookie policy prevents it, Studio must show/use `PUBLIC FALLBACK`; authentication must not be weakened to force `PRIVATE READ`.
+Studio Build 7 remains a **consumer** of that backend. It cannot save metadata or mutate production data.
 
-## 8. Rollback principle
+## 8. Browser-validation rule
+
+CI/dry-run proves source contracts; it does not replace real-browser verification of Cloudflare Access cookie/CORS behavior.
+
+Therefore every newly exposed browser method must pass this sequence before the next risky phase:
+
+1. authenticate normally in Track Manager;
+2. confirm Studio reports `PRIVATE READ`;
+3. exercise the new browser method;
+4. confirm the response is the expected Worker JSON rather than an Access/preflight/network failure;
+5. confirm no production write occurred unless the phase explicitly intended and separately authorized one.
+
+Build 6 failing step 3 while step 2 passed is the reference example for why this rule is mandatory.
+
+## 9. Rollback principle
 
 If an integration step causes a regression:
 
 1. stop the next phase;
 2. revert only the affected repository/PR;
 3. verify the original standalone tool still works;
-4. use the safety branch only if a normal PR revert is insufficient.
+4. if the regression is backend-only, redeploy only the private/admin Worker from the known-good source;
+5. use the safety branch only if a normal PR revert is insufficient;
+6. do not mutate R2 to compensate for a code-only failure.
 
-For Studio Build 5 specifically, reverting the Studio PR returns the app to Build 4 public-read behavior without requiring any LaunchPAD, Track Manager, SonicTrace, LRC Maker or R2 rollback. The deployed Track Manager v5.8 bridge is additive and can remain unused safely.
+For Studio Build 7 specifically:
+
+- reverting the Studio PR returns the client to Build 6;
+- the Track Manager v5.10 endpoint can remain deployed safely because it is backward-compatible and non-mutating;
+- if v5.10 itself regresses Track Manager, redeploy admin-only from `safety/pre-cors-hotfix-20260808-1540`;
+- no R2 rollback is expected.
 
 The goal is that Studio integration can fail without taking LaunchPAD, Track Manager, LRC Maker or SonicTrace down with it.

@@ -1,5 +1,7 @@
 import { studioConfig } from './config';
 
+const METADATA_VALIDATION_INTENT = 'metadata-validate-v1';
+
 export type AdminReadFailureKind = 'access-or-cors' | 'http' | 'timeout' | 'invalid-response';
 export type AdminAssetKind = 'audio' | 'cover' | 'thumbnail' | 'video' | 'lyrics';
 
@@ -239,8 +241,7 @@ async function postAdminValidation<T>(path: string, body: unknown, timeoutMs = 7
         method: 'POST',
         headers: {
           Accept: 'application/json',
-          'Content-Type': 'application/json',
-          'X-Shinobiwan-Studio-Intent': 'metadata-validate-v1',
+          'Content-Type': 'text/plain;charset=UTF-8',
         },
         body: JSON.stringify(body),
         cache: 'no-store',
@@ -320,7 +321,7 @@ export async function validateAdminTrackMetadata(
 
   const payload = await postAdminValidation<AdminMetadataValidationResponse>(
     `/api/studio/tracks/${encodeURIComponent(trackId)}/metadata/validate`,
-    { expectedUpdatedAt, metadata },
+    { intent: METADATA_VALIDATION_INTENT, expectedUpdatedAt, metadata },
   );
   if (payload.ok === false || payload.validationOnly !== true || !payload.proposed) {
     throw new AdminValidationError('Track Manager returned an invalid metadata validation response.');
@@ -328,12 +329,14 @@ export async function validateAdminTrackMetadata(
   return payload;
 }
 
-// Phase 4B.1A adds one validation-only POST. Production writes remain locked:
-// no save, upload, delete, publish or catalog-rebuild wrapper exists in Studio.
+// Phase 4B.1A keeps one validation-only POST. Build 7 uses a CORS-safelisted
+// text/plain transport so Cloudflare Access does not have to admit an OPTIONS preflight.
+// Production writes remain locked: no save, upload, delete, publish or catalog-rebuild wrapper exists in Studio.
 export const adminService = Object.freeze({
   fallbackUrl: studioConfig.trackManagerUrl,
   bridgeHealthUrl: `${baseUrl()}/api/studio/health`,
-  metadataValidationIntent: 'metadata-validate-v1',
+  metadataValidationIntent: METADATA_VALIDATION_INTENT,
+  metadataValidationTransport: 'text/plain-simple-request',
   validationEnabled: true,
   writesEnabled: false,
 });

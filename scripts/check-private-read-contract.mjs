@@ -6,6 +6,7 @@ const admin = read('src/services/admin-api.ts');
 const catalog = read('src/services/catalog-api.ts');
 const metadata = read('src/components/MetadataValidationPanel.tsx');
 const workspace = read('src/components/TrackWorkspace.tsx');
+const app = read('src/App.tsx');
 const release = read('src/release.ts');
 const pkg = JSON.parse(read('package.json'));
 
@@ -18,11 +19,13 @@ for (const required of [
   '/api/studio/tracks/${encodeURIComponent(trackId)}',
   '/metadata/validate',
   "method: 'POST'",
-  "'Content-Type': 'application/json'",
-  "'X-Shinobiwan-Studio-Intent': 'metadata-validate-v1'",
+  "const METADATA_VALIDATION_INTENT = 'metadata-validate-v1'",
+  "'Content-Type': 'text/plain;charset=UTF-8'",
+  'intent: METADATA_VALIDATION_INTENT',
   'JSON.stringify(body)',
   'expectedUpdatedAt',
   'validationOnly !== true',
+  "metadataValidationTransport: 'text/plain-simple-request'",
   'validationEnabled: true',
   'writesEnabled: false',
   "capabilities?.write?.length",
@@ -31,6 +34,8 @@ for (const required of [
 }
 
 assert.equal((admin.match(/method:\s*'POST'/g) || []).length, 1, 'Studio must expose exactly one explicit POST client path.');
+assert.ok(!admin.includes("'X-Shinobiwan-Studio-Intent'"), 'Build 7 validation POST must not reintroduce the custom header/preflight path.');
+assert.ok(!admin.includes("'Content-Type': 'application/json'"), 'Build 7 validation POST must remain CORS-safelisted text/plain.');
 for (const forbiddenMethod of ['PUT', 'PATCH', 'DELETE']) {
   assert.ok(!admin.includes(`method: '${forbiddenMethod}'`), `Studio must not expose ${forbiddenMethod}.`);
 }
@@ -61,14 +66,16 @@ for (const required of [
 ]) {
   assert.ok(metadata.includes(required), `Metadata validation UI is missing ${required}.`);
 }
-assert.ok(!/Save metadata|Save changes|Publish now|Delete track/.test(metadata), 'Build 6 metadata preview must not expose a production write CTA.');
-assert.ok(workspace.includes("privateRead ? 'Track Manager v5.9' : 'LaunchPAD public fallback'"), 'Workspace must identify Track Manager v5.9.');
+assert.ok(!/Save metadata|Save changes|Publish now|Delete track/.test(metadata), 'Build 7 metadata preview must not expose a production write CTA.');
+assert.ok(workspace.includes("privateRead ? 'Track Manager v5.10' : 'LaunchPAD public fallback'"), 'Workspace must identify Track Manager v5.10.');
 assert.ok(workspace.includes('<MetadataValidationPanel track={track} />'), 'Metadata tab must use the validation preview panel.');
+assert.ok(app.includes("Track Manager v5.10 · validation-only"), 'Dashboard read-layer copy must identify Track Manager v5.10 validation-only mode.');
+assert.ok(app.includes('PHASE 4B.1A · VALIDATION'), 'Sidebar milestone must identify Phase 4B.1A validation mode.');
 
-assert.ok(release.includes("version: '0.4.1'"), 'Studio release version must be 0.4.1.');
-assert.ok(release.includes('build: 6'), 'Studio release build must be 6.');
-assert.ok(release.includes("codename: 'metadata-validation-preview'"), 'Studio release codename must be metadata-validation-preview.');
-assert.equal(pkg.version, '0.4.1', 'package.json must match Studio 0.4.1.');
+assert.ok(release.includes("version: '0.4.2'"), 'Studio release version must be 0.4.2.');
+assert.ok(release.includes('build: 7'), 'Studio release build must be 7.');
+assert.ok(release.includes("codename: 'metadata-validation-simple-transport'"), 'Studio release codename must describe the simple validation transport.');
+assert.equal(pkg.version, '0.4.2', 'package.json must match Studio 0.4.2.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'The production build must run the Studio bridge regression guard.');
 
-console.log('Studio 0.4.1 Build 6 keeps private/public reads safe and exposes exactly one validation-only metadata POST with production writes locked.');
+console.log('Studio 0.4.2 Build 7 keeps private/public reads safe, uses the no-preflight validation-only metadata POST, and leaves production writes locked.');
