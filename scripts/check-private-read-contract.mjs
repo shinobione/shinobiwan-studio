@@ -66,7 +66,7 @@ for (const required of [
   'Canonical lyrics.txt editor',
   'Validate lyrics',
   'Save lyrics.txt',
-  'expected manifest revision + lyrics ETag',
+  'exact manifest revision + lyrics ETag',
   'NO .LRC REQUIRED',
   'CANONICAL REREAD · VERIFIED',
   'saveAdminTrackLyrics',
