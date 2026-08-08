@@ -17,6 +17,7 @@ export type WorkspaceSection =
   | 'publishing';
 
 export type ServiceState = 'checking' | 'online' | 'degraded' | 'offline';
+export type StudioReadSource = 'private' | 'public';
 
 export interface ServiceStatus {
   state: ServiceState;
@@ -33,6 +34,18 @@ export interface StudioAsset {
   url: string;
   fullUrl?: string | null;
   optimized?: boolean;
+}
+
+export interface StudioTrackQuality {
+  state: string | null;
+  publishable: boolean | null;
+  counts: {
+    error: number;
+    warning: number;
+    info: number;
+  } | null;
+  timestampsAvailable: boolean;
+  lyricsStatus: 'missing' | 'invalid' | 'unsynced' | 'synced' | null;
 }
 
 export interface StudioTrack {
@@ -59,6 +72,8 @@ export interface StudioTrack {
   accent2: string | null;
   lyricsAvailable: boolean;
   timestampsAvailable: boolean;
+  readSource: StudioReadSource;
+  quality: StudioTrackQuality | null;
   assets: {
     audio: StudioAsset | null;
     cover: StudioAsset | null;
