@@ -113,6 +113,8 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
 
   const artwork = fullArtwork(track);
   const syncedLyrics = track.timestampsAvailable || Boolean(track.assets.lyricsLrc);
+  const privateRead = track.readSource === 'private';
+  const qualityCounts = track.quality?.counts;
   const healthStyle = { '--health-angle': `${health.total * 3.6}deg` } as CSSProperties;
 
   return (
@@ -131,6 +133,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
           <p>{track.album.title} · {displayDate(track.releaseDate, track.year)}</p>
           <div className="workspace-header-tags">
             <span className="workspace-status">{track.status}</span>
+            <span>{privateRead ? 'PRIVATE READ' : 'PUBLIC FALLBACK'}</span>
             {(track.genres.length ? track.genres : ['Unclassified']).slice(0, 4).map(value => <span key={value}>{value}</span>)}
           </div>
         </div>
@@ -180,8 +183,14 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
 
           <WorkspacePanel eyebrow="ACTIVITY / SOURCE" title="Recent activity">
             <div className="workspace-note">
-              <strong>{track.updatedAt ? 'Latest public asset revision detected' : 'Activity history unavailable'}</strong>
-              <p>{track.updatedAt ? new Date(track.updatedAt).toLocaleString() : 'The public read layer does not expose admin activity history. This arrives with the private API integration.'}</p>
+              <strong>{track.updatedAt
+                ? privateRead ? 'Canonical manifest revision detected' : 'Latest public asset revision detected'
+                : 'Activity history unavailable'}</strong>
+              <p>{track.updatedAt
+                ? `${new Date(track.updatedAt).toLocaleString()} · ${privateRead ? 'Track Manager private read' : 'LaunchPAD public fallback'}`
+                : privateRead
+                  ? 'Track Manager did not expose an updatedAt value for this manifest.'
+                  : 'The public fallback does not expose admin activity history.'}</p>
             </div>
           </WorkspacePanel>
 
@@ -203,7 +212,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
               <b className={track.audioIntelligence.available ? 'ready' : 'pending'}>{track.audioIntelligence.available ? 'CATALOG-LINKED' : 'NOT SAVED'}</b>
               <p>{track.audioIntelligence.available
                 ? 'A persisted SonicTrace analysis is linked to this track.'
-                : 'SonicTrace can analyze audio today, but catalog persistence belongs to Phase 5. The Studio will not invent a fake result here.'}</p>
+                : 'SonicTrace can analyze audio today, but catalog persistence belongs to a later phase. The Studio will not invent a fake result here.'}</p>
             </div>
             <a className="ghost-btn" href={studioConfig.sonicTraceUrl} target="_blank" rel="noreferrer">Open SonicTrace ↗</a>
           </WorkspacePanel>
@@ -211,7 +220,8 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
             <dl className="workspace-metadata-list">
               <div><dt>trackId</dt><dd>{track.id}</dd></div>
               <div><dt>Audio</dt><dd>{track.assets.audio?.filename || 'Missing'}</dd></div>
-              <div><dt>Fingerprint</dt><dd>Phase 5</dd></div>
+              <div><dt>Read layer</dt><dd>{privateRead ? 'Track Manager private' : 'LaunchPAD public fallback'}</dd></div>
+              <div><dt>Fingerprint</dt><dd>Later phase</dd></div>
               <div><dt>Analysis ID</dt><dd>{track.audioIntelligence.latestAnalysisId || '—'}</dd></div>
               <div><dt>Outdated</dt><dd>{track.audioIntelligence.outdated ? 'Yes' : 'No persisted analysis'}</dd></div>
             </dl>
@@ -249,7 +259,9 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
             <AssetRow label="Lyrics TXT" asset={track.assets.lyricsTxt} />
             <AssetRow label="Video / Canvas" asset={track.assets.video} />
           </div>
-          <p className="workspace-footnote">Read-only projection from the canonical catalog. Synchronized lyrics are content-derived from timestamp data; a separate .lrc sidecar is optional. Replace/upload actions stay in Track Manager until Phase 4.</p>
+          <p className="workspace-footnote">{privateRead
+            ? 'Read-only projection from the canonical Track Manager/R2 state. Published media keeps the proven public delivery URLs when available; private-only assets remain protected by Cloudflare Access.'
+            : 'Safe public LaunchPAD fallback. Authenticate with Track Manager to expose private canonical state such as drafts.'} Synchronized lyrics are content-derived from timestamp data; a separate .lrc sidecar is optional. Replace/upload actions remain in Track Manager.</p>
         </WorkspacePanel>
       )}
 
@@ -259,12 +271,13 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
             <dl className="workspace-metadata-list">
               <div><dt>trackId</dt><dd>{track.id}</dd></div>
               <div><dt>Audio filename</dt><dd>{track.assets.audio?.filename || 'Missing'}</dd></div>
-              <div><dt>Public revision</dt><dd>{track.updatedAt || 'Not exposed'}</dd></div>
+              <div><dt>{privateRead ? 'Canonical revision' : 'Public revision'}</dt><dd>{track.updatedAt || 'Not exposed'}</dd></div>
+              <div><dt>Read layer</dt><dd>{privateRead ? 'Track Manager v5.8' : 'LaunchPAD public fallback'}</dd></div>
               <div><dt>Master ID</dt><dd>Not modeled yet</dd></div>
             </dl>
           </WorkspacePanel>
           <WorkspacePanel eyebrow="VERSIONS / ROADMAP" title="Version model reserved">
-            <div className="workspace-note"><strong>No fake version history.</strong><p>Phase 3 establishes the workspace slot only. Dedicated masters/version identifiers will remain subordinate to the canonical trackId when the data model is introduced.</p></div>
+            <div className="workspace-note"><strong>No fake version history.</strong><p>The workspace reserves the version slot only. Dedicated masters/version identifiers will remain subordinate to the canonical trackId when the data model is introduced.</p></div>
           </WorkspacePanel>
         </div>
       )}
@@ -287,8 +300,9 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
             <div><dt>BPM</dt><dd>{track.bpm ?? '—'}</dd></div>
             <div><dt>Key</dt><dd>{track.key || '—'}</dd></div>
             <div><dt>Explicit</dt><dd>{track.explicit == null ? '—' : track.explicit ? 'Yes' : 'No'}</dd></div>
+            <div><dt>Read source</dt><dd>{privateRead ? 'Track Manager private bridge' : 'LaunchPAD public fallback'}</dd></div>
           </dl>
-          <p className="workspace-footnote">Editing remains intentionally unavailable until the Track Manager write backend is integrated in Phase 4.</p>
+          <p className="workspace-footnote">Metadata is read-only in Studio 0.4.0. Existing Track Manager writes remain same-origin protected and are not proxied or duplicated here.</p>
         </WorkspacePanel>
       )}
 
@@ -297,12 +311,20 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
           <WorkspacePanel eyebrow="PUBLISHING / STATE" title="Catalog visibility">
             <div className="workspace-publish-state">
               <b className={track.publishing.catalogVisible ? 'ready' : 'pending'}>{track.publishing.catalogVisible ? 'PUBLISHED' : 'NOT PUBLIC'}</b>
-              <p>Status reported by the public LaunchPAD catalog: <strong>{track.status}</strong>.</p>
+              <p>Status reported by the {privateRead ? 'canonical Track Manager manifest' : 'LaunchPAD public fallback'}: <strong>{track.status}</strong>.</p>
             </div>
-            <a className="ghost-btn" href={studioConfig.launchpadUrl} target="_blank" rel="noreferrer">Open LaunchPAD ↗</a>
+            {privateRead && track.quality && (
+              <div className="workspace-facts">
+                <div><span>Quality</span><strong>{track.quality.state || '—'}</strong></div>
+                <div><span>Publishable</span><strong>{track.quality.publishable == null ? '—' : track.quality.publishable ? 'Yes' : 'No'}</strong></div>
+                <div><span>Errors</span><strong>{qualityCounts?.error ?? 0}</strong></div>
+                <div><span>Warnings</span><strong>{qualityCounts?.warning ?? 0}</strong></div>
+              </div>
+            )}
+            {track.publishing.catalogVisible && <a className="ghost-btn" href={studioConfig.launchpadUrl} target="_blank" rel="noreferrer">Open LaunchPAD ↗</a>}
           </WorkspacePanel>
           <WorkspacePanel eyebrow="PUBLISHING / GUARD" title="Write actions locked">
-            <div className="workspace-note"><strong>Catalog rebuild is not exposed here yet.</strong><p>Publishing, delete, asset replacement and manifest edits stay behind the protected Track Manager path until Phase 4 resolves authenticated cross-origin writes.</p></div>
+            <div className="workspace-note"><strong>Catalog rebuild is not exposed here.</strong><p>Publishing, delete, asset replacement and manifest edits remain in the protected Track Manager UI. Phase 4A deliberately adds no browser write method.</p></div>
           </WorkspacePanel>
         </div>
       )}
