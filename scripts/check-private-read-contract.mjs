@@ -16,6 +16,8 @@ const sonicApi = read('src/services/sonictrace-api.ts');
 const sonicPanel = read('src/components/SonicTracePanel.tsx');
 const intelligenceView = read('src/components/CatalogIntelligenceView.tsx');
 const intelligenceMath = read('src/catalog-intelligence.ts');
+const sonicCss = read('src/sonictrace.css');
+const readability = read('src/readability.css');
 const app = read('src/App.tsx');
 const release = read('src/release.ts');
 const pkg = JSON.parse(read('package.json'));
@@ -110,6 +112,16 @@ for (const required of [
 for (const required of ['Catalog Intelligence', '512D INDEX', 'SIMILARITY / NEIGHBORS', 'CLUSTERS / DETERMINISTIC']) assert.ok(intelligenceView.includes(required), `Catalog Intelligence UI is missing ${required}.`);
 for (const required of ['cosineSimilarity', 'nearestTracks', 'clusterTracks', 'vector.length === 512']) assert.ok(intelligenceMath.includes(required), `Catalog Intelligence engine is missing ${required}.`);
 
+const tinyPhase5Fonts = [...sonicCss.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)]
+  .map(match => Number(match[1]))
+  .filter(size => size < 11);
+assert.deepEqual(tinyPhase5Fonts, [], `Phase 5 UI must not reintroduce microcopy below 11px; found ${tinyPhase5Fonts.join(', ')}.`);
+for (const selector of [
+  '.sonic-status-grid span', '.sonic-alert', '.sonic-layers span', '.sonic-warnings',
+  '.sonic-history span', '.intelligence-track-list small', '.similarity-list span', '.cluster-grid small',
+]) assert.ok(readability.includes(selector), `Readability floor must explicitly cover new Phase 5 selector ${selector}.`);
+assert.ok(readability.includes('--studio-micro-readable: 11px'), 'Studio readability floor must remain 11px.');
+
 assert.equal((admin.match(/method:\s*'POST'/g) || []).length, 2, 'Metadata client must keep validate + save POSTs only.');
 assert.equal((lyricsApi.match(/method:\s*'POST'/g) || []).length, 1, 'Lyrics service must keep one generic POST transport.');
 assert.equal((phase4Api.match(/method:\s*'POST'/g) || []).length, 1, 'Phase 4 service must keep one generic simple JSON POST transport; uploads use XHR/FormData.');
@@ -130,4 +142,4 @@ assert.equal(pkg.version, '0.8.0', 'package.json must match Studio 0.8.0.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'Production build must run the integration regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase5'), 'Production build must run the Phase 5 algorithm guard.');
 
-console.log('Studio 0.8.0 Build 14 completes roadmap Phase 5: workspace analysis, browser fallback, guarded R2 persistence, history, freshness, 512D similarity and clusters.');
+console.log('Studio 0.8.0 Build 14 completes roadmap Phase 5 with the 11px readability floor preserved: workspace analysis, browser fallback, guarded R2 persistence, history, freshness, 512D similarity and clusters.');
