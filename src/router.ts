@@ -1,4 +1,4 @@
-import type { StudioRoute } from './types/studio';
+import type { StudioRoute, WorkspaceSection } from './types/studio';
 
 const ROUTES = new Set<StudioRoute>([
   'dashboard',
@@ -8,6 +8,16 @@ const ROUTES = new Set<StudioRoute>([
   'assets',
   'publishing',
   'administration',
+]);
+
+const WORKSPACE_SECTIONS = new Set<WorkspaceSection>([
+  'overview',
+  'intelligence',
+  'lyrics',
+  'assets',
+  'versions',
+  'metadata',
+  'publishing',
 ]);
 
 function hashParts(): string[] {
@@ -31,10 +41,17 @@ export function readTrackId(): string | null {
   return second;
 }
 
+export function readTrackSection(): WorkspaceSection {
+  const [first, , third] = hashParts();
+  if (first !== 'track') return 'overview';
+  const section = third as WorkspaceSection;
+  return WORKSPACE_SECTIONS.has(section) ? section : 'overview';
+}
+
 export function routeHref(route: StudioRoute): string {
   return `#/${route}`;
 }
 
-export function trackHref(trackId: string): string {
-  return `#/track/${encodeURIComponent(trackId)}`;
+export function trackHref(trackId: string, section: WorkspaceSection = 'overview'): string {
+  return `#/track/${encodeURIComponent(trackId)}/${section}`;
 }
