@@ -5,6 +5,7 @@ import './styles.css';
 import './catalog.css';
 import './workspace.css';
 import './metadata-validation.css';
+import './lyrics-editor.css';
 import './readability.css';
 
 createRoot(document.getElementById('root')!).render(

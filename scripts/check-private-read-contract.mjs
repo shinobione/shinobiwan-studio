@@ -3,8 +3,9 @@ import fs from 'node:fs';
 
 const read = path => fs.readFileSync(path, 'utf8');
 const admin = read('src/services/admin-api.ts');
-const catalog = read('src/services/catalog-api.ts');
+const lyricsApi = read('src/services/lyrics-admin-api.ts');
 const metadata = read('src/components/MetadataValidationPanel.tsx');
+const lyrics = read('src/components/LyricsEditorPanel.tsx');
 const workspace = read('src/components/TrackWorkspace.tsx');
 const app = read('src/App.tsx');
 const release = read('src/release.ts');
@@ -15,49 +16,42 @@ for (const required of [
   "mode: 'cors'",
   "cache: 'no-store'",
   "'/api/studio/health'",
-  "'/api/studio/tracks'",
-  '/api/studio/tracks/${encodeURIComponent(trackId)}',
   '/metadata/validate',
   '/metadata/save',
-  "const METADATA_VALIDATION_INTENT = 'metadata-validate-v1'",
-  "const METADATA_SAVE_INTENT = 'metadata-save-v1'",
   "const ALLOWED_BRIDGE_WRITE_CAPABILITIES = new Set(['metadata', 'lyrics'])",
   "'Content-Type': 'text/plain;charset=UTF-8'",
-  'intent: METADATA_VALIDATION_INTENT',
-  'intent: METADATA_SAVE_INTENT',
-  'expectedUpdatedAt',
-  "recognizedWriteCapabilities: ['metadata', 'lyrics'] as const",
-  "writeCapabilities: ['metadata'] as const",
-  'lyricsWriteEnabled: false',
   "writeCapabilities.includes('metadata')",
   'clientVerified',
-  'validationEnabled: true',
-  'writesEnabled: true',
-]) {
-  assert.ok(admin.includes(required), `Track Manager Studio client is missing ${required}.`);
-}
-
-assert.equal((admin.match(/method:\s*'POST'/g) || []).length, 2, 'Studio Build 11 must keep exactly the two production-proven metadata POST clients.');
-assert.ok(!admin.includes("'X-Shinobiwan-Studio-Intent'"), 'Metadata POSTs must not reintroduce the custom header/preflight path.');
-assert.ok(!admin.includes("'Content-Type': 'application/json'"), 'Metadata POSTs must remain CORS-safelisted text/plain.');
-for (const forbiddenMethod of ['PUT', 'PATCH', 'DELETE']) {
-  assert.ok(!admin.includes(`method: '${forbiddenMethod}'`), `Studio must not expose ${forbiddenMethod}.`);
-}
-for (const forbiddenPath of ['/lyrics/validate', '/lyrics/save', '/delete', '/publish', '/catalog/rebuild', '/thumbnail', '/audio/upload', '/cover/upload', '/video/upload']) {
-  assert.ok(!admin.includes(forbiddenPath), `Phase 4B.2A must not expose runtime path ${forbiddenPath}.`);
-}
+]) assert.ok(admin.includes(required), `Metadata client contract is missing ${required}.`);
 
 for (const required of [
-  'getAdminBridgeHealth()',
-  'getAdminTracks()',
+  "const LYRICS_VALIDATION_INTENT = 'lyrics-validate-v1'",
+  "const LYRICS_SAVE_INTENT = 'lyrics-save-v1'",
+  '/lyrics`',
+  '/lyrics/${suffix}',
+  "suffix: 'validate' | 'save'",
+  "'Content-Type': 'text/plain;charset=UTF-8'",
+  'expectedUpdatedAt',
+  'expectedLyricsEtag',
+  "health.capabilities?.read",
+  "health.capabilities?.validate",
+  "health.capabilities?.write",
+  "includes('lyrics')",
+  'getAdminTrackLyrics',
+  'validateAdminTrackLyrics',
+  'saveAdminTrackLyrics',
   'getAdminTrack(trackId)',
-  "readSource: 'private'",
-  "readSource: 'public'",
-  'if (publicResult.ok) return publicResult.value',
-  'Private and public catalog reads failed.',
-  'Private and public track reads failed.',
-]) {
-  assert.ok(catalog.includes(required), `Catalog fallback contract is missing ${required}.`);
+  'clientVerified',
+  "canonicalFilename: 'lyrics.txt'",
+  'separateLrcRequired: false',
+]) assert.ok(lyricsApi.includes(required), `Lyrics client contract is missing ${required}.`);
+
+assert.equal((admin.match(/method:\s*'POST'/g) || []).length, 2, 'Metadata client must keep exactly validate + save POSTs.');
+assert.equal((lyricsApi.match(/method:\s*'POST'/g) || []).length, 1, 'Lyrics helper must use one generic POST transport for validate/save.');
+for (const source of [admin, lyricsApi]) {
+  assert.ok(!source.includes("'X-Shinobiwan-Studio-Intent'"), 'Studio writes must not reintroduce the custom-header preflight path.');
+  assert.ok(!source.includes("'Content-Type': 'application/json'"), 'Studio writes must remain CORS-simple text/plain.');
+  for (const forbiddenMethod of ['PUT', 'PATCH', 'DELETE']) assert.ok(!source.includes(`method: '${forbiddenMethod}'`), `Studio Build 12 must not expose ${forbiddenMethod}.`);
 }
 
 for (const required of [
@@ -65,36 +59,44 @@ for (const required of [
   'Validate metadata',
   'Save metadata',
   'METADATA SAVED',
+]) assert.ok(metadata.includes(required), `Metadata UI is missing ${required}.`);
+
+for (const required of [
+  'LYRICS / GUARDED WRITE',
+  'Canonical lyrics.txt editor',
+  'Validate lyrics',
+  'Save lyrics.txt',
+  'exact manifest revision + lyrics ETag',
+  'NO .LRC REQUIRED',
   'CANONICAL REREAD · VERIFIED',
-  'saveAdminTrackMetadata(track.id, validationRevision, patch)',
-]) {
-  assert.ok(metadata.includes(required), `Production-proven metadata UI is missing ${required}.`);
-}
-assert.ok(!/Publish now|Delete track|Upload audio|Replace cover/.test(metadata), 'Metadata UI must not expose unrelated production write CTAs.');
+  'saveAdminTrackLyrics',
+]) assert.ok(lyrics.includes(required), `Lyrics UI is missing ${required}.`);
+assert.ok(lyrics.includes('globalThis.confirm'), 'Lyrics production save must require explicit confirmation.');
+assert.ok(!/Upload audio|Delete track|Replace cover|Publish now/.test(lyrics), 'Lyrics editor must not expose unrelated Track Manager operations.');
 
 for (const required of [
-  "privateRead ? 'Track Manager v5.11 · bridge v1.3' : 'LaunchPAD public fallback'",
-  '<MetadataValidationPanel track={track} onSaved={refreshTrackAfterMetadataSave} />',
-  'Publishing writes still locked',
-]) {
-  assert.ok(workspace.includes(required), `Workspace Build 11 contract is missing ${required}.`);
-}
+  '<LyricsEditorPanel track={track} onSaved={refreshTrackAfterWrite} />',
+  '<MetadataValidationPanel track={track} onSaved={refreshTrackAfterWrite} />',
+  "Track Manager v5.12 · bridge v1.4",
+  'Asset replace/upload/delete stays in Track Manager until the final Phase 4 Assets integration.',
+]) assert.ok(workspace.includes(required), `Workspace Build 12 contract is missing ${required}.`);
 
 for (const required of [
-  "Track Manager v5.11 · bridge v1.3",
-  'PHASE 4B.2A · LYRICS CAPABILITY PREP',
-  'Lyrics writes remain locked.',
-  'Lyrics capability prep is compatibility-only.',
-  'Lyrics capability recognized · not active',
-  'lyrics.txt stays canonical.',
-]) {
-  assert.ok(app.includes(required), `Dashboard Build 11 contract is missing ${required}.`);
+  'PHASE 4B.2C · GUARDED LYRICS SAVE',
+  'Metadata + lyrics writes active.',
+  'Track Manager v5.12 · bridge v1.4',
+  'Metadata + Lyrics',
+  'Phase 5, which is outside the current delivery scope.',
+]) assert.ok(app.includes(required), `Dashboard Build 12 contract is missing ${required}.`);
+
+for (const forbiddenFutureRuntime of ['/catalog/rebuild', '/assets/upload', '/assets/delete', '/tracks/create']) {
+  assert.ok(!lyricsApi.includes(forbiddenFutureRuntime) && !admin.includes(forbiddenFutureRuntime), `Build 12 must not prematurely expose final Phase 4 operation ${forbiddenFutureRuntime}.`);
 }
 
-assert.ok(release.includes("version: '0.5.2'"), 'Studio release version must be 0.5.2.');
-assert.ok(release.includes('build: 11'), 'Studio release build must be 11.');
-assert.ok(release.includes("codename: 'lyrics-write-capability-awareness'"), 'Studio release codename must describe lyrics capability awareness.');
-assert.equal(pkg.version, '0.5.2', 'package.json must match Studio 0.5.2.');
-assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'The production build must run the Studio bridge regression guard.');
+assert.ok(release.includes("version: '0.6.0'"), 'Studio release version must be 0.6.0.');
+assert.ok(release.includes('build: 12'), 'Studio release build must be 12.');
+assert.ok(release.includes("codename: 'guarded-lyrics-save'"), 'Studio release codename must describe guarded lyrics save.');
+assert.equal(pkg.version, '0.6.0', 'package.json must match Studio 0.6.0.');
+assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'Production build must run the integration regression guard.');
 
-console.log('Studio 0.5.2 Build 11 can recognize a future lyrics write capability without exposing any lyrics validation/save client; metadata remains the only active production write.');
+console.log('Studio 0.6.0 Build 12 exposes only the production-proven metadata write and guarded canonical lyrics.txt read/validate/save; remaining Phase 4 operations stay locked.');
