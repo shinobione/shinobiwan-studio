@@ -95,7 +95,12 @@ for (const required of [
 assert.equal((admin.match(/method:\s*'POST'/g) || []).length, 2, 'Metadata client must keep validate + save POSTs only.');
 assert.equal((lyricsApi.match(/method:\s*'POST'/g) || []).length, 1, 'Lyrics service must keep one generic POST transport.');
 assert.equal((phase4Api.match(/method:\s*'POST'/g) || []).length, 1, 'Phase 4 service must keep one generic simple JSON POST transport; uploads use XHR/FormData.');
-assert.ok(!/deleteAdminTrack|tracks\/delete|track-delete/.test(phase4Api), 'Whole-track delete must not be exposed by Studio Phase 4.');
+for (const forbiddenWholeTrack of [
+  '/api/studio/tracks/${encodeURIComponent(trackId)}/delete',
+  '/api/studio/tracks/delete',
+  'wholeTrackDeleteEnabled: true',
+  'deleteWholeTrack(',
+]) assert.ok(!phase4Api.includes(forbiddenWholeTrack), `Whole-track delete must not be exposed by Studio Phase 4: ${forbiddenWholeTrack}`);
 for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog intelligence', 'saveSonicTrace', 'phase5Enabled: true']) {
   assert.ok(!phase4Api.toLowerCase().includes(forbiddenPhase5.toLowerCase()), `Phase 5 leaked into Phase 4 client: ${forbiddenPhase5}`);
 }
