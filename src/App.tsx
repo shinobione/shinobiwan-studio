@@ -25,8 +25,8 @@ const NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
 const shellCopy: Record<Exclude<StudioRoute, 'catalog'>, { eyebrow: string; title: string; body: string }> = {
   dashboard: {
     eyebrow: 'STUDIO / HOME',
-    title: 'Private reads + guarded metadata save are online.',
-    body: 'Phase 4B.1B connects Studio to Track Manager v5.11 / bridge v1.3. Canonical reads remain private-first with public fallback, while the Metadata workspace exposes one explicitly validated production write and nothing else.',
+    title: 'Guarded metadata save is production-proven.',
+    body: 'Phase 4B.1B is now proven end-to-end against Track Manager v5.11 / bridge v1.3: validate, confirm, save, catalog rebuild, backend reread and browser canonical reread all passed in real production, including a clean restoration write.',
   },
   intelligence: {
     eyebrow: 'SONICTRACE / INTELLIGENCE',
@@ -46,12 +46,12 @@ const shellCopy: Record<Exclude<StudioRoute, 'catalog'>, { eyebrow: string; titl
   publishing: {
     eyebrow: 'CATALOG / PUBLISHING',
     title: 'Publishing remains protected.',
-    body: 'Build 9 can save validated metadata only. Publication shortcuts, media replacement, delete and standalone catalog rebuild actions remain intentionally locked in Studio.',
+    body: 'Build 10 keeps the production-proven metadata save unchanged. Publication shortcuts, media replacement, delete and standalone catalog rebuild actions remain intentionally locked in Studio.',
   },
   administration: {
     eyebrow: 'SYSTEM / ADMINISTRATION',
-    title: 'First scoped write integrated. Recovery tools preserved.',
-    body: 'Track Manager remains the protected operational fallback, while SonicTrace and LRC Maker stay independently usable. Studio absorbs write workflows one by one behind separately versioned safety gates.',
+    title: 'First scoped write proven. Recovery tools preserved.',
+    body: 'Track Manager remains the protected operational fallback, while SonicTrace and LRC Maker stay independently usable. Studio absorbs write workflows one by one behind separately versioned safety gates and real-browser proof.',
   },
 };
 
@@ -137,7 +137,7 @@ export default function App() {
         </nav>
 
         <div className="sidebar-foot">
-          <span className="phase-tag">PHASE 4B.1B · METADATA SAVE</span>
+          <span className="phase-tag">PHASE 4B.1B · PRODUCTION PROVEN</span>
           <p>v{studioRelease.version} · Build {studioRelease.build}<br />1 guarded production write.</p>
         </div>
       </aside>
@@ -183,7 +183,7 @@ export default function App() {
               <article className="metric panel"><span>READ LAYER</span><strong>{readLayerLabel}</strong><small>{readLayerDetail}</small></article>
               <article className="metric panel"><span>WORKSPACE</span><strong>Live</strong><small>7 contextual sections per track</small></article>
               <article className="metric panel"><span>CONTENT HEALTH</span><strong>V1.1</strong><small>Timestamp-aware lyrics completeness</small></article>
-              <article className="metric panel"><span>WRITES</span><strong>Metadata</strong><small>Validate → confirm → save · everything else locked</small></article>
+              <article className="metric panel"><span>WRITES</span><strong>Metadata</strong><small>Production-proven · everything else locked</small></article>
             </section>
 
             <EmptyState eyebrow={shellCopy.dashboard.eyebrow} title={shellCopy.dashboard.title} body={shellCopy.dashboard.body} />
