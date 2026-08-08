@@ -10,7 +10,7 @@ import { adminService } from './services/admin-api';
 import { getCatalogHealth } from './services/catalog-api';
 import { studioConfig } from './services/config';
 import { getSonicTraceHealth } from './services/sonictrace-api';
-import type { ServiceStatus, StudioRoute, WorkspaceSection } from './types/studio';
+import type { ServiceStatus, StudioReadSource, StudioRoute, WorkspaceSection } from './types/studio';
 
 const NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
   { route: 'dashboard', label: 'Dashboard', glyph: '◫' },
@@ -25,13 +25,13 @@ const NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
 const shellCopy: Record<Exclude<StudioRoute, 'catalog'>, { eyebrow: string; title: string; body: string }> = {
   dashboard: {
     eyebrow: 'STUDIO / HOME',
-    title: 'Track Workspace is online.',
-    body: 'Phase 3 provides a read-only workspace per track. Build 4 also treats timestamped canonical lyrics as synchronized content without requiring a duplicate .lrc file.',
+    title: 'Private catalog reads are online.',
+    body: 'Phase 4A connects Studio to the authenticated Track Manager v5.8 GET-only bridge. If the Cloudflare Access session is unavailable, Studio automatically keeps the proven LaunchPAD public catalog as a non-destructive fallback.',
   },
   intelligence: {
     eyebrow: 'SONICTRACE / INTELLIGENCE',
     title: 'Audio Intelligence boundary ready.',
-    body: 'Track Workspace has a dedicated intelligence section. Analysis persistence remains intentionally gated until Phase 5.',
+    body: 'Track Workspace has a dedicated intelligence section. Analysis persistence remains intentionally gated until the later SonicTrace catalog phase.',
   },
   lyrics: {
     eyebrow: 'LYRICS / SYNC',
@@ -41,17 +41,17 @@ const shellCopy: Record<Exclude<StudioRoute, 'catalog'>, { eyebrow: string; titl
   assets: {
     eyebrow: 'CONTENT / ASSETS',
     title: 'Canonical assets are visible per track.',
-    body: 'Track Workspace can inspect R2-backed public assets. Replace/upload actions remain protected until the authenticated Phase 4 path.',
+    body: 'Authenticated reads can inspect the canonical Track Manager state, including drafts. Replace/upload actions remain in the existing protected Track Manager write path.',
   },
   publishing: {
     eyebrow: 'CATALOG / PUBLISHING',
     title: 'Publishing status is visible, writes stay protected.',
-    body: 'Each track has a Publishing section, while rebuild and publication writes remain in Track Manager until Phase 4.',
+    body: 'Phase 4A reads publishability and canonical status from Track Manager when Access is available. Publication and catalog rebuild writes remain intentionally locked in Studio.',
   },
   administration: {
     eyebrow: 'SYSTEM / ADMINISTRATION',
-    title: 'Legacy tools remain available as fallbacks.',
-    body: 'The Studio absorbs workflows progressively while Track Manager, SonicTrace and LRC Maker remain available as recovery paths.',
+    title: 'Private reads integrated. Recovery tools preserved.',
+    body: 'Track Manager remains the protected write fallback, while SonicTrace and LRC Maker stay independently usable. Studio only absorbs workflows after each new path is proven.',
   },
 };
 
@@ -63,6 +63,7 @@ export default function App() {
   const [trackSection, setTrackSection] = useState<WorkspaceSection>(() => readTrackSection());
   const [catalog, setCatalog] = useState<ServiceStatus>(checking);
   const [sonic, setSonic] = useState<ServiceStatus>(checking);
+  const [readSource, setReadSource] = useState<StudioReadSource | 'checking'>('checking');
   const adminMode = useMemo(resolveAdminMode, []);
 
   useEffect(() => {
@@ -79,11 +80,24 @@ export default function App() {
   useEffect(() => {
     let active = true;
     getCatalogHealth()
-      .then(payload => active && setCatalog({
-        state: payload.ok === false ? 'degraded' : 'online',
-        label: payload.canonicalTracks != null ? `${payload.canonicalTracks} tracks` : 'online',
-        detail: `${payload.service || 'LaunchPAD media'}${payload.version != null ? ` v${payload.version}` : ''}`,
-      }))
+      .then(payload => {
+        if (!active) return;
+        setReadSource(payload.readSource);
+        const count = payload.canonicalTracks != null ? ` · ${payload.canonicalTracks} public tracks` : '';
+        if (payload.readSource === 'private') {
+          setCatalog({
+            state: 'online',
+            label: 'private read',
+            detail: `Track Manager v${payload.trackManagerVersion || payload.version || '?'} · bridge v${payload.bridgeVersion || '?'}${count}`,
+          });
+        } else {
+          setCatalog({
+            state: 'degraded',
+            label: 'public fallback',
+            detail: `${payload.service || 'LaunchPAD media'}${payload.version != null ? ` v${payload.version}` : ''}${count}`,
+          });
+        }
+      })
       .catch(error => active && setCatalog({ state: 'offline', label: 'offline', detail: String(error) }));
 
     getSonicTraceHealth()
@@ -98,6 +112,12 @@ export default function App() {
   }, []);
 
   const navTitle = trackId ? 'Track Workspace' : NAV.find(item => item.route === route)?.label;
+  const readLayerLabel = readSource === 'private' ? 'Private' : readSource === 'public' ? 'Fallback' : '…';
+  const readLayerDetail = readSource === 'private'
+    ? 'Track Manager v5.8 · GET-only'
+    : readSource === 'public'
+      ? 'LaunchPAD public read-only'
+      : 'Checking Access session';
 
   return (
     <div className="studio-shell">
@@ -117,7 +137,7 @@ export default function App() {
         </nav>
 
         <div className="sidebar-foot">
-          <span className="phase-tag">PHASE 3.1 · SYNCED LYRICS</span>
+          <span className="phase-tag">PHASE 4A · PRIVATE READ</span>
           <p>v{studioRelease.version} · Build {studioRelease.build}<br />Production writes locked.</p>
         </div>
       </aside>
@@ -160,10 +180,10 @@ export default function App() {
             </section>
 
             <section className="status-grid">
-              <article className="metric panel"><span>CATALOG</span><strong>{catalog.state === 'online' ? catalog.label : '—'}</strong><small>LaunchPAD public read layer</small></article>
+              <article className="metric panel"><span>READ LAYER</span><strong>{readLayerLabel}</strong><small>{readLayerDetail}</small></article>
               <article className="metric panel"><span>WORKSPACE</span><strong>Live</strong><small>7 contextual sections per track</small></article>
               <article className="metric panel"><span>CONTENT HEALTH</span><strong>V1.1</strong><small>Timestamp-aware lyrics completeness</small></article>
-              <article className="metric panel"><span>WRITES</span><strong>Locked</strong><small>Phase 4 security gate</small></article>
+              <article className="metric panel"><span>WRITES</span><strong>Locked</strong><small>Track Manager same-origin guard preserved</small></article>
             </section>
 
             <EmptyState eyebrow={shellCopy.dashboard.eyebrow} title={shellCopy.dashboard.title} body={shellCopy.dashboard.body} />
@@ -180,7 +200,7 @@ export default function App() {
 
             {route === 'administration' && (
               <section className="tool-grid">
-                <a className="tool-card panel" href={adminService.fallbackUrl} target="_blank" rel="noreferrer"><b>LP</b><span>Track Manager</span><small>Protected write fallback ↗</small></a>
+                <a className="tool-card panel" href={adminService.fallbackUrl} target="_blank" rel="noreferrer"><b>LP</b><span>Track Manager</span><small>Authenticate private reads / protected writes ↗</small></a>
                 <a className="tool-card panel" href={studioConfig.sonicTraceUrl} target="_blank" rel="noreferrer"><b>ST</b><span>SonicTrace</span><small>Audio Intelligence ↗</small></a>
                 <a className="tool-card panel" href={studioConfig.lrcMakerUrl} target="_blank" rel="noreferrer"><b>LM</b><span>LRC Maker</span><small>Lyrics synchronization ↗</small></a>
               </section>
