@@ -40,7 +40,7 @@ for (const required of [
 
 for (const required of [
   "const EMBED_TAG = 'shinobiwan-lyrics-studio'",
-  "const EMBED_VERSION = '6.3.2'",
+  "const EMBED_VERSION = '6.3.3'",
   "embed/lyrics-studio.js",
   "base.searchParams.set('v', EMBED_VERSION)",
   'void onSaved()',
@@ -48,6 +48,7 @@ for (const required of [
   'Open standalone fallback ↗',
 ]) assert.ok(embed.includes(required), `Embedded Lyrics Studio host missing ${required}.`);
 
+assert.ok(!embed.includes("const EMBED_VERSION = '6.3.2'"), 'Build 19 must not reload the faulty 6.3.2 embed.');
 assert.ok(!`${embed}\n${workspace}`.includes('<iframe'), 'Phase 6C must not use an iframe.');
 assert.ok(!fs.existsSync('src/components/LyricsStudioPortal.tsx'), 'Phase 6C must not rely on a MutationObserver/portal injection bridge.');
 assert.ok(health.includes('const syncedLyrics = track.timestampsAvailable;'), 'Content Health must derive synchronization only from canonical timestamps.');
@@ -59,4 +60,4 @@ const tinyFonts = [...`${lyricsCss}\n${embedCss}\n${readability}`.matchAll(/font
   .filter(size => size < 11);
 assert.deepEqual(tinyFonts, [], `Phase 6 must preserve the 11px readability floor; found ${tinyFonts.join(', ')}.`);
 
-console.log('Phase 6 Lyrics contract passed: direct embedded LRC Maker 6.3.2 engine, standalone fallback, canonical timestamps, guarded refresh and 11px readability floor.');
+console.log('Phase 6 Lyrics contract passed: direct embedded LRC Maker 6.3.3 engine, canonical reread hotfix, standalone fallback, canonical timestamps, guarded refresh and 11px readability floor.');
