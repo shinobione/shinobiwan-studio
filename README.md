@@ -2,15 +2,35 @@
 
 Artist Content & Intelligence Manager.
 
-**Release:** `0.10.8`
+**Release:** `0.10.9`
 
-**Build:** `30`
+**Build:** `31`
 
-**Codename:** `phase-ux-c2-5-a-polish`
+**Codename:** `phase-ux-c2-5-a-lrc-638`
 
-**Milestone:** PHASE UX C2.5-A — Studio frontend polish
+**Milestone:** PHASE UX C2.5-A — Lyrics embed cascade correction
 
 **Stop line:** Do not begin Phase 7 without explicit authorization.
+
+## PHASE UX C2.5-A — Build 31
+
+Build 31 is the narrow corrective integration discovered by real-user smoke of Build 30. The embedded Lyrics row borders had adopted the intended teal/cyan treatment, but the selected/current row fill itself remained purple.
+
+The host pin and Shadow DOM integration were correct. The remaining mismatch was inside LRC Maker: its historical standalone `launchpad-skin.css` protects purple `.line.select` / `.line.highlight` backgrounds with `!important`, while the 6.3.7 Studio-only overrides did not use equivalent priority for those background declarations.
+
+Build 31 therefore:
+
+- consumes LRC Maker embed `6.3.8` with an explicit cache-busting version pin;
+- keeps `trackId` as the only Studio embed context and preserves the existing protected Track Manager lyrics routes;
+- relies on the 6.3.8 embed-only cascade fix so neutral, hover, selected and current rows actually render with dark teal/cyan fills and readable light text;
+- preserves the standalone LRC Maker appearance unchanged;
+- preserves Build 30's in-flow cleanup/audio confirmations, Catalog warm/shared read, in-memory route snapshot, first-load skeleton/status and Intelligence overflow fix;
+- advances every release, Phase 6 and C2.5-A regression guard to `0.10.9` / Build `31`;
+- changes no Track Manager route, Worker, R2 object, canonical Album schema, catalog projection contract, SonicTrace persistence or Phase 7 scope.
+
+Studio Build 31 must not be promoted before LRC Maker `6.3.8` is green, merged and published to GitHub Pages. See [`docs/PHASE-UX-C2-5-A-BUILD31-LRC-638.md`](docs/PHASE-UX-C2-5-A-BUILD31-LRC-638.md) and [`CHANGELOG-C2-5-A-BUILD31.md`](CHANGELOG-C2-5-A-BUILD31.md).
+
+The final PHASE UX checkpoint remains **NOT CREATED**. C2.5-B is **NOT STARTED**, C3 SonicTrace V2-E parity remains suspended, and Phase 7 remains forbidden.
 
 ## PHASE UX C2.5-A — Build 30
 
@@ -19,7 +39,7 @@ Build 30 is a frontend-only polish lot discovered during real-user C2.5-A smoke.
 - removes the Intelligence track-list horizontal scrollbar that appeared on hover by keeping the list vertical-only and removing the translated hover geometry;
 - starts warming the canonical Catalog read as soon as the Studio shell is loaded, shares the in-flight request, keeps an in-memory snapshot for route revisits and force-refreshes only after a real catalog-changing action such as New Track creation;
 - replaces the ambiguous blank Catalog wait with an accessible loading status, animated activity indicator and responsive skeleton cards;
-- consumes LRC Maker embed `6.3.7`, whose Studio-only presentation keeps cleanup/audio confirmations inside the layout and aligns selected/current lyric lines with the Studio teal/cyan palette;
+- consumes LRC Maker embed `6.3.7`, whose in-flow notification behavior remains valid; its intended teal/cyan row-fill presentation was only partially effective because of the standalone skin cascade and is superseded by 6.3.8 / Build 31;
 - adds regression coverage for the loading/cache, overflow correction, embed pin and release markers;
 - changes no Track Manager route, Worker, R2 object, canonical Album schema, catalog projection contract, SonicTrace persistence or Phase 7 scope.
 
@@ -232,7 +252,7 @@ Cloudflare Access   protected
 public Worker       v2.6 unchanged
 ```
 
-LRC Maker `6.3.7` is the frontend embed consumed by Build 30. Its canonical duration-evidence behavior remains the proven `6.3.6` contract; 6.3.7 only changes embedded presentation. The C2 real-user Lyrics smoke passed canonical playback, timestamp navigation, synchronized `lyrics.txt` save and canonical reread without changing the one-source Lyrics contract.
+LRC Maker `6.3.8` is the frontend embed targeted by Build 31. Its canonical duration-evidence behavior remains the proven `6.3.6` contract; 6.3.7 moved embedded confirmations into the layout, and 6.3.8 only corrects the embed-only row-state CSS cascade. The C2 real-user Lyrics smoke passed canonical playback, timestamp navigation, synchronized `lyrics.txt` save and canonical reread without changing the one-source Lyrics contract.
 
 ## Security rules
 
@@ -251,24 +271,26 @@ See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md).
 
 ## Safety / rollback
 
-Current C2.5-A polish snapshots:
+Current corrective snapshots:
 
 ```text
-Studio:        safety/pre-c2-5-a-studio-ux-polish-20260809-2037
-LRC Maker:     safety/pre-c2-5-a-studio-embed-polish-20260809-2037
-LaunchPAD-APP: safety/pre-c2-5-a-era-play-mobile-ux-20260809-2037
+Studio Build 31:    safety/pre-build31-lrc-638-20260809-2128
+LRC Maker 6.3.8:    safety/pre-6-3-8-studio-line-state-20260809-2128
+Studio Build 30:    safety/pre-c2-5-a-studio-ux-polish-20260809-2037
+LRC Maker 6.3.7:    safety/pre-c2-5-a-studio-embed-polish-20260809-2037
+LaunchPAD Build 71: safety/pre-c2-5-a-era-play-mobile-ux-20260809-2037
 ```
 
 The older final Phase 6 checkpoint remains the authoritative rollback point for the validated Phase 6 milestone itself.
 
 ## Verification policy
 
-Studio Build 30 is protected by:
+Studio Build 31 is protected by:
 
 - private-read integration guards;
 - Phase 5 algorithm guards;
 - Phase 6 canonical Lyrics guards;
-- LRC Maker 6.3.7 embed pin;
+- LRC Maker 6.3.8 embed pin with stale-version rejection;
 - no-iframe guard;
 - Content Health timestamp-only synchronization guard;
 - 11px readability floor for established useful microcopy;
@@ -277,7 +299,7 @@ Studio Build 30 is protected by:
 - Vite production build;
 - final Phase 6/C2 production smoke history.
 
-LRC Maker 6.3.7 additionally preserves the real reducer transition test for `line N -> timestamp -> select N+1`, retains isolated simple-click/no-seek versus double-click/seek guards, and adds an embed-only UX guard for non-overlay notifications and readable Studio line states.
+LRC Maker 6.3.8 additionally preserves the real reducer transition test for `line N -> timestamp -> select N+1`, retains isolated simple-click/no-seek versus double-click/seek guards, keeps notifications in-flow and explicitly verifies that Studio's scoped teal/dark row backgrounds defeat the standalone purple `!important` skin without changing that standalone skin.
 
 We do not mutate a real production WAV/cover/lyrics object merely to manufacture a frontend smoke test.
 
@@ -315,7 +337,7 @@ Every Studio release updates together:
 1. `package.json`;
 2. `src/release.ts`;
 3. visible version/build/codename copy;
-4. `CHANGELOG.md`;
+4. `CHANGELOG.md` plus corrective changelog where applicable;
 5. README and affected docs;
 6. security/integration regression guards;
 7. PR dependency and rollback notes.
