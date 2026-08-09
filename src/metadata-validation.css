@@ -6,6 +6,12 @@
 .metadata-write-badge { border-color: rgba(96,231,163,.25); color: #91ecc0; background: rgba(96,231,163,.035); }
 .metadata-lock-note { margin-bottom: 18px; }
 .metadata-lock-note .ghost-btn { margin-top: 12px; }
+.metadata-form-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.metadata-group { min-width: 0; margin: 0; padding: 16px; border: 1px solid var(--studio-border-muted); border-radius: var(--studio-radius-md); background: rgba(255,255,255,.012); }
+.metadata-group-wide { grid-column: 1 / -1; }
+.metadata-group legend { padding: 0 7px; color: var(--studio-text); font-size: 14px; font-weight: 850; }
+.metadata-group > p { margin: 0 0 14px; color: var(--studio-text-muted); font-size: 11px; line-height: 1.5; }
+.metadata-group > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .metadata-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .metadata-field { display: grid; gap: 6px; min-width: 0; }
 .metadata-field-wide { grid-column: 1 / -1; }
@@ -15,6 +21,8 @@
 .metadata-field input:focus,
 .metadata-field select:focus { border-color: rgba(82,227,214,.32); background: rgba(82,227,214,.025); box-shadow: 0 0 0 3px rgba(82,227,214,.035); }
 .metadata-field select option { background: #0b1215; color: #d7e9e9; }
+.metadata-color-field { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 8px; }
+.metadata-color-field > i { min-height: 42px; border: 1px solid rgba(255,255,255,.18); border-radius: 9px; background-image: linear-gradient(135deg,rgba(255,255,255,.08),transparent); }
 .metadata-validation-actions { margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(133,231,226,.07); display: flex; align-items: center; gap: 10px; }
 .metadata-validation-actions > div { min-width: 0; margin-right: auto; }
 .metadata-validation-actions > div span { display: block; color: #566b70; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; }
@@ -54,6 +62,8 @@
 .metadata-reload-btn { margin-top: 13px; min-height: 38px; }
 @media (max-width: 850px) {
   .metadata-validation-head { flex-direction: column; }
+  .metadata-form-groups { grid-template-columns: 1fr; }
+  .metadata-group-wide { grid-column: auto; }
   .metadata-result-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .metadata-save-zone { align-items: stretch; flex-direction: column; }
   .metadata-save-zone > div { margin-right: 0; }
@@ -61,6 +71,7 @@
 @media (max-width: 590px) {
   .metadata-validation-shell { padding: 18px; }
   .metadata-form-grid { grid-template-columns: 1fr; }
+  .metadata-group > div { grid-template-columns: 1fr; }
   .metadata-field-wide { grid-column: auto; }
   .metadata-validation-actions { align-items: stretch; flex-direction: column; }
   .metadata-validation-actions > div { margin-right: 0; }

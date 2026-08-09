@@ -165,8 +165,8 @@ export function AssetsManager({ track, onChanged }: { track: StudioTrackDetail; 
   return (
     <article className="panel phase4-assets-manager">
       <div className="phase4-panel-head">
-        <div><span className="eyebrow">TRACK MANAGER / ASSETS</span><h3>Canonical Assets Manager</h3></div>
-        <b>{locked ? 'LOCKED' : 'BRIDGE v1.5'}</b>
+        <div><span className="eyebrow">ASSETS</span><h3>Manage production media</h3><p>Upload, replace or remove one media item at a time. Every operation is verified before the workspace refreshes.</p></div>
+        <b>{locked ? 'READ ONLY' : 'EDITING ENABLED'}</b>
       </div>
 
       {locked && <p className="workspace-muted">Asset mutations require PRIVATE READ and a canonical manifest revision. The existing Track Manager fallback remains available.</p>}
@@ -243,7 +243,7 @@ export function AssetsManager({ track, onChanged }: { track: StudioTrackDetail; 
       )}
       {error && <div className="phase4-operation-error"><strong>ASSET OPERATION ERROR</strong><span>{error}</span></div>}
 
-      <p className="workspace-footnote">One asset per operation. Upload uses multipart FormData with progress and no custom request header. Destructive actions require confirmation. Whole-track deletion is intentionally not exposed.</p>
+      <details className="workspace-diagnostics phase4-assets-diagnostics"><summary>Safety details</summary><p>One asset changes per operation. Destructive actions require confirmation and whole-track deletion is intentionally not exposed. Track Manager preserves stale-write and rollback protection internally.</p></details>
     </article>
   );
 }

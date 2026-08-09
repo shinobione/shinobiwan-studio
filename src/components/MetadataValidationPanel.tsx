@@ -148,6 +148,10 @@ function Field({ label, children, wide = false }: { label: string; children: Rea
   return <label className={`metadata-field${wide ? ' metadata-field-wide' : ''}`}><span>{label}</span>{children}</label>;
 }
 
+function MetadataGroup({ title, hint, children, wide = false }: { title: string; hint: string; children: React.ReactNode; wide?: boolean }) {
+  return <fieldset className={`metadata-group${wide ? ' metadata-group-wide' : ''}`}><legend>{title}</legend><p>{hint}</p><div>{children}</div></fieldset>;
+}
+
 export function MetadataValidationPanel({
   track,
   onSaved,
@@ -272,11 +276,11 @@ export function MetadataValidationPanel({
     <div className="metadata-validation-shell">
       <div className="metadata-validation-head">
         <div>
-          <span className="eyebrow">METADATA / GUARDED WRITE</span>
-          <h3>Canonical metadata editor</h3>
-          <p>Edit locally, validate against Track Manager v5.11, review the normalized proposal, then save explicitly. Metadata save is the only production write exposed by this Studio build.</p>
+          <span className="eyebrow">METADATA</span>
+          <h3>Shape how this track appears</h3>
+          <p>Organize identity, release information and discovery details. Studio validates the full proposal before any protected save.</p>
         </div>
-        <b className="metadata-no-write metadata-write-badge">METADATA WRITE · GUARDED</b>
+        <b className="metadata-no-write metadata-write-badge">PROTECTED SAVE</b>
       </div>
 
       {!privateRead && (
@@ -291,31 +295,41 @@ export function MetadataValidationPanel({
         <div className="workspace-note metadata-lock-note"><strong>Canonical revision unavailable.</strong><p>Validation and save stay locked because Build 9 refuses to submit metadata without expectedUpdatedAt stale-write protection.</p></div>
       )}
 
-      <div className="metadata-form-grid">
-        <Field label="Title" wide><input value={form.title} onChange={event => update('title', event.target.value)} /></Field>
-        <Field label="Status"><select value={form.status} onChange={event => update('status', event.target.value)}><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></Field>
-        <Field label="Type"><input value={form.type} onChange={event => update('type', event.target.value)} /></Field>
-        <Field label="Year"><input inputMode="numeric" value={form.year} onChange={event => update('year', event.target.value)} placeholder="2026" /></Field>
-        <Field label="Release date"><input type="date" value={form.releaseDate} onChange={event => update('releaseDate', event.target.value)} /></Field>
-        <Field label="Album ID"><input value={form.albumId} onChange={event => update('albumId', event.target.value)} /></Field>
-        <Field label="Album title"><input value={form.albumTitle} onChange={event => update('albumTitle', event.target.value)} /></Field>
-        <Field label="Genres" wide><input value={form.genres} onChange={event => update('genres', event.target.value)} placeholder="R&B, Trap" /></Field>
-        <Field label="Tags" wide><input value={form.tags} onChange={event => update('tags', event.target.value)} /></Field>
-        <Field label="Moods"><input value={form.moods} onChange={event => update('moods', event.target.value)} /></Field>
-        <Field label="Themes"><input value={form.themes} onChange={event => update('themes', event.target.value)} /></Field>
-        <Field label="Era"><input value={form.era} onChange={event => update('era', event.target.value)} /></Field>
-        <Field label="Energy"><input value={form.energy} onChange={event => update('energy', event.target.value)} /></Field>
-        <Field label="Languages" wide><input value={form.languages} onChange={event => update('languages', event.target.value)} placeholder="English, French" /></Field>
-        <Field label="BPM"><input inputMode="decimal" value={form.bpm} onChange={event => update('bpm', event.target.value)} /></Field>
-        <Field label="Key"><input value={form.key} onChange={event => update('key', event.target.value)} placeholder="F# minor" /></Field>
-        <Field label="Key confidence"><input inputMode="decimal" value={form.keyConfidence} onChange={event => update('keyConfidence', event.target.value)} /></Field>
-        <Field label="Content"><select value={form.explicit} onChange={event => update('explicit', event.target.value as MetadataFormState['explicit'])}><option value="unrated">Unrated</option><option value="clean">Clean</option><option value="explicit">Explicit</option></select></Field>
-        <Field label="Accent"><input value={form.accent} onChange={event => update('accent', event.target.value)} placeholder="#52e3d6" /></Field>
-        <Field label="Accent 2"><input value={form.accent2} onChange={event => update('accent2', event.target.value)} placeholder="#00e5ff" /></Field>
+      <div className="metadata-form-groups">
+        <MetadataGroup title="Identity" hint="The name and release this track belongs to.">
+          <Field label="Title" wide><input value={form.title} onChange={event => update('title', event.target.value)} /></Field>
+          <Field label="Album title"><input value={form.albumTitle} onChange={event => update('albumTitle', event.target.value)} /></Field>
+          <Field label="Type"><input value={form.type} onChange={event => update('type', event.target.value)} /></Field>
+          <Field label="Album ID" wide><input value={form.albumId} onChange={event => update('albumId', event.target.value)} /></Field>
+        </MetadataGroup>
+        <MetadataGroup title="Release" hint="Control timing, visibility and content labeling.">
+          <Field label="Status"><select value={form.status} onChange={event => update('status', event.target.value)}><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></Field>
+          <Field label="Content"><select value={form.explicit} onChange={event => update('explicit', event.target.value as MetadataFormState['explicit'])}><option value="unrated">Unrated</option><option value="clean">Clean</option><option value="explicit">Explicit</option></select></Field>
+          <Field label="Release date"><input type="date" value={form.releaseDate} onChange={event => update('releaseDate', event.target.value)} /></Field>
+          <Field label="Year"><input inputMode="numeric" value={form.year} onChange={event => update('year', event.target.value)} placeholder="2026" /></Field>
+        </MetadataGroup>
+        <MetadataGroup title="Discovery" hint="Help Catalog and LaunchPAD organize and surface the track." wide>
+          <Field label="Genres" wide><input value={form.genres} onChange={event => update('genres', event.target.value)} placeholder="R&B, Trap" /></Field>
+          <Field label="Tags" wide><input value={form.tags} onChange={event => update('tags', event.target.value)} /></Field>
+          <Field label="Moods"><input value={form.moods} onChange={event => update('moods', event.target.value)} /></Field>
+          <Field label="Themes"><input value={form.themes} onChange={event => update('themes', event.target.value)} /></Field>
+          <Field label="Languages" wide><input value={form.languages} onChange={event => update('languages', event.target.value)} placeholder="English, French" /></Field>
+          <Field label="Era"><input value={form.era} onChange={event => update('era', event.target.value)} /></Field>
+          <Field label="Energy"><input value={form.energy} onChange={event => update('energy', event.target.value)} /></Field>
+        </MetadataGroup>
+        <MetadataGroup title="Music details" hint="Optional musical facts used across Studio and intelligence views.">
+          <Field label="BPM"><input inputMode="decimal" value={form.bpm} onChange={event => update('bpm', event.target.value)} /></Field>
+          <Field label="Key"><input value={form.key} onChange={event => update('key', event.target.value)} placeholder="F# minor" /></Field>
+          <Field label="Key confidence" wide><input inputMode="decimal" value={form.keyConfidence} onChange={event => update('keyConfidence', event.target.value)} /></Field>
+        </MetadataGroup>
+        <MetadataGroup title="LaunchPAD theme" hint="Canonical cover colors shared with Track Manager and LaunchPAD.">
+          <Field label="accent"><div className="metadata-color-field"><i style={{ background: form.accent || 'transparent' }} /><input value={form.accent} onChange={event => update('accent', event.target.value)} placeholder="#52e3d6" /></div></Field>
+          <Field label="accent2"><div className="metadata-color-field"><i style={{ background: form.accent2 || 'transparent' }} /><input value={form.accent2} onChange={event => update('accent2', event.target.value)} placeholder="#00e5ff" /></div></Field>
+        </MetadataGroup>
       </div>
 
       <div className="metadata-validation-actions">
-        <div><span>Canonical revision</span><strong>{track.updatedAt || 'Unavailable'}</strong></div>
+        <div><span>{validation ? 'Proposal reviewed' : 'Ready to review'}</span><strong>{validation ? `${changedFields.length} changed field${changedFields.length === 1 ? '' : 's'}` : 'Validate before saving'}</strong></div>
         <button className="ghost-btn metadata-reset-btn" type="button" disabled={saving} onClick={resetProposal}>Reset proposal</button>
         <button className="metadata-validate-btn" type="button" disabled={!canValidate} onClick={validate}>{validating ? 'Validating…' : 'Validate metadata'}</button>
       </div>

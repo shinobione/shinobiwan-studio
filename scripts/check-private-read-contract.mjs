@@ -69,12 +69,12 @@ for (const forbiddenMethod of ['PUT', 'PATCH', 'DELETE']) {
   assert.ok(!phase4Api.includes(`method: '${forbiddenMethod}'`), `Phase 4 client must not expose ${forbiddenMethod}.`);
 }
 
-for (const required of ['METADATA / GUARDED WRITE', 'Validate metadata', 'Save metadata', 'METADATA SAVED']) assert.ok(metadata.includes(required), `Metadata UI missing ${required}.`);
+for (const required of ['Shape how this track appears', 'PROTECTED SAVE', 'Validate metadata', 'Save metadata', 'METADATA SAVED']) assert.ok(metadata.includes(required), `Metadata UI missing ${required}.`);
 for (const required of ['LYRICS / GUARDED WRITE', 'Canonical lyrics.txt editor', 'Validate lyrics', 'Save lyrics.txt', 'NO .LRC REQUIRED', 'CANONICAL REREAD · VERIFIED']) assert.ok(lyrics.includes(required), `Lyrics UI missing ${required}.`);
 
 for (const required of [
-  'TRACK MANAGER / ASSETS', 'Canonical Assets Manager', 'Upload', 'Replace', 'Delete asset', 'globalThis.confirm',
-  'uploadAdminTrackAsset', 'deleteAdminTrackAsset', 'phase4-upload-progress', 'One asset per operation', 'Whole-track deletion is intentionally not exposed.',
+  'Manage production media', 'EDITING ENABLED', 'Upload', 'Replace', 'Delete asset', 'globalThis.confirm',
+  'uploadAdminTrackAsset', 'deleteAdminTrackAsset', 'phase4-upload-progress', 'One asset changes per operation', 'whole-track deletion is intentionally not exposed',
 ]) assert.ok(assets.includes(required), `Assets Manager missing ${required}.`);
 
 for (const required of [
@@ -135,13 +135,13 @@ for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog 
   assert.ok(!phase4Api.toLowerCase().includes(forbiddenPhase5.toLowerCase()), `Phase 5 leaked into Phase 4 client: ${forbiddenPhase5}`);
 }
 
-assert.ok(release.includes("version: '0.10.2'"), 'Studio release version must be 0.10.2.');
-assert.ok(release.includes('build: 24'), 'Studio release build must be 24.');
-assert.ok(release.includes("codename: 'phase-ux-track-workspace'"), 'Studio release codename must identify the PHASE UX Track Workspace milestone.');
-assert.equal(pkg.version, '0.10.2', 'package.json must match Studio 0.10.2.');
+assert.ok(release.includes("version: '0.10.3'"), 'Studio release version must be 0.10.3.');
+assert.ok(release.includes('build: 25'), 'Studio release build must be 25.');
+assert.ok(release.includes("codename: 'phase-ux-module-polish'"), 'Studio release codename must identify the PHASE UX module-polish milestone.');
+assert.equal(pkg.version, '0.10.3', 'package.json must match Studio 0.10.3.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'Production build must run the integration regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase5'), 'Production build must run the Phase 5 algorithm guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase6'), 'Production build must run the embedded Phase 6 regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:ux'), 'Production build must run the PHASE UX regression guard.');
 
-console.log('Studio 0.10.2 Build 24 preserves Phase 0-6 contracts while delivering the PHASE UX Track Workspace without starting Phase 7.');
+console.log('Studio 0.10.3 Build 25 preserves Phase 0-6 contracts while delivering PHASE UX module polish without starting Phase 7.');

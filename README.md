@@ -2,27 +2,27 @@
 
 Artist Content & Intelligence Manager.
 
-**Release:** `0.10.2`
+**Release:** `0.10.3`
 
-**Build:** `24`
+**Build:** `25`
 
-**Codename:** `phase-ux-track-workspace`
+**Codename:** `phase-ux-module-polish`
 
-**Milestone:** PHASE UX — UX-3 Track Workspace
+**Milestone:** PHASE UX — UX-4 Module polish
 
 **Stop line:** Do not begin Phase 7 without explicit authorization.
 
-## PHASE UX — Build 24
+## PHASE UX — Build 25
 
-Build 24 delivers the UX-3 Track Workspace and action-led Overview without changing any backend or Phase 4/5/6 engine contract.
+Build 25 polishes Metadata, Assets, Lyrics and SonicTrace without changing any backend or Phase 4/5/6 engine contract.
 
-- compacts and preserves track context with cover, title, release, status, readiness and saved cover palette;
-- keeps five obvious local tools: Overview, Metadata, Assets, Lyrics and SonicTrace;
-- redesigns Overview around readiness, concrete next actions, media state, music details, release and analysis;
-- keeps Content Health strictly about completeness and moves raw source/revision information into secondary diagnostics;
-- adds `aria-current` to local navigation and responsive sticky positioning for desktop, laptop, tablet and mobile;
-- preserves Metadata, Assets, embedded/standalone Lyrics and SonicTrace integrations unchanged;
-- adds a dedicated UX-3 regression guard for context, navigation, action hierarchy, responsive layout and engine availability;
+- groups Metadata into Identity, Release, Discovery, Music details and LaunchPAD theme;
+- presents one Assets media manager with aligned upload/replace/delete controls and subdued safety diagnostics;
+- makes embedded LRC Maker the primary Lyrics surface and moves the plain-text editor behind progressive disclosure;
+- keeps standalone LRC Maker visible as the recovery fallback;
+- leads SonicTrace with readiness, Analyze/Re-scan, progress and useful result state while moving engine IDs into diagnostics;
+- preserves all validation, save, stale, rollback, canonical reread and engine behaviors unchanged;
+- adds a dedicated UX-4 regression guard across all four modules;
 - makes no Worker, R2, manifest, SonicTrace or LRC Maker runtime change.
 
 See `docs/PHASE-UX.md` and `docs/PHASE-UX-AUDIT.md`.
