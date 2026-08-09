@@ -1,7 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
-import { LyricsStudioPortal } from './components/LyricsStudioPortal';
 import './styles.css';
 import './catalog.css';
 import './workspace.css';
@@ -15,6 +14,5 @@ import './readability.css';
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
-    <LyricsStudioPortal />
   </StrictMode>,
 );
