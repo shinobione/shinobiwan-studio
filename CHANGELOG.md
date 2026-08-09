@@ -1,5 +1,32 @@
 # SHINOBIWAN Studio Changelog
 
+## 0.9.5 — Build 20 — 2026-08-09
+
+Codename: `phase6-native-lyrics-sync-restore`
+
+### Native LRC synchronization flow restore
+
+- consumes LRC Maker `6.3.4` in the embedded Lyrics Studio;
+- removes the 6.3.2 single-click direct seek behavior from the shared LRC Maker `Synchronizer`;
+- restores the native interaction in standalone and embed: simple click selects, double-click returns to an existing timestamp, `Espace` writes the current time and advances exactly one line;
+- preserves LRC Maker 6.3.3 canonical reread normalization and guarded save behavior unchanged;
+- cache-bumps the embedded engine from `6.3.3` to `6.3.4`;
+- preserves Track Manager v5.15 / bridge v1.7, protected Range/206 media reads, canonical `lyrics.txt`, R2 schema, SonicTrace and public LaunchPAD unchanged;
+- creates pre-hotfix safety checkpoints `safety/pre-phase6-native-sync-restore-20260809-0443` in Studio and LRC Maker;
+- keeps the Phase 7 STOP LINE active.
+
+### Root cause
+
+Production correction sessions showed that the 6.3.2 single-click seek changed the mature LRC Maker selection/timing sequence. After correcting one line and continuing playback, subsequent `Espace` presses could appear to timestamp the lyric line above the intended one. The same behavior reproduced in standalone LRC Maker, isolating the regression from Studio, Track Manager, Cloudflare R2 and the protected media range route.
+
+### Verification
+
+- LRC Maker regression guards require simple-click selection without direct `audioRef.currentTime` assignment;
+- double-click timestamp reposition and `ActionType.next` timestamp+advance remain required;
+- Studio Phase 6 regression guards require the `6.3.4` embed cache key and forbid stale `6.3.2` / `6.3.3` pins;
+- standalone and embedded real-audio smoke tests remain required before the final Phase 6 checkpoint;
+- no backend Worker deployment or intentional R2 schema change is introduced.
+
 ## 0.9.4 — Build 19 — 2026-08-09
 
 Codename: `phase6-canonical-reread-hotfix`
