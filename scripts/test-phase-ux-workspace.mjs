@@ -44,11 +44,11 @@ assert.ok(foundationCss.includes('.workspace-tabs { position: sticky; top: 76px;
 assert.ok(foundationCss.includes('.workspace-tabs { top: 72px;'), 'Mobile local navigation must remain sticky below the mobile topbar.');
 assert.ok(workspace.includes('workspace-sticky-context'), 'Sticky navigation must retain compact track identity and readiness context.');
 
-assert.equal(pkg.version, '0.10.7');
-assert.ok(release.includes("version: '0.10.7'"));
-assert.ok(release.includes('build: 29'));
-assert.ok(release.includes("codename: 'phase-ux-integration-parity-c1'"));
+assert.equal(pkg.version, '0.10.8');
+assert.ok(release.includes("version: '0.10.8'"));
+assert.ok(release.includes('build: 30'));
+assert.ok(release.includes("codename: 'phase-ux-c2-5-a-polish'"));
 
 for (const forbidden of ['phase7', 'phase-7']) assert.ok(!workspace.toLowerCase().includes(forbidden), `Phase 7 runtime marker found: ${forbidden}.`);
 
-console.log('PHASE UX UX-3 guard passed: persistent track context, five local tools, action-led Overview, secondary diagnostics and responsive layout protected.');
+console.log('PHASE UX UX-3 guard passed: persistent track context, five local tools, action-led Overview, secondary diagnostics, responsive layout and Build 30 identity protected.');
