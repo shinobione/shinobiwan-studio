@@ -2,11 +2,11 @@
 
 Date: `2026-08-09`
 
-Status: **MAINTENANCE / HARDENING — NOT PHASE 7**
+Status: **COMPLETE — MAINTENANCE / HARDENING — NOT PHASE 7**
 
 ## Purpose
 
-This milestone follows the completed and production-validated Phase 6. It addresses the final read-only audit warnings without reopening Phase 6 architecture or starting Phase 7.
+This milestone followed the completed and production-validated Phase 6. It addressed the final read-only audit warnings without reopening Phase 6 architecture or starting Phase 7.
 
 The audit verdict was **PASS WITH WARNINGS**. No active second lyrics source, iframe, Phase 7 leak or private Track Manager security regression was found.
 
@@ -35,13 +35,20 @@ The formatter now parses the normalized value directly. Regression coverage incl
 
 No Worker deployment, R2 write or catalog rebuild was performed for this public UI hotfix.
 
-## Hardening scope
+## Hardening delivery
 
 ### LRC Maker 6.3.5
 
-No synchronization UX change is introduced.
+Delivered through PR `#13`.
 
-The critical Space transition is now behaviorally testable:
+```text
+merge 3d7f65fbe023e6ac26f3ba93fdcc98a135023a98
+Pages deploy 31312507411 — success
+```
+
+No synchronization UX change was introduced.
+
+The critical Space transition is now behaviorally tested:
 
 ```text
 selected line N
@@ -49,45 +56,61 @@ selected line N
   -> select exactly N+1
 ```
 
-The new reducer guard verifies:
+The reducer guard verifies:
 
-- previous reducer state is not mutated;
+- previous state is not mutated;
 - line N-1 remains unchanged;
 - line N receives the timestamp;
 - line N+1 is not accidentally overwritten;
 - selection advances exactly one line;
 - final-line selection clamps safely.
 
-The Studio-context guard also isolates mouse handlers and proves:
+The Studio-context guard also isolates mouse handlers and protects:
 
 ```text
-simple click   -> selection only / no seek
- double-click  -> explicit seek path
+simple click  -> selection only / no seek
+double-click  -> explicit seek path
 ```
 
-### LaunchPAD / Track Manager documentation and tests
+The historical `guard` export used by the audio module remains compatibility-preserved while the tested transition logic lives in a pure module.
 
-The hardening branch:
+### LaunchPAD / Track Manager docs + test hardening
 
-- updates deployment topology to Build 67 + Track Manager v5.15 / bridge v1.7;
-- updates Cloudflare operations documentation to the actually deployed Phase 6 backend;
-- updates the Lyrics synchronization contract from candidate language to production state;
-- removes the ambiguous Range-document wording that could imply simple-click seeking;
-- rewrites the cross-repository integration contract as the current authoritative contract;
-- removes the historical contradiction that an optional `.lrc` sidecar could earn `Synced Lyrics` Content Health points;
-- makes the protected-media Range regression test remove its generated temporary Worker artifact in `finally`.
+Delivered through PR `#169`.
 
-No Track Manager runtime source or Worker contract version is changed by these hardening edits.
+```text
+merge 0e508c893c038059da4a563365dbdba7094b638d
+GitHub Pages 31312541929 — success
+```
+
+Changes:
+
+- deployment topology updated to Build 67 + Track Manager v5.15 / bridge v1.7;
+- Cloudflare operations documentation updated to the actually deployed Phase 6 backend;
+- Lyrics synchronization contract updated from candidate language to production state;
+- ambiguous Range wording that could imply simple-click seeking removed;
+- cross-repository integration contract rewritten as the current authoritative contract;
+- stale contradiction allowing optional `.lrc` to earn `Synced Lyrics` Content Health points removed;
+- protected-media Range regression test now deletes its generated temporary Worker artifact in `finally`.
+
+No Track Manager Worker runtime source/version changed. No Worker deployment was required.
 
 ### Studio 0.9.6 / Build 21
 
-Studio Build 21:
+Delivered through PR `#22`.
+
+```text
+merge 763de31b183159989c50706e10331d9581ac460d
+GitHub Pages 31312561358 — success
+```
+
+Build 21:
 
 - pins embedded LRC Maker `6.3.5`;
 - updates Phase 6 regression guards for the 6.3.5 producer;
 - updates Integration Safety to current production facts;
 - updates the Phase 6 final checkpoint document to factual completed/verified state;
-- updates README/release metadata;
+- updates README, CHANGELOG and release metadata;
 - preserves all Phase 6 product behavior.
 
 ## Canonical Lyrics contract — re-frozen
@@ -115,11 +138,11 @@ manifest schema v1 unchanged
 R2 layout unchanged
 ```
 
-No deliberate R2 production write is required for this hardening milestone.
+No deliberate R2 production write was performed for this hardening milestone.
 
 ## Safety snapshots
 
-Created before hardening:
+Pre-hardening snapshots:
 
 ```text
 LaunchPAD-APP
@@ -132,27 +155,33 @@ lrc-maker
   safety/pre-post-phase6-hardening-20260809-1342
 ```
 
-The final Phase 6 checkpoint remains immutable:
+The immutable Phase 6 checkpoint remains untouched:
 
 ```text
 safety/phase6-complete-20260809-0513
 ```
 
+Final post-hardening checkpoint name:
+
+```text
+safety/post-phase6-hardening-complete-20260809-1409
+```
+
+LaunchPAD-APP and LRC Maker checkpoints were created on their final hardening heads before this documentation-only closeout. The same checkpoint is created on Studio after this closeout merge, so each repository points to its own final hardening head.
+
 ## Deferred debt — deliberately not touched
 
 The audit also noted older dead/legacy Gist-related source and fragile historical Worker-version assembly mechanisms.
 
-They are **not** removed/refactored in this milestone because they are not active Phase 6 regressions and expanding the maintenance surface would add unnecessary risk. They require separate explicit refactors if ever prioritized.
+They were **not** removed/refactored in this milestone because they are not active Phase 6 regressions and expanding the maintenance surface would add unnecessary risk. They require separate explicit refactors if ever prioritized.
 
-## Exit criteria
+## Exit criteria — result
 
-This hardening milestone is complete only when:
-
-1. LRC Maker 6.3.5 CI/build is green and deployed;
-2. LaunchPAD hardening CI is green and merged with no Worker redeploy;
-3. Studio 0.9.6 Build 21 CI is green and deployed after LRC Maker 6.3.5;
-4. the new post-hardening safety checkpoint is created and verified on final heads;
-5. Phase 7 remains untouched.
+1. LRC Maker 6.3.5 CI/build: **PASS**; deployed: **YES**.
+2. LaunchPAD hardening CI: **PASS**; merged: **YES**; Worker redeploy: **NO**.
+3. Studio 0.9.6 Build 21 CI: **PASS**; deployed after LRC Maker 6.3.5: **YES**.
+4. Post-hardening safety checkpoint: **created on LaunchPAD/LRC and completed on Studio after this closeout merge**.
+5. Phase 7: **NOT STARTED**.
 
 ## STOP
 
