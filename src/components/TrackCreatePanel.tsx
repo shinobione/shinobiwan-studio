@@ -185,10 +185,10 @@ export function TrackCreatePanel({ privateRead, onCreated, onCancel }: { private
   return (
     <article className="panel phase4-create-panel intake-flow">
       <div className="phase4-panel-head intake-head"><div><span className="eyebrow">NEW TRACK</span><h3>Build a canonical draft from the files you already have</h3><p>Drop a mixed selection, confirm Studio’s assignments and detected metadata, then review every write before creation.</p></div><button className="ghost-btn compact" type="button" disabled={busy} onClick={onCancel}>Close</button></div>
-      <ol className="intake-steps" aria-label="New Track steps">{(['Metadata', 'Files', 'Review'] as const).map((label, index) => <li className={step === index + 1 ? 'active' : step > index + 1 ? 'complete' : ''} key={label}><b>{index + 1}</b><span>{label}</span></li>)}</ol>
+      <ol className="intake-steps" aria-label="New Track steps">{(['Files', 'Metadata', 'Review'] as const).map((label, index) => <li className={step === index + 1 ? 'active' : step > index + 1 ? 'complete' : ''} key={label}><b>{index + 1}</b><span>{label}</span></li>)}</ol>
       {!privateRead && <div className="workspace-note"><strong>Sign in to Track Manager first.</strong><p>New Track remains locked while Studio is using the public read-only catalog.</p></div>}
 
-      {step === 1 && <section className="intake-step-panel">
+      {step === 2 && <section className="intake-step-panel">
         <div className="phase4-create-grid intake-metadata-grid">
           <label><span>Title <b>Required</b></span><input autoFocus value={values.title} onChange={event => updateField('title', event.target.value)} /></label>
           <label><span>Album</span><input value={values.albumTitle} onChange={event => updateField('albumTitle', event.target.value)} /></label>
@@ -207,7 +207,7 @@ export function TrackCreatePanel({ privateRead, onCreated, onCancel }: { private
         <details className="intake-technical"><summary>Technical identifier and extended metadata</summary><div className="phase4-create-grid"><label><span>trackId</span><input value={values.slug} onChange={event => updateField('slug', event.target.value)} placeholder={canonicalIntakeSlug(values.title) || 'generated-from-title'} /></label><label><span>Album ID</span><input value={values.albumId} onChange={event => updateField('albumId', event.target.value)} /></label><label><span>Year</span><input inputMode="numeric" value={values.year} onChange={event => updateField('year', event.target.value)} /></label><label><span>Era</span><input value={values.era} onChange={event => updateField('era', event.target.value)} /></label></div></details>
       </section>}
 
-      {step === 2 && <section className="intake-step-panel intake-media-step">
+      {step === 1 && <section className="intake-step-panel intake-media-step">
         <label className={`intake-drop-zone${dragActive ? ' active' : ''}`} onDragEnter={event => { event.preventDefault(); setDragActive(true); }} onDragOver={event => event.preventDefault()} onDragLeave={() => setDragActive(false)} onDrop={event => { event.preventDefault(); setDragActive(false); addFiles(event.dataTransfer.files); }}>
           <strong>Drop audio, cover, TXT and Canvas together</strong><span>or choose multiple files · Studio classifies by extension and MIME, then asks you to resolve conflicts</span><input type="file" multiple accept="audio/*,image/*,text/plain,video/mp4,video/webm,.mp3,.wav,.flac,.m4a,.aac,.ogg,.jpg,.jpeg,.png,.webp,.gif,.txt,.mp4,.webm" onChange={event => event.target.files && addFiles(event.target.files)} />
         </label>
@@ -225,7 +225,7 @@ export function TrackCreatePanel({ privateRead, onCreated, onCancel }: { private
       </section>}
 
       {busy && <div className="intake-progress-stages" aria-live="polite">{progress.map((item, index) => <span key={`${index}-${item}`}>{item}</span>)}</div>}
-      <div className="intake-actions"><button className="ghost-btn" type="button" disabled={busy || step === 1} onClick={() => setStep(previous => Math.max(1, previous - 1) as 1 | 2 | 3)}>Back</button>{step < 3 ? <button className="primary-btn" type="button" disabled={busy || (step === 1 && !basicsValid) || (step === 2 && Boolean(problems.length))} onClick={() => setStep(previous => Math.min(3, previous + 1) as 1 | 2 | 3)}>Continue</button> : <button className="primary-btn" type="button" disabled={!canSubmit} onClick={() => void create()}>{busy ? 'Working…' : 'Create canonical draft'}</button>}</div>
+      <div className="intake-actions"><button className="ghost-btn" type="button" disabled={busy || step === 1} onClick={() => setStep(previous => Math.max(1, previous - 1) as 1 | 2 | 3)}>Back</button>{step < 3 ? <button className="primary-btn" type="button" disabled={busy || (step === 1 && Boolean(problems.length)) || (step === 2 && !basicsValid)} onClick={() => setStep(previous => Math.min(3, previous + 1) as 1 | 2 | 3)}>Continue</button> : <button className="primary-btn" type="button" disabled={!canSubmit} onClick={() => void create()}>{busy ? 'Working…' : 'Create canonical draft'}</button>}</div>
       {error && <ErrorNotice error={error} createdTrackId={createdTrackId} />}
     </article>
   );

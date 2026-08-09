@@ -2,21 +2,22 @@
 
 Artist Content & Intelligence Manager.
 
-**Release:** `0.10.5`
+**Release:** `0.10.6`
 
-**Build:** `27`
+**Build:** `28`
 
-**Codename:** `phase-ux-live-smoke-corrections`
+**Codename:** `phase-ux-live-smoke-intake-order`
 
 **Milestone:** PHASE UX — production-smoke corrective release
 
 **Stop line:** Do not begin Phase 7 without explicit authorization.
 
-## PHASE UX — Build 27
+## PHASE UX — Build 28
 
-Build 27 corrects the production-smoke findings after UX-5 without changing any Worker, R2, schema or engine contract.
+Build 28 completes the production-smoke correction by making multi-file selection the first New Track step, so TXT detection can prefill editable metadata before Review. It includes every Build 27 correction and changes no Worker, R2, schema or engine contract.
 
 - restores Studio asset uploads with credentialed, CORS-simple multipart `fetch` and canonical lost-response verification;
+- opens New Track on the combined MP3/cover/TXT drop step before Metadata;
 - brings New Track intake to the useful current Track Manager behavior: multi-file drop, role review, TXT metadata parsing/inference and visible provenance;
 - adds cover image preview plus editable canonical `accent` / `accent2` controls, including native EyeDropper support when available;
 - preserves saved palettes when an existing cover is replaced until an explicit Extract/Save action;

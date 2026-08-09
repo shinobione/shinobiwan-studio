@@ -45,10 +45,10 @@ for (const token of [
 assert.ok(css.includes('grid-template-columns: repeat(3, 1fr)'), 'Mobile navigation must expose three primary destinations.');
 assert.ok(css.includes('.nav-list-utility { display: none; }'), 'Mobile must keep utility navigation secondary.');
 assert.ok(app.includes('codename') || release.includes('phase-ux-'));
-assert.equal(pkg.version, '0.10.5');
-assert.ok(release.includes("version: '0.10.5'"));
-assert.ok(release.includes('build: 27'));
-assert.ok(release.includes("codename: 'phase-ux-live-smoke-corrections'"));
+assert.equal(pkg.version, '0.10.6');
+assert.ok(release.includes("version: '0.10.6'"));
+assert.ok(release.includes('build: 28'));
+assert.ok(release.includes("codename: 'phase-ux-live-smoke-intake-order'"));
 
 for (const forbidden of ['phase7', 'phase-7', 'Phase 7 runtime']) {
   assert.ok(!`${app}\n${workspace}\n${css}`.toLowerCase().includes(forbidden.toLowerCase()), `Unauthorized Phase 7 runtime marker found: ${forbidden}.`);

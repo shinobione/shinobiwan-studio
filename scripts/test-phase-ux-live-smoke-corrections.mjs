@@ -47,6 +47,8 @@ assert.equal(merged.values.bpm, '144');
 for (const marker of ['multiple', 'onDrop=', 'mergeIntakeFiles', 'parseTrackTxt', 'EXISTING USER VALUE PRESERVED', 'DETECTED FROM TXT', 'INFERRED', 'Create canonical draft']) assert.ok(create.includes(marker), `Corrective New Track intake is missing ${marker}.`);
 assert.ok(create.includes("intakeFileForRole(assignments, 'lyrics')"));
 assert.ok(create.includes("type=\"file\" multiple"));
+assert.ok(create.indexOf('{step === 1 && <section className="intake-step-panel intake-media-step">') > -1, 'Multi-file drop must be the first New Track step.');
+assert.ok(create.includes("(step === 2 && !basicsValid)"), 'Metadata validation must gate the transition from step two to Review.');
 assert.ok(create.includes('CoverImagePreview'));
 
 const uploadTransport = service.slice(service.indexOf('async function uploadViaFetch'), service.indexOf('export async function createAdminTrack'));
