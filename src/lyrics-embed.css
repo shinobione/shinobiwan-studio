@@ -1,6 +1,7 @@
 .workspace-lyrics-panel--embedded {
   position: relative;
-  min-height: 720px;
+  min-height: 620px;
+  height: min(74vh, 760px);
   padding: 0;
   overflow: hidden;
   border-color: rgba(82, 227, 214, .13);
@@ -58,33 +59,32 @@
   flex: 1 1 auto;
   width: 100%;
   min-width: 0;
-  min-height: 620px;
+  min-height: 0;
   opacity: .28;
   transition: opacity .18s ease;
 }
 .workspace-lyrics-embed.ready { opacity: 1; }
 
 /* The external page remains a recovery/fallback path, not the primary Phase 6C workflow. */
-.workspace-lyrics-grid .workspace-tool-link.primary-btn {
+.workspace-lyrics-grid .workspace-tool-link.ghost-btn {
+  width: 100%;
   color: #779095;
-  border: 1px solid rgba(133,231,226,.12);
+  border-color: rgba(133,231,226,.12);
   background: rgba(255,255,255,.012);
   box-shadow: none;
-  font-size: 0;
-}
-.workspace-lyrics-grid .workspace-tool-link.primary-btn::after {
-  content: 'Open LRC Maker standalone ↗';
   font-size: 11px;
-  font-weight: 800;
 }
-.workspace-lyrics-grid .workspace-tool-link.primary-btn:hover:not(:disabled) {
+.workspace-lyrics-grid .workspace-tool-link.ghost-btn:hover:not(:disabled) {
   color: #bdd1d1;
   border-color: rgba(82,227,214,.25);
   background: rgba(82,227,214,.025);
 }
 
 @media (max-width: 850px) {
-  .workspace-lyrics-panel--embedded { min-height: 760px; }
+  .workspace-lyrics-panel--embedded {
+    min-height: 700px;
+    height: auto;
+  }
   .workspace-lyrics-embed-head { align-items: flex-start; flex-direction: column; }
   .workspace-lyrics-portal-card { padding: 11px; }
 }
