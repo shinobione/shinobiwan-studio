@@ -135,11 +135,12 @@ for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog 
   assert.ok(!phase4Api.toLowerCase().includes(forbiddenPhase5.toLowerCase()), `Phase 5 leaked into Phase 4 client: ${forbiddenPhase5}`);
 }
 
-assert.ok(release.includes("version: '0.9.0'"), 'Studio release version must be 0.9.0.');
-assert.ok(release.includes('build: 15'), 'Studio release build must be 15.');
-assert.ok(release.includes("codename: 'phase6-canonical-lyrics-workflow'"), 'Studio release codename must freeze Phase 6 completion.');
-assert.equal(pkg.version, '0.9.0', 'package.json must match Studio 0.9.0.');
+assert.ok(release.includes("version: '0.9.1'"), 'Studio release version must be 0.9.1.');
+assert.ok(release.includes('build: 16'), 'Studio release build must be 16.');
+assert.ok(release.includes("codename: 'phase6-embedded-lyrics-studio'"), 'Studio release codename must freeze the completed Phase 6C workflow.');
+assert.equal(pkg.version, '0.9.1', 'package.json must match Studio 0.9.1.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'Production build must run the integration regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase5'), 'Production build must run the Phase 5 algorithm guard.');
+assert.ok(String(pkg.scripts?.build || '').includes('check:phase6'), 'Production build must run the embedded Phase 6 regression guard.');
 
-console.log('Studio 0.9.0 Build 15 preserves prior contracts and completes the contextual canonical Lyrics workflow.');
+console.log('Studio 0.9.1 Build 16 preserves prior contracts and completes the embedded canonical Lyrics workflow.');
