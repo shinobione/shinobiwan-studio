@@ -137,6 +137,20 @@ The requested new-track exception is safe: automatic extraction changes only uns
 - Compact sticky track header with cover, title, status, release and completeness.
 - One tool at a time; no return to a giant stacked page.
 
+### UX-3 implementation decision
+
+The header is reduced to durable track context: cover, title, album/release, status, a few genres, operational readiness and the two saved canonical cover colors. Read-source labels no longer compete with the track identity.
+
+Overview is reorganized into five concise answers:
+
+1. readiness and the next priority;
+2. remaining checklist actions;
+3. current production media;
+4. core music facts and playback;
+5. release plus SonicTrace state.
+
+The previous always-expanded eight-row Content Health detail is replaced by compact readiness pills. This is a presentation change only; the existing scoring inputs and 100-point completeness contract are untouched. Source, revision and `trackId` remain available in a collapsed diagnostics disclosure.
+
 ## Metadata
 
 ### Problems

@@ -1,5 +1,21 @@
 # SHINOBIWAN Studio Changelog
 
+## 0.10.2 — Build 24 — 2026-08-09
+
+Codename: `phase-ux-track-workspace`
+
+### PHASE UX — UX-3 Track Workspace
+
+- compacts the persistent track header around artwork, identity, release, status, readiness and the saved canonical cover palette;
+- keeps Overview, Metadata, Assets, Lyrics and SonicTrace as the five primary local tools with accessible active-page state;
+- replaces the long always-expanded completeness breakdown with an action-led readiness summary and prioritized next action;
+- adds scannable Needs attention, Production media, Music details and Release and analysis cards;
+- moves read-source, last-update and `trackId` details behind a secondary Source diagnostics disclosure;
+- keeps Content Health explicitly limited to operational completeness rather than artistic judgment;
+- refines sticky header/tab offsets and reflow behavior for desktop, laptop, tablet and mobile;
+- preserves all Phase 4/5/6 engines, guarded writes, embedded/standalone fallbacks and canonical sources unchanged;
+- changes no Worker, route, R2 schema/data, LaunchPAD runtime, SonicTrace contract, LRC Maker mechanics or Phase 7 code.
+
 ## 0.10.1 — Build 23 — 2026-08-09
 
 Codename: `phase-ux-catalog-intake`

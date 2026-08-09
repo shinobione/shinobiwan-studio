@@ -2,7 +2,7 @@
 
 Date opened: `2026-08-09`
 
-Status: **AUTHORIZED — UX-1 PRODUCTION GREEN / UX-2 LOCAL IMPLEMENTATION GREEN**
+Status: **AUTHORIZED — UX-1 / UX-2 PRODUCTION GREEN / UX-3 LOCAL GREEN**
 
 Phase 7: **NOT AUTHORIZED — ABSOLUTE STOP**
 
@@ -52,6 +52,10 @@ All four repositories were clean and synchronized with their upstream branches b
 - UX-1 merge commit: `0ad67ab63417e6a02a935a0b8baa7d50175e5a90`;
 - UX-1 production deploy workflow: `31314367804`;
 - UX-2 development branch: `codex/phase-ux-catalog-intake`.
+- UX-2 PR: `#25`;
+- UX-2 merge commit: `e5781ca4013e3587aed7abef66f58fd64d7f6893`;
+- UX-2 production deploy workflow: `31315492537`;
+- UX-3 development branch: `codex/phase-ux-track-workspace`.
 
 ## Information architecture decision
 
@@ -161,10 +165,14 @@ Studio therefore ports the Feature 10.3 browser algorithm as a local preview uti
 
 ### UX-3 — Track Workspace
 
+Version target: Studio `0.10.2` / Build `24` / `phase-ux-track-workspace`
+
 - compact persistent track context;
 - Overview focused on readiness and next actions;
 - five primary local tools;
 - technical source/version information moved to secondary diagnostics.
+
+UX-3 implements a compact persistent context header and keeps the five track-local tools visible without rendering them simultaneously. Overview now leads with operational readiness and the next useful action, then presents media state, music details, release and SonicTrace status. `trackId`, read source and update revision remain available in a collapsed diagnostics disclosure.
 
 ### UX-4 — Module polish
 
@@ -216,6 +224,27 @@ UX-2 local validation:
 - UX-2 Catalog/Palette guard: PASS (`#e02644` + `#556bff` extracted from a valid synthetic cover buffer);
 - TypeScript typecheck: PASS;
 - Vite production build: PASS.
+
+UX-2 delivery validation:
+
+- PR `#25`: PASS;
+- GitHub Actions build `31315456681`: PASS;
+- merge commit `e5781ca4013e3587aed7abef66f58fd64d7f6893`;
+- Pages deploy workflow `31315492537`: PASS;
+- production smoke: Studio `0.10.1` / Build `23`, 29-track public fallback loaded, obvious `+ New Track` action present.
+
+UX-3 local validation:
+
+- private integration contract guard: PASS;
+- Phase 5 algorithms: PASS;
+- Phase 6 Lyrics integration: PASS;
+- UX-1 foundation and UX-2 intake guards: PASS;
+- UX-3 Track Workspace guard: PASS;
+- TypeScript typecheck: PASS;
+- Vite production build: PASS;
+- rendered existing-track Overview smoke: PASS at the available 1280×720 browser viewport;
+- visible track identity, five local tools, readiness, next action, media, release and SonicTrace state: PASS;
+- no visible horizontal overflow, clipped action or render failure in the Overview smoke.
 
 CI, PR, merge, deploy and smoke records will be appended per slice. Static Studio Pages deployment remains separate from Worker deployment. No Worker deployment is authorized for PHASE UX.
 
