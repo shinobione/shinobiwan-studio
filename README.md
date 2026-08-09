@@ -2,9 +2,9 @@
 
 Artist Content & Intelligence Manager.
 
-**Release:** `0.9.1`
-**Build:** `16`
-**Milestone:** Roadmap Phase 6 — embedded Lyrics Studio workflow complete
+**Release:** `0.9.2`
+**Build:** `17`
+**Milestone:** Roadmap Phase 6 — embedded Lyrics Studio workflow complete + runtime hotfix
 **Stop line:** Do not begin Phase 7 without explicit authorization.
 
 ## Product role
@@ -23,7 +23,7 @@ Core rules:
 
 ## Roadmap Phase 6 status
 
-Build 16 completes the Phase 6C product criterion rather than treating navigation to a separate LRC Maker page as the primary workflow:
+Build 16 completed the Phase 6C product criterion rather than treating navigation to a separate LRC Maker page as the primary workflow. Build 17 is a runtime-only consumer hotfix that points Studio at the browser-safe LRC Maker 6.3.1 embedded bundle and cache-busts the previous 6.3.0 asset.
 
 > A canonical track opens its real LRC Maker synchronization engine directly inside the Studio Lyrics workspace, with protected audio and `lyrics.txt` already contextualized, guarded save through Track Manager, and immediate canonical refresh after save.
 
@@ -44,7 +44,7 @@ Implemented:
 - optional `.lrc` export stays outside persistence and Content Health;
 - standalone LRC Maker remains available as a secondary fallback.
 
-LRC Maker `6.3.0` produces the stable embedded asset at `build/embed/lyrics-studio.js`. Build 16 lazy-loads that asset from the deployed LRC Maker GitHub Pages project.
+LRC Maker `6.3.1` produces the stable embedded asset at `build/embed/lyrics-studio.js`. Its embed build now inlines the React production environment and rejects residual browser-unsafe `process.env` references after build. Studio Build 17 lazy-loads that asset with a `6.3.1` cache key from the deployed LRC Maker GitHub Pages project.
 
 See [`docs/PHASE-6-LYRICS-COMPLETE.md`](docs/PHASE-6-LYRICS-COMPLETE.md).
 
@@ -113,9 +113,9 @@ Cloudflare Access   protected
 public Worker       unchanged
 ```
 
-The protected backend keeps canonical lyrics context, validation, stale protection, save, catalog update when required, canonical reread and rollback behind specialized routes. Build 16 does not require another Worker deployment.
+The protected backend keeps canonical lyrics context, validation, stale protection, save, catalog update when required, canonical reread and rollback behind specialized routes. Build 17 does not require another Worker deployment.
 
-Public LaunchPAD remains a separate surface and is not modified by this Phase 6C patch.
+Public LaunchPAD remains a separate surface and is not modified by this Phase 6C hotfix.
 
 ## Studio operations
 
@@ -158,9 +158,9 @@ timestamps inside lyrics.txt = synchronized
 .lrc = optional compatibility/export only
 ```
 
-The Lyrics workspace now has two paths sharing the same canonical contract:
+The Lyrics workspace has two paths sharing the same canonical contract:
 
-1. **embedded Lyrics Studio** — the primary Build 16 workflow using LRC Maker 6.3's real synchronizer inside the right-hand workspace panel;
+1. **embedded Lyrics Studio** — the primary Build 17 workflow using LRC Maker 6.3.1's real synchronizer inside the right-hand workspace panel;
 2. **standalone LRC Maker** — retained as an advanced recovery/fallback path.
 
 Both use the same protected Track Manager context/write authority. Neither creates a second lyrics source of truth.
@@ -248,8 +248,9 @@ The current code is protected by:
 - protected admin-only backend deployment and Cloudflare Access verification;
 - Studio build-time integration guards;
 - Phase 5 algorithm guards;
-- Phase 6 embedded-engine regression guards;
+- Phase 6 embedded-engine regression guards, including the required LRC Maker `6.3.1` cache key;
 - LRC Maker format/lint/context guards;
+- LRC Maker post-build embedded runtime guard rejecting residual `process.env` references;
 - TypeScript;
 - Vite production builds;
 - capability gating;
@@ -261,7 +262,7 @@ We do **not** replace or delete a production WAV/cover merely to manufacture a s
 
 ## Phase 7 stop line
 
-**STOP after Build 16.**
+**STOP after Build 17.**
 
 Do not begin any Phase 7 item.
 
