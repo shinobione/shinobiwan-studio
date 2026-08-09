@@ -6,6 +6,7 @@ import { studioConfig } from '../services/config';
 import { openContextualLrcMaker } from '../services/lrc-maker';
 import type { StudioAsset, StudioTrackDetail, WorkspaceSection } from '../types/studio';
 import { AssetsManager } from './AssetsManager';
+import { EmbeddedLyricsStudio } from './EmbeddedLyricsStudio';
 import { LyricsEditorPanel } from './LyricsEditorPanel';
 import { MetadataValidationPanel } from './MetadataValidationPanel';
 import { SonicTracePanel } from './SonicTracePanel';
@@ -107,6 +108,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
   const artwork = fullArtwork(track);
   const syncedLyrics = track.timestampsAvailable;
   const privateRead = track.readSource === 'private';
+  const canEmbedLyrics = privateRead && Boolean(track.assets.audio && track.assets.lyricsTxt);
   const qualityCounts = track.quality?.counts;
   const healthStyle = { '--health-angle': `${health.total * 3.6}deg` } as CSSProperties;
 
@@ -149,8 +151,14 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
       {section === 'lyrics' && (
         <>
           <div className="workspace-two-col workspace-lyrics-grid">
-            <WorkspacePanel eyebrow="LYRICS / STATE" title="Lyrics synchronization"><div className="workspace-facts"><div><span>Source</span><strong>{track.assets.lyricsTxt ? 'lyrics.txt' : 'Missing'}</strong></div><div><span>Timestamp data</span><strong>{track.timestampsAvailable ? 'Detected' : 'No'}</strong></div><div><span>Sync status</span><strong>{syncedLyrics ? 'Ready' : 'Not synced'}</strong></div><div><span>Segments</span><strong>{track.lyricSegments.length}</strong></div></div><div className="workspace-note workspace-tool-link"><strong>No separate .lrc file is required.</strong><p>Only timestamps inside canonical lyrics.txt define synchronized health. LRC export remains optional.</p></div><button className="primary-btn workspace-tool-link" type="button" disabled={!privateRead || !track.assets.audio || !track.assets.lyricsTxt} onClick={() => openContextualLrcMaker(track.id)}>Synchronize in LRC Maker ↗</button>{(!track.assets.audio || !track.assets.lyricsTxt) && <p className="workspace-muted">Canonical audio and lyrics.txt are required before synchronization.</p>}</WorkspacePanel>
-            <WorkspacePanel eyebrow="LYRICS / PREVIEW" title={track.assets.lyricsTxt ? 'Catalog lyrics' : 'No lyrics'} className="workspace-lyrics-panel">{lyricLines.length ? <div className="workspace-lyrics-lines">{lyricLines.map((line, index) => <p key={`${index}-${line}`}>{line}</p>)}</div> : <p className="workspace-muted">No lyric text is exposed for this track. Missing canonical lyrics.txt can be uploaded from Assets.</p>}</WorkspacePanel>
+            <WorkspacePanel eyebrow="LYRICS / STATE" title="Lyrics synchronization"><div className="workspace-facts"><div><span>Source</span><strong>{track.assets.lyricsTxt ? 'lyrics.txt' : 'Missing'}</strong></div><div><span>Timestamp data</span><strong>{track.timestampsAvailable ? 'Detected' : 'No'}</strong></div><div><span>Sync status</span><strong>{syncedLyrics ? 'Ready' : 'Not synced'}</strong></div><div><span>Segments</span><strong>{track.lyricSegments.length}</strong></div></div><div className="workspace-note workspace-tool-link"><strong>No separate .lrc file is required.</strong><p>Only timestamps inside canonical lyrics.txt define synchronized health. LRC export remains optional.</p></div><button className="ghost-btn workspace-tool-link" type="button" disabled={!privateRead || !track.assets.audio || !track.assets.lyricsTxt} onClick={() => openContextualLrcMaker(track.id)}>Open LRC Maker standalone ↗</button>{(!track.assets.audio || !track.assets.lyricsTxt) && <p className="workspace-muted">Canonical audio and lyrics.txt are required before synchronization.</p>}</WorkspacePanel>
+            <WorkspacePanel eyebrow="LYRICS / PREVIEW" title={track.assets.lyricsTxt ? 'Catalog lyrics' : 'No lyrics'} className={`workspace-lyrics-panel${canEmbedLyrics ? ' workspace-lyrics-panel--embedded' : ''}`}>
+              {canEmbedLyrics
+                ? <EmbeddedLyricsStudio trackId={track.id} onSaved={refreshTrackAfterWrite} />
+                : lyricLines.length
+                  ? <div className="workspace-lyrics-lines">{lyricLines.map((line, index) => <p key={`${index}-${line}`}>{line}</p>)}</div>
+                  : <p className="workspace-muted">No lyric text is exposed for this track. Missing canonical lyrics.txt can be uploaded from Assets.</p>}
+            </WorkspacePanel>
           </div>
           <LyricsEditorPanel track={track} onSaved={refreshTrackAfterWrite} />
         </>
