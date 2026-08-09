@@ -1,5 +1,23 @@
 # SHINOBIWAN Studio Changelog
 
+## 0.9.2 — Build 17 — 2026-08-09
+
+Codename: `phase6-embed-runtime-hotfix`
+
+### Runtime hotfix
+
+- switches the embedded Lyrics Studio cache key from LRC Maker `6.3.0` to browser-safe `6.3.1`;
+- consumes the producer-side fix that inlines React `process.env.NODE_ENV = production` during the embed build;
+- avoids stale browser/CDN reuse of the broken 6.3.0 embed asset;
+- adds a Phase 6 regression guard requiring the 6.3.1 embed version and cache key;
+- preserves the direct Track Workspace mount, Shadow DOM isolation, canonical `trackId` context and guarded save workflow;
+- leaves Track Manager, R2, SonicTrace and public LaunchPAD unchanged;
+- keeps the Phase 7 STOP LINE active.
+
+### Root cause
+
+The deployed 6.3.0 embed bundle bundled React and retained a browser-unsafe `process.env.NODE_ENV` reference. Chrome therefore aborted the script before `customElements.define('shinobiwan-lyrics-studio', ...)`, producing the visible `EMBED LOAD ERROR` despite a successful network load. LRC Maker 6.3.1 removes that residual Node reference and adds a post-build guard against recurrence.
+
 ## 0.9.1 — Build 16 — 2026-08-09
 
 Codename: `phase6-embedded-lyrics-studio`
