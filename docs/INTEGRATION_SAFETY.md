@@ -1,7 +1,8 @@
 # SHINOBIWAN Studio — Integration Safety Policy
 
 Date established: 2026-08-08  
-Current release: `0.7.0` / Build `13` / roadmap Phase 4 complete
+Hardened: 2026-08-09  
+Current Studio hardening release: `0.9.6` / Build `21` / codename `post-phase6-hardening`
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -13,183 +14,227 @@ This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace
 - `shinobione/lrc-maker` (`master`)
 - `shinobione/shinobiwan-studio` (`main`)
 
+## Frozen Phase 6 baseline
+
+Phase 6 was production-validated before this hardening milestone.
+
+```text
+Studio
+  0.9.5 / Build 20
+  closeout SHA 00b4504779ec6220d97564965309ef7a9ef20887
+
+LRC Maker
+  6.3.4 validated baseline
+  SHA 8bd3f3fd52acc1217a65216541c0b7e40fcab5ba
+
+Track Manager / LaunchPAD backend
+  Track Manager v5.15 / Studio bridge v1.7
+  Phase 6 backend SHA 23a7b494b89d4958f573f0889057b53a44aa23b6
+  deployment run 31288949405
+  target admin
+
+Final Phase 6 checkpoint
+  safety/phase6-complete-20260809-0513
+```
+
+Post-Phase-6 hardening may advance documentation/tests/public UI versions, but it must not rewrite what constituted the validated Phase 6 checkpoint.
+
+## Current public LaunchPAD maintenance baseline
+
+The Track DNA release-date maintenance hotfix was delivered separately before hardening:
+
+```text
+LaunchPAD Build 2026.08.09.67
+release post-phase6-track-dna-release-date-20260809
+merge 20674c774e172b85c1468e480621391057d70754
+GitHub Pages run 31311437062
+public media Worker remains v2.6
+```
+
+This public hotfix did not deploy either Worker and did not mutate R2.
+
 ## Restoration checkpoints
+
+Rollback references are immutable snapshots and never development branches.
 
 Most relevant current references:
 
 ```text
-Studio:    safety/pre-phase4-final-ui-20260808-2025
-LaunchPAD: safety/pre-v5.13-phase4-ops-20260808-1948
-Both:      safety/post-v5.12-pre-phase4-complete-20260808-1945
-Both:      safety/post-metadata-write-proven-20260808-1822
+Final Phase 6:
+  safety/phase6-complete-20260809-0513
+
+Before Build 67 / hardening LaunchPAD work:
+  safety/pre-post-phase6-hardening-20260809-1331
+  safety/pre-post-phase6-hardening-build67-20260809-1342
+
+Before Studio/LRC hardening:
+  safety/pre-post-phase6-hardening-20260809-1342
 ```
 
-Earlier baseline/CORS/write snapshots remain preserved in Git history. Safety branches are rollback references only and must never be developed on.
+Earlier Phase 4/5 snapshots remain preserved in Git history for historical rollback only.
 
 ## Mandatory sequence
 
 For every risky integration step:
 
 1. inspect current production branch and version/build rules;
-2. create a fresh safety snapshot when crossing a new write/security boundary;
+2. create a fresh safety snapshot when crossing a new runtime/write/security boundary;
 3. use a dedicated feature branch;
 4. make the smallest independently reversible change;
-5. update version/build metadata and documentation;
+5. update version/build metadata and relevant documentation;
 6. add or extend regression guards;
 7. open a dedicated PR with dependency and rollback notes;
 8. run repository-native CI;
 9. never merge red CI;
-10. keep source merge, web deployment, Worker deployment and R2/catalog mutation as distinct states;
-11. verify the deployed dependency before enabling its consumer.
+10. merge only the exact tested head;
+11. keep source merge, web deployment, Worker deployment and R2/catalog mutation as distinct states;
+12. verify a deployed dependency before enabling its consumer.
 
-## Public LaunchPAD boundary
+## Product boundaries
 
-Public LaunchPAD remains intentionally unchanged by final Phase 4 integration:
+### LaunchPAD
 
-```text
-Build 2026.08.08.66
-release studio-metadata-validation-20260808
-public Worker v2.6
-```
+LaunchPAD remains the public listening/PWA product. Public UI maintenance may advance its Build without implying a Worker deployment.
 
-No Audio Lab renderer, public player/media behavior, PWA cache contract, SonicTrace shortcut or LRC Maker shortcut is modified by Build 13/v5.13.
+### Track Manager
 
-## Production Track Manager backend
+Track Manager remains the protected production R2 write/admin authority and standalone fallback.
 
-Final Phase 4 consumes this already-deployed backend:
+Current deployed private backend:
 
 ```text
-Track Manager       v5.13
-Studio bridge       v1.5
-source SHA          df75509d89b1ed1477d4b249fab63a6bd41db311
-workflow run        31272655808
-deployment target   admin
-Worker Version ID   781f75f9-776c-4e39-90a7-5cdf34854599
-Access verification protected / HTTP 302 unauthenticated
-public Worker       skipped / remains v2.6
+Track Manager v5.15
+Studio bridge v1.7
+source SHA 23a7b494b89d4958f573f0889057b53a44aa23b6
+workflow run 31288949405
+deployment target admin
+public Worker unchanged v2.6
 ```
 
-The deployment completed Worker source validation, bridge guards, Wrangler dry-run, private Worker upload and post-deploy Access verification before Build 13 was enabled.
+### SonicTrace
 
-Previous deployed backend:
+SonicTrace remains the audio-intelligence compute engine. R2 sidecars hold durable catalog-linked analysis. No duplicate canonical WAV is stored in analysis persistence.
 
-```text
-Track Manager v5.12
-bridge v1.4
-Worker Version ID 3aa3136f-492d-46c5-af0a-fd3b048e8666
-workflow run 31270132063
-```
+### LRC Maker
 
-## Production proof — metadata
-
-Real-browser metadata smoke test on `soft-addiction` completed successfully and was restored cleanly.
-
-```text
-temporary revision 2026-08-08T16:21:15.503Z
-restored revision  2026-08-08T16:22:10.890Z
-final quality      ready
-publishable        yes
-errors/warnings    0 / 0
-media              untouched
-```
+LRC Maker is integrated as the real Lyrics engine and remains available standalone. Post-Phase-6 hardening advances it to 6.3.5 only to strengthen synchronization regression coverage; the validated native interaction remains unchanged.
 
 ## Canonical lyrics boundary
 
-- `lyrics.txt` is the canonical source;
-- timestamps inside TXT define synchronized state;
-- `.lrc` remains optional compatibility/export only;
-- existing lyrics save requires manifest revision + R2 ETag;
-- missing lyrics creation is handled only through the scoped Assets Manager TXT upload;
-- LRC Maker remains separate and unchanged.
-
-## Final Phase 4 management boundary
-
-Build 13 may consume only bridge v1.5 `manage` capabilities:
+This rule is non-negotiable:
 
 ```text
-track-create
-assets
-catalog-rebuild
+tracks/<slug>/lyrics.txt = only canonical lyrics source
+recognized timestamps     = synchronized lyrics
+.lrc                      = optional export/compatibility only
 ```
 
-The asset family is limited to:
+Consequences:
+
+- a missing `.lrc` does not mean lyrics are unsynchronized;
+- `.lrc` never contributes to Content Health;
+- canonical save writes `lyrics.txt` through Track Manager only;
+- synchronization save uses manifest revision + lyrics ETag stale guards;
+- post-save canonical reread remains mandatory;
+- client/backend text normalization is limited to optional BOM removal and line endings `CRLF`/`CR` → `LF`;
+- real lyric differences remain blocking.
+
+Final LRC interaction:
+
+- simple click = selection only;
+- double-click = explicit seek to existing timestamp;
+- Space = timestamp selected line then select next line.
+
+## Studio write boundary
+
+Studio uses specialized, domain-scoped routes. Do not create a generic arbitrary cross-origin `saveTrack()` replacement.
+
+Existing families include:
 
 ```text
-audio
-cover
-thumbnail
-lyrics
-video
+metadata validate/save
+canonical lyrics validate/save
+track create
+per-asset upload/delete
+explicit catalog rebuild
+SonicTrace sidecar save/read
+Lyrics context + synchronization validate/save
 ```
 
-Required invariants:
+Whole-track deletion remains outside the Studio bridge.
 
-- new tracks are draft-only;
-- duplicate trackId is rejected;
-- asset operations process one kind at a time;
-- asset operations require canonical `expectedUpdatedAt`;
-- uploads use existing Track Manager validation;
-- multipart uploads use no custom request headers;
-- XHR is used only to expose upload progress while retaining Access credentials;
-- replace/delete keeps temporary R2 rollback material outside the track prefix;
-- published-track quality guards remain authoritative;
-- destructive asset delete requires explicit confirmation;
-- explicit catalog rebuild requires explicit confirmation;
-- backend verification is followed by Studio canonical reread;
-- whole-track deletion is not exposed;
-- generic legacy `saveTrack()` is not opened cross-origin;
-- legacy Track Manager remains fallback.
-
-## Security safety
+## Cloudflare Access / CORS safety
 
 - no Cloudflare Access secret in GitHub Pages;
 - no R2 credential in GitHub Pages;
 - exact Studio origin remains `https://shinobione.github.io`;
 - credentialed CORS never uses `*`;
-- browser uses the existing Access session with credentials;
-- JSON control POSTs use CORS-simple `text/plain;charset=UTF-8`;
-- uploads use browser multipart FormData without custom headers;
-- every management operation checks the deployed capability first;
-- unrelated legacy writes retain same-origin enforcement;
-- no PUT/PATCH/DELETE client is added to Studio.
+- browser JSON-like control POSTs use the established simple-request `text/plain;charset=UTF-8` transport where required;
+- multipart uploads use browser-generated `FormData` without custom headers;
+- every private operation is gated behind the deployed capability/Access boundary;
+- unrelated legacy Track Manager writes retain same-origin enforcement;
+- no PUT/PATCH/DELETE client is added to Studio merely for convenience.
+
+## Protected media safety
+
+Private canonical media reads used by Studio retain Cloudflare Access and exact-origin CORS while supporting single byte ranges (`206` / `416`) for reliable HTML media seeking.
+
+Range support is a transport capability. It must not reintroduce the retired LRC Maker simple-click seek behavior.
 
 ## Destructive/media verification policy
 
-Do not mutate a real production WAV, cover or other catalog asset merely to prove that destructive/media code can mutate it.
+Do not mutate a real production WAV, cover, video or lyrics object merely to prove destructive/media code can mutate it.
 
-For final Phase 4 management paths, acceptable pre-release proof is:
+Preferred proof before any deliberate production mutation:
 
 - source-scope guard;
-- Worker assembly and syntax validation;
+- Worker assembly/syntax validation;
 - generated bundle verification;
 - Wrangler dry-run;
-- protected admin-only deployment;
 - Cloudflare Access verification;
 - LaunchPAD regression CI;
-- Studio TypeScript/Vite build;
-- capability gating;
+- Studio/LRC builds and behavioral guards;
 - stale checks;
 - transaction compensation;
 - explicit UI confirmation.
 
-If a disposable draft is intentionally supplied later, it can be used for deeper media smoke testing without risking canonical release assets.
+Use an intentionally disposable draft if deeper destructive media smoke testing is required later.
+
+## Version / deployment discipline
+
+Treat as separate facts:
+
+1. code merged;
+2. GitHub Pages/static host deployed;
+3. Worker deployed;
+4. R2/catalog data changed.
+
+For private Track Manager-only Worker changes, prefer:
+
+```text
+target = admin
+confirm = DEPLOY
+```
+
+Never use `both` without an explicit reason that both Worker surfaces changed.
+
+A public LaunchPAD UI build does not imply Worker redeployment. A private Worker version does not require an artificial public LaunchPAD build bump.
 
 ## Rollback principle
 
 If a regression appears:
 
-1. stop immediately;
+1. stop the next integration step;
 2. do not compensate with unrelated media/catalog edits;
-3. revert the Studio PR if the consumer is at fault;
-4. redeploy the private Worker from a known-good source/checkpoint if backend-only;
-5. prefer `safety/pre-phase4-final-ui-20260808-2025` for the Studio pre-final state;
-6. prefer `safety/pre-v5.13-phase4-ops-20260808-1948` for the backend pre-v5.13 state;
-7. verify Track Manager, LaunchPAD, LRC Maker and SonicTrace independently before resuming.
+3. revert the responsible PR first where possible;
+4. redeploy only the affected Worker from a known-good source if backend-only;
+5. use the relevant immutable safety branch only when a normal revert is insufficient;
+6. independently verify LaunchPAD, Track Manager, SonicTrace, LRC Maker and Studio before resuming.
 
 ## Stop line
 
-After roadmap Phase 4 is complete, **STOP before Phase 5**.
+**Phase 6 is complete. Post-Phase-6 hardening is maintenance, not Phase 7.**
 
-No SonicTrace result persistence, embeddings, fingerprints, Catalog Intelligence, similarity, duplicate detection or outdated-analysis work begins without new user instructions.
+Phase 7 must not be implemented, scaffolded, partially prepared, branched or deployed without a new explicit user authorization.
 
-The objective remains simple: Studio integration may fail, but it must not take LaunchPAD, Track Manager, SonicTrace or LRC Maker down with it.
+The objective remains simple: integration may fail locally or in CI, but a maintenance change must never take LaunchPAD, Track Manager, SonicTrace or LRC Maker down with it.
