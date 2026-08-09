@@ -45,13 +45,13 @@ for (const token of [
 assert.ok(css.includes('grid-template-columns: repeat(3, 1fr)'), 'Mobile navigation must expose three primary destinations.');
 assert.ok(css.includes('.nav-list-utility { display: none; }'), 'Mobile must keep utility navigation secondary.');
 assert.ok(app.includes('codename') || release.includes('phase-ux-'));
-assert.equal(pkg.version, '0.10.8');
-assert.ok(release.includes("version: '0.10.8'"));
-assert.ok(release.includes('build: 30'));
-assert.ok(release.includes("codename: 'phase-ux-c2-5-a-polish'"));
+assert.equal(pkg.version, '0.10.9');
+assert.ok(release.includes("version: '0.10.9'"));
+assert.ok(release.includes('build: 31'));
+assert.ok(release.includes("codename: 'phase-ux-c2-5-a-lrc-638'"));
 
 for (const forbidden of ['phase7', 'phase-7', 'Phase 7 runtime']) {
   assert.ok(!`${app}\n${workspace}\n${css}`.toLowerCase().includes(forbidden.toLowerCase()), `Unauthorized Phase 7 runtime marker found: ${forbidden}.`);
 }
 
-console.log('PHASE UX foundation guard passed: focused navigation, shared tokens, readable responsive controls, legacy deep links, Build 30 identity and Phase 7 STOP preserved.');
+console.log('PHASE UX foundation guard passed: focused navigation, shared tokens, readable responsive controls, legacy deep links, Build 31 identity and Phase 7 STOP preserved.');
