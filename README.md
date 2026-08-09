@@ -2,27 +2,26 @@
 
 Artist Content & Intelligence Manager.
 
-**Release:** `0.10.3`
+**Release:** `0.10.4`
 
-**Build:** `25`
+**Build:** `26`
 
-**Codename:** `phase-ux-module-polish`
+**Codename:** `phase-ux-responsive-closeout`
 
-**Milestone:** PHASE UX — UX-4 Module polish
+**Milestone:** PHASE UX — UX-5 Responsive closeout
 
 **Stop line:** Do not begin Phase 7 without explicit authorization.
 
-## PHASE UX — Build 25
+## PHASE UX — Build 26
 
-Build 25 polishes Metadata, Assets, Lyrics and SonicTrace without changing any backend or Phase 4/5/6 engine contract.
+Build 26 completes the authorized PHASE UX runtime slices with a purposeful Catalog Intelligence workspace and final responsive/accessibility hardening.
 
-- groups Metadata into Identity, Release, Discovery, Music details and LaunchPAD theme;
-- presents one Assets media manager with aligned upload/replace/delete controls and subdued safety diagnostics;
-- makes embedded LRC Maker the primary Lyrics surface and moves the plain-text editor behind progressive disclosure;
-- keeps standalone LRC Maker visible as the recovery fallback;
-- leads SonicTrace with readiness, Analyze/Re-scan, progress and useful result state while moving engine IDs into diagnostics;
-- preserves all validation, save, stale, rollback, canonical reread and engine behaviors unchanged;
-- adds a dedicated UX-4 regression guard across all four modules;
+- reframes Catalog Intelligence around analyzed tracks, nearest sounds and recurring sonic families;
+- adds an accessible track search and explicit selection state;
+- keeps the existing 512D similarity and deterministic cluster math untouched;
+- improves laptop, tablet and mobile reflow down to 390 px;
+- guards semantic loading/error states, visible focus, 42 px controls, reduced motion and overflow behavior;
+- adds a dedicated UX-5 regression guard;
 - makes no Worker, R2, manifest, SonicTrace or LRC Maker runtime change.
 
 See `docs/PHASE-UX.md` and `docs/PHASE-UX-AUDIT.md`.

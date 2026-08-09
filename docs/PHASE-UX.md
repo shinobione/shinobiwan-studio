@@ -2,7 +2,7 @@
 
 Date opened: `2026-08-09`
 
-Status: **AUTHORIZED — UX-1 / UX-2 / UX-3 PRODUCTION GREEN / UX-4 LOCAL GREEN**
+Status: **AUTHORIZED — UX-1 / UX-2 / UX-3 / UX-4 PRODUCTION GREEN / UX-5 LOCAL GREEN**
 
 Phase 7: **NOT AUTHORIZED — ABSOLUTE STOP**
 
@@ -60,6 +60,10 @@ All four repositories were clean and synchronized with their upstream branches b
 - UX-3 merge commit: `8de766f45f5323a1b22bc26ac929c60709184b46`;
 - UX-3 production deploy workflow: `31315940358`;
 - UX-4 development branch: `codex/phase-ux-module-polish`.
+- UX-4 PR: `#27`;
+- UX-4 merge commit: `25128e7f4ccc07283c9f53a4c00b3f7d8fb78cb8`;
+- UX-4 production deploy workflow: `31316548853`;
+- UX-5 development branch: `codex/phase-ux-responsive`.
 
 ## Information architecture decision
 
@@ -192,10 +196,14 @@ The slice groups the Metadata form, removes the duplicate Assets projection, mak
 
 ### UX-5 — Intelligence, responsive and accessibility closeout
 
+Version target: Studio `0.10.4` / Build `26` / `phase-ux-responsive-closeout`
+
 - Catalog Intelligence presentation;
 - final responsive validation at desktop, laptop, tablet and mobile;
 - focus, labels, reduced motion and overflow guards;
 - documentation, production smoke and final checkpoint.
+
+The slice replaces engineering-console hierarchy with searchable analyzed-track selection, understandable closest-sound results, visual similarity strength and sonic-family cards. It adds semantic status/error/selection states and explicit reflow at 1100, 850, 590 and 390 px while preserving Phase 5 math, schemas and persistence exactly.
 
 ## Validation record
 
@@ -271,6 +279,22 @@ UX-4 local validation:
 - rendered Metadata, Assets, Lyrics and SonicTrace track-local views: PASS at the available desktop viewport;
 - canonical `accent` / `accent2`, `lyrics.txt`, private Track Manager and Cloudflare Access boundaries remain explicit;
 - no write control was invoked during the visual smoke.
+
+UX-4 delivery validation:
+
+- PR `#27`: PASS;
+- GitHub Actions build `31316514821`: PASS;
+- merge commit `25128e7f4ccc07283c9f53a4c00b3f7d8fb78cb8`;
+- Pages deploy workflow `31316548853`: PASS;
+- production smoke: Studio `0.10.3` / Build `25`, grouped Metadata and canonical LaunchPAD palette rendered on the existing Soft Addiction workspace.
+
+UX-5 local validation:
+
+- private integration, Phase 5, Phase 6 and UX-1 through UX-5 guards: PASS;
+- TypeScript typecheck and Vite production build: PASS;
+- Catalog Intelligence accessible error state: PASS at the available 1280×720 browser viewport;
+- Studio `0.10.4` / Build `26` rendered with no horizontal document overflow;
+- the full private analysis dataset remained correctly protected by Cloudflare Access and was not fabricated for visual testing.
 
 CI, PR, merge, deploy and smoke records will be appended per slice. Static Studio Pages deployment remains separate from Worker deployment. No Worker deployment is authorized for PHASE UX.
 
