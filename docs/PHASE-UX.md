@@ -329,6 +329,18 @@ Corrective local validation:
 - Assets rendered current canonical cover beside the saved `accent` / `accent2` pair with no horizontal overflow;
 - no create, upload, metadata save, palette save, Worker deploy or other production mutation was invoked.
 
+Corrective delivery validation:
+
+- implementation commit: `d5b92618f0625796011ea010b6c0596cf79fd127`;
+- PR `#29`: merged only after green validation workflow `31319128176`;
+- production merge: `80c59e61a35db59d82a80af362ba2de3cb522fa0`;
+- GitHub Pages workflow `31319156206`: build and deploy PASS;
+- read-only production smoke: Studio `0.10.5` / Build `27`, PRIVATE READ, current canonical cover/palette, multi-file intake step and compact sticky navigation rendered with no horizontal overflow;
+- measured production sticky state after scroll: tabs `top: 76px`, full header outside viewport, overlap `false`;
+- known non-blocking GitHub annotation: Pages actions still target deprecated Node 20 metadata and are forced to Node 24 by the runner;
+- real user production mutation smoke: **PENDING**;
+- final `safety/phase-ux-complete-*` checkpoint: **NOT CREATED** pending explicit user acceptance.
+
 ## Stop conditions
 
 Stop before any backend/schema/Worker/R2 change, destructive migration, lyrics contract change, trackId change, major fallback removal or Phase 7 work.
