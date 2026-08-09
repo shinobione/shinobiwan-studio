@@ -39,13 +39,15 @@ for (const required of [
   '.workspace-readiness-layout', '.workspace-health-pills', '.workspace-next-action', '.workspace-media-grid',
   '.workspace-release-states', '.workspace-diagnostics', '@media(max-width:590px)', '@media(max-width:390px)',
 ]) assert.ok(workspaceCss.includes(required), `UX-3 responsive workspace CSS is missing ${required}.`);
-assert.ok(foundationCss.includes('.workspace-tabs { position: sticky; top: 205px;'), 'Desktop local navigation must remain sticky below the compact header.');
-assert.ok(foundationCss.includes('.workspace-tabs { top: 178px;'), 'Mobile local navigation must remain sticky below compact track context.');
+assert.ok(foundationCss.includes('.workspace-header { position: relative;'), 'The full workspace hero must scroll normally and never overlap content.');
+assert.ok(foundationCss.includes('.workspace-tabs { position: sticky; top: 76px;'), 'Desktop local navigation must remain sticky below the global topbar.');
+assert.ok(foundationCss.includes('.workspace-tabs { top: 72px;'), 'Mobile local navigation must remain sticky below the mobile topbar.');
+assert.ok(workspace.includes('workspace-sticky-context'), 'Sticky navigation must retain compact track identity and readiness context.');
 
-assert.equal(pkg.version, '0.10.4');
-assert.ok(release.includes("version: '0.10.4'"));
-assert.ok(release.includes('build: 26'));
-assert.ok(release.includes("codename: 'phase-ux-responsive-closeout'"));
+assert.equal(pkg.version, '0.10.5');
+assert.ok(release.includes("version: '0.10.5'"));
+assert.ok(release.includes('build: 27'));
+assert.ok(release.includes("codename: 'phase-ux-live-smoke-corrections'"));
 
 for (const forbidden of ['phase7', 'phase-7']) assert.ok(!workspace.toLowerCase().includes(forbidden), `Phase 7 runtime marker found: ${forbidden}.`);
 

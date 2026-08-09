@@ -39,7 +39,7 @@ for (const field of ['accent', 'accent2']) {
 }
 assert.ok(preview.includes('cover-palette-swatch'));
 assert.ok(preview.includes('<code>{palette[field]}</code>'), 'Actual color values must be visible beside the swatches.');
-assert.ok(create.includes('if (file) void calculatePalette(file)'), 'New Track cover selection must automatically calculate a palette preview.');
+assert.ok(create.includes('extractCoverPalette(cover)'), 'New Track cover selection must automatically calculate a palette preview.');
 assert.ok(create.includes('Recalculate palette') || preview.includes("actionLabel = 'Recalculate palette'"));
 assert.ok(create.includes('...(palette ? { accent: palette.accent, accent2: palette.accent2 } : {})'), 'New Track must persist the preview through canonical manifest fields.');
 
@@ -53,7 +53,7 @@ assert.ok(assets.includes('saveAdminTrackMetadata(track.id, revision, patch)'));
 
 assert.ok(catalog.includes('>+ New Track</button>'), 'Catalog must expose one obvious New Track action.');
 assert.ok(!catalog.includes('<TrackCreatePanel privateRead={privateRead} onCreated={loadCatalog} />'), 'The intake flow must not remain permanently expanded above the catalog.');
-for (const step of ["['Basics', 'Media', 'Review']", "step === 1", "step === 2", "step === 3"]) assert.ok(create.includes(step), `New Track progressive flow is missing ${step}.`);
+for (const step of ["['Metadata', 'Files', 'Review']", "step === 1", "step === 2", "step === 3"]) assert.ok(create.includes(step), `New Track progressive flow is missing ${step}.`);
 for (const forbidden of ['/api/', 'fetch(']) assert.ok(!paletteSource.includes(forbidden), `Palette extraction must remain local and route-free: ${forbidden}.`);
 
 console.log(`PHASE UX UX-2 guard passed: ${extracted.accent} + ${extracted.accent2}; canonical palette, progressive intake, visible swatches and explicit existing-track updates protected.`);

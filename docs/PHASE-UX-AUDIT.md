@@ -284,3 +284,28 @@ Catalog Intelligence now leads with the user task, human summary metrics, search
 8. Treat Content Health strictly as operational completeness.
 9. Preserve all standalone fallbacks.
 10. Never introduce Phase 7 behavior or a new source of truth.
+
+## Live-smoke corrective audit — 2026-08-09
+
+Baseline: Studio `0.10.4` / Build `26` production merge `2a1f74f2b3487501fbeffe94d53f6c5015955ba1`; Track Manager `v5.15`, bridge `v1.7`, LaunchPAD repository `0e508c893c038059da4a563365dbdba7094b638d`.
+
+### Findings and dispositions
+
+| Finding | Current-code evidence | Corrective disposition |
+|---|---|---|
+| Studio asset upload failed before a Worker JSON response | Cross-origin `XMLHttpRequest` registered `xhr.upload.onprogress`, forcing CORS preflight; the current asset route is not an allowed preflight path | Studio-only credentialed multipart `fetch`; browser boundary; no Worker/CORS change |
+| A lost response could invite a duplicate manual upload | No canonical reread occurred after status-zero transport failure | Reread `updatedAt` and asset fingerprint; recover verified writes, allow retry only for unchanged revision, block ambiguity |
+| New Track lagged Track Manager intake | Separate role-specific pickers; TXT uploaded without current parser/inference | Multi-file drop, role review, current TXT field map, release/album/slug and Feature 10.2 genre/mood/theme inference |
+| Metadata origin was invisible | No detected/inferred/manual provenance | Explicit provenance badges and `EXISTING USER VALUE PRESERVED` guard |
+| Cover workflow lacked image/manual palette affordances | Palette swatches only | Local/current cover preview, canonical field swatches/values, color and HEX inputs, optional native EyeDropper |
+| Cover replacement could be misunderstood as palette replacement | Saved colors displayed without selected-cover image context | Selected cover preview plus explicit Extract and Save; no automatic existing-palette mutation |
+| Track Workspace controls overlapped while scrolling | Full header sticky at 88/72 px and tabs independently sticky at 205/178 px | Header scrolls; one compact sticky context/navigation bar at 76/72 px |
+
+### Safety result
+
+- Track Manager remains the only protected R2 write authority.
+- No Worker, Cloudflare Access policy, backend route, schema, R2 data, LaunchPAD runtime, SonicTrace runtime or LRC Maker runtime was modified.
+- `trackId`, `lyrics.txt`, `accent` and `accent2` remain the only canonical identifiers/fields involved.
+- Corrective automated tests are read-only and use synthetic buffers/text plus source-contract assertions.
+- Production mutation smoke is deliberately pending explicit user execution after Pages deployment.
+- Phase 7 is neither authorized nor present in runtime code.
