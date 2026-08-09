@@ -2,9 +2,9 @@
 
 Artist Content & Intelligence Manager.
 
-**Release:** `0.9.0`
-**Build:** `15`
-**Milestone:** Roadmap Phase 6 — canonical Lyrics/LRC workflow complete
+**Release:** `0.9.1`
+**Build:** `16`
+**Milestone:** Roadmap Phase 6 — embedded Lyrics Studio workflow complete
 **Stop line:** Do not begin Phase 7 without explicit authorization.
 
 ## Product role
@@ -23,22 +23,28 @@ Core rules:
 
 ## Roadmap Phase 6 status
 
-Build 15 closes the Phase 6 criterion:
+Build 16 completes the Phase 6C product criterion rather than treating navigation to a separate LRC Maker page as the primary workflow:
 
-> A canonical track can enter LRC Maker with its protected audio and `lyrics.txt`, synchronize timestamps, save through Track Manager and return to a refreshed Studio workspace without introducing a second source of truth.
+> A canonical track opens its real LRC Maker synchronization engine directly inside the Studio Lyrics workspace, with protected audio and `lyrics.txt` already contextualized, guarded save through Track Manager, and immediate canonical refresh after save.
 
 Implemented:
 
-- minimal URL context (`studio`, `trackId`, internal return path), with no audio/blob/lyrics payload;
-- protected canonical audio and `lyrics.txt` loading;
-- LRC Maker standalone mode preserved;
+- the real LRC Maker `Synchronizer` is exposed as the `shinobiwan-lyrics-studio` Web Component;
+- Shadow DOM isolates LRC Maker styling from the Studio shell;
+- the right-hand Track Workspace > Lyrics panel mounts that engine directly;
+- no iframe and no copied/reimplemented synchronization engine;
+- only canonical `trackId` is passed by Studio; no audio/blob/lyrics payload is put in a URL;
+- protected canonical audio and `lyrics.txt` loading through Track Manager v5.15 / bridge v1.7;
 - strict track-bound timestamp validation;
 - manifest revision + lyrics ETag stale protection;
 - UTF-8 `lyrics.txt` write through Track Manager only;
-- catalog rebuild, canonical reread and rollback;
-- automatic Studio refresh after save;
-- timestamps inside `lyrics.txt` as the only “Synced Lyrics” signal;
-- optional `.lrc` export kept outside persistence and Content Health.
+- catalog rebuild, canonical reread and rollback remain backend-authoritative;
+- automatic Studio refresh after embedded save;
+- timestamps inside `lyrics.txt` remain the only “Synced Lyrics” signal;
+- optional `.lrc` export stays outside persistence and Content Health;
+- standalone LRC Maker remains available as a secondary fallback.
+
+LRC Maker `6.3.0` produces the stable embedded asset at `build/embed/lyrics-studio.js`. Build 16 lazy-loads that asset from the deployed LRC Maker GitHub Pages project.
 
 See [`docs/PHASE-6-LYRICS-COMPLETE.md`](docs/PHASE-6-LYRICS-COMPLETE.md).
 
@@ -97,41 +103,19 @@ See [`docs/PHASE-4-COMPLETE.md`](docs/PHASE-4-COMPLETE.md).
 
 ## Deployed backend dependency
 
-Build 13 consumes the production-deployed backend:
+The current Lyrics workflow consumes the production-deployed private backend:
 
 ```text
-Track Manager       v5.13
-Studio bridge       v1.5
-source SHA          df75509d89b1ed1477d4b249fab63a6bd41db311
-workflow run        31272655808
+Track Manager       v5.15
+Studio bridge       v1.7
 deployment target   admin
-Worker Version ID   781f75f9-776c-4e39-90a7-5cdf34854599
-Access verification protected / HTTP 302 unauthenticated
-public Worker       skipped / remains v2.6
+Cloudflare Access   protected
+public Worker       unchanged
 ```
 
-The protected deployment passed Worker source validation, bridge regression guards, Wrangler dry-run, private Worker deployment and post-deploy Cloudflare Access verification before Studio Build 13 was released.
+The protected backend keeps canonical lyrics context, validation, stale protection, save, catalog update when required, canonical reread and rollback behind specialized routes. Build 16 does not require another Worker deployment.
 
-Public LaunchPAD remains unchanged:
-
-```text
-Build 2026.08.08.66
-release studio-metadata-validation-20260808
-public Worker v2.6
-```
-
-## Bridge v1.5 capability contract
-
-```json
-{
-  "read": ["tracks", "track", "lyrics"],
-  "validate": ["metadata", "lyrics"],
-  "write": ["metadata", "lyrics"],
-  "manage": ["track-create", "assets", "catalog-rebuild"]
-}
-```
-
-`manage` is separate from the narrower metadata/lyrics write family.
+Public LaunchPAD remains a separate surface and is not modified by this Phase 6C patch.
 
 ## Studio operations
 
@@ -141,7 +125,7 @@ Catalog exposes **Create canonical draft**.
 
 Creation:
 
-- requires PRIVATE READ / bridge v1.5;
+- requires PRIVATE READ and the current protected bridge;
 - requires canonical lower-case kebab-case trackId;
 - rejects duplicates;
 - always starts as `draft`;
@@ -174,7 +158,12 @@ timestamps inside lyrics.txt = synchronized
 .lrc = optional compatibility/export only
 ```
 
-Existing lyrics use manifest revision + R2 ETag concurrency. Missing lyrics can be created by uploading a `.txt` file through Assets Manager. LRC Maker remains unchanged.
+The Lyrics workspace now has two paths sharing the same canonical contract:
+
+1. **embedded Lyrics Studio** — the primary Build 16 workflow using LRC Maker 6.3's real synchronizer inside the right-hand workspace panel;
+2. **standalone LRC Maker** — retained as an advanced recovery/fallback path.
+
+Both use the same protected Track Manager context/write authority. Neither creates a second lyrics source of truth.
 
 ### Assets
 
@@ -212,7 +201,7 @@ Delete asset:
 
 ### Catalog rebuild
 
-Administration exposes an explicit standalone catalog rebuild.
+Administration exposes an explicit standalone canonical catalog rebuild.
 
 It:
 
@@ -233,36 +222,36 @@ It:
 - no PUT/PATCH/DELETE client is introduced;
 - no generic legacy `saveTrack()` route is opened cross-origin;
 - no whole-track delete route is exposed;
-- every management call verifies the bridge `manage` capability first;
-- standalone Track Manager remains the fallback.
+- standalone Track Manager remains the fallback;
+- the embedded LRC Maker engine receives only `trackId` from Studio and fetches canonical data through the existing protected bridge;
+- Shadow DOM is used for UI isolation, not as a security boundary;
+- no iframe is used for Phase 6C.
 
 ## Safety / rollback
 
-Current relevant checkpoints:
+Current Phase 6C pre-patch checkpoints:
 
 ```text
-Studio:    safety/pre-phase4-final-ui-20260808-2025
-LaunchPAD: safety/pre-v5.13-phase4-ops-20260808-1948
-Both:      safety/post-v5.12-pre-phase4-complete-20260808-1945
-Both:      safety/post-metadata-write-proven-20260808-1822
+Studio:    safety/pre-phase6-embedded-lyrics-20260809-0147
+LRC Maker: safety/pre-phase6-embedded-lyrics-20260809-0147
 ```
+
+Earlier Phase 4/5 safety branches remain untouched.
 
 See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md).
 
 ## Verification policy
 
-The final management code is protected by:
+The current code is protected by:
 
 - Track Manager source guards;
-- assembled Worker syntax checks;
-- generated bundle verification;
-- Wrangler dry-run;
-- protected admin-only production deployment;
-- Cloudflare Access post-deploy verification;
-- LaunchPAD regression CI;
+- protected admin-only backend deployment and Cloudflare Access verification;
 - Studio build-time integration guards;
+- Phase 5 algorithm guards;
+- Phase 6 embedded-engine regression guards;
+- LRC Maker format/lint/context guards;
 - TypeScript;
-- Vite build;
+- Vite production builds;
 - capability gating;
 - stale checks;
 - rollback contracts;
@@ -272,11 +261,11 @@ We do **not** replace or delete a production WAV/cover merely to manufacture a s
 
 ## Phase 7 stop line
 
-**STOP after Build 15.**
+**STOP after Build 16.**
 
 Do not begin any Phase 7 item.
 
-Wait for new user instructions.
+Wait for new user instructions after the deployed embedded Lyrics Studio smoke test.
 
 ## Development
 
@@ -284,11 +273,13 @@ Wait for new user instructions.
 npm install
 npm run dev
 npm run check:private-read
+npm run check:phase5
+npm run check:phase6
 npm run typecheck
 npm run build
 ```
 
-`npm run build` runs the integration regression guard before TypeScript/Vite.
+`npm run build` runs the integration regression guards before TypeScript/Vite.
 
 ## Production URL
 

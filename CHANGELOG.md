@@ -1,12 +1,43 @@
 # SHINOBIWAN Studio Changelog
 
+## 0.9.1 — Build 16 — 2026-08-09
+
+Codename: `phase6-embedded-lyrics-studio`
+
+### Phase 6C completion
+
+- embeds the **real LRC Maker 6.3 Synchronizer** directly in the right-hand Track Workspace > Lyrics panel;
+- lazy-loads the stable `embed/lyrics-studio.js` bundle from the deployed LRC Maker Pages project;
+- isolates LRC Maker presentation with Shadow DOM instead of an iframe;
+- keeps `trackId` as the only Studio integration identity;
+- keeps canonical audio + `lyrics.txt` loading behind protected Track Manager v5.15 / bridge v1.7;
+- reuses the existing guarded validate/save/canonical-reread path;
+- refreshes the existing Studio Track Workspace after an embedded save;
+- retains standalone LRC Maker as a secondary fallback rather than the primary Phase 6 workflow;
+- leaves Track Manager, R2, SonicTrace and public LaunchPAD unchanged;
+- keeps the Phase 7 STOP LINE active.
+
+### Canonical Lyrics rule
+
+- `tracks/<slug>/lyrics.txt` remains the only source of truth;
+- timestamps inside canonical `lyrics.txt` remain the only Synced Lyrics signal;
+- `.lrc` remains optional export/compatibility data and does not affect Content Health.
+
+### Verification
+
+- Studio private-read, Phase 5 and Phase 6 regression guards pass;
+- Studio TypeScript + Vite production build pass;
+- LRC Maker format, lint and Studio-context guards pass;
+- LRC Maker standalone build and dedicated embedded bundle build pass;
+- no iframe, second lyrics store or new backend write surface is introduced.
+
 ## 0.9.0 — Build 15 — 2026-08-09
 
 Codename: `phase6-canonical-lyrics-workflow`
 
 ### Roadmap milestone
 
-- completes **Phase 6 — Lyrics/LRC integration**;
+- completes **Phase 6 — Lyrics/LRC context + guarded save foundation**;
 - opens LRC Maker with minimal, track-bound context and preserves its standalone mode;
 - saves through Track Manager v5.15 / bridge v1.7 only;
 - keeps `tracks/<slug>/lyrics.txt` as the sole canonical lyrics source;
