@@ -22,14 +22,26 @@ export class Phase4AdminError extends Error {
   readonly code: string | null;
   readonly currentUpdatedAt: string | null;
   readonly rollback: Record<string, boolean> | null;
+  readonly retrySafe: boolean;
+  readonly technicalDetails: string | null;
 
-  constructor(message: string, status: number | null = null, code: string | null = null, currentUpdatedAt: string | null = null, rollback: Record<string, boolean> | null = null) {
+  constructor(
+    message: string,
+    status: number | null = null,
+    code: string | null = null,
+    currentUpdatedAt: string | null = null,
+    rollback: Record<string, boolean> | null = null,
+    retrySafe = false,
+    technicalDetails: string | null = null,
+  ) {
     super(message);
     this.name = 'Phase4AdminError';
     this.status = status;
     this.code = code;
     this.currentUpdatedAt = currentUpdatedAt;
     this.rollback = rollback;
+    this.retrySafe = retrySafe;
+    this.technicalDetails = technicalDetails;
   }
 }
 
@@ -70,6 +82,9 @@ export interface AssetMutationResponse {
   error?: string;
   rollback?: Record<string, boolean> | null;
   clientVerified?: boolean;
+  recoveredAfterTransportFailure?: boolean;
+  retrySafe?: boolean;
+  technicalDetails?: string | null;
 }
 
 export interface CatalogRebuildResponse {
@@ -144,43 +159,94 @@ async function postSimple<T>(path: string, body: unknown, timeoutMs = 15000): Pr
   }
 }
 
-function uploadViaXhr(
+async function uploadViaFetch(
   url: string,
   formData: FormData,
   onProgress?: (percent: number) => void,
 ): Promise<AssetMutationResponse> {
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', url, true);
-    xhr.withCredentials = true;
-    xhr.timeout = 120000;
-    xhr.upload.onprogress = event => {
-      if (!event.lengthComputable) return;
-      onProgress?.(Math.max(0, Math.min(100, Math.round((event.loaded / event.total) * 100))));
+  const controller = new AbortController();
+  const timeout = globalThis.setTimeout(() => controller.abort(), 120000);
+  try {
+    // Fetch + browser-generated multipart boundary keeps this request CORS-simple.
+    // Do not add a Content-Type header or an upload listener: either would force a preflight.
+    onProgress?.(15);
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        method: 'POST',
+        body: formData,
+        cache: 'no-store',
+        credentials: 'include',
+        mode: 'cors',
+        signal: controller.signal,
+      });
+    } catch (reason) {
+      const timedOut = reason instanceof DOMException && reason.name === 'AbortError';
+      throw new Phase4AdminError(
+        timedOut
+          ? 'Asset upload timed out. Studio will reread canonical state before allowing a retry.'
+          : 'Asset upload transport was interrupted. Studio will reread canonical state before allowing a retry.',
+        null,
+        timedOut ? 'ASSET_UPLOAD_TIMEOUT' : 'ASSET_UPLOAD_TRANSPORT',
+        null,
+        null,
+        false,
+        reason instanceof Error ? reason.message : String(reason),
+      );
+    }
+    onProgress?.(85);
+    if (!isJsonResponse(response)) {
+      throw new Phase4AdminError(
+        'Cloudflare Access did not return an authenticated JSON response. Open Track Manager, sign in, then reload Studio.',
+        response.status || null,
+        'ACCESS_SESSION_REQUIRED',
+      );
+    }
+    let payload: AssetMutationResponse;
+    try { payload = await response.json() as AssetMutationResponse; }
+    catch { throw new Phase4AdminError('Track Manager returned invalid asset upload JSON.', response.status || null, 'INVALID_ASSET_RESPONSE'); }
+    if (!response.ok || payload.ok === false) {
+      throw new Phase4AdminError(
+        payload.error || `Asset upload returned HTTP ${response.status}.`,
+        response.status,
+        payload.code || 'ASSET_UPLOAD_REJECTED',
+        payload.currentUpdatedAt || null,
+        payload.rollback || null,
+      );
+    }
+    onProgress?.(100);
+    return payload;
+  } finally {
+    globalThis.clearTimeout(timeout);
+  }
+}
+
+export interface Phase4ErrorPresentation {
+  title: string;
+  message: string;
+  nextAction: string;
+  retrySafe: boolean;
+  technicalDetails: string | null;
+}
+
+export function phase4ErrorPresentation(reason: unknown): Phase4ErrorPresentation {
+  if (!(reason instanceof Phase4AdminError)) {
+    return {
+      title: 'Unexpected Studio error',
+      message: reason instanceof Error ? reason.message : String(reason),
+      nextAction: 'Keep the selected files, reload canonical state, and inspect Track Manager before retrying.',
+      retrySafe: false,
+      technicalDetails: reason instanceof Error ? reason.stack || null : null,
     };
-    xhr.onerror = () => reject(new Phase4AdminError('Asset upload failed before Track Manager returned a response.'));
-    xhr.ontimeout = () => reject(new Phase4AdminError('Asset upload timed out. Reload canonical state before retrying.'));
-    xhr.onload = () => {
-      const contentType = String(xhr.getResponseHeader('content-type') || '').toLowerCase();
-      if (!contentType.includes('application/json')) {
-        reject(new Phase4AdminError('Cloudflare Access session is not available to the Studio asset upload.', xhr.status || null));
-        return;
-      }
-      let payload: AssetMutationResponse;
-      try { payload = JSON.parse(xhr.responseText) as AssetMutationResponse; }
-      catch {
-        reject(new Phase4AdminError('Track Manager returned invalid asset upload JSON.', xhr.status || null));
-        return;
-      }
-      if (xhr.status < 200 || xhr.status >= 300 || payload.ok === false) {
-        reject(new Phase4AdminError(payload.error || `Asset upload returned HTTP ${xhr.status}.`, xhr.status, payload.code || null, payload.currentUpdatedAt || null, payload.rollback || null));
-        return;
-      }
-      onProgress?.(100);
-      resolve(payload);
-    };
-    xhr.send(formData);
-  });
+  }
+  const code = reason.code || 'PHASE4_OPERATION_ERROR';
+  if (code === 'ACCESS_SESSION_REQUIRED') return { title: 'Track Manager sign-in required', message: reason.message, nextAction: 'Open Track Manager, complete Cloudflare Access sign-in, then reload Studio.', retrySafe: false, technicalDetails: code };
+  if (code === 'ASSET_UPLOAD_NOT_COMMITTED') return { title: 'Upload not committed', message: reason.message, nextAction: 'The canonical revision is unchanged. You may use Retry after restoring connectivity or Access.', retrySafe: true, technicalDetails: [code, reason.technicalDetails].filter(Boolean).join(' · ') };
+  if (code === 'ASSET_UPLOAD_AMBIGUOUS' || code === 'ASSET_UPLOAD_UNVERIFIED') return { title: 'Upload state needs inspection', message: reason.message, nextAction: 'Do not retry. Reload the track and inspect the canonical asset in Track Manager first.', retrySafe: false, technicalDetails: [code, reason.currentUpdatedAt, reason.technicalDetails].filter(Boolean).join(' · ') };
+  if (reason.status === 409 || /STALE|CONFLICT/i.test(code)) return { title: 'Track changed elsewhere', message: reason.message, nextAction: 'Reload the workspace to obtain the latest canonical revision before deciding whether to retry.', retrySafe: false, technicalDetails: [code, reason.currentUpdatedAt].filter(Boolean).join(' · ') };
+  if (reason.status === 413 || /TOO_LARGE/i.test(code)) return { title: 'File exceeds the allowed size', message: reason.message, nextAction: 'Choose a smaller valid file; do not repeatedly retry the same upload.', retrySafe: false, technicalDetails: code };
+  if (reason.status === 400 || reason.status === 415 || /INVALID|UNSUPPORTED/i.test(code)) return { title: 'File or request rejected', message: reason.message, nextAction: 'Review the file type and Track Manager validation details, then choose a compliant file.', retrySafe: false, technicalDetails: code };
+  return { title: 'Track Manager operation failed', message: reason.message, nextAction: reason.retrySafe ? 'Canonical state is unchanged; an explicit retry is safe.' : 'Reload canonical state before another write.', retrySafe: reason.retrySafe, technicalDetails: [code, reason.status ? `HTTP ${reason.status}` : '', reason.technicalDetails].filter(Boolean).join(' · ') };
 }
 
 export async function createAdminTrack(slug: string, metadata: AdminMetadataPatch): Promise<TrackCreateResponse> {
@@ -208,11 +274,89 @@ export async function uploadAdminTrackAsset(
   if (!expectedUpdatedAt.trim()) throw new Phase4AdminError('Canonical updatedAt is required for asset upload.');
   if (!(file instanceof File) || file.size <= 0) throw new Phase4AdminError('Choose a non-empty file first.');
   await requireManage('assets');
+  const before = await getAdminTrack(trackId);
+  const beforeManifest = before.track?.manifest;
+  const beforeAsset = before.track?.assets?.[kind];
+  if (!beforeManifest?.updatedAt || beforeManifest.updatedAt !== expectedUpdatedAt) {
+    throw new Phase4AdminError(
+      'The track changed before this upload began. Reload the workspace before another write.',
+      409,
+      'STALE_MANIFEST',
+      beforeManifest?.updatedAt || null,
+    );
+  }
   const formData = new FormData();
   formData.set('intent', ASSET_UPLOAD_INTENT);
   formData.set('expectedUpdatedAt', expectedUpdatedAt);
   formData.set('file', file);
-  const payload = await uploadViaXhr(`${baseUrl()}/api/studio/tracks/${encodeURIComponent(trackId)}/assets/${kind}/upload`, formData, onProgress);
+  let payload: AssetMutationResponse;
+  try {
+    payload = await uploadViaFetch(`${baseUrl()}/api/studio/tracks/${encodeURIComponent(trackId)}/assets/${kind}/upload`, formData, onProgress);
+  } catch (reason) {
+    if (!(reason instanceof Phase4AdminError) || !['ASSET_UPLOAD_TIMEOUT', 'ASSET_UPLOAD_TRANSPORT'].includes(reason.code || '')) throw reason;
+    try {
+      const reread = await getAdminTrack(trackId);
+      const manifest = reread.track?.manifest;
+      const asset = reread.track?.assets?.[kind];
+      const changed = Boolean(manifest?.updatedAt && manifest.updatedAt !== expectedUpdatedAt);
+      const matchesSelectedFile = asset?.present === true && asset.size === file.size && (!file.type || !asset.contentType || asset.contentType === file.type);
+      const changedAssetFingerprint = beforeAsset?.present !== true
+        || Boolean(asset?.etag && beforeAsset.etag && asset.etag !== beforeAsset.etag)
+        || asset?.size !== beforeAsset?.size
+        || asset?.filename !== beforeAsset?.filename;
+      if (changed && matchesSelectedFile && changedAssetFingerprint) {
+        onProgress?.(100);
+        return {
+          ok: true,
+          saved: true,
+          trackId,
+          kind,
+          filename: asset.filename || manifest?.assets?.[kind] || file.name,
+          size: asset.size ?? file.size,
+          contentType: asset.contentType || file.type || null,
+          etag: asset.etag || null,
+          previousUpdatedAt: expectedUpdatedAt,
+          updatedAt: manifest?.updatedAt || null,
+          quality: reread.track?.quality || null,
+          clientVerified: true,
+          recoveredAfterTransportFailure: true,
+          retrySafe: false,
+          technicalDetails: `${reason.code}: response lost; canonical reread verified the selected asset size and a new manifest revision.`,
+        };
+      }
+      if (!changed) {
+        throw new Phase4AdminError(
+          'The upload did not reach canonical storage. Your selected file is still available; retry is safe after checking your Access session.',
+          null,
+          'ASSET_UPLOAD_NOT_COMMITTED',
+          manifest?.updatedAt || expectedUpdatedAt,
+          null,
+          true,
+          reason.technicalDetails,
+        );
+      }
+      throw new Phase4AdminError(
+        'Canonical state changed while the upload response was unavailable. Reload this track and inspect the asset before any retry.',
+        null,
+        'ASSET_UPLOAD_AMBIGUOUS',
+        manifest?.updatedAt || null,
+        null,
+        false,
+        reason.technicalDetails,
+      );
+    } catch (rereadReason) {
+      if (rereadReason instanceof Phase4AdminError) throw rereadReason;
+      throw new Phase4AdminError(
+        'The upload response and canonical reread are both unavailable. Do not retry until Track Manager access is restored and the track is reloaded.',
+        null,
+        'ASSET_UPLOAD_UNVERIFIED',
+        null,
+        null,
+        false,
+        rereadReason instanceof Error ? rereadReason.message : String(rereadReason),
+      );
+    }
+  }
   if (!payload.saved || !payload.updatedAt || !payload.filename) throw new Phase4AdminError('Track Manager returned an invalid asset upload response.');
   const reread = await getAdminTrack(trackId);
   const manifest = reread.track?.manifest;

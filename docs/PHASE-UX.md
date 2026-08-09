@@ -298,6 +298,37 @@ UX-5 local validation:
 
 CI, PR, merge, deploy and smoke records will be appended per slice. Static Studio Pages deployment remains separate from Worker deployment. No Worker deployment is authorized for PHASE UX.
 
+## Production-smoke corrective release — Build 27
+
+Version target: Studio `0.10.5` / Build `27` / `phase-ux-live-smoke-corrections`
+
+The post-UX-5 live smoke exposed frontend gaps without revealing a missing backend contract. The corrective release therefore stays Studio-only:
+
+- asset upload uses credentialed multipart `fetch` with a browser-generated boundary, matching the useful Track Manager transport behavior and avoiding the preflight forced by `XMLHttpRequest.upload` listeners;
+- transport loss always triggers a canonical Track Manager reread; an explicit retry is offered only when the manifest revision is unchanged, while an uncertain changed state blocks retry;
+- New Track accepts a mixed multi-file drop for one track, classifies audio/cover/TXT/Canvas files, exposes conflicts, and parses current Track Manager TXT metadata and smart genre/mood/theme signals before Create;
+- detected and inferred values are labeled, and an already entered user value is preserved rather than silently replaced;
+- cover selection renders a safe local preview and extracts the existing canonical `accent` / `accent2` pair; color, HEX and optional native EyeDropper editing remain frontend controls over those same fields;
+- an existing track's palette never changes merely because its cover selection changes; Extract colors and Save palette remain separate explicit actions;
+- the full Track Workspace header scrolls normally, while a compact identity/readiness row shares the sticky local navigation below the global topbar.
+
+The implementation adds no Worker route, CORS exception, R2 mutation outside existing user-triggered protected routes, manifest field, palette model, lyrics source or engine behavior. Automated tests use pure/synthetic data and source contracts only; real production asset creation remains a manual user smoke after deploy.
+
+Corrective safety checkpoint: `safety/pre-phase-ux-live-smoke-corrections-20260809-1608` at `2a1f74f2b3487501fbeffe94d53f6c5015955ba1`.
+
+Corrective branch: `codex/phase-ux-live-smoke-corrections`.
+
+Corrective local validation:
+
+- private integration, Phase 5, Phase 6 and UX-1 through UX-5 guards: PASS;
+- dedicated live-smoke corrective guard: PASS;
+- TypeScript typecheck and Vite production build: PASS;
+- local built release rendered as Studio `0.10.5` / Build `27`;
+- New Track metadata hierarchy rendered with no horizontal overflow at the available `1280×720` viewport;
+- Track Workspace header scrolled out normally while compact tabs remained at `top: 76px`; measured header/tab overlap after scroll: `false`;
+- Assets rendered current canonical cover beside the saved `accent` / `accent2` pair with no horizontal overflow;
+- no create, upload, metadata save, palette save, Worker deploy or other production mutation was invoked.
+
 ## Stop conditions
 
 Stop before any backend/schema/Worker/R2 change, destructive migration, lyrics contract change, trackId change, major fallback removal or Phase 7 work.

@@ -47,9 +47,11 @@ for (const required of [
   '/assets/${kind}/upload',
   '/assets/${kind}/delete',
   "'/api/studio/catalog/rebuild'",
-  'new XMLHttpRequest()',
-  'xhr.withCredentials = true',
-  'xhr.upload.onprogress',
+  'async function uploadViaFetch(',
+  "credentials: 'include'",
+  'body: formData',
+  "'ASSET_UPLOAD_NOT_COMMITTED'",
+  "'ASSET_UPLOAD_AMBIGUOUS'",
   "formData.set('expectedUpdatedAt', expectedUpdatedAt)",
   "formData.set('file', file)",
   "'Content-Type': 'text/plain;charset=UTF-8'",
@@ -78,7 +80,7 @@ for (const required of [
 ]) assert.ok(assets.includes(required), `Assets Manager missing ${required}.`);
 
 for (const required of [
-  'NEW TRACK', 'Create a production-ready draft', 'Create draft', 'globalThis.confirm', 'createAdminTrack', 'uploadAdminTrackAsset', "uploads.length ? 'assets' : 'overview'", "Initial state</span><strong>Draft",
+  'NEW TRACK', 'Build a canonical draft from the files you already have', 'Create canonical draft', 'globalThis.confirm', 'createAdminTrack', 'uploadAdminTrackAsset', "uploads.length ? 'assets' : 'overview'", "Initial state</span><strong>Draft",
 ]) assert.ok(create.includes(required), `Track create UI missing ${required}.`);
 
 for (const required of ['TRACK MANAGER / CATALOG', 'Explicit catalog rebuild', 'REBUILD the canonical catalog/index.json', 'globalThis.confirm', 'rebuildAdminCatalog']) assert.ok(rebuild.includes(required), `Catalog rebuild UI missing ${required}.`);
@@ -124,7 +126,7 @@ assert.ok(readability.includes('--studio-micro-readable: 11px'), 'Studio readabi
 
 assert.equal((admin.match(/method:\s*'POST'/g) || []).length, 2, 'Metadata client must keep validate + save POSTs only.');
 assert.equal((lyricsApi.match(/method:\s*'POST'/g) || []).length, 1, 'Lyrics service must keep one generic POST transport.');
-assert.equal((phase4Api.match(/method:\s*'POST'/g) || []).length, 1, 'Phase 4 service must keep one generic simple JSON POST transport; uploads use XHR/FormData.');
+assert.equal((phase4Api.match(/method:\s*'POST'/g) || []).length, 2, 'Phase 4 service must keep one simple JSON POST transport and one CORS-simple fetch/FormData upload transport.');
 for (const forbiddenWholeTrack of [
   '/api/studio/tracks/${encodeURIComponent(trackId)}/delete',
   '/api/studio/tracks/delete',
@@ -135,13 +137,13 @@ for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog 
   assert.ok(!phase4Api.toLowerCase().includes(forbiddenPhase5.toLowerCase()), `Phase 5 leaked into Phase 4 client: ${forbiddenPhase5}`);
 }
 
-assert.ok(release.includes("version: '0.10.4'"), 'Studio release version must be 0.10.4.');
-assert.ok(release.includes('build: 26'), 'Studio release build must be 26.');
-assert.ok(release.includes("codename: 'phase-ux-responsive-closeout'"), 'Studio release codename must identify the PHASE UX responsive closeout milestone.');
-assert.equal(pkg.version, '0.10.4', 'package.json must match Studio 0.10.4.');
+assert.ok(release.includes("version: '0.10.5'"), 'Studio release version must be 0.10.5.');
+assert.ok(release.includes('build: 27'), 'Studio release build must be 27.');
+assert.ok(release.includes("codename: 'phase-ux-live-smoke-corrections'"), 'Studio release codename must identify the PHASE UX live-smoke corrective milestone.');
+assert.equal(pkg.version, '0.10.5', 'package.json must match Studio 0.10.5.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'Production build must run the integration regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase5'), 'Production build must run the Phase 5 algorithm guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase6'), 'Production build must run the embedded Phase 6 regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:ux'), 'Production build must run the PHASE UX regression guard.');
 
-console.log('Studio 0.10.4 Build 26 preserves Phase 0-6 contracts while completing PHASE UX without starting Phase 7.');
+console.log('Studio 0.10.5 Build 27 preserves Phase 0-6 contracts while correcting PHASE UX live-smoke findings without starting Phase 7.');

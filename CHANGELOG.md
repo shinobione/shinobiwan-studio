@@ -1,5 +1,20 @@
 # SHINOBIWAN Studio Changelog
 
+## 0.10.5 — Build 27 — 2026-08-09
+
+Codename: `phase-ux-live-smoke-corrections`
+
+### PHASE UX — production-smoke corrections
+
+- replaces preflight-causing `XMLHttpRequest.upload` transport with credentialed multipart `fetch`, leaving the browser to generate the boundary;
+- rereads canonical Track Manager state after any upload transport loss and permits explicit retry only when the manifest revision did not change;
+- treats changed-but-unverified state as ambiguous and blocks blind retry; no Worker, CORS, route or R2 change was needed;
+- adds one-track multi-file drop/classification, ambiguity resolution, current Track Manager TXT parsing and smart metadata inference with visible provenance;
+- preserves manual form values and keeps canonical `lyrics.txt` as the only accepted Studio lyrics intake format;
+- adds local/current cover preview, editable `accent` / `accent2`, HEX inputs and optional native EyeDropper while preserving explicit existing-track palette saves;
+- replaces the overlapping sticky track hero/tabs pair with a scrolling hero and compact sticky identity/navigation bar;
+- adds a dedicated corrective regression guard and preserves every Phase 0–6, UX-1–UX-5 and Phase 7 STOP boundary.
+
 ## 0.10.4 — Build 26 — 2026-08-09
 
 Codename: `phase-ux-responsive-closeout`

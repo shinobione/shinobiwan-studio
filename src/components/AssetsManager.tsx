@@ -10,10 +10,12 @@ import {
 } from '../services/admin-api';
 import {
   deleteAdminTrackAsset,
-  Phase4AdminError,
+  phase4ErrorPresentation,
   uploadAdminTrackAsset,
   type AssetMutationResponse,
+  type Phase4ErrorPresentation,
 } from '../services/phase4-admin-api';
+import { CoverImagePreview } from './CoverImagePreview';
 import { CoverPalettePreview } from './CoverPalettePreview';
 
 interface AssetDefinition {
@@ -36,24 +38,12 @@ function assetFor(track: StudioTrackDetail, kind: AdminAssetKind): StudioAsset |
   return track.assets[kind] || null;
 }
 
-function errorText(reason: unknown): string {
-  if (reason instanceof Phase4AdminError) {
-    const parts = [reason.message];
-    if (reason.code) parts.push(reason.code);
-    if (reason.rollback) {
-      const rollback = Object.entries(reason.rollback).map(([key, value]) => `${key}:${value ? 'ok' : 'no'}`).join(' · ');
-      if (rollback) parts.push(`rollback ${rollback}`);
-    }
-    return parts.join(' · ');
-  }
-  return reason instanceof Error ? reason.message : String(reason);
-}
-
 export function AssetsManager({ track, onChanged }: { track: StudioTrackDetail; onChanged: () => Promise<void> | void }) {
   const [selected, setSelected] = useState<Partial<Record<AdminAssetKind, File>>>({});
   const [progress, setProgress] = useState<Partial<Record<AdminAssetKind, number>>>({});
   const [busyKind, setBusyKind] = useState<AdminAssetKind | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<Phase4ErrorPresentation | null>(null);
+  const [lastFailedKind, setLastFailedKind] = useState<AdminAssetKind | null>(null);
   const [result, setResult] = useState<AssetMutationResponse | null>(null);
   const [palettePreview, setPalettePreview] = useState<CoverPalette | null>(null);
   const [paletteBusy, setPaletteBusy] = useState(false);
@@ -85,7 +75,7 @@ export function AssetsManager({ track, onChanged }: { track: StudioTrackDetail; 
       setPalettePreview(await extractCoverPalette(await paletteBlob()));
       setPaletteMessage('Preview recalculated. The saved manifest palette is still unchanged.');
     } catch (reason) {
-      setError(errorText(reason));
+      setError(phase4ErrorPresentation(reason));
     } finally {
       setPaletteBusy(false);
     }
@@ -106,8 +96,9 @@ export function AssetsManager({ track, onChanged }: { track: StudioTrackDetail; 
       setPaletteMessage(response.noChange ? 'The canonical palette already had these values.' : 'Palette saved and verified in the canonical manifest.');
       await onChanged();
     } catch (reason) {
-      if (reason instanceof AdminValidationError || reason instanceof AdminSaveError) setError([reason.message, reason.code].filter(Boolean).join(' · '));
-      else setError(errorText(reason));
+      if (reason instanceof AdminValidationError || reason instanceof AdminSaveError) {
+        setError({ title: 'Palette update rejected', message: reason.message, nextAction: 'Reload canonical metadata and review validation details before another save.', retrySafe: false, technicalDetails: reason.code || null });
+      } else setError(phase4ErrorPresentation(reason));
     } finally {
       setPaletteBusy(false);
     }
@@ -122,6 +113,7 @@ export function AssetsManager({ track, onChanged }: { track: StudioTrackDetail; 
     setBusyKind(def.kind);
     setError(null);
     setResult(null);
+    setLastFailedKind(null);
     setProgress(previous => ({ ...previous, [def.kind]: 0 }));
     try {
       const response = await uploadAdminTrackAsset(track.id, def.kind, revision, file, percent => {
@@ -135,7 +127,8 @@ export function AssetsManager({ track, onChanged }: { track: StudioTrackDetail; 
       });
       await onChanged();
     } catch (reason) {
-      setError(errorText(reason));
+      setLastFailedKind(def.kind);
+      setError(phase4ErrorPresentation(reason));
     } finally {
       setBusyKind(null);
     }
@@ -156,7 +149,8 @@ export function AssetsManager({ track, onChanged }: { track: StudioTrackDetail; 
       setResult(response);
       await onChanged();
     } catch (reason) {
-      setError(errorText(reason));
+      setLastFailedKind(null);
+      setError(phase4ErrorPresentation(reason));
     } finally {
       setBusyKind(null);
     }
@@ -204,6 +198,7 @@ export function AssetsManager({ track, onChanged }: { track: StudioTrackDetail; 
                       }
                       setResult(null);
                       setError(null);
+                      setLastFailedKind(null);
                     }}
                   />
                 </label>
@@ -218,6 +213,7 @@ export function AssetsManager({ track, onChanged }: { track: StudioTrackDetail; 
               )}
               {def.kind === 'cover' && (
                 <div className="assets-cover-palette">
+                  <CoverImagePreview file={file} canonicalUrl={current?.fullUrl || current?.url || null} alt={`${track.title} cover preview`} />
                   <CoverPalettePreview
                     palette={palettePreview || savedPalette}
                     title={palettePreview ? 'Extracted palette preview' : 'Saved cover palette'}
@@ -225,6 +221,8 @@ export function AssetsManager({ track, onChanged }: { track: StudioTrackDetail; 
                     busy={paletteBusy}
                     actionLabel="Extract colors"
                     onRecalculate={!locked && (Boolean(file) || Boolean(current)) ? () => void recalculatePalette() : undefined}
+                    editable={Boolean(palettePreview)}
+                    onChange={setPalettePreview}
                   />
                   {palettePreview && <button className="primary-btn compact" type="button" disabled={paletteBusy} onClick={() => void savePalette()}>Save palette</button>}
                   {paletteMessage && <p className="assets-palette-message">{paletteMessage}</p>}
@@ -241,7 +239,13 @@ export function AssetsManager({ track, onChanged }: { track: StudioTrackDetail; 
           <span>Canonical reread: {result.clientVerified ? 'Verified' : 'Check required'} · Catalog rebuilt: {result.catalogRebuilt ? 'Yes' : 'No'} · Revision: {result.updatedAt || '—'}</span>
         </div>
       )}
-      {error && <div className="phase4-operation-error"><strong>ASSET OPERATION ERROR</strong><span>{error}</span></div>}
+      {error && (
+        <div className="phase4-operation-error assets-error">
+          <strong>{error.title.toUpperCase()}</strong><span>{error.message}</span><b>{error.nextAction}</b>
+          {error.technicalDetails && <details><summary>Technical details</summary><code>{error.technicalDetails}</code></details>}
+          {error.retrySafe && lastFailedKind && selected[lastFailedKind] && <button className="primary-btn compact" type="button" disabled={Boolean(busyKind)} onClick={() => { const def = ASSETS.find(item => item.kind === lastFailedKind); if (def) void upload(def); }}>Retry explicit upload</button>}
+        </div>
+      )}
 
       <details className="workspace-diagnostics phase4-assets-diagnostics"><summary>Safety details</summary><p>One asset changes per operation. Destructive actions require confirmation and whole-track deletion is intentionally not exposed. Track Manager preserves stale-write and rollback protection internally.</p></details>
     </article>

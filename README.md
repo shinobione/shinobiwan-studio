@@ -2,26 +2,26 @@
 
 Artist Content & Intelligence Manager.
 
-**Release:** `0.10.4`
+**Release:** `0.10.5`
 
-**Build:** `26`
+**Build:** `27`
 
-**Codename:** `phase-ux-responsive-closeout`
+**Codename:** `phase-ux-live-smoke-corrections`
 
-**Milestone:** PHASE UX — UX-5 Responsive closeout
+**Milestone:** PHASE UX — production-smoke corrective release
 
 **Stop line:** Do not begin Phase 7 without explicit authorization.
 
-## PHASE UX — Build 26
+## PHASE UX — Build 27
 
-Build 26 completes the authorized PHASE UX runtime slices with a purposeful Catalog Intelligence workspace and final responsive/accessibility hardening.
+Build 27 corrects the production-smoke findings after UX-5 without changing any Worker, R2, schema or engine contract.
 
-- reframes Catalog Intelligence around analyzed tracks, nearest sounds and recurring sonic families;
-- adds an accessible track search and explicit selection state;
-- keeps the existing 512D similarity and deterministic cluster math untouched;
-- improves laptop, tablet and mobile reflow down to 390 px;
-- guards semantic loading/error states, visible focus, 42 px controls, reduced motion and overflow behavior;
-- adds a dedicated UX-5 regression guard;
+- restores Studio asset uploads with credentialed, CORS-simple multipart `fetch` and canonical lost-response verification;
+- brings New Track intake to the useful current Track Manager behavior: multi-file drop, role review, TXT metadata parsing/inference and visible provenance;
+- adds cover image preview plus editable canonical `accent` / `accent2` controls, including native EyeDropper support when available;
+- preserves saved palettes when an existing cover is replaced until an explicit Extract/Save action;
+- removes the overlapping double-sticky workspace header and keeps compact track context in the local navigation;
+- adds regression guards for the corrective transport, retry safety, intake parity, palette and sticky layout;
 - makes no Worker, R2, manifest, SonicTrace or LRC Maker runtime change.
 
 See `docs/PHASE-UX.md` and `docs/PHASE-UX-AUDIT.md`.

@@ -130,7 +130,13 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
         </div>
       </header>
 
-      <nav className="workspace-tabs" aria-label="Track Workspace sections">{TABS.map(tab => <a key={tab.id} className={section === tab.id ? 'active' : ''} aria-current={section === tab.id ? 'page' : undefined} href={trackHref(track.id, tab.id)}>{tab.label}</a>)}</nav>
+      <nav className="workspace-tabs" aria-label="Track Workspace sections">
+        <div className="workspace-sticky-context">
+          <span className="workspace-sticky-cover">{artwork ? <img src={artwork} alt="" /> : track.title.slice(0, 2).toUpperCase()}</span>
+          <span><strong>{track.title}</strong><small>{track.status} · {health.total}% ready</small></span>
+        </div>
+        <div className="workspace-tab-links">{TABS.map(tab => <a key={tab.id} className={section === tab.id ? 'active' : ''} aria-current={section === tab.id ? 'page' : undefined} href={trackHref(track.id, tab.id)}>{tab.label}</a>)}</div>
+      </nav>
 
       {section === 'overview' && (
         <div className="workspace-overview-grid">
