@@ -1,0 +1,236 @@
+# SHINOBIWAN Studio — PHASE UX audit
+
+Date: `2026-08-09`
+
+Baseline: Studio `0.9.6` / Build `21` / `post-phase6-hardening`
+
+Safety snapshot: `safety/pre-phase-ux-20260809-1426` at `5819914cd8db14f344754a02fe9cb966729b3b61`
+
+Phase 7 status: **NOT AUTHORIZED — STOP**
+
+## Executive finding
+
+Studio is technically complete through Phase 6, but its information architecture still mirrors the implementation history. The shell exposes seven global destinations, several of which are explanatory placeholders for tools that only make sense inside a track. The Catalog opens with a full technical creation form before the user sees the catalog. The Track Workspace is useful but gives seven local tabs equal visual weight and exposes implementation language such as `trackId`, R2, bridge versions, manifests and canonical revisions in primary copy.
+
+The visual baseline is already strong: dark surfaces, cyan accents, glass panels, clear track artwork and a capable responsive grid. PHASE UX should preserve that foundation while adopting LaunchPAD's calmer violet/blue depth, stronger hierarchy, consistent controls and progressive disclosure.
+
+## Validation method
+
+- inspected every Studio route and frontend component;
+- inspected Studio CSS, routing and responsive rules;
+- inspected LaunchPAD's current design tokens, panels, navigation, controls and breakpoints;
+- rendered Studio locally at `1366×900` and `390×844`;
+- inspected Dashboard, Catalog and an existing Track Workspace;
+- confirmed no horizontal document overflow at those two widths;
+- observed excessive vertical height: Catalog measured more than 4,100 px at laptop width and more than 6,100 px on mobile before any track was opened.
+
+## Application shell and global navigation
+
+### Problems
+
+- Seven equal global navigation entries make Studio feel like a collection of modules.
+- Lyrics, Assets and Publishing are global placeholder screens even though their actionable forms live inside a track.
+- Administration competes visually with everyday work.
+- Service health pills expose operational details permanently and can crowd the laptop top bar.
+- Mobile removes the sidebar but replaces it with seven tiny icons without labels, producing weak orientation.
+- The shell repeatedly surfaces Phase numbers and backend architecture rather than the user's current task.
+
+### Direction
+
+- Primary navigation: Dashboard, Catalog, Intelligence.
+- Secondary utility: System status/Administration, visually separated.
+- Track tools remain track-local.
+- Use explicit active states, readable labels and a compact mobile navigation.
+- Keep service diagnostics available in a secondary status area.
+
+## Dashboard
+
+### Problems
+
+- The hero is polished but architecture-centric.
+- “canonical slug”, R2 and Track Manager are prominent on the first screen.
+- Four status cards repeat facts more useful to maintainers than music operators.
+- The main CTA says “Open Track Workspace” even though no track is selected.
+
+### Direction
+
+- Lead with Catalog and `+ New Track`.
+- Show concise operational overview and recent/attention-oriented information.
+- Move architecture facts into Administration or diagnostics.
+
+## Catalog
+
+### Problems
+
+- The full creation form appears before search and tracks.
+- The primary screen can exceed 4,100 px at laptop width.
+- “TRACK MANAGER / CREATE”, `trackId / slug`, “manifest-only”, “bridge” and “canonical reread” expose backend vocabulary.
+- The locked form remains visually dominant when Access is unavailable.
+- Track cards expose many chips and asset flags simultaneously.
+- There is no isolated, unmistakable `+ New Track` entry action.
+
+### Direction
+
+- Catalog header with title, useful summary and `+ New Track` primary CTA.
+- Search/filter toolbar immediately above tracks.
+- New Track becomes a dedicated progressive flow, not an always-open panel.
+- Generate the slug internally and hide it under optional technical details.
+- Keep cards scannable: cover, title, release/status, Content Health summary and Open action.
+
+## New Track / intake
+
+### Problems
+
+- Current creation is a single technical form followed by separate asset work.
+- Confirmation dialog exposes `trackId` and catalog rebuild behavior.
+- Required versus optional information is not visually explained.
+- Success redirects to Assets, but there is no visible completion or next-step state.
+
+### Direction
+
+- Maximum three understandable steps: Basics, Media guidance, Review.
+- Reuse the existing draft-create bridge exactly as-is.
+- No bulk backend route or new mutation.
+- Clear required/optional labels, generated identifier hidden by default.
+- After verified creation, open the new workspace with a concise success handoff.
+
+### UX-2 addendum — Cover Palette
+
+Track Manager currently provides useful cover-assisted intake behavior that Studio must study before redesigning New Track. UX-2 must inspect the current Track Manager and LaunchPAD implementations and reuse their existing canonical two-color palette contract exactly.
+
+The New Track Media step must make palette extraction understandable rather than technical: selecting a valid cover should calculate a preview automatically, display two clear swatches with the real color values and canonical field names, and provide an explicit “Recalculate palette” or “Extract colors” action. The same preview should remain visible in Review when it helps the user confirm the draft.
+
+For an existing track, selecting or replacing a cover must not silently mutate a saved palette. Recalculation and persistence must be an explicit user action. Assets/Cover or the Track Workspace summary may expose the two saved colors only when useful and uncluttered.
+
+No second palette model, Studio-only fields, alternate persistence or new backend route is permitted. If the existing protected contract cannot persist the canonical fields, UX-2 stops before implementation and reports that backend blocker.
+
+## Track Workspace
+
+### Problems
+
+- Seven tabs give Versions and Publishing the same priority as Metadata, Assets and Lyrics.
+- “Audio Intelligence” is long and wraps poorly at constrained widths.
+- Overview's complete Content Health breakdown dominates the viewport.
+- Technical source/revision language is visible in primary panels.
+- The header is attractive but can be more compact and sticky.
+
+### Direction
+
+- Primary local navigation: Overview, Metadata, Assets, Lyrics, SonicTrace.
+- Publishing state belongs in Overview/Metadata; technical Versions becomes secondary details.
+- Compact sticky track header with cover, title, status, release and completeness.
+- One tool at a time; no return to a giant stacked page.
+
+## Metadata
+
+### Problems
+
+- The underlying form is comprehensive but dense.
+- Validation and save actions have competing emphasis.
+- Error payloads and revision language can reach the primary UI.
+- Button classes and action rows are not fully normalized.
+
+### Direction
+
+- Group identity, release, classification and publishing fields.
+- One primary Save action; validation is integrated or secondary.
+- Human summary first, expandable diagnostics second.
+- Preserve revision and stale-write semantics internally.
+
+## Assets
+
+### Problems
+
+- Current assets are shown once as a technical R2 list and again as management cards.
+- Upload/replace/delete controls vary in density and alignment.
+- Canonical filename and storage explanations are too prominent.
+
+### Direction
+
+- One media-management surface for Audio, Cover, Thumbnail, Lyrics TXT and Video.
+- Each asset card has current state, one primary upload/replace action, secondary open and subdued danger action.
+- Preserve progress, validation, confirmations and protected writes.
+
+## Lyrics / embedded LRC Maker
+
+### Findings
+
+- The canonical boundary is correctly represented.
+- Embedded and standalone workflows are both preserved.
+- The current screen stacks a state panel, embedded engine and plain editor, which creates competing editing surfaces.
+
+### Direction
+
+- Embedded LRC Maker remains the primary synchronization surface.
+- Plain text editor becomes secondary/collapsible when the embed is available.
+- Preserve simple-click/no-seek, double-click seek, Space timestamp-and-advance, canonical reread and fallback unchanged.
+
+## SonicTrace
+
+### Problems
+
+- Engine/model/GPU terminology is prominent.
+- Analysis action, state, history and diagnostics compete for attention.
+
+### Direction
+
+- Lead with readiness, Analyze action, progress and latest result.
+- Move model/GPU/source-version details into diagnostics.
+- Preserve Phase 5 persistence and 512D contracts unchanged.
+
+## Catalog Intelligence and Catalog Rebuild
+
+- Catalog Intelligence should remain a global workspace, but relationships and similarity need editorial hierarchy rather than debug-console density.
+- Catalog Rebuild is an Administration action and must not compete with daily workflows.
+- No automatic rebuild will be introduced as a UX side effect.
+
+## States and feedback
+
+### Problems
+
+- Loading and read errors are mostly plain panels.
+- Raw exception text can be the most visible message.
+- Success states are inconsistent across modules.
+
+### Direction
+
+- Standard EmptyState, Notice, Progress and ActionBar patterns.
+- Messages answer what happened and what to do next.
+- Technical details become expandable diagnostics.
+
+## Buttons and forms
+
+### Problems
+
+- Multiple button families (`primary-btn`, `ghost-btn`, operation buttons and component-specific controls) use different heights and padding.
+- Action rows can place validation, save, refresh and delete at competing levels.
+- Disabled, focus and success behavior is not uniformly represented.
+
+### Direction
+
+- Shared 42 px control/button baseline, compact 36 px option where necessary.
+- Primary, secondary, ghost and danger variants.
+- Danger actions isolated from the normal primary flow.
+- Unified focus-visible ring and minimum 11 px useful microcopy.
+
+## Responsive and accessibility findings
+
+- No document-level horizontal overflow was observed at 1366 px or 390 px.
+- Mobile Catalog is excessively tall because intake is permanently expanded.
+- Mobile navigation icons lack sufficient labels/context.
+- Track tabs require better overflow or wrapping behavior.
+- Semantic links/buttons and labels are generally present and should be preserved.
+- Add consistent focus-visible states and reduced-motion handling.
+
+## PHASE UX principles
+
+1. Show the user's task before implementation details.
+2. Keep three global destinations and five track-local tools.
+3. Use progressive disclosure for creation, diagnostics and technical metadata.
+4. Give every screen one obvious primary action.
+5. Preserve all guarded backend contracts behind simpler language.
+6. Use shared tokens and primitives instead of component-specific control geometry.
+7. Keep track context visible and reduce unnecessary scrolling.
+8. Treat Content Health strictly as operational completeness.
+9. Preserve all standalone fallbacks.
+10. Never introduce Phase 7 behavior or a new source of truth.

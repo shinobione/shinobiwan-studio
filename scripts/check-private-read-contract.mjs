@@ -94,9 +94,9 @@ for (const required of [
 ]) assert.ok(workspace.includes(required), `Workspace Build 15 contract missing ${required}.`);
 
 for (const required of [
-  'PHASE 6 · COMPLETE', 'Canonical Lyrics workflow.', 'Track Manager v5.15 · bridge v1.7', 'Context · timestamps · guarded save',
-  '<CatalogRebuildPanel privateRead={privateRead} />', '<CatalogIntelligenceView />', 'stop before Phase 7',
-]) assert.ok(app.includes(required), `Dashboard Build 15 contract missing ${required}.`);
+  'Track Manager v5.15 · bridge v1.7', 'LYRICS / CANONICAL', 'lyrics.txt is the single canonical source.',
+  '<CatalogRebuildPanel privateRead={privateRead} />', '<CatalogIntelligenceView />', 'PHASE 6 / COMPLETE',
+]) assert.ok(app.includes(required), `Studio integration contract missing ${required}.`);
 
 for (const required of [
   "const SAVE_INTENT = 'sonictrace-analysis-save-v1'", '/api/studio/analyze', '/analysis/sonictrace',
@@ -135,12 +135,13 @@ for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog 
   assert.ok(!phase4Api.toLowerCase().includes(forbiddenPhase5.toLowerCase()), `Phase 5 leaked into Phase 4 client: ${forbiddenPhase5}`);
 }
 
-assert.ok(release.includes("version: '0.9.6'"), 'Studio release version must be 0.9.6.');
-assert.ok(release.includes('build: 21'), 'Studio release build must be 21.');
-assert.ok(release.includes("codename: 'post-phase6-hardening'"), 'Studio release codename must identify the post-Phase-6 hardening milestone.');
-assert.equal(pkg.version, '0.9.6', 'package.json must match Studio 0.9.6.');
+assert.ok(release.includes("version: '0.10.0'"), 'Studio release version must be 0.10.0.');
+assert.ok(release.includes('build: 22'), 'Studio release build must be 22.');
+assert.ok(release.includes("codename: 'phase-ux-foundation'"), 'Studio release codename must identify the PHASE UX foundation milestone.');
+assert.equal(pkg.version, '0.10.0', 'package.json must match Studio 0.10.0.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'Production build must run the integration regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase5'), 'Production build must run the Phase 5 algorithm guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase6'), 'Production build must run the embedded Phase 6 regression guard.');
+assert.ok(String(pkg.scripts?.build || '').includes('check:ux'), 'Production build must run the PHASE UX regression guard.');
 
-console.log('Studio 0.9.6 Build 21 preserves Phase 0-6 contracts and consumes LRC Maker 6.3.5 hardening without starting Phase 7.');
+console.log('Studio 0.10.0 Build 22 preserves Phase 0-6 contracts while delivering the PHASE UX foundation without starting Phase 7.');

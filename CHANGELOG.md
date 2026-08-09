@@ -1,5 +1,22 @@
 # SHINOBIWAN Studio Changelog
 
+## 0.10.0 — Build 22 — 2026-08-09
+
+Codename: `phase-ux-foundation`
+
+### PHASE UX — UX-1 foundation
+
+- creates the verified pre-PHASE-UX checkpoint `safety/pre-phase-ux-20260809-1426`;
+- records the complete end-to-end UX audit and delivery architecture;
+- reduces global navigation to Dashboard, Catalog and Intelligence, with System separated as a utility;
+- reduces primary Track Workspace navigation to Overview, Metadata, Assets, Lyrics and SonicTrace while retaining legacy deep links;
+- introduces centralized LaunchPAD-aligned Studio tokens for surfaces, borders, typography, semantic colors, spacing, radii, controls, focus and motion;
+- redesigns the Dashboard around understandable music-production tasks rather than backend architecture;
+- adds responsive labeled mobile navigation, visible focus states and reduced-motion handling;
+- adds a dedicated PHASE UX foundation regression guard;
+- preserves Track Manager v5.15 / bridge v1.7, public Worker v2.6, LRC Maker 6.3.5, SonicTrace Phase 5 persistence and all canonical source-of-truth contracts;
+- performs no Worker deployment, R2 mutation, schema change or Phase 7 work.
+
 ## 0.9.6 — Build 21 — 2026-08-09
 
 Codename: `post-phase6-hardening`
