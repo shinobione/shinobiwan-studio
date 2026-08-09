@@ -1,14 +1,14 @@
 {
   "name": "shinobiwan-studio",
   "private": true,
-  "version": "0.10.3",
+  "version": "0.10.4",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "check:private-read": "node scripts/check-private-read-contract.mjs",
     "check:phase5": "node scripts/test-phase5-algorithms.mjs",
     "check:phase6": "node scripts/test-phase6-lyrics.mjs",
-    "check:ux": "node scripts/test-phase-ux-foundation.mjs && node scripts/test-phase-ux-catalog.mjs && node scripts/test-phase-ux-workspace.mjs && node scripts/test-phase-ux-modules.mjs",
+    "check:ux": "node scripts/test-phase-ux-foundation.mjs && node scripts/test-phase-ux-catalog.mjs && node scripts/test-phase-ux-workspace.mjs && node scripts/test-phase-ux-modules.mjs && node scripts/test-phase-ux-closeout.mjs",
     "typecheck": "tsc --noEmit",
     "build": "npm run check:private-read && npm run check:phase5 && npm run check:phase6 && npm run check:ux && npm run typecheck && vite build",
     "preview": "vite preview"

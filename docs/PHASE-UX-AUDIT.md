@@ -230,6 +230,10 @@ The primary panel now leads with Analyze/Re-scan, progress, saved/current state 
 - Catalog Rebuild is an Administration action and must not compete with daily workflows.
 - No automatic rebuild will be introduced as a UX side effect.
 
+### UX-5 implementation decision
+
+Catalog Intelligence now leads with the user task, human summary metrics, searchable analyzed-track selection, ranked sonic neighbors and readable family cards. The saved 512D embedding contract, nearest-neighbor math and deterministic clustering remain unchanged. Engine methodology is available through a secondary disclosure, while loading, errors and selection use semantic status/alert/pressed states. Catalog Rebuild remains isolated in Administration and is never triggered as a UX side effect.
+
 ## States and feedback
 
 ### Problems

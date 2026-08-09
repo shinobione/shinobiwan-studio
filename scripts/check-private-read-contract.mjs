@@ -109,7 +109,7 @@ for (const required of [
   'SonicTrace Deep Audio is offline', 'Browser DSP', 'append-only history', 'never stores the audio',
 ]) assert.ok(sonicPanel.includes(required), `SonicTrace workspace UI is missing ${required}.`);
 
-for (const required of ['Catalog Intelligence', '512D INDEX', 'SIMILARITY / NEIGHBORS', 'CLUSTERS / DETERMINISTIC']) assert.ok(intelligenceView.includes(required), `Catalog Intelligence UI is missing ${required}.`);
+for (const required of ['Understand your catalog', 'SIMILARITY READY', 'CLOSEST SOUND', 'SONIC FAMILIES', 'entry.embedding?.dimension === 512']) assert.ok(intelligenceView.includes(required), `Catalog Intelligence UI is missing ${required}.`);
 for (const required of ['cosineSimilarity', 'nearestTracks', 'clusterTracks', 'vector.length === 512']) assert.ok(intelligenceMath.includes(required), `Catalog Intelligence engine is missing ${required}.`);
 
 const tinyPhase5Fonts = [...sonicCss.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)]
@@ -135,13 +135,13 @@ for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog 
   assert.ok(!phase4Api.toLowerCase().includes(forbiddenPhase5.toLowerCase()), `Phase 5 leaked into Phase 4 client: ${forbiddenPhase5}`);
 }
 
-assert.ok(release.includes("version: '0.10.3'"), 'Studio release version must be 0.10.3.');
-assert.ok(release.includes('build: 25'), 'Studio release build must be 25.');
-assert.ok(release.includes("codename: 'phase-ux-module-polish'"), 'Studio release codename must identify the PHASE UX module-polish milestone.');
-assert.equal(pkg.version, '0.10.3', 'package.json must match Studio 0.10.3.');
+assert.ok(release.includes("version: '0.10.4'"), 'Studio release version must be 0.10.4.');
+assert.ok(release.includes('build: 26'), 'Studio release build must be 26.');
+assert.ok(release.includes("codename: 'phase-ux-responsive-closeout'"), 'Studio release codename must identify the PHASE UX responsive closeout milestone.');
+assert.equal(pkg.version, '0.10.4', 'package.json must match Studio 0.10.4.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'Production build must run the integration regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase5'), 'Production build must run the Phase 5 algorithm guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase6'), 'Production build must run the embedded Phase 6 regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:ux'), 'Production build must run the PHASE UX regression guard.');
 
-console.log('Studio 0.10.3 Build 25 preserves Phase 0-6 contracts while delivering PHASE UX module polish without starting Phase 7.');
+console.log('Studio 0.10.4 Build 26 preserves Phase 0-6 contracts while completing PHASE UX without starting Phase 7.');

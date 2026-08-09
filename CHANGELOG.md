@@ -1,5 +1,20 @@
 # SHINOBIWAN Studio Changelog
 
+## 0.10.4 — Build 26 — 2026-08-09
+
+Codename: `phase-ux-responsive-closeout`
+
+### PHASE UX — UX-5 Catalog Intelligence + responsive closeout
+
+- reframes Catalog Intelligence as a task-led workspace for analyzed tracks, close neighbors and recurring sonic families;
+- keeps the Phase 5 `nearestTracks`, `clusterTracks`, persisted 512D embedding and canonical `trackId` contracts unchanged;
+- adds title search, explicit `aria-pressed` selection state, semantic loading/error feedback and clearer current/outdated labels;
+- visualizes similarity strength without changing its calculation and moves the technical method behind progressive disclosure;
+- adds dedicated laptop, tablet and mobile reflow for KPI, selection, neighbor and cluster surfaces down to 390 px;
+- preserves the global visible-focus, 42 px control, 11 px microcopy and reduced-motion contracts;
+- adds the final UX-5 regression guard and completes the five authorized PHASE UX runtime slices;
+- changes no Worker, route, R2 schema/data, LaunchPAD runtime, SonicTrace engine, LRC Maker engine or Phase 7 code.
+
 ## 0.10.3 — Build 25 — 2026-08-09
 
 Codename: `phase-ux-module-polish`

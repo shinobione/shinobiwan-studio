@@ -29,7 +29,9 @@ for (const marker of ['Manage production media', 'EDITING ENABLED', 'Safety deta
   assert.ok(assets.includes(marker), `Assets media-management surface is missing ${marker}.`);
 }
 assert.ok(!workspace.includes('<AssetRow'), 'The Assets tab must not duplicate the media state above the manager.');
-assert.ok(workspace.includes("section === 'assets' && (\n        <AssetsManager"), 'Assets must render one primary media-management surface.');
+assert.equal((workspace.match(/<AssetsManager track=\{track\}/g) || []).length, 1, 'Assets must render exactly one media-management surface.');
+const assetsSection = workspace.slice(workspace.indexOf("section === 'assets'"), workspace.indexOf("section === 'versions'"));
+assert.ok(assetsSection.includes('<AssetsManager track={track}'), 'The single media manager must live in the Assets section.');
 for (const marker of ['grid-template-columns:repeat(2,minmax(0,1fr))', ':has(.assets-cover-palette)', '.phase4-assets-diagnostics']) assert.ok(assetsCss.includes(marker));
 
 for (const marker of ['workspace-lyrics-shell', 'workspace-lyrics-status', 'LYRICS / STUDIO', '<EmbeddedLyricsStudio', '<details className="workspace-lyrics-plain">', 'Open standalone fallback']) {
@@ -45,10 +47,10 @@ for (const marker of ['Understand this track', 'Analysis ready', 'Analyze with S
 for (const protectedBehavior of ['fetchCanonicalAudio', 'analyzeBrowserDsp', 'runSonicTraceAnalysis', 'browserOnlyAnalysis', 'saveSonicTraceAnalysis']) assert.ok(sonic.includes(protectedBehavior));
 for (const marker of ['.sonic-progress', '.sonic-diagnostics', '.sonic-intro p']) assert.ok(sonicCss.includes(marker));
 
-assert.equal(pkg.version, '0.10.3');
-assert.ok(release.includes("version: '0.10.3'"));
-assert.ok(release.includes('build: 25'));
-assert.ok(release.includes("codename: 'phase-ux-module-polish'"));
+assert.equal(pkg.version, '0.10.4');
+assert.ok(release.includes("version: '0.10.4'"));
+assert.ok(release.includes('build: 26'));
+assert.ok(release.includes("codename: 'phase-ux-responsive-closeout'"));
 for (const source of [workspace, metadata, assets, sonic]) for (const forbidden of ['phase7', 'phase-7']) assert.ok(!source.toLowerCase().includes(forbidden));
 
 console.log('PHASE UX UX-4 guard passed: grouped metadata, single media manager, embedded-first Lyrics and action-led SonicTrace preserve all guarded engines.');
