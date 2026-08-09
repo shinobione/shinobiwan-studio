@@ -10,6 +10,14 @@
 .sonic-status-grid span { display: block; color: #566b70; font-size: 11px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
 .sonic-status-grid strong { display: block; margin-top: 5px; overflow: hidden; text-overflow: ellipsis; color: #d3e6e6; font-size: 12px; }
 .sonic-status-grid strong.warn { color: #e1b96d; }
+.sonic-profile-label.full { color: var(--studio-success); }
+.sonic-profile-label.partial { color: var(--studio-warning); }
+.sonic-profile-label.outdated { color: var(--studio-danger); }
+.sonic-profile-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.sonic-profile-badge { padding: 6px 9px; border: 1px solid var(--studio-border-muted); border-radius: 999px; font-size: 11px; font-weight: 900; letter-spacing: .1em; }
+.sonic-profile-badge.full { border-color: rgba(94,224,169,.2); color: var(--studio-success); background: rgba(94,224,169,.04); }
+.sonic-profile-badge.partial { border-color: rgba(255,197,92,.22); color: var(--studio-warning); background: rgba(255,197,92,.04); }
+.sonic-profile-badge.outdated { border-color: rgba(255,102,124,.22); color: var(--studio-danger); background: rgba(255,102,124,.04); }
 .sonic-alert { margin-top: 14px; padding: 11px 13px; border: 1px solid rgba(82,227,214,.14); border-radius: 9px; background: rgba(82,227,214,.035); color: #91aeaf; font-size: 11px; line-height: 1.55; }
 .sonic-alert.warn { border-color: rgba(225,185,109,.22); background: rgba(225,185,109,.04); color: #c9a969; }
 .sonic-alert.error { border-color: rgba(255,112,130,.2); background: rgba(255,112,130,.035); color: #d38994; }

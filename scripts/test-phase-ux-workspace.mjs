@@ -44,10 +44,10 @@ assert.ok(foundationCss.includes('.workspace-tabs { position: sticky; top: 76px;
 assert.ok(foundationCss.includes('.workspace-tabs { top: 72px;'), 'Mobile local navigation must remain sticky below the mobile topbar.');
 assert.ok(workspace.includes('workspace-sticky-context'), 'Sticky navigation must retain compact track identity and readiness context.');
 
-assert.equal(pkg.version, '0.10.6');
-assert.ok(release.includes("version: '0.10.6'"));
-assert.ok(release.includes('build: 28'));
-assert.ok(release.includes("codename: 'phase-ux-live-smoke-intake-order'"));
+assert.equal(pkg.version, '0.10.7');
+assert.ok(release.includes("version: '0.10.7'"));
+assert.ok(release.includes('build: 29'));
+assert.ok(release.includes("codename: 'phase-ux-integration-parity-c1'"));
 
 for (const forbidden of ['phase7', 'phase-7']) assert.ok(!workspace.toLowerCase().includes(forbidden), `Phase 7 runtime marker found: ${forbidden}.`);
 

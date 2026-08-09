@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="SHINOBIWAN Studio">
+  <defs>
+    <linearGradient id="g" x1="8" y1="7" x2="56" y2="57" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#54e8e0"/>
+      <stop offset="1" stop-color="#6478ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="#070b14"/>
+  <path d="M44 18.5c-3.4-2.7-7.3-4-11.7-4-8.2 0-13.7 4.2-13.7 10.5 0 6.1 4.7 8.4 12.4 10 5.2 1.1 7 2.1 7 4.3 0 2.4-2.4 3.8-6.4 3.8-4.7 0-8.8-1.7-12.1-5.1l-4.8 5.8c4.3 4.1 9.8 6.2 16.6 6.2 9.2 0 15-4.4 15-11.4 0-6.2-4.2-8.8-12.4-10.5-5.1-1.1-7-1.9-7-3.8 0-2 2-3.2 5.3-3.2 3.7 0 7 1.2 10 3.6z" fill="url(#g)"/>
+</svg>

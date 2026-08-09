@@ -57,11 +57,13 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
   const [track, setTrack] = useState<StudioTrackDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [observedAudioDuration, setObservedAudioDuration] = useState<number | null>(null);
 
   useEffect(() => {
     let active = true;
     setLoading(true);
     setTrack(null);
+    setObservedAudioDuration(null);
     getCatalogTrack(trackId)
       .then(item => { if (!active) return; setTrack(item); setError(null); })
       .catch(reason => active && setError(reason instanceof Error ? reason.message : String(reason)))
@@ -113,6 +115,12 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
     mediaState('Lyrics', Boolean(track.assets.lyricsTxt), syncedLyrics ? 'Timestamped and synced' : track.assets.lyricsTxt ? 'TXT ready for timing' : 'Add lyrics.txt', trackHref(track.id, 'lyrics')),
     mediaState('Canvas', Boolean(track.assets.video), track.assets.video?.filename || 'Optional video', trackHref(track.id, 'assets')),
   ];
+  const displayedDuration = observedAudioDuration ?? track.duration;
+  const durationSource = observedAudioDuration != null
+    ? track.duration != null && Math.abs(track.duration - observedAudioDuration) > 1
+      ? `Audio measured ${formatDuration(observedAudioDuration)} · manifest ${formatDuration(track.duration)}`
+      : 'Measured from canonical audio'
+    : track.duration != null ? 'Canonical manifest value' : 'Waiting for audio metadata';
 
   return (
     <section className="track-workspace">
@@ -166,8 +174,8 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
           </WorkspacePanel>
 
           <WorkspacePanel eyebrow="TRACK / SNAPSHOT" title="Music details" className="workspace-snapshot-panel">
-            <div className="workspace-facts"><div><span>BPM</span><strong>{track.bpm ?? '—'}</strong></div><div><span>Key</span><strong>{track.key || '—'}</strong></div><div><span>Duration</span><strong>{formatDuration(track.duration)}</strong></div><div><span>Language</span><strong>{track.languages.join(', ') || '—'}</strong></div></div>
-            {track.assets.audio && <audio className="workspace-audio" controls preload="metadata" src={track.assets.audio.url} />}
+            <div className="workspace-facts"><div><span>BPM</span><strong>{track.bpm ?? '—'}</strong></div><div><span>Key</span><strong>{track.key || '—'}</strong></div><div><span>Duration</span><strong>{formatDuration(displayedDuration)}</strong><small>{durationSource}</small></div><div><span>Language</span><strong>{track.languages.join(', ') || '—'}</strong></div></div>
+            {track.assets.audio && <audio className="workspace-audio" controls preload="metadata" crossOrigin={privateRead ? 'use-credentials' : undefined} src={track.assets.audio.url} onLoadedMetadata={event => { const duration = event.currentTarget.duration; setObservedAudioDuration(Number.isFinite(duration) && duration > 0 ? duration : null); }} />}
           </WorkspacePanel>
 
           <WorkspacePanel eyebrow="RELEASE / INTELLIGENCE" title="Release and analysis" className="workspace-release-panel">

@@ -362,3 +362,17 @@ Build 28 delivery validation:
 Stop before any backend/schema/Worker/R2 change, destructive migration, lyrics contract change, trackId change, major fallback removal or Phase 7 work.
 
 At the end of PHASE UX: **STOP and wait for explicit Phase 7 authorization.**
+
+## Final integration parity correction — Build 29 / C1
+
+The final parity audit confirmed two distinct integration faults and one product gap:
+
+- Studio displayed only manifest duration even though the canonical audio element could provide a more reliable observed value;
+- the local SonicTrace coordinator was healthy, but production Studio's browser request failed at Private Network Access preflight;
+- Studio's Catalog Intelligence represented only a small subset of the current standalone V2-E intelligence.
+
+C1 remains Studio-only. Release `0.10.7` / Build `29` / `phase-ux-integration-parity-c1` adds the favicon, observed-audio duration display with manifest disagreement disclosure, and explicit FULL/PARTIAL/OUTDATED SonicTrace profile states. It adds no backend route, Worker source, R2 mutation, alternate duration field, legacy catalog import or Phase 7 runtime.
+
+The authoritative diagnoses and next contracts are recorded in `docs/PHASE-UX-DURATION-AUTHORITY.md` and `docs/PHASE-UX-SONICTRACE-INTEGRATION-PARITY.md`.
+
+Final PHASE UX acceptance remains pending real user smoke. The final `safety/phase-ux-complete-*` checkpoint must not be created before that acceptance.

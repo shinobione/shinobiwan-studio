@@ -137,13 +137,13 @@ for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog 
   assert.ok(!phase4Api.toLowerCase().includes(forbiddenPhase5.toLowerCase()), `Phase 5 leaked into Phase 4 client: ${forbiddenPhase5}`);
 }
 
-assert.ok(release.includes("version: '0.10.6'"), 'Studio release version must be 0.10.6.');
-assert.ok(release.includes('build: 28'), 'Studio release build must be 28.');
-assert.ok(release.includes("codename: 'phase-ux-live-smoke-intake-order'"), 'Studio release codename must identify the PHASE UX live-smoke intake-order milestone.');
-assert.equal(pkg.version, '0.10.6', 'package.json must match Studio 0.10.6.');
+assert.ok(release.includes("version: '0.10.7'"), 'Studio release version must be 0.10.7.');
+assert.ok(release.includes('build: 29'), 'Studio release build must be 29.');
+assert.ok(release.includes("codename: 'phase-ux-integration-parity-c1'"), 'Studio release codename must identify the PHASE UX final integration C1 milestone.');
+assert.equal(pkg.version, '0.10.7', 'package.json must match Studio 0.10.7.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'Production build must run the integration regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase5'), 'Production build must run the Phase 5 algorithm guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase6'), 'Production build must run the embedded Phase 6 regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:ux'), 'Production build must run the PHASE UX regression guard.');
 
-console.log('Studio 0.10.6 Build 28 preserves Phase 0-6 contracts while completing the PHASE UX file-first intake correction without starting Phase 7.');
+console.log('Studio 0.10.7 Build 29 preserves Phase 0-6 contracts while hardening PHASE UX integration parity without starting Phase 7.');

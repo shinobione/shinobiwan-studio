@@ -326,3 +326,32 @@ Baseline: Studio `0.10.4` / Build `26` production merge `2a1f74f2b3487501fbeffe9
 Build 27 exposed the multi-file classifier but placed Metadata first. The brief's required user order is file selection first so TXT can drive autofill. Build 28 corrects only that presentation/state order to `Files → Metadata → Review`; the parsed values, manual-value preservation, sequential writes and canonical contracts are unchanged.
 
 Build 28 delivery evidence: commit `6c0ad04`, PR `#31`, validation `31319624749` PASS, merge `38286ba59ded0d3c02fd896054a27ecc70d19286`, Pages `31319657102` PASS. Real user production mutation smoke and the final PHASE UX checkpoint remain pending.
+
+## Final integration parity audit — C1
+
+Baseline verification on 2026-08-09:
+
+- Studio `main`: `bf88f37cf8b23578f7d54a80b2805341845d15e9`, clean and synchronized;
+- LaunchPAD/Track Manager `main`: `0e508c893c038059da4a563365dbdba7094b638d`, Track Manager `v5.15`, bridge `v1.7`;
+- LRC Maker `master`: `3d7f65fbe023e6ac26f3ba93fdcc98a135023a98`, version `6.3.5`;
+- SonicTrace `main`: `2a7f195298b8842d6bdb11ea63a11855c292a354`, API schema `2.2`.
+
+Safety branch `safety/pre-phase-ux-final-integration-corrections-20260809-1753` was created and pushed before source modification in every repository that can require changes. Studio work uses `codex/phase-ux-final-integration-c1`.
+
+Read-only runtime evidence:
+
+- Studio production: `0.10.6` / Build `28`, PRIVATE READ, Track Manager `v5.15`, bridge `v1.7`, LRC Maker `6.3.5`;
+- local SonicTrace `/api/live`: HTTP 200, schema `2.2`, GPU and all advertised V2 layers ready;
+- production-origin Private Network Access preflight to loopback: HTTP 400 `Disallowed CORS private-network`;
+- therefore Studio's `local offline` state is an integration failure, not a stopped SonicTrace engine.
+
+C1 code result:
+
+- favicon present;
+- Track Workspace measures canonical audio duration and exposes any manifest disagreement without persistence;
+- saved SonicTrace profiles use deterministic FULL/PARTIAL/OUTDATED states;
+- browser-DSP-only results remain usable and visibly partial;
+- focused regression guard, all inherited guards, TypeScript and Vite build pass locally;
+- no Worker, R2, production data, SonicTrace backend, LRC Maker runtime or Phase 7 code changed in C1.
+
+Cross-repository duration and browser-private-network corrections remain separate guarded lots. Final real-user smoke and the final PHASE UX checkpoint remain pending.

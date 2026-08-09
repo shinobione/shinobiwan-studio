@@ -7,6 +7,7 @@ import {
   runSonicTraceAnalysis,
   saveSonicTraceAnalysis,
 } from '../services/sonictrace-api';
+import { sonicTraceMissingLayers, sonicTraceProfileLabel, sonicTraceProfileState } from '../sonictrace-profile';
 import type { SonicTraceAnalysis, SonicTraceAnalysisState, StudioTrackDetail } from '../types/studio';
 
 function numeric(value: unknown): number | null {
@@ -67,6 +68,9 @@ export function SonicTracePanel({ track, onSaved }: { track: StudioTrackDetail; 
 
   const latest = state?.latest || null;
   const history = state?.history || [];
+  const profileState = sonicTraceProfileState(latest, Boolean(state?.outdated));
+  const profileLabel = sonicTraceProfileLabel(profileState);
+  const missingLayers = sonicTraceMissingLayers(latest);
   const comparison = useMemo(() => history.filter(item => item.analysisId !== latest?.analysisId).slice(0, 5), [history, latest]);
 
   async function analyze() {
@@ -143,13 +147,14 @@ export function SonicTracePanel({ track, onSaved }: { track: StudioTrackDetail; 
         {!loading && !track.assets.audio && <div className="sonic-alert">Canonical audio is required before analysis.</div>}
         {state && (
           <div className="sonic-status-grid">
-            <div><span>Analysis</span><strong>{latest ? 'Saved and linked' : 'Not analyzed'}</strong></div>
+            <div><span>Profile</span><strong className={`sonic-profile-label ${profileState || 'none'}`}>{profileLabel}</strong></div>
             <div><span>Audio match</span><strong className={state.outdated ? 'warn' : ''}>{latest ? state.outdated ? 'Re-scan needed' : 'Current' : 'Waiting'}</strong></div>
             <div><span>History</span><strong>{history.length} scan{history.length === 1 ? '' : 's'}</strong></div>
           </div>
         )}
         {state && <details className="sonic-diagnostics"><summary>Engine diagnostics</summary><dl><div><dt>Analysis ID</dt><dd>{latest?.analysisId || '—'}</dd></div><div><dt>Engine</dt><dd>{engineLabel(latest)}</dd></div><div><dt>Embedding</dt><dd>{latest?.embedding ? `${latest.embedding.dimension}D` : 'Missing'}</dd></div><div><dt>Source version</dt><dd>{latest?.sourceVersion.value || '—'}</dd></div></dl></details>}
         {state?.outdated && <div className="sonic-alert warn">The canonical audio revision changed after the latest scan. Re-scan before trusting comparisons.</div>}
+        {latest && profileState === 'partial' && <div className="sonic-alert warn">This saved profile is usable but incomplete. Missing deep layers: {missingLayers.join(', ')}. Re-scan while the local SonicTrace coordinator is available to produce a FULL profile.</div>}
         {error && <div className="sonic-alert error">{error}</div>}
         {notice && <div className="sonic-alert">{notice}</div>}
       </article>
@@ -173,7 +178,7 @@ export function SonicTracePanel({ track, onSaved }: { track: StudioTrackDetail; 
 
       {latest && (
         <article className="panel sonic-panel">
-          <span className="eyebrow">PROFILE / LATEST</span><h3>Durable SonicTrace profile</h3>
+          <div className="sonic-profile-head"><div><span className="eyebrow">PROFILE / LATEST</span><h3>Durable SonicTrace profile</h3></div><strong className={`sonic-profile-badge ${profileState || 'none'}`}>{profileLabel}</strong></div>
           <div className="sonic-status-grid">
             <div><span>Analyzed</span><strong>{new Date(latest.analyzedAt).toLocaleString()}</strong></div>
             <div><span>LUFS</span><strong>{metric(nested(latest.mastering, 'loudness', 'integrated_lufs'), ' LUFS')}</strong></div>

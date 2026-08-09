@@ -60,9 +60,9 @@ for (const source of [app, workspace, intelligence]) {
   for (const forbidden of ['phase7', 'phase-7']) assert.ok(!source.toLowerCase().includes(forbidden), `Unauthorized Phase 7 runtime marker found: ${forbidden}.`);
 }
 
-assert.equal(pkg.version, '0.10.6');
-assert.ok(release.includes("version: '0.10.6'"));
-assert.ok(release.includes('build: 28'));
-assert.ok(release.includes("codename: 'phase-ux-live-smoke-intake-order'"));
+assert.equal(pkg.version, '0.10.7');
+assert.ok(release.includes("version: '0.10.7'"));
+assert.ok(release.includes('build: 29'));
+assert.ok(release.includes("codename: 'phase-ux-integration-parity-c1'"));
 
 console.log('PHASE UX UX-5 guard passed: purposeful Catalog Intelligence, responsive reflow, accessible selection/status semantics and Phase 7 STOP protected.');
