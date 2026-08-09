@@ -2,26 +2,28 @@
 
 Artist Content & Intelligence Manager.
 
-**Release:** `0.10.0`
+**Release:** `0.10.1`
 
-**Build:** `22`
+**Build:** `23`
 
-**Codename:** `phase-ux-foundation`
+**Codename:** `phase-ux-catalog-intake`
 
-**Milestone:** PHASE UX — UX-1 foundation
+**Milestone:** PHASE UX — UX-2 Catalog + New Track
 
 **Stop line:** Do not begin Phase 7 without explicit authorization.
 
-## PHASE UX — Build 22
+## PHASE UX — Build 23
 
-Build 22 starts the authorized PHASE UX frontend program without changing any backend or Phase 4/5/6 engine contract.
+Build 23 delivers the UX-2 catalog and track-intake slice without changing any backend or Phase 4/5/6 engine contract.
 
-- focuses global navigation on Dashboard, Catalog and Intelligence;
-- separates System/Administration from daily production work;
-- normalizes the Track Workspace around Overview, Metadata, Assets, Lyrics and SonicTrace;
-- introduces Studio-owned LaunchPAD-aligned design tokens, control geometry, focus states and reduced-motion behavior;
-- replaces architecture-heavy Dashboard copy with a clear music-production workflow;
-- preserves legacy deep links, standalone fallbacks, guarded writes, canonical rereads and the `lyrics.txt` contract;
+- keeps the catalog visible by default behind one obvious `+ New Track` action;
+- turns New Track into Basics, Media and Review steps with an automatically generated identifier;
+- accepts cover, audio, canonical lyrics TXT and Canvas through the existing protected create/asset routes;
+- generates the same useful 512 px WebP thumbnail behavior as Track Manager;
+- ports Track Manager Feature 10.3 cover extraction and uses only canonical `accent` / `accent2` manifest fields;
+- previews both colors as visible swatches and values before creation;
+- prevents existing cover replacement from silently overwriting a saved palette, with explicit extract and save actions;
+- adds executable regression coverage for palette extraction, rendering, explicit updates and contract reuse;
 - makes no Worker, R2, manifest, SonicTrace or LRC Maker runtime change.
 
 See `docs/PHASE-UX.md` and `docs/PHASE-UX-AUDIT.md`.

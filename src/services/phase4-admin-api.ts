@@ -194,7 +194,7 @@ export async function createAdminTrack(slug: string, metadata: AdminMetadataPatc
   if (!payload.created || payload.trackId !== slug) throw new Phase4AdminError('Track Manager returned an invalid create response.');
   const reread = await getAdminTrack(slug);
   const clientVerified = reread.track?.manifest?.slug === slug && reread.track?.manifest?.status === 'draft';
-  return { ...payload, clientVerified };
+  return { ...payload, track: reread.track?.manifest || payload.track, clientVerified };
 }
 
 export async function uploadAdminTrackAsset(

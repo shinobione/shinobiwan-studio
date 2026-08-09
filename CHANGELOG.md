@@ -1,5 +1,22 @@
 # SHINOBIWAN Studio Changelog
 
+## 0.10.1 — Build 23 — 2026-08-09
+
+Codename: `phase-ux-catalog-intake`
+
+### PHASE UX — UX-2 Catalog + New Track
+
+- replaces the permanently expanded technical creation form with one clear `+ New Track` action and a three-step Basics / Media / Review flow;
+- keeps `trackId` generated from the title by default and moves its override into optional technical details;
+- supports cover, audio, canonical lyrics TXT and Canvas intake through existing Track Manager create and asset routes, including a generated 512 px WebP thumbnail;
+- ports the current Track Manager Feature 10.3 hue-diverse cover extraction algorithm without creating another palette model;
+- renders the canonical `accent` and `accent2` values as two visible cover-section swatches in Media and Review;
+- automatically previews a new-track cover palette and provides an explicit recalculation action;
+- keeps existing-track cover replacement independent from saved palette metadata and requires explicit extraction, validation, confirmation and metadata save;
+- persists palette values only through the existing manifest create or guarded metadata-save contracts;
+- adds direct synthetic-pixel regression coverage and source-boundary guards for the UX-2 addendum;
+- changes no Worker, route, R2 schema/data, LaunchPAD runtime, SonicTrace engine, LRC Maker engine or Phase 7 code.
+
 ## 0.10.0 — Build 22 — 2026-08-09
 
 Codename: `phase-ux-foundation`

@@ -1,12 +1,20 @@
 import { useMemo, useState } from 'react';
+import { extractCoverPalette, type CoverPalette } from '../cover-palette';
 import type { StudioAsset, StudioTrackDetail } from '../types/studio';
-import type { AdminAssetKind } from '../services/admin-api';
+import {
+  AdminSaveError,
+  AdminValidationError,
+  saveAdminTrackMetadata,
+  validateAdminTrackMetadata,
+  type AdminAssetKind,
+} from '../services/admin-api';
 import {
   deleteAdminTrackAsset,
   Phase4AdminError,
   uploadAdminTrackAsset,
   type AssetMutationResponse,
 } from '../services/phase4-admin-api';
+import { CoverPalettePreview } from './CoverPalettePreview';
 
 interface AssetDefinition {
   kind: AdminAssetKind;
@@ -47,10 +55,63 @@ export function AssetsManager({ track, onChanged }: { track: StudioTrackDetail; 
   const [busyKind, setBusyKind] = useState<AdminAssetKind | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AssetMutationResponse | null>(null);
+  const [palettePreview, setPalettePreview] = useState<CoverPalette | null>(null);
+  const [paletteBusy, setPaletteBusy] = useState(false);
+  const [paletteMessage, setPaletteMessage] = useState<string | null>(null);
 
   const revision = track.updatedAt || '';
   const locked = track.readSource !== 'private' || !revision;
   const currentAssets = useMemo(() => Object.fromEntries(ASSETS.map(def => [def.kind, assetFor(track, def.kind)])) as Record<AdminAssetKind, StudioAsset | null>, [track]);
+  const savedPalette = /^#[0-9a-f]{6}$/i.test(track.accent || '') && /^#[0-9a-f]{6}$/i.test(track.accent2 || '')
+    ? { accent: track.accent as string, accent2: track.accent2 as string }
+    : null;
+
+  async function paletteBlob(): Promise<Blob> {
+    const selectedCover = selected.cover;
+    if (selectedCover) return selectedCover;
+    const current = track.assets.cover;
+    if (!current) throw new Error('Choose a cover or upload one before extracting colors.');
+    const response = await fetch(current.fullUrl || current.url, { cache: 'no-store', credentials: 'include' });
+    if (!response.ok) throw new Error(`The current cover is unavailable (HTTP ${response.status}).`);
+    return response.blob();
+  }
+
+  async function recalculatePalette() {
+    if (locked || paletteBusy) return;
+    setPaletteBusy(true);
+    setError(null);
+    setPaletteMessage(null);
+    try {
+      setPalettePreview(await extractCoverPalette(await paletteBlob()));
+      setPaletteMessage('Preview recalculated. The saved manifest palette is still unchanged.');
+    } catch (reason) {
+      setError(errorText(reason));
+    } finally {
+      setPaletteBusy(false);
+    }
+  }
+
+  async function savePalette() {
+    if (locked || paletteBusy || !palettePreview || !revision) return;
+    if (!globalThis.confirm(`Update the saved LaunchPAD palette for ${track.title}?\n\naccent: ${palettePreview.accent}\naccent2: ${palettePreview.accent2}\n\nThis updates only these two canonical manifest fields.`)) return;
+    setPaletteBusy(true);
+    setError(null);
+    setPaletteMessage(null);
+    try {
+      const patch = { accent: palettePreview.accent, accent2: palettePreview.accent2 };
+      const validation = await validateAdminTrackMetadata(track.id, revision, patch);
+      if (validation.valid !== true) throw new Error('Track Manager did not accept this palette proposal. Review Content Health before retrying.');
+      const response = await saveAdminTrackMetadata(track.id, revision, patch);
+      if (!response.clientVerified) throw new Error('The palette save returned without a verified canonical reread. Reload before another edit.');
+      setPaletteMessage(response.noChange ? 'The canonical palette already had these values.' : 'Palette saved and verified in the canonical manifest.');
+      await onChanged();
+    } catch (reason) {
+      if (reason instanceof AdminValidationError || reason instanceof AdminSaveError) setError([reason.message, reason.code].filter(Boolean).join(' · '));
+      else setError(errorText(reason));
+    } finally {
+      setPaletteBusy(false);
+    }
+  }
 
   async function upload(def: AssetDefinition) {
     const file = selected[def.kind];
@@ -137,6 +198,10 @@ export function AssetsManager({ track, onChanged }: { track: StudioTrackDetail; 
                     onChange={event => {
                       const next = event.target.files?.[0];
                       setSelected(previous => ({ ...previous, [def.kind]: next }));
+                      if (def.kind === 'cover') {
+                        setPalettePreview(null);
+                        setPaletteMessage(next ? 'New cover selected. Saved accent / accent2 remain unchanged until you explicitly extract and save a new palette.' : null);
+                      }
                       setResult(null);
                       setError(null);
                     }}
@@ -149,6 +214,20 @@ export function AssetsManager({ track, onChanged }: { track: StudioTrackDetail; 
               {busy && typeof currentProgress === 'number' && (
                 <div className="phase4-upload-progress" aria-label={`${def.label} upload progress`}>
                   <i style={{ width: `${currentProgress}%` }} /><span>{currentProgress}%</span>
+                </div>
+              )}
+              {def.kind === 'cover' && (
+                <div className="assets-cover-palette">
+                  <CoverPalettePreview
+                    palette={palettePreview || savedPalette}
+                    title={palettePreview ? 'Extracted palette preview' : 'Saved cover palette'}
+                    note={palettePreview ? 'Preview only. Uploading or replacing the cover does not save these colors.' : 'Canonical LaunchPAD manifest fields. Cover replacement never changes them automatically.'}
+                    busy={paletteBusy}
+                    actionLabel="Extract colors"
+                    onRecalculate={!locked && (Boolean(file) || Boolean(current)) ? () => void recalculatePalette() : undefined}
+                  />
+                  {palettePreview && <button className="primary-btn compact" type="button" disabled={paletteBusy} onClick={() => void savePalette()}>Save palette</button>}
+                  {paletteMessage && <p className="assets-palette-message">{paletteMessage}</p>}
                 </div>
               )}
             </section>
