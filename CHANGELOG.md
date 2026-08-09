@@ -1,5 +1,26 @@
 # SHINOBIWAN Studio Changelog
 
+## 0.9.3 — Build 18 — 2026-08-09
+
+Codename: `phase6-embed-editor-parity`
+
+### Embedded Lyrics parity hotfix
+
+- switches the embedded Lyrics Studio cache key to LRC Maker `6.3.2`;
+- restores **Supprimer les tags [ ]** and **Supprimer les lignes vides** inside the embedded Studio workflow;
+- keeps valid LRC timestamp brackets while removing only non-timestamp bracket tags;
+- restores direct timestamp navigation: clicking a timestamped line immediately seeks the active audio to that exact moment;
+- consumes the same shared LRC Maker behavior in standalone and embedded modes rather than duplicating a Studio-specific implementation;
+- preserves Track Manager v5.15 / bridge v1.7, canonical `lyrics.txt`, guarded save, R2, SonicTrace and LaunchPAD unchanged;
+- keeps the Phase 7 STOP LINE active.
+
+### Verification
+
+- LRC Maker 6.3.2 format, lint, Studio-context and production builds pass;
+- LRC Maker regression guards now require shared cleanup parity and timestamp click-to-seek;
+- Studio private-read, Phase 5 and Phase 6 guards require the 6.3.2 embed cache key;
+- no backend deployment or R2 mutation is introduced.
+
 ## 0.9.2 — Build 17 — 2026-08-09
 
 Codename: `phase6-embed-runtime-hotfix`
