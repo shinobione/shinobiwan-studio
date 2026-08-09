@@ -324,3 +324,5 @@ Baseline: Studio `0.10.4` / Build `26` production merge `2a1f74f2b3487501fbeffe9
 ### Acceptance-path follow-up
 
 Build 27 exposed the multi-file classifier but placed Metadata first. The brief's required user order is file selection first so TXT can drive autofill. Build 28 corrects only that presentation/state order to `Files → Metadata → Review`; the parsed values, manual-value preservation, sequential writes and canonical contracts are unchanged.
+
+Build 28 delivery evidence: commit `6c0ad04`, PR `#31`, validation `31319624749` PASS, merge `38286ba59ded0d3c02fd896054a27ecc70d19286`, Pages `31319657102` PASS. Real user production mutation smoke and the final PHASE UX checkpoint remain pending.

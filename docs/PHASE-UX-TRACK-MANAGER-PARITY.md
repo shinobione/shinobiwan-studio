@@ -70,4 +70,6 @@ Real production asset mutation remains reserved for the user's final manual smok
 
 Implementation status: corrective runtime delivered. The specialized Studio bridge routes were retained; upload transport, canonical lost-response recovery, multi-file intake review, TXT parsing/provenance, cover preview, manual canonical palette controls and compact sticky context are protected by `scripts/test-phase-ux-live-smoke-corrections.mjs`. PR `#29`, CI `31319128176`, merge `80c59e61a35db59d82a80af362ba2de3cb522fa0` and Pages `31319156206` are green. The real user production mutation smoke remains pending, so PHASE UX is not yet closed and no final completion checkpoint exists.
 
+Acceptance-path follow-up: Studio `0.10.6` / Build `28` makes the sequence `Files → Metadata → Review`, allowing immediate MP3/cover/TXT classification and TXT-driven autofill. Commit `6c0ad04`, PR `#31`, CI `31319624749`, merge `38286ba59ded0d3c02fd896054a27ecc70d19286` and Pages `31319657102` are green. Real user production mutation smoke is still pending.
+
 Phase 7 remains not authorized and not started.

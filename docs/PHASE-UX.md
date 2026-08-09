@@ -347,6 +347,16 @@ The final acceptance-path review found that Build 27 still opened New Track on M
 
 Target release: Studio `0.10.6` / Build `28` / `phase-ux-live-smoke-intake-order`.
 
+Build 28 delivery validation:
+
+- implementation commit: `6c0ad04`;
+- PR `#31`: merged after green validation workflow `31319624749`;
+- production merge: `38286ba59ded0d3c02fd896054a27ecc70d19286`;
+- GitHub Pages workflow `31319657102`: build and deploy PASS;
+- local rendered validation: New Track opened on `Files`, combined input was `multiple`, Metadata was not shown first, Studio rendered `0.10.6` / Build `28`, no horizontal overflow;
+- real user production mutation smoke: **PENDING**;
+- final `safety/phase-ux-complete-*` checkpoint: **NOT CREATED** pending explicit user acceptance.
+
 ## Stop conditions
 
 Stop before any backend/schema/Worker/R2 change, destructive migration, lyrics contract change, trackId change, major fallback removal or Phase 7 work.
