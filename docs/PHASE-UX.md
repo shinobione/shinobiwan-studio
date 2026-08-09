@@ -341,6 +341,12 @@ Corrective delivery validation:
 - real user production mutation smoke: **PENDING**;
 - final `safety/phase-ux-complete-*` checkpoint: **NOT CREATED** pending explicit user acceptance.
 
+### File-first acceptance correction — Build 28
+
+The final acceptance-path review found that Build 27 still opened New Track on Metadata, requiring a provisional title before the combined file drop. Build 28 changes the order to `Files → Metadata → Review`: the user can select MP3 + cover + TXT immediately, TXT parsing populates the next editable step, and required title/slug validation gates Review rather than the file chooser. No persistence or backend contract changes.
+
+Target release: Studio `0.10.6` / Build `28` / `phase-ux-live-smoke-intake-order`.
+
 ## Stop conditions
 
 Stop before any backend/schema/Worker/R2 change, destructive migration, lyrics contract change, trackId change, major fallback removal or Phase 7 work.

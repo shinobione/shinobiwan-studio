@@ -1,5 +1,17 @@
 # SHINOBIWAN Studio Changelog
 
+## 0.10.6 — Build 28 — 2026-08-09
+
+Codename: `phase-ux-live-smoke-intake-order`
+
+### PHASE UX — file-first intake acceptance correction
+
+- opens New Track directly on the combined multi-file drop/classification step;
+- parses a detected canonical TXT before the user enters the Metadata step, allowing current Track Manager rules to prefill the editable form;
+- gates Review on the resulting required title/slug validation while keeping classification conflicts isolated to the Files step;
+- preserves every Build 27 upload, retry-safety, cover/palette, sticky navigation and frozen-contract correction;
+- changes no Worker, R2, backend route, schema, LaunchPAD, SonicTrace, LRC Maker or Phase 7 runtime.
+
 ## 0.10.5 — Build 27 — 2026-08-09
 
 Codename: `phase-ux-live-smoke-corrections`

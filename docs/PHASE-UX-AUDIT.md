@@ -320,3 +320,7 @@ Baseline: Studio `0.10.4` / Build `26` production merge `2a1f74f2b3487501fbeffe9
 - Production read-only verification: Studio `0.10.5` / Build `27`, private Track Manager read active, no horizontal overflow, compact tabs fixed at `76px` with no measured overlap.
 - No production create/upload/delete/save/rebuild operation was invoked by automation.
 - Real user mutation smoke and final PHASE UX checkpoint remain pending.
+
+### Acceptance-path follow-up
+
+Build 27 exposed the multi-file classifier but placed Metadata first. The brief's required user order is file selection first so TXT can drive autofill. Build 28 corrects only that presentation/state order to `Files → Metadata → Review`; the parsed values, manual-value preservation, sequential writes and canonical contracts are unchanged.
