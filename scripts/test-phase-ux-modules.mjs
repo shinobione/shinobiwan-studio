@@ -47,10 +47,10 @@ for (const marker of ['Understand this track', 'Analysis ready', 'Analyze with S
 for (const protectedBehavior of ['fetchCanonicalAudio', 'analyzeBrowserDsp', 'runSonicTraceAnalysis', 'browserOnlyAnalysis', 'saveSonicTraceAnalysis']) assert.ok(sonic.includes(protectedBehavior));
 for (const marker of ['.sonic-progress', '.sonic-diagnostics', '.sonic-intro p']) assert.ok(sonicCss.includes(marker));
 
-assert.equal(pkg.version, '0.10.7');
-assert.ok(release.includes("version: '0.10.7'"));
-assert.ok(release.includes('build: 29'));
-assert.ok(release.includes("codename: 'phase-ux-integration-parity-c1'"));
+assert.equal(pkg.version, '0.10.8');
+assert.ok(release.includes("version: '0.10.8'"));
+assert.ok(release.includes('build: 30'));
+assert.ok(release.includes("codename: 'phase-ux-c2-5-a-polish'"));
 for (const source of [workspace, metadata, assets, sonic]) for (const forbidden of ['phase7', 'phase-7']) assert.ok(!source.toLowerCase().includes(forbidden));
 
-console.log('PHASE UX UX-4 guard passed: grouped metadata, single media manager, embedded-first Lyrics and action-led SonicTrace preserve all guarded engines.');
+console.log('PHASE UX UX-4 guard passed: grouped metadata, single media manager, embedded-first Lyrics, action-led SonicTrace and Build 30 identity preserve all guarded engines.');
