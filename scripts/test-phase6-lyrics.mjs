@@ -41,7 +41,7 @@ for (const required of [
 
 for (const required of [
   "const EMBED_TAG = 'shinobiwan-lyrics-studio'",
-  "const EMBED_VERSION = '6.3.7'",
+  "const EMBED_VERSION = '6.3.8'",
   "embed/lyrics-studio.js",
   "base.searchParams.set('v', EMBED_VERSION)",
   'void onSaved()',
@@ -49,8 +49,8 @@ for (const required of [
   'Open standalone fallback ↗',
 ]) assert.ok(embed.includes(required), `Embedded Lyrics Studio host missing ${required}.`);
 
-for (const staleVersion of ['6.3.2', '6.3.3', '6.3.4', '6.3.5', '6.3.6']) {
-  assert.ok(!embed.includes(`const EMBED_VERSION = '${staleVersion}'`), `Build 30 must not reload stale LRC Maker ${staleVersion}.`);
+for (const staleVersion of ['6.3.2', '6.3.3', '6.3.4', '6.3.5', '6.3.6', '6.3.7']) {
+  assert.ok(!embed.includes(`const EMBED_VERSION = '${staleVersion}'`), `Build 31 must not reload stale LRC Maker ${staleVersion}.`);
 }
 assert.ok(!`${embed}\n${workspace}`.includes('<iframe'), 'Phase 6C must not use an iframe.');
 assert.ok(!fs.existsSync('src/components/LyricsStudioPortal.tsx'), 'Phase 6C must not rely on a MutationObserver/portal injection bridge.');
@@ -63,4 +63,4 @@ const tinyFonts = [...`${lyricsCss}\n${embedCss}\n${readability}`.matchAll(/font
   .filter(size => size < 11);
 assert.deepEqual(tinyFonts, [], `Phase 6 must preserve the 11px readability floor; found ${tinyFonts.join(', ')}.`);
 
-console.log('Phase 6 Lyrics contract passed: direct embedded LRC Maker 6.3.7 engine, native click/double-click/Space sync flow, behavioral reducer hardening, canonical reread normalization, standalone fallback, canonical timestamps, guarded refresh and 11px readability floor.');
+console.log('Phase 6 Lyrics contract passed: direct embedded LRC Maker 6.3.8 engine, native click/double-click/Space sync flow, behavioral reducer hardening, canonical reread normalization, standalone fallback, canonical timestamps, guarded refresh and 11px readability floor.');
