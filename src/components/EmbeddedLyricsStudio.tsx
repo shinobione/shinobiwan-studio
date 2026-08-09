@@ -48,7 +48,7 @@ function loadEmbedBundle(): Promise<void> {
 
 interface LyricsSavedEvent extends CustomEvent<{ trackId: string; updatedAt: string }> {}
 
-export function EmbeddedLyricsStudio({ trackId }: { trackId: string }) {
+export function EmbeddedLyricsStudio({ trackId, onSaved }: { trackId: string; onSaved: () => Promise<void> | void }) {
   const hostRef = useRef<HTMLElement | null>(null);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [error, setError] = useState<string | null>(null);
@@ -73,14 +73,11 @@ export function EmbeddedLyricsStudio({ trackId }: { trackId: string }) {
     const listener = (event: Event) => {
       const detail = (event as LyricsSavedEvent).detail;
       if (detail?.trackId !== trackId) return;
-      globalThis.dispatchEvent(new MessageEvent('message', {
-        origin: globalThis.location.origin,
-        data: { type: 'shinobiwan:lyrics-saved:v1', ...detail },
-      }));
+      void onSaved();
     };
     host.addEventListener('lyrics-saved', listener);
     return () => host.removeEventListener('lyrics-saved', listener);
-  }, [trackId]);
+  }, [onSaved, trackId]);
 
   return (
     <div className="workspace-lyrics-portal-card">
