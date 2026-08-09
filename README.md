@@ -4,7 +4,7 @@ Artist Content & Intelligence Manager.
 
 **Release:** `0.9.5`
 **Build:** `20`
-**Milestone:** Roadmap Phase 6 — native LRC synchronization flow restore
+**Milestone:** Roadmap Phase 6 — COMPLETE / production validated
 **Stop line:** Do not begin Phase 7 without explicit authorization.
 
 ## Product role
@@ -51,6 +51,32 @@ Implemented:
 LRC Maker `6.3.4` produces the stable embedded asset at `build/embed/lyrics-studio.js`. It keeps the 6.3.3 canonical reread normalization and removes only the 6.3.2 single-click direct seek. Studio Build 20 lazy-loads that asset with a `6.3.4` cache key from the deployed LRC Maker GitHub Pages project.
 
 See [`docs/PHASE-6-LYRICS-COMPLETE.md`](docs/PHASE-6-LYRICS-COMPLETE.md).
+
+### Final production validation
+
+Phase 6 is now **closed and production-validated**.
+
+Frozen runtime proof:
+
+```text
+Studio 0.9.5 / Build 20
+source SHA 38b47441a7c59181045000ebcc4fd86b2d1829b3
+deploy workflow 31291318828
+
+LRC Maker 6.3.4
+source SHA 8bd3f3fd52acc1217a65216541c0b7e40fcab5ba
+PR Build workflow 31291273801
+Pages deploy workflow 31291292303
+
+Track Manager v5.15 / bridge v1.7
+LaunchPAD-APP source SHA 23a7b494b89d4958f573f0889057b53a44aa23b6
+```
+
+The requested authenticated production smoke passed in standalone LRC Maker and in the embedded Studio workflow: double-click repositions, `Espace` timestamps the selected line then advances exactly one line, the following timestamp lands on the selected next line rather than the line above, and protected canonical `lyrics.txt` save/reread completes without the false mismatch banner. User verdict: **`nickel`**.
+
+Final operational checkpoint: `safety/phase6-complete-20260809-0513` on Studio, LRC Maker and LaunchPAD-APP / Track Manager final heads.
+
+See [`docs/PHASE-6-FINAL-CHECKPOINT.md`](docs/PHASE-6-FINAL-CHECKPOINT.md).
 
 ## Roadmap Phase 5 status
 
@@ -240,9 +266,17 @@ Studio:    safety/pre-phase6-native-sync-restore-20260809-0443
 LRC Maker: safety/pre-phase6-native-sync-restore-20260809-0443
 ```
 
+Final Phase 6 checkpoint:
+
+```text
+Studio:        safety/phase6-complete-20260809-0513
+LRC Maker:     safety/phase6-complete-20260809-0513
+LaunchPAD-APP: safety/phase6-complete-20260809-0513
+```
+
 Earlier Phase 4/5/6 safety branches remain untouched.
 
-See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md).
+See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md) and [`docs/PHASE-6-FINAL-CHECKPOINT.md`](docs/PHASE-6-FINAL-CHECKPOINT.md).
 
 ## Verification policy
 
@@ -263,17 +297,17 @@ The current code is protected by:
 - capability gating;
 - stale checks;
 - rollback contracts;
-- explicit confirmations.
+- explicit confirmations;
+- final standalone + embedded production synchronization smoke;
+- final protected canonical `lyrics.txt` save/reread production proof.
 
 We do **not** replace or delete a production WAV/cover merely to manufacture a smoke test. A deliberately disposable draft can be used later if deeper destructive-media smoke testing is desired.
 
 ## Phase 7 stop line
 
-**STOP after Build 20 and the Phase 6 standalone + embedded synchronization/save smoke/checkpoint.**
+**PHASE 6 IS COMPLETE. STOP.**
 
-Do not begin any Phase 7 item.
-
-Wait for explicit user authorization after the deployed native synchronization and canonical Lyrics save smoke tests.
+Do not implement, scaffold, prepare, merge or deploy any Phase 7 item without a new explicit user authorization.
 
 ## Development
 
