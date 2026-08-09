@@ -1,10 +1,10 @@
 # SHINOBIWAN Studio — Phase 6 complete
 
-Studio release: `0.9.4` / Build `19` / `phase6-canonical-reread-hotfix`
+Studio release: `0.9.5` / Build `20` / `phase6-native-lyrics-sync-restore`
 
 Track Manager target: `v5.15` / Studio bridge `v1.7`
 
-LRC Maker target: `6.3.3`
+LRC Maker target: `6.3.4`
 
 ## Canonical rule
 
@@ -32,20 +32,31 @@ The right-hand Lyrics workspace panel loads the **real LRC Maker synchronizer en
 - saves through the same v5.15 specialized guarded routes;
 - emits a local `lyrics-saved` event after canonical reread;
 - is isolated with Shadow DOM so LRC Maker styles do not leak into Studio;
-- exposes tag cleanup, empty-line cleanup and timestamp click-to-seek in the embedded workflow.
+- exposes tag cleanup and empty-line cleanup in the embedded workflow;
+- uses the native LRC Maker timing interaction: simple click selects, double-click repositions to an existing timestamp, `Espace` timestamps the selected line then advances exactly one line.
 
-This is intentionally **not an iframe**, not a copied synchronizer implementation and not a new lyrics store. The standalone LRC Maker page remains available as a secondary fallback.
+This is intentionally **not an iframe**, not a copied synchronizer implementation and not a new lyrics store. The standalone LRC Maker page remains available as a secondary fallback and shares the same synchronization behavior.
 
-## Build 19 regression hotfix
+## Build 19 regression hotfix — canonical reread
 
-The Build 18 deployed workflow exposed a false negative after a successful save: LRC Maker compared `refreshed.lyrics.text` with the editor serialization byte-for-byte, while Track Manager intentionally normalizes BOM and line endings before R2 storage.
+Build 18 exposed a false negative after a successful save: LRC Maker compared `refreshed.lyrics.text` with the editor serialization byte-for-byte, while Track Manager intentionally normalizes BOM and line endings before R2 storage.
 
-Build 19 + LRC Maker 6.3.3 preserve canonical reread verification but compare normalized storage representation instead of raw editor representation. Regression coverage explicitly proves:
+Build 19 + LRC Maker 6.3.3 preserve canonical reread verification but compare normalized storage representation instead of raw editor representation. Regression coverage proves BOM removal and CRLF/LF equivalence are accepted while a real wording difference remains blocking.
 
-- BOM removal is accepted;
-- `CRLF` and `LF` forms of the same lyrics compare equal;
-- a real wording difference still compares different;
-- the previous raw `refreshed.lyrics.text !== lyrics` guard cannot return.
+## Build 20 stabilization hotfix — restore native synchronization flow
+
+Production testing then exposed a separate interaction regression introduced by LRC Maker 6.3.2. The added **single-click seek** changed the mature synchronization sequence. While correcting a line and continuing playback, the selection/timing flow could become conceptually offset so subsequent `Espace` presses appeared to timestamp the line above the intended lyric.
+
+The decisive observation was that the same behavior occurred in standalone LRC Maker. This isolates the issue from Studio, Track Manager, R2 and the protected Range/206 media route.
+
+LRC Maker 6.3.4 therefore restores the pre-click-to-seek `Synchronizer` behavior from commit `10dc5dce566db1ce31998680c3c40bf461c492e4`:
+
+- simple click only selects a line;
+- simple click does not assign `audioRef.currentTime`;
+- double-click is again the explicit action to return to an existing line timestamp;
+- `Espace` keeps native `ActionType.next`: write current audio time to the selected line, then select the next line.
+
+Studio Build 20 changes only the embedded LRC Maker cache key from `6.3.3` to `6.3.4`, updates release metadata/docs and regression guards. No Track Manager or public LaunchPAD deployment is required.
 
 ## Safety boundary
 
@@ -53,7 +64,7 @@ Build 19 + LRC Maker 6.3.3 preserve canonical reread verification but compare no
 - no audio or lyrics in query parameters;
 - no direct browser write to R2;
 - no `.lrc` source of truth;
-- no Track Manager/Worker code change for Build 19;
+- no Track Manager/Worker code change for Build 20;
 - no Worker deployment required;
 - no SonicTrace schema or data change;
 - no public LaunchPAD version change;
@@ -61,20 +72,24 @@ Build 19 + LRC Maker 6.3.3 preserve canonical reread verification but compare no
 
 ## Dependency order
 
-1. LRC Maker `6.3.3` must be built and deployed first so the corrected `/lrc-maker/embed/lyrics-studio.js` is live.
-2. Studio `0.9.4` / Build `19` then consumes that asset with cache key `6.3.3`.
+1. LRC Maker `6.3.4` must be built and deployed first so the restored `/lrc-maker/embed/lyrics-studio.js` is live.
+2. Studio `0.9.5` / Build `20` then consumes that asset with cache key `6.3.4`.
 3. Track Manager remains at v5.15 / bridge v1.7; no Cloudflare deployment is required.
-4. One real protected save smoke test must confirm `lyrics.txt synchronisé et relu`, Studio refresh and Synced Lyrics before the final Phase 6 checkpoint is created.
+4. Smoke test standalone first: double-click known line, play, `Espace`, verify selection advances one line; continue to next phrase and verify timestamp lands on the selected next line.
+5. Repeat the same sequence in embedded Lyrics Studio.
+6. Save `lyrics.txt` and verify canonical reread succeeds.
+7. Only after those checks pass, create the final Phase 6 safety checkpoint and STOP.
 
 ## Rollback
 
-Immediate pre-hotfix checkpoints:
+Existing immediate pre-hotfix checkpoints remain preserved:
 
 - `lrc-maker`: `safety/pre-phase6-reread-hotfix-20260809-0354`
 - `shinobiwan-studio`: `safety/pre-phase6-reread-hotfix-20260809-0354`
 
-Feature branches:
+Current stabilization branches:
 
-- `hotfix/phase6-canonical-reread`
+- `lrc-maker`: `fix/phase6-restore-native-sync-flow`
+- `shinobiwan-studio`: `fix/phase6-lrc-6.3.4-native-sync`
 
-After the real save smoke test passes, create a final `safety/phase6-complete-*` checkpoint on the deployed production heads. Phase 7 remains strictly behind its STOP LINE.
+After the real standalone + embedded synchronization smoke test and protected save pass, create a final `safety/phase6-complete-*` checkpoint on the deployed production heads. Phase 7 remains strictly behind its STOP LINE.

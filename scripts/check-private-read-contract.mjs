@@ -135,12 +135,12 @@ for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog 
   assert.ok(!phase4Api.toLowerCase().includes(forbiddenPhase5.toLowerCase()), `Phase 5 leaked into Phase 4 client: ${forbiddenPhase5}`);
 }
 
-assert.ok(release.includes("version: '0.9.4'"), 'Studio release version must be 0.9.4.');
-assert.ok(release.includes('build: 19'), 'Studio release build must be 19.');
-assert.ok(release.includes("codename: 'phase6-canonical-reread-hotfix'"), 'Studio release codename must freeze the Phase 6 canonical reread hotfix.');
-assert.equal(pkg.version, '0.9.4', 'package.json must match Studio 0.9.4.');
+assert.ok(release.includes("version: '0.9.5'"), 'Studio release version must be 0.9.5.');
+assert.ok(release.includes('build: 20'), 'Studio release build must be 20.');
+assert.ok(release.includes("codename: 'phase6-native-lyrics-sync-restore'"), 'Studio release codename must freeze the Phase 6 native Lyrics sync restoration.');
+assert.equal(pkg.version, '0.9.5', 'package.json must match Studio 0.9.5.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'Production build must run the integration regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase5'), 'Production build must run the Phase 5 algorithm guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase6'), 'Production build must run the embedded Phase 6 regression guard.');
 
-console.log('Studio 0.9.4 Build 19 preserves prior contracts and consumes LRC Maker 6.3.3 canonical reread hotfix.');
+console.log('Studio 0.9.5 Build 20 preserves prior contracts and consumes LRC Maker 6.3.4 native synchronization flow.');
