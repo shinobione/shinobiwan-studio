@@ -1,0 +1,180 @@
+/* PHASE UX C2.5-A — small frontend-only polish layer.
+   Keep this last in the stylesheet order so it can correct UX without rewriting
+   established module styling or changing any backend/data contract. */
+
+/* Intelligence: a translated child inside overflow:auto created a horizontal scrollbar on hover. */
+.intelligence-track-list {
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.intelligence-track-list button:hover {
+  transform: none;
+  border-color: rgba(82, 227, 214, .22);
+  background: rgba(82, 227, 214, .035);
+}
+
+.intelligence-track-list button:focus-visible {
+  outline: 2px solid rgba(82, 227, 214, .58);
+  outline-offset: -2px;
+  border-color: rgba(82, 227, 214, .3);
+}
+
+/* Catalog: visible, lightweight progress while the canonical read is resolving. */
+.catalog-loading {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.catalog-loading-status {
+  min-height: 78px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 18px;
+}
+
+.catalog-loading-status > div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.catalog-loading-status strong {
+  color: #dff3f1;
+  font-size: 12px;
+}
+
+.catalog-loading-status span {
+  color: var(--studio-text-muted);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.catalog-loading-orb {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  border: 2px solid rgba(82, 227, 214, .16);
+  border-top-color: var(--studio-cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 22px rgba(82, 227, 214, .08);
+  animation: studio-catalog-spin .9s linear infinite;
+}
+
+.catalog-loading-orb::after {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  border-radius: 50%;
+  background: rgba(82, 227, 214, .17);
+  box-shadow: 0 0 14px rgba(82, 227, 214, .2);
+  animation: studio-catalog-pulse 1.25s ease-in-out infinite alternate;
+}
+
+.catalog-skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
+  gap: 12px;
+}
+
+.catalog-skeleton-card {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.catalog-skeleton-artwork,
+.catalog-skeleton-body > i,
+.catalog-skeleton-body b {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, .035);
+}
+
+.catalog-skeleton-artwork::after,
+.catalog-skeleton-body > i::after,
+.catalog-skeleton-body b::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-110%);
+  background: linear-gradient(90deg, transparent, rgba(82, 227, 214, .09), transparent);
+  animation: studio-catalog-shimmer 1.45s ease-in-out infinite;
+}
+
+.catalog-skeleton-artwork {
+  aspect-ratio: 1;
+  background: radial-gradient(circle at 35% 30%, rgba(82, 227, 214, .055), rgba(255, 255, 255, .018));
+}
+
+.catalog-skeleton-body {
+  display: grid;
+  gap: 9px;
+  padding: 15px;
+}
+
+.catalog-skeleton-body > i {
+  display: block;
+  width: 72%;
+  height: 12px;
+  border-radius: 999px;
+}
+
+.catalog-skeleton-body > i:nth-child(2) {
+  width: 44%;
+  height: 8px;
+}
+
+.catalog-skeleton-body > span {
+  display: flex;
+  gap: 7px;
+  padding-top: 5px;
+}
+
+.catalog-skeleton-body b {
+  display: block;
+  width: 46px;
+  height: 18px;
+  border-radius: 999px;
+}
+
+@keyframes studio-catalog-spin {
+  to { transform: rotate(1turn); }
+}
+
+@keyframes studio-catalog-pulse {
+  to { transform: scale(.72); opacity: .55; }
+}
+
+@keyframes studio-catalog-shimmer {
+  55%, 100% { transform: translateX(110%); }
+}
+
+@media (max-width: 560px) {
+  .catalog-skeleton-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .catalog-loading-status {
+    align-items: flex-start;
+    padding: 14px;
+  }
+
+  .catalog-loading-status span {
+    font-size: 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .catalog-loading-orb,
+  .catalog-loading-orb::after,
+  .catalog-skeleton-artwork::after,
+  .catalog-skeleton-body > i::after,
+  .catalog-skeleton-body b::after {
+    animation: none !important;
+  }
+}
