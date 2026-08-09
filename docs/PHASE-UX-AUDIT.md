@@ -104,6 +104,22 @@ For an existing track, selecting or replacing a cover must not silently mutate a
 
 No second palette model, Studio-only fields, alternate persistence or new backend route is permitted. If the existing protected contract cannot persist the canonical fields, UX-2 stops before implementation and reports that backend blocker.
 
+### UX-2 cover palette source audit — completed
+
+Current code confirms one shared contract:
+
+| Concern | Current authority | Verified behavior |
+|---|---|---|
+| Extraction | LaunchPAD-APP `08c-feature-10-color-diversity.inject.part` | Feature 10.3 samples a 96×96 canvas, scores quantized colors and selects a hue-diverse pair. |
+| Field names | Track Manager manifest normalization | `accent` and `accent2` only. |
+| Existing-cover safety | Track Manager Phase 12 + Milestone 3 controls | Cover selection preserves saved colors; extraction is an explicit action. |
+| Persistence | Track create + guarded metadata save | Both existing routes already whitelist `accent` and `accent2`; no route change is needed. |
+| Public consumption | LaunchPAD `remote-catalog.js` + `theme.js` | Valid manifest colors become track `accent` / `accent2` and CSS `--accent` / `--accent2`. |
+
+Useful Track Manager intake behaviors retained by UX-2 are cover-aware preview, two theme colors, browser-side thumbnail generation, optional multi-media intake, draft-first creation and quality-protected canonical writes. Studio uses its existing one-asset-at-a-time endpoints after the draft reread rather than reproducing Track Manager's older multipart whole-form route.
+
+The requested new-track exception is safe: automatic extraction changes only unsaved local preview state because a new track has no existing canonical palette. An existing track still requires explicit extraction and a second explicit, confirmed metadata save. Cover upload alone never calls the palette save path.
+
 ## Track Workspace
 
 ### Problems

@@ -78,12 +78,12 @@ for (const required of [
 ]) assert.ok(assets.includes(required), `Assets Manager missing ${required}.`);
 
 for (const required of [
-  'TRACK MANAGER / CREATE', 'Create canonical draft', 'Create draft track', 'globalThis.confirm', 'createAdminTrack', "trackHref(effectiveSlug, 'assets')", 'always starts as <strong>draft</strong>',
+  'NEW TRACK', 'Create a production-ready draft', 'Create draft', 'globalThis.confirm', 'createAdminTrack', 'uploadAdminTrackAsset', "uploads.length ? 'assets' : 'overview'", "Initial state</span><strong>Draft",
 ]) assert.ok(create.includes(required), `Track create UI missing ${required}.`);
 
 for (const required of ['TRACK MANAGER / CATALOG', 'Explicit catalog rebuild', 'REBUILD the canonical catalog/index.json', 'globalThis.confirm', 'rebuildAdminCatalog']) assert.ok(rebuild.includes(required), `Catalog rebuild UI missing ${required}.`);
 
-for (const required of ['<TrackCreatePanel privateRead={privateRead} onCreated={loadCatalog} />', 'Track Manager v5.15 / bridge v1.7', 'All mutations remain locked.']) assert.ok(catalog.includes(required), `Catalog Build 15 contract missing ${required}.`);
+for (const required of ['showCreate && <TrackCreatePanel', 'privateRead={privateRead}', 'onCreated={async () =>', '+ New Track', 'public catalog']) assert.ok(catalog.includes(required), `Catalog private-write boundary missing ${required}.`);
 for (const required of [
   '<AssetsManager track={track} onChanged={refreshTrackAfterWrite} />',
   '<LyricsEditorPanel track={track} onSaved={refreshTrackAfterWrite} />',
@@ -135,13 +135,13 @@ for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog 
   assert.ok(!phase4Api.toLowerCase().includes(forbiddenPhase5.toLowerCase()), `Phase 5 leaked into Phase 4 client: ${forbiddenPhase5}`);
 }
 
-assert.ok(release.includes("version: '0.10.0'"), 'Studio release version must be 0.10.0.');
-assert.ok(release.includes('build: 22'), 'Studio release build must be 22.');
-assert.ok(release.includes("codename: 'phase-ux-foundation'"), 'Studio release codename must identify the PHASE UX foundation milestone.');
-assert.equal(pkg.version, '0.10.0', 'package.json must match Studio 0.10.0.');
+assert.ok(release.includes("version: '0.10.1'"), 'Studio release version must be 0.10.1.');
+assert.ok(release.includes('build: 23'), 'Studio release build must be 23.');
+assert.ok(release.includes("codename: 'phase-ux-catalog-intake'"), 'Studio release codename must identify the PHASE UX catalog/intake milestone.');
+assert.equal(pkg.version, '0.10.1', 'package.json must match Studio 0.10.1.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'Production build must run the integration regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase5'), 'Production build must run the Phase 5 algorithm guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase6'), 'Production build must run the embedded Phase 6 regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:ux'), 'Production build must run the PHASE UX regression guard.');
 
-console.log('Studio 0.10.0 Build 22 preserves Phase 0-6 contracts while delivering the PHASE UX foundation without starting Phase 7.');
+console.log('Studio 0.10.1 Build 23 preserves Phase 0-6 contracts while delivering PHASE UX catalog/intake without starting Phase 7.');

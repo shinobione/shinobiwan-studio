@@ -42,6 +42,7 @@ export function CatalogView() {
   const [album, setAlbum] = useState('all');
   const [contentFilter, setContentFilter] = useState<ContentFilter>('all');
   const [sortMode, setSortMode] = useState<SortMode>('newest');
+  const [showCreate, setShowCreate] = useState(false);
 
   async function loadCatalog() {
     setLoading(true);
@@ -89,20 +90,23 @@ export function CatalogView() {
     <section className="catalog-surface">
       <div className="catalog-heading">
         <div>
-          <span className="eyebrow">{privateRead ? 'CATALOG / PRIVATE CANONICAL' : 'CATALOG / PUBLIC FALLBACK'}</span>
+          <span className="eyebrow">CATALOG</span>
           <h2>One catalog. Every track.</h2>
           <p>{privateRead
-            ? `Track Manager v5.15 / bridge v1.7 is the canonical admin backend. Draft creation, metadata, contextual Lyrics synchronization, assets, SonicTrace sidecars and catalog operations are scoped through Studio.${draftCount ? ` ${draftCount} draft${draftCount === 1 ? '' : 's'} currently included.` : ''}`
-            : 'Cloudflare Access private read is unavailable in this browser session, so Studio is safely using the proven LaunchPAD public read-only catalog. All mutations remain locked.'}</p>
+            ? `Search the production catalog, continue an existing track or start a new draft.${draftCount ? ` ${draftCount} draft${draftCount === 1 ? '' : 's'} currently need attention.` : ''}`
+            : 'Studio is safely showing the public catalog. Sign in through Track Manager to create or edit tracks.'}</p>
         </div>
-        <div className="catalog-kpis" aria-label="Catalog summary">
-          <div><strong>{tracks.length}</strong><span>tracks</span></div>
-          <div><strong>{albums.length}</strong><span>albums</span></div>
-          <div><strong>{syncedCount}</strong><span>timestamped</span></div>
+        <div className="catalog-heading-actions">
+          <div className="catalog-kpis" aria-label="Catalog summary">
+            <div><strong>{tracks.length}</strong><span>tracks</span></div>
+            <div><strong>{albums.length}</strong><span>albums</span></div>
+            <div><strong>{syncedCount}</strong><span>timestamped</span></div>
+          </div>
+          <button className="primary-btn catalog-new-track" type="button" disabled={loading} onClick={() => setShowCreate(true)}>+ New Track</button>
         </div>
       </div>
 
-      <TrackCreatePanel privateRead={privateRead} onCreated={loadCatalog} />
+      {showCreate && <TrackCreatePanel privateRead={privateRead} onCancel={() => setShowCreate(false)} onCreated={async () => { await loadCatalog(); setShowCreate(false); }} />}
 
       <div className="catalog-toolbar panel">
         <label className="catalog-search"><span>Search</span><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Title, album, genre, mood…" /></label>

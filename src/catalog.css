@@ -7,6 +7,8 @@
 .catalog-kpis div { min-width: 86px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: rgba(10,18,22,.55); }
 .catalog-kpis strong { display: block; color: #dff8f5; font-size: 20px; letter-spacing: -.035em; }
 .catalog-kpis span { display: block; margin-top: 3px; color: #5f7479; font-size: 8px; text-transform: uppercase; letter-spacing: .12em; font-weight: 800; }
+.catalog-heading-actions { display: flex; align-items: stretch; gap: 12px; }
+.catalog-new-track { min-width: 132px; white-space: nowrap; }
 .catalog-toolbar { display: grid; grid-template-columns: minmax(250px, 1.6fr) repeat(3, minmax(145px, .55fr)); gap: 10px; padding: 13px; }
 .catalog-toolbar label { display: grid; gap: 6px; min-width: 0; }
 .catalog-toolbar label > span { padding-left: 2px; color: #5d7378; font-size: 8px; text-transform: uppercase; font-weight: 900; letter-spacing: .13em; }
@@ -84,6 +86,8 @@
 }
 @media (max-width: 820px) {
   .catalog-heading { align-items: flex-start; flex-direction: column; }
+  .catalog-heading-actions { width: 100%; flex-direction: column; }
+  .catalog-new-track { width: 100%; }
   .catalog-kpis { width: 100%; }
   .track-read-hero { grid-template-columns: 1fr; }
   .track-read-artwork { width: min(100%, 430px); }

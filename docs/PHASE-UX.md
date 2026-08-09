@@ -2,7 +2,7 @@
 
 Date opened: `2026-08-09`
 
-Status: **AUTHORIZED — UX-1 IMPLEMENTED / LOCAL VALIDATION GREEN**
+Status: **AUTHORIZED — UX-1 PRODUCTION GREEN / UX-2 LOCAL IMPLEMENTATION GREEN**
 
 Phase 7: **NOT AUTHORIZED — ABSOLUTE STOP**
 
@@ -49,6 +49,9 @@ All four repositories were clean and synchronized with their upstream branches b
 - immutable post-hardening checkpoint: `safety/post-phase6-hardening-complete-20260809-1409`;
 - PHASE UX pre-change checkpoint: `safety/pre-phase-ux-20260809-1426`;
 - UX-1 development branch: `codex/phase-ux-foundation`.
+- UX-1 merge commit: `0ad67ab63417e6a02a935a0b8baa7d50175e5a90`;
+- UX-1 production deploy workflow: `31314367804`;
+- UX-2 development branch: `codex/phase-ux-catalog-intake`.
 
 ## Information architecture decision
 
@@ -107,6 +110,8 @@ Version target: Studio `0.10.0` / Build `22` / `phase-ux-foundation`
 
 ### UX-2 — Catalog and Track Intake
 
+Version target: Studio `0.10.1` / Build `23` / `phase-ux-catalog-intake`
+
 - catalog-first hierarchy and obvious `+ New Track` CTA;
 - progressive 2–3 step intake using existing protected routes;
 - hidden/generated slug by default;
@@ -139,6 +144,20 @@ Regression coverage must prove:
 5. Studio uses exactly the same canonical palette contract as Track Manager and LaunchPAD.
 
 Assets/Cover and Track Workspace may display the two saved colors when this adds useful context without clutter. No separate palette model, Studio-only palette field, route, storage layer or source of truth is authorized.
+
+#### Verified current palette contract
+
+The mandatory source audit completed before UX-2 implementation found:
+
+- Track Manager Feature 10.3 implements the current hue-diverse 96×96 extraction in `cloudflare/admin-worker.parts/08c-feature-10-color-diversity.inject.part`;
+- Track Manager writes exactly `accent` and `accent2`, with fallback colors `#1db954` and `#556bff`;
+- Phase 12 and Milestone 3 controls prevent a cover-selection event from overwriting an existing palette and expose explicit color extraction;
+- Track Manager create and save metadata already include `accent` / `accent2`;
+- the Studio create whitelist and guarded metadata validate/save whitelist already accept those same two fields;
+- LaunchPAD `js/core/remote-catalog.js` maps manifest `accent` / `accent2`, and `js/core/theme.js` applies them as `--accent` / `--accent2`;
+- no new backend route, Worker change or schema change is required.
+
+Studio therefore ports the Feature 10.3 browser algorithm as a local preview utility, persists only through the existing manifest contracts, and treats the canonical manifest as the sole saved palette source. New Track performs the requested automatic preview because no saved palette exists yet. Existing tracks require separate explicit Extract colors and Save palette actions.
 
 ### UX-3 — Track Workspace
 
@@ -179,6 +198,24 @@ UX-1 local validation:
 - no browser console warning/error during the rendered UX-1 smoke;
 - mobile primary navigation exposes readable labels and three destinations;
 - standard hero actions compute to the shared 42 px minimum height.
+
+UX-1 delivery validation:
+
+- draft PR `#24`: PASS;
+- GitHub Actions build: PASS;
+- merge commit `0ad67ab63417e6a02a935a0b8baa7d50175e5a90`;
+- Pages deploy workflow `31314367804`: PASS;
+- production smoke at `https://shinobione.github.io/shinobiwan-studio/`: Studio `0.10.0` / Build `22`, three primary destinations, no overflow or console error.
+
+UX-2 local validation:
+
+- private integration contract guard: PASS;
+- Phase 5 algorithms: PASS;
+- Phase 6 Lyrics integration: PASS;
+- UX-1 foundation guard: PASS;
+- UX-2 Catalog/Palette guard: PASS (`#e02644` + `#556bff` extracted from a valid synthetic cover buffer);
+- TypeScript typecheck: PASS;
+- Vite production build: PASS.
 
 CI, PR, merge, deploy and smoke records will be appended per slice. Static Studio Pages deployment remains separate from Worker deployment. No Worker deployment is authorized for PHASE UX.
 
