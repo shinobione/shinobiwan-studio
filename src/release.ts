@@ -1,6 +1,6 @@
 export const studioRelease = {
-  version: '0.9.5',
-  build: 20,
-  codename: 'phase6-native-lyrics-sync-restore',
+  version: '0.9.6',
+  build: 21,
+  codename: 'post-phase6-hardening',
   releasedAt: '2026-08-09',
 } as const;

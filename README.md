@@ -2,312 +2,239 @@
 
 Artist Content & Intelligence Manager.
 
-**Release:** `0.9.5`
-**Build:** `20`
-**Milestone:** Roadmap Phase 6 — COMPLETE / production validated
+**Release:** `0.9.6`  
+**Build:** `21`  
+**Codename:** `post-phase6-hardening`  
+**Milestone:** Post-Phase-6 Hardening — Phase 6 remains COMPLETE / production validated  
 **Stop line:** Do not begin Phase 7 without explicit authorization.
 
 ## Product role
 
 SHINOBIWAN Studio is the private orchestration cockpit for the SHINOBIWAN toolchain.
 
-Core rules:
+Frozen boundaries:
 
-- `trackId = R2 manifest slug`;
+- `trackId = R2 manifest slug` everywhere;
 - LaunchPAD stays the public product;
-- R2 stays the catalog/media source of truth;
-- Track Manager stays the protected catalog/admin backend and legacy fallback;
+- Cloudflare R2 stays the catalog/media/analysis source of truth;
+- Track Manager stays the protected R2 write/admin backend and standalone fallback;
 - SonicTrace stays the audio-intelligence engine;
-- LRC Maker stays the advanced lyrics editing/synchronization engine;
-- Studio degrades safely to public read-only behavior when private Track Manager access is unavailable.
+- LRC Maker stays the lyrics timing engine with standalone fallback;
+- GitHub stays the code source of truth;
+- Studio never becomes another catalog.
 
-## Roadmap Phase 6 status
+## Post-Phase-6 Hardening — Build 21
 
-Build 16 completed the Phase 6C product criterion rather than treating navigation to a separate LRC Maker page as the primary workflow. Build 17 fixed the embedded browser runtime. Build 18 restored embedded editor parity. Build 19 fixed the post-save canonical reread comparison without weakening the guard. Build 20 consumes LRC Maker 6.3.4 and restores the historical synchronization interaction after the 6.3.2 single-click seek proved disruptive during correction sessions.
+Build 21 is a **maintenance/hardening release**, not a new roadmap phase.
 
-> A canonical track opens its real LRC Maker synchronization engine directly inside the Studio Lyrics workspace, with protected audio and `lyrics.txt` already contextualized, guarded save through Track Manager, and immediate canonical refresh after save.
+It follows the completed and production-validated Phase 6 checkpoint and resolves the warnings from the final read-only audit without changing the established product workflow.
 
-Implemented:
+### What Build 21 changes
 
-- the real LRC Maker `Synchronizer` is exposed as the `shinobiwan-lyrics-studio` Web Component;
-- Shadow DOM isolates LRC Maker styling from the Studio shell;
-- the right-hand Track Workspace > Lyrics panel mounts that engine directly;
-- no iframe and no copied/reimplemented synchronization engine;
-- only canonical `trackId` is passed by Studio; no audio/blob/lyrics payload is put in a URL;
-- protected canonical audio and `lyrics.txt` loading through Track Manager v5.15 / bridge v1.7;
-- strict track-bound timestamp validation;
-- manifest revision + lyrics ETag stale protection;
-- UTF-8 `lyrics.txt` write through Track Manager only;
-- catalog rebuild, canonical reread and rollback remain backend-authoritative;
-- automatic Studio refresh after embedded save;
-- timestamps inside `lyrics.txt` remain the only “Synced Lyrics” signal;
-- optional `.lrc` export stays outside persistence and Content Health;
-- standalone LRC Maker remains available as a secondary fallback;
-- embedded Lyrics Studio exposes the shared **Supprimer les tags [ ]** and **Supprimer les lignes vides** utilities;
-- non-timestamp bracket tags can be removed without deleting valid LRC timestamps;
-- native LRC Maker interaction is restored in both standalone and embed: **simple clic = sélectionner**, **double-clic = revenir au timestamp existant**, **Espace = timestamp courant + ligne suivante**;
-- post-save verification compares backend-normalized canonical text (BOM removed; CRLF/CR normalized to LF), preventing false mismatches while keeping real lyric differences blocking.
+- consumes **LRC Maker 6.3.5** in embedded Lyrics Studio;
+- preserves the validated native timing UX: **simple click = select**, **double-click = explicit seek**, **Space = timestamp selected line then advance exactly one line**;
+- benefits from LRC Maker's new behavioral reducer test rather than relying only on source-string guards;
+- keeps the 11px useful-microcopy floor;
+- updates Integration Safety and final-checkpoint documentation to the actual Phase 6 production state;
+- records that the Phase 6 checkpoint already exists and was verified;
+- keeps the canonical Lyrics contract explicit and unambiguous;
+- preserves Track Manager v5.15 / bridge v1.7, SonicTrace Phase 5 persistence, R2 schemas and all existing Track Workspace features.
 
-LRC Maker `6.3.4` produces the stable embedded asset at `build/embed/lyrics-studio.js`. It keeps the 6.3.3 canonical reread normalization and removes only the 6.3.2 single-click direct seek. Studio Build 20 lazy-loads that asset with a `6.3.4` cache key from the deployed LRC Maker GitHub Pages project.
+### What Build 21 does **not** change
 
-See [`docs/PHASE-6-LYRICS-COMPLETE.md`](docs/PHASE-6-LYRICS-COMPLETE.md).
+- no new Track Manager endpoint;
+- no Worker source/runtime version bump;
+- no Worker deployment requirement;
+- no R2 migration or deliberate production write;
+- no manifest schema change;
+- no `.lrc` persistence requirement;
+- no SonicTrace runtime change;
+- no LaunchPAD feature refactor;
+- no Phase 7 implementation or scaffold.
 
-### Final production validation
+See [`docs/POST-PHASE-6-HARDENING.md`](docs/POST-PHASE-6-HARDENING.md).
 
-Phase 6 is now **closed and production-validated**.
+## LaunchPAD Build 67 maintenance dependency
 
-Frozen runtime proof:
+Before this Studio hardening milestone, LaunchPAD received a separate public maintenance hotfix:
+
+```text
+LaunchPAD Build 2026.08.09.67
+release post-phase6-track-dna-release-date-20260809
+merge 20674c774e172b85c1468e480621391057d70754
+GitHub Pages run 31311437062
+```
+
+The Home Track DNA release-date formatter now parses normalized catalog ISO dates directly instead of appending a second `T00:00:00` and incorrectly falling back to `Date TBD`.
+
+That hotfix changed no R2 data and required no public/admin Worker deployment.
+
+## Phase 6 — frozen validated baseline
+
+Phase 6 remains **closed and production-validated**.
 
 ```text
 Studio 0.9.5 / Build 20
-source SHA 38b47441a7c59181045000ebcc4fd86b2d1829b3
-deploy workflow 31291318828
+runtime source SHA 38b47441a7c59181045000ebcc4fd86b2d1829b3
+final closeout main SHA 00b4504779ec6220d97564965309ef7a9ef20887
+runtime deploy workflow 31291318828
+final closeout Pages workflow 31292085394
 
-LRC Maker 6.3.4
+LRC Maker 6.3.4 validated baseline
 source SHA 8bd3f3fd52acc1217a65216541c0b7e40fcab5ba
-PR Build workflow 31291273801
 Pages deploy workflow 31291292303
 
-Track Manager v5.15 / bridge v1.7
-LaunchPAD-APP source SHA 23a7b494b89d4958f573f0889057b53a44aa23b6
+Track Manager v5.15 / Studio bridge v1.7
+Phase 6 backend SHA 23a7b494b89d4958f573f0889057b53a44aa23b6
+admin deployment workflow 31288949405
 ```
 
-The requested authenticated production smoke passed in standalone LRC Maker and in the embedded Studio workflow: double-click repositions, `Espace` timestamps the selected line then advances exactly one line, the following timestamp lands on the selected next line rather than the line above, and protected canonical `lyrics.txt` save/reread completes without the false mismatch banner. User verdict: **`nickel`**.
+Final immutable Phase 6 checkpoint:
 
-Final operational checkpoint: `safety/phase6-complete-20260809-0513` on Studio, LRC Maker and LaunchPAD-APP / Track Manager final heads.
+```text
+safety/phase6-complete-20260809-0513
+```
+
+That checkpoint remains untouched by Build 21 hardening.
 
 See [`docs/PHASE-6-FINAL-CHECKPOINT.md`](docs/PHASE-6-FINAL-CHECKPOINT.md).
 
-## Roadmap Phase 5 status
+## Canonical Lyrics contract
 
-Build 14 closes the Phase 5 criterion:
+This rule is non-negotiable:
 
-> A track can be analyzed from Studio and durably recover its SonicTrace profile in its workspace.
+```text
+tracks/<slug>/lyrics.txt = only canonical lyrics source
+recognized timestamps     = synchronized lyrics
+.lrc                       = optional export/compatibility only
+```
 
-Implemented:
+A missing `.lrc` does not mean lyrics are unsynchronized, and an optional `.lrc` can never contribute to Content Health.
 
-- canonical `SonicTraceAnalysis` schema v1;
-- canonical R2 source revision/ETag fingerprint;
-- one-upload SonicTrace coordinator endpoint;
-- Browser DSP retained when the Deep Audio node is offline;
+The embedded and standalone LRC Maker modes use the same synchronization engine. Studio passes only minimal `trackId` context; protected audio and lyrics are loaded through Track Manager.
+
+Canonical save remains guarded by:
+
+- manifest `expectedUpdatedAt`;
+- lyrics R2 ETag;
+- strict timestamp/UTF-8 validation;
+- Track Manager write authority;
+- catalog update only where the existing contract requires it;
+- canonical reread;
+- compensating rollback on multi-object failure.
+
+Canonical text equality normalizes only optional BOM removal plus `CRLF`/`CR` → `LF`. Real lyric differences remain blocking.
+
+## Native LRC interaction
+
+Final behavior shared by embedded and standalone modes:
+
+1. **simple click** selects only;
+2. **double-click** on a timestamped line repositions audio to that timestamp;
+3. **Space** writes current audio time on the selected line and advances to the next line;
+4. the next Space timestamps that newly selected line, never the line above.
+
+The direct simple-click seek introduced experimentally in LRC Maker 6.3.2 remains retired.
+
+## Phase 5 — SonicTrace / Catalog Intelligence
+
+Phase 5 remains operational:
+
+- canonical `SonicTraceAnalysis` sidecars;
+- Browser DSP + local/GPU SonicTrace analysis;
 - explicit review before save;
-- guarded `latest.json` + append-only history persistence;
-- no retained/copy WAV in SonicTrace persistence;
-- re-scan and outdated detection;
-- 512D CLAP embedding index;
-- cross-track similarity and deterministic clusters;
-- analysis/master source-version history and comparison;
-- partial-layer warnings without breaking the Studio workspace.
+- `latest.json` + append-oriented history;
+- canonical audio source revision/freshness;
+- embedding 512D;
+- similarity/clusters/comparison;
+- no duplicate canonical WAV in analysis persistence.
 
 See [`docs/PHASE-5-SONICTRACE-COMPLETE.md`](docs/PHASE-5-SONICTRACE-COMPLETE.md).
 
-## Roadmap Phase 4 status (preserved)
+## Phase 4 — Track Manager integration
 
-Build 13 closes the roadmap criterion:
+Principal Track Manager operations remain available from Studio:
 
-> Principal Track Manager operations are achievable from the Studio workspace.
-
-The complete Studio Phase 4 surface is:
-
-- private-first unified catalog read with public fallback;
-- Track Workspace;
-- canonical draft track creation;
-- metadata validation + guarded save;
-- canonical lyrics read + ETag + validation + guarded save;
-- `lyrics.txt` upload when missing;
-- audio upload / replace / delete asset;
-- cover upload / replace / delete asset;
-- thumbnail upload / replace / delete asset;
-- video/Canvas upload / replace / delete asset;
+- private-first catalog read with public fallback;
+- canonical draft creation;
+- metadata validate/save;
+- canonical lyrics edit/save;
+- asset upload/replace/delete for audio, cover, thumbnail, lyrics TXT and video;
 - upload progress;
-- stale-manifest protection;
-- published-track quality protection;
-- explicit destructive confirmations;
-- explicit canonical catalog rebuild;
-- canonical reread verification after writes;
-- old Track Manager retained as protected fallback.
+- stale guards and quality protection;
+- explicit catalog rebuild;
+- canonical reread and rollback;
+- standalone Track Manager fallback.
 
-Whole-track deletion is intentionally not exposed because the roadmap requires delete/replace **asset**, not deletion of the canonical track itself.
+Whole-track deletion is intentionally not exposed through Studio.
 
 See [`docs/PHASE-4-COMPLETE.md`](docs/PHASE-4-COMPLETE.md).
 
-## Deployed backend dependency
-
-The current Lyrics workflow consumes the production-deployed private backend:
+## Current backend dependency
 
 ```text
 Track Manager       v5.15
 Studio bridge       v1.7
+Phase 6 backend     23a7b494b89d4958f573f0889057b53a44aa23b6
+deployment run      31288949405
 deployment target   admin
 Cloudflare Access   protected
-public Worker       unchanged
+public Worker       v2.6 unchanged
 ```
 
-The protected backend keeps canonical lyrics context, validation, stale protection, save, catalog update when required, canonical reread and rollback behind specialized routes. Build 20 changes only the LRC Maker producer behavior, Studio embed cache key, release metadata/docs and regression guards; it requires no Worker redeployment.
+No Worker redeployment is required merely because Studio consumes LRC Maker 6.3.5.
 
-Public LaunchPAD remains a separate surface and is not modified by this Phase 6 hotfix.
+## Security rules
 
-## Studio operations
-
-### Create track
-
-Catalog exposes **Create canonical draft**.
-
-Creation:
-
-- requires PRIVATE READ and the current protected bridge;
-- requires canonical lower-case kebab-case trackId;
-- rejects duplicates;
-- always starts as `draft`;
-- writes manifest only, then rebuilds catalog;
-- verifies the canonical draft reread;
-- navigates to Assets so media can be attached separately.
-
-### Metadata
-
-Metadata keeps the production-proven flow:
-
-```text
-Edit -> Validate -> Review -> Save -> confirm -> backend guard -> catalog rebuild -> canonical reread
-```
-
-The real `soft-addiction` smoke write and restoration remain documented:
-
-- temporary revision `2026-08-08T16:21:15.503Z`;
-- restored revision `2026-08-08T16:22:10.890Z`;
-- final quality `ready`, publishable `Yes`, errors/warnings `0 / 0`;
-- media untouched.
-
-### Lyrics
-
-Canonical rule:
-
-```text
-tracks/<slug>/lyrics.txt = source of truth
-timestamps inside lyrics.txt = synchronized
-.lrc = optional compatibility/export only
-```
-
-The Lyrics workspace has two paths sharing the same canonical contract:
-
-1. **embedded Lyrics Studio** — the primary Build 20 workflow using LRC Maker 6.3.4's real synchronizer, cleanup tools, native simple-click/double-click/Space timing flow and normalized canonical reread guard inside the right-hand workspace panel;
-2. **standalone LRC Maker** — retained as an advanced recovery/fallback path and sharing the same native synchronization behavior.
-
-Both use the same protected Track Manager context/write authority. Neither creates a second lyrics source of truth.
-
-### Assets
-
-Assets Manager supports exactly:
-
-```text
-audio
-cover
-thumbnail
-lyrics
-video
-```
-
-Each operation processes one asset kind only.
-
-Upload/replace:
-
-- uses multipart FormData with no custom request header;
-- exposes XHR upload progress;
-- requires `expectedUpdatedAt`;
-- reuses Track Manager extension/size validation;
-- temporarily backs up the previous R2 object outside the canonical track prefix;
-- updates manifest + catalog;
-- performs backend verification + Studio canonical reread;
-- performs compensating rollback on failure.
-
-Delete asset:
-
-- requires explicit confirmation;
-- requires canonical revision;
-- blocks destructive changes that make a published track non-publishable;
-- backs up before deletion;
-- updates and verifies manifest/catalog;
-- compensates on failure.
-
-### Catalog rebuild
-
-Administration exposes an explicit standalone canonical catalog rebuild.
-
-It:
-
-- requires a user confirmation;
-- sends `confirm: REBUILD` to Track Manager;
-- rebuilds only `catalog/index.json` from current manifests;
-- performs a private catalog reread verification;
-- does not mutate track metadata or media.
-
-## Security
-
-- Cloudflare Access remains mandatory;
+- Cloudflare Access remains mandatory for the private bridge;
 - exact Studio origin remains `https://shinobione.github.io`;
-- no Access/R2 secret is shipped to GitHub Pages;
-- no wildcard credentialed CORS;
-- JSON mutation controls use CORS-simple `text/plain;charset=UTF-8`;
-- asset uploads use browser multipart FormData without custom headers;
-- no PUT/PATCH/DELETE client is introduced;
-- no generic legacy `saveTrack()` route is opened cross-origin;
-- no whole-track delete route is exposed;
-- standalone Track Manager remains the fallback;
-- the embedded LRC Maker engine receives only `trackId` from Studio and fetches canonical data through the existing protected bridge;
-- Shadow DOM is used for UI isolation, not as a security boundary;
-- no iframe is used for Phase 6C.
+- no Access/R2 secrets ship to GitHub Pages;
+- credentialed CORS never uses wildcard origin;
+- JSON-like cross-origin mutation controls use the established `text/plain;charset=UTF-8` transport where required;
+- file uploads use native multipart `FormData` without custom headers;
+- no generic arbitrary cross-origin `saveTrack()` route is introduced;
+- standalone Track Manager remains fallback;
+- Shadow DOM isolates embedded LRC presentation but is not treated as a security boundary;
+- no iframe is used for the final Lyrics integration.
+
+See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md).
 
 ## Safety / rollback
 
-Immediate pre-Build-20 stabilization checkpoints:
+Pre-hardening snapshots:
 
 ```text
-Studio:    safety/pre-phase6-native-sync-restore-20260809-0443
-LRC Maker: safety/pre-phase6-native-sync-restore-20260809-0443
+Studio:        safety/pre-post-phase6-hardening-20260809-1342
+LRC Maker:     safety/pre-post-phase6-hardening-20260809-1342
+LaunchPAD-APP: safety/pre-post-phase6-hardening-build67-20260809-1342
 ```
 
-Final Phase 6 checkpoint:
-
-```text
-Studio:        safety/phase6-complete-20260809-0513
-LRC Maker:     safety/phase6-complete-20260809-0513
-LaunchPAD-APP: safety/phase6-complete-20260809-0513
-```
-
-Earlier Phase 4/5/6 safety branches remain untouched.
-
-See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md) and [`docs/PHASE-6-FINAL-CHECKPOINT.md`](docs/PHASE-6-FINAL-CHECKPOINT.md).
+The older final Phase 6 checkpoint remains the authoritative rollback point for the validated milestone itself.
 
 ## Verification policy
 
-The current code is protected by:
+Studio Build 21 is protected by:
 
-- Track Manager source guards;
-- protected admin-only backend deployment and Cloudflare Access verification;
-- Studio build-time integration guards;
+- private-read integration guards;
 - Phase 5 algorithm guards;
-- Phase 6 embedded-engine regression guards, including the required LRC Maker `6.3.4` cache key;
-- LRC Maker format/lint/context guards;
-- LRC Maker canonical reread normalization regression coverage (BOM + CRLF/CR -> LF while preserving detection of real text differences);
-- LRC Maker native synchronization-flow guard: simple click must not directly seek, double-click remains wired, `ActionType.next` timestamps and advances exactly one line;
-- LRC Maker embedded cleanup-parity guards;
-- LRC Maker post-build embedded runtime guard rejecting residual `process.env` references;
+- Phase 6 canonical Lyrics guards;
+- LRC Maker 6.3.5 embed pin;
+- no-iframe guard;
+- Content Health timestamp-only synchronization guard;
+- 11px readability floor;
 - TypeScript;
-- Vite production builds;
-- capability gating;
-- stale checks;
-- rollback contracts;
-- explicit confirmations;
-- final standalone + embedded production synchronization smoke;
-- final protected canonical `lyrics.txt` save/reread production proof.
+- Vite production build;
+- final Phase 6 production smoke history.
 
-We do **not** replace or delete a production WAV/cover merely to manufacture a smoke test. A deliberately disposable draft can be used later if deeper destructive-media smoke testing is desired.
+LRC Maker 6.3.5 additionally performs a real reducer transition test for `line N -> timestamp -> select N+1` and retains isolated simple-click/no-seek versus double-click/seek guards.
+
+We do not mutate a real production WAV/cover/lyrics object merely to manufacture a maintenance smoke test.
 
 ## Phase 7 stop line
 
-**PHASE 6 IS COMPLETE. STOP.**
+**PHASE 6 IS COMPLETE. POST-PHASE-6 HARDENING IS MAINTENANCE. STOP BEFORE PHASE 7.**
 
-Do not implement, scaffold, prepare, merge or deploy any Phase 7 item without a new explicit user authorization.
+Do not implement, scaffold, prepare, branch, merge or deploy any Phase 7 item without a new explicit user authorization.
 
 ## Development
 
@@ -321,7 +248,7 @@ npm run typecheck
 npm run build
 ```
 
-`npm run build` runs the integration regression guards before TypeScript/Vite.
+`npm run build` runs integration regression guards before TypeScript/Vite.
 
 ## Production URL
 
@@ -335,7 +262,7 @@ Every Studio release updates together:
 
 1. `package.json`;
 2. `src/release.ts`;
-3. visible version/build/phase copy;
+3. visible version/build/codename copy;
 4. `CHANGELOG.md`;
 5. README and affected docs;
 6. security/integration regression guards;
