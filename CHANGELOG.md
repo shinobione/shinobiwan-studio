@@ -1,5 +1,28 @@
 # SHINOBIWAN Studio Changelog
 
+## 0.9.6 — Build 21 — 2026-08-09
+
+Codename: `post-phase6-hardening`
+
+### Post-Phase-6 hardening
+
+- consumes LRC Maker `6.3.5` in the embedded Lyrics Studio without changing the validated native synchronization UX;
+- keeps **simple click = selection**, **double-click = explicit seek**, **Espace = timestamp selected line then advance exactly one line**;
+- adds producer-side behavioral reducer coverage for `line N -> timestamp -> select N+1`, including immutability, neighboring-line protection and final-line clamping;
+- strengthens simple-click/no-seek versus double-click/seek regression isolation;
+- updates Integration Safety and the final Phase 6 checkpoint document to the actual production state;
+- records the completed/verified `safety/phase6-complete-20260809-0513` checkpoint instead of leaving future-tense instructions;
+- preserves `tracks/<slug>/lyrics.txt` as the only canonical lyrics source and keeps `.lrc` outside Content Health;
+- preserves Track Manager `v5.15` / bridge `v1.7`, SonicTrace persistence, R2 layout and manifest schema;
+- requires no Worker redeployment and no deliberate R2 production write;
+- remains maintenance only and keeps Phase 7 strictly stopped.
+
+### Related LaunchPAD maintenance
+
+Before Build 21, LaunchPAD Build `2026.08.09.67` fixed Home Track DNA release dates incorrectly falling back to `Date TBD` when the catalog already supplied a normalized ISO `releaseDate`. The fix was merged separately and deployed to GitHub Pages without a Worker deployment or R2 mutation.
+
+See `docs/POST-PHASE-6-HARDENING.md`.
+
 ## 0.9.5 — Build 20 — 2026-08-09
 
 Codename: `phase6-native-lyrics-sync-restore`
