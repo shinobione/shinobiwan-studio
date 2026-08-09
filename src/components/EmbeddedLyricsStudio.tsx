@@ -3,7 +3,7 @@ import { contextualLrcMakerUrl } from '../services/lrc-maker';
 import { studioConfig } from '../services/config';
 
 const EMBED_TAG = 'shinobiwan-lyrics-studio';
-const EMBED_VERSION = '6.3.2';
+const EMBED_VERSION = '6.3.3';
 let embedLoader: Promise<void> | null = null;
 
 function embedScriptUrl(): string {
