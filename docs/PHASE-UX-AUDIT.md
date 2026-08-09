@@ -309,3 +309,14 @@ Baseline: Studio `0.10.4` / Build `26` production merge `2a1f74f2b3487501fbeffe9
 - Corrective automated tests are read-only and use synthetic buffers/text plus source-contract assertions.
 - Production mutation smoke is deliberately pending explicit user execution after Pages deployment.
 - Phase 7 is neither authorized nor present in runtime code.
+
+### Corrective delivery evidence
+
+- Corrective commit: `d5b92618f0625796011ea010b6c0596cf79fd127`.
+- Corrective PR: `#29`.
+- CI validation run: `31319128176` — PASS.
+- Production merge SHA: `80c59e61a35db59d82a80af362ba2de3cb522fa0`.
+- GitHub Pages run: `31319156206` — build/deploy PASS.
+- Production read-only verification: Studio `0.10.5` / Build `27`, private Track Manager read active, no horizontal overflow, compact tabs fixed at `76px` with no measured overlap.
+- No production create/upload/delete/save/rebuild operation was invoked by automation.
+- Real user mutation smoke and final PHASE UX checkpoint remain pending.
