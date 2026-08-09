@@ -67,3 +67,7 @@ Browser-DSP-only fallback remains valid but explicitly `PARTIAL`.
 - No source audio is persisted in Studio or analysis sidecars.
 - Track Manager remains the sole analysis-sidecar write authority.
 - Phase 7 is not started.
+
+## C2 boundary and C3 status
+
+The completed C2 Lyrics duration-evidence change caused no SonicTrace runtime, persistence or analysis-sidecar change. C3 SonicTrace V2-E parity remains **SUSPENDED** until the C2.5 Album / Project architecture decision is complete. No legacy standalone catalog import is authorized and the final PHASE UX checkpoint remains uncreated.

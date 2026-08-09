@@ -23,7 +23,11 @@ Build 29 is the Studio-only first corrective lot of the final integration parity
 - adds regression coverage for these behaviors;
 - makes no Worker, R2, backend, LRC Maker or Phase 7 runtime change.
 
-The Track Manager/LRC Maker duration-validation correction and the SonicTrace private-network connectivity correction remain separate guarded cross-repository lots.
+The cross-repository C2 duration-validation correction is now production deployed and real-user validated. Track Manager `v5.16` / Studio bridge `v1.8` accepts request-scoped `observedAudioDuration` evidence from LRC Maker `6.3.6` on the existing guarded Lyrics routes. The canonical `lyrics.txt` save and reread passed in production and the false "last timestamp exceeds audio duration" blocker is gone.
+
+The C2 admin-only deployment used workflow run `31324447727`, source `1bbe0293e4e17968bb7e191f58e7ae1cdd95dadf` and Worker Version ID `5a83c6dd-cfb4-4be6-ab8d-16b5c34bdc2b`. The public Worker remained unchanged, no automated production R2 test mutation occurred, and Studio remains `0.10.7` / Build `29`.
+
+C3 SonicTrace V2-E parity is suspended pending the C2.5 Album / Project architecture decision. The final PHASE UX checkpoint is not created and Phase 7 is not started.
 
 ## PHASE UX — Build 28
 
@@ -205,16 +209,17 @@ See [`docs/PHASE-4-COMPLETE.md`](docs/PHASE-4-COMPLETE.md).
 ## Current backend dependency
 
 ```text
-Track Manager       v5.15
-Studio bridge       v1.7
-Phase 6 backend     23a7b494b89d4958f573f0889057b53a44aa23b6
-deployment run      31288949405
+Track Manager       v5.16
+Studio bridge       v1.8
+deployed source     1bbe0293e4e17968bb7e191f58e7ae1cdd95dadf
+deployment run      31324447727
 deployment target   admin
+Worker Version ID   5a83c6dd-cfb4-4be6-ab8d-16b5c34bdc2b
 Cloudflare Access   protected
 public Worker       v2.6 unchanged
 ```
 
-No Worker redeployment is required merely because Studio consumes LRC Maker 6.3.5.
+LRC Maker `6.3.6` is the active duration-evidence integration. The C2 real-user Lyrics smoke passed canonical playback, timestamp navigation, synchronized `lyrics.txt` save and canonical reread without changing the one-source Lyrics contract.
 
 ## Security rules
 

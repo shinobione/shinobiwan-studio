@@ -14,6 +14,15 @@ Codename: `phase-ux-integration-parity-c1`
 - records the authoritative duration diagnosis and the standalone V2-E versus Studio parity matrix;
 - adds a focused read-only regression guard and preserves all Phase 0–6, PHASE UX and Phase 7 STOP boundaries.
 
+### C2 production closeout — documentation only
+
+- records Track Manager `v5.16` / Studio bridge `v1.8` deployed from `1bbe0293e4e17968bb7e191f58e7ae1cdd95dadf` by admin-only workflow `31324447727` (Worker Version ID `5a83c6dd-cfb4-4be6-ab8d-16b5c34bdc2b`);
+- records LRC Maker `6.3.6` as the active observed-canonical-audio duration-evidence client;
+- records the real-user production Lyrics smoke as **PASSED**: canonical playback and timestamp navigation worked, synchronized `lyrics.txt` saved and reread canonically, and the false end-of-audio blocker was removed;
+- preserves `tracks/<slug>/lyrics.txt` as the only canonical lyrics source and `.lrc` as optional export/compatibility only;
+- confirms that the public Worker, LaunchPAD public runtime, SonicTrace runtime and production R2 data were not changed by the C2 admin deployment;
+- performs no runtime version/build bump, keeps the final PHASE UX checkpoint uncreated, suspends C3 pending the C2.5 architecture decision and does not start Phase 7.
+
 ## 0.10.6 — Build 28 — 2026-08-09
 
 Codename: `phase-ux-live-smoke-intake-order`

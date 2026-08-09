@@ -355,3 +355,17 @@ C1 code result:
 - no Worker, R2, production data, SonicTrace backend, LRC Maker runtime or Phase 7 code changed in C1.
 
 Cross-repository duration and browser-private-network corrections remain separate guarded lots. Final real-user smoke and the final PHASE UX checkpoint remain pending.
+
+## C2 production closeout evidence
+
+- LaunchPAD/Track Manager production source: `1bbe0293e4e17968bb7e191f58e7ae1cdd95dadf`;
+- deployed private runtime: Track Manager `v5.16` / Studio bridge `v1.8`;
+- admin-only deployment workflow: `31324447727`, success;
+- Worker Version ID: `5a83c6dd-cfb4-4be6-ab8d-16b5c34bdc2b`;
+- public Worker deployment steps: skipped; public Worker remains `v2.6`;
+- LRC Maker production source: `32345063353ab251690bf1fd728deb97b21c5ddf`, version `6.3.6`;
+- Studio remains `0.10.7` / Build `29`.
+
+C2 real-user Lyrics smoke: **PASSED**. Canonical audio playback and line/timestamp navigation worked, synchronized `lyrics.txt` saved successfully, canonical reread succeeded, and the false "last timestamp exceeds audio duration" rejection is no longer present. The observed audio duration remains request-scoped validation evidence and does not create a second durable duration field.
+
+No automated R2 production mutation was used for testing, no SonicTrace runtime or LaunchPAD public runtime changed, and the canonical Lyrics contract is unchanged. The final PHASE UX checkpoint remains **NOT CREATED**; C3 is suspended pending C2.5; Phase 7 is **NOT STARTED**.

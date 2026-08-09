@@ -14,7 +14,7 @@ The browser can also observe the duration of the current canonical audio object 
 - LRC Maker knows `audioRef.duration` while synchronizing canonical audio;
 - Studio browser DSP records `durationSeconds` and the Track Workspace audio player can observe the same value.
 
-The dedicated Lyrics Studio routes are the inconsistency. `studioLyricsQuality()` currently compares the final timestamp only with `manifest.duration`. It does not receive the duration already observed by LRC Maker. A stale manifest can therefore reject valid synchronized lyrics even though the canonical audio is longer.
+The C1 audit identified an inconsistency in the dedicated Lyrics Studio routes: `studioLyricsQuality()` compared the final timestamp only with `manifest.duration` and did not receive the duration already observed by LRC Maker. A stale manifest could therefore reject valid synchronized lyrics even though the canonical audio was longer.
 
 ## Authority decision
 
@@ -30,11 +30,11 @@ For Lyrics validation the reliable reference order is:
 
 A disagreement must produce explicit evidence (`manifestDuration`, `observedAudioDuration`, tolerance and selected reference). It must never silently rewrite the manifest. The existing Track Manager metadata workflow remains the deliberate repair authority.
 
-## Required corrective contract
+## Deployed C2 corrective contract
 
-No new route or schema is needed. Extend only the existing `lyrics/sync/validate` and `lyrics/sync/save` request bodies with optional `observedAudioDuration`.
+No new route or schema was added. The existing `lyrics/sync/validate` and `lyrics/sync/save` request bodies accept optional `observedAudioDuration`.
 
-The Track Manager bridge must:
+The Track Manager bridge now:
 
 - reject non-finite, zero, negative or implausible values;
 - use a small quality tolerance consistent with current Track Manager audio checks;
@@ -43,7 +43,11 @@ The Track Manager bridge must:
 - preserve manifest concurrency and lyrics ETag guards;
 - never mutate duration as a side effect of a lyrics save.
 
-LRC Maker must send `audioRef.duration` only after the protected canonical audio has loaded. Standalone mode and manual/local audio must not gain a production write path.
+LRC Maker `6.3.6` sends `audioRef.duration` only after the protected canonical audio has loaded. Standalone mode and manual/local audio did not gain a production write path.
+
+Track Manager `v5.16` / Studio bridge `v1.8` was deployed admin-only from source `1bbe0293e4e17968bb7e191f58e7ae1cdd95dadf` by workflow `31324447727` (Worker Version ID `5a83c6dd-cfb4-4be6-ab8d-16b5c34bdc2b`). The public Worker was not deployed.
+
+The C2 real-user smoke passed canonical playback, timestamp navigation, synchronized `lyrics.txt` save and canonical reread. The false end-of-audio rejection is resolved without a manifest-duration side effect.
 
 ## Studio C1 behavior
 
@@ -54,5 +58,5 @@ Studio `0.10.7` / Build `29` displays the duration observed by the Track Workspa
 - `trackId` remains the canonical R2 slug.
 - Track Manager remains the only R2 write authority.
 - No automatic duration repair is authorized.
-- No Worker deploy is performed by this audit without the required manual deployment stop.
+- The completed C2 deployment targeted the private admin Worker only; the public Worker remains unchanged.
 - No Phase 7 runtime is introduced.
