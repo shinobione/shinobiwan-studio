@@ -1,0 +1,90 @@
+.workspace-lyrics-panel--embedded {
+  position: relative;
+  min-height: 720px;
+  padding: 0;
+  overflow: hidden;
+  border-color: rgba(82, 227, 214, .13);
+  background: rgba(5, 12, 15, .92);
+}
+
+.workspace-lyrics-panel--embedded > .eyebrow,
+.workspace-lyrics-panel--embedded > h3,
+.workspace-lyrics-panel--embedded > .workspace-lyrics-lines,
+.workspace-lyrics-panel--embedded > .workspace-muted {
+  display: none;
+}
+
+.workspace-lyrics-portal-card {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  padding: 14px;
+  background: radial-gradient(circle at 12% 0%, rgba(82,227,214,.035), transparent 34%), rgba(5,12,15,.98);
+}
+
+.workspace-lyrics-embed-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 0 2px 12px;
+}
+
+.workspace-lyrics-embed-head > div { min-width: 0; }
+.workspace-lyrics-embed-head h3 { margin: 5px 0 4px; font-size: 18px; }
+.workspace-lyrics-embed-head p {
+  margin: 0;
+  color: #667d81;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.workspace-lyrics-embed-head .ghost-btn { flex: 0 0 auto; font-size: 11px; }
+
+.workspace-lyrics-embed-message {
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(82,227,214,.12);
+  border-radius: 9px;
+  color: #759093;
+  background: rgba(82,227,214,.025);
+  font-size: 11px;
+}
+
+.workspace-lyrics-embed {
+  display: block;
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 620px;
+  opacity: .28;
+  transition: opacity .18s ease;
+}
+.workspace-lyrics-embed.ready { opacity: 1; }
+
+/* The external page remains a recovery/fallback path, not the primary Phase 6C workflow. */
+.workspace-lyrics-grid .workspace-tool-link.primary-btn {
+  color: #779095;
+  border: 1px solid rgba(133,231,226,.12);
+  background: rgba(255,255,255,.012);
+  box-shadow: none;
+  font-size: 0;
+}
+.workspace-lyrics-grid .workspace-tool-link.primary-btn::after {
+  content: 'Open LRC Maker standalone ↗';
+  font-size: 11px;
+  font-weight: 800;
+}
+.workspace-lyrics-grid .workspace-tool-link.primary-btn:hover:not(:disabled) {
+  color: #bdd1d1;
+  border-color: rgba(82,227,214,.25);
+  background: rgba(82,227,214,.025);
+}
+
+@media (max-width: 850px) {
+  .workspace-lyrics-panel--embedded { min-height: 760px; }
+  .workspace-lyrics-embed-head { align-items: flex-start; flex-direction: column; }
+  .workspace-lyrics-portal-card { padding: 11px; }
+}
