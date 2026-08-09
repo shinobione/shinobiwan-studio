@@ -133,23 +133,22 @@ export function SonicTracePanel({ track, onSaved }: { track: StudioTrackDetail; 
     <div className="sonic-stack">
       <article className="panel sonic-panel">
         <div className="sonic-head">
-          <div><span className="eyebrow">SONICTRACE / PHASE 5</span><h3>{latest ? 'Catalog-linked analysis' : 'Analyze canonical audio'}</h3></div>
+          <div className="sonic-intro"><span className="eyebrow">SONICTRACE</span><h3>{latest ? 'Analysis ready' : 'Understand this track'}</h3><p>{latest ? 'Review the latest profile or re-scan after an audio change.' : 'Analyze loudness, structure and similarity signals without storing source audio.'}</p></div>
           <div className="sonic-actions">
             <button className="primary-btn" type="button" disabled={busy || loading || !track.assets.audio} onClick={() => void analyze()}>{busy ? `Working ${progress}%` : latest ? 'Re-scan with SonicTrace' : 'Analyze with SonicTrace'}</button>
           </div>
         </div>
+        {busy && <div className="sonic-progress" aria-label={`SonicTrace analysis ${progress}% complete`}><i style={{ width: `${progress}%` }} /><span>{progress}%</span></div>}
         {loading && <p className="workspace-muted">Reading canonical SonicTrace sidecars…</p>}
         {!loading && !track.assets.audio && <div className="sonic-alert">Canonical audio is required before analysis.</div>}
         {state && (
           <div className="sonic-status-grid">
-            <div><span>Persistence</span><strong>{latest ? 'R2 linked' : 'Not saved'}</strong></div>
-            <div><span>Freshness</span><strong className={state.outdated ? 'warn' : ''}>{latest ? state.outdated ? 'Outdated' : 'Current' : '—'}</strong></div>
-            <div><span>Analysis ID</span><strong>{latest?.analysisId || '—'}</strong></div>
-            <div><span>Engine</span><strong>{engineLabel(latest)}</strong></div>
-            <div><span>Embedding</span><strong>{latest?.embedding ? `${latest.embedding.dimension}D` : 'Missing'}</strong></div>
-            <div><span>History</span><strong>{history.length}</strong></div>
+            <div><span>Analysis</span><strong>{latest ? 'Saved and linked' : 'Not analyzed'}</strong></div>
+            <div><span>Audio match</span><strong className={state.outdated ? 'warn' : ''}>{latest ? state.outdated ? 'Re-scan needed' : 'Current' : 'Waiting'}</strong></div>
+            <div><span>History</span><strong>{history.length} scan{history.length === 1 ? '' : 's'}</strong></div>
           </div>
         )}
+        {state && <details className="sonic-diagnostics"><summary>Engine diagnostics</summary><dl><div><dt>Analysis ID</dt><dd>{latest?.analysisId || '—'}</dd></div><div><dt>Engine</dt><dd>{engineLabel(latest)}</dd></div><div><dt>Embedding</dt><dd>{latest?.embedding ? `${latest.embedding.dimension}D` : 'Missing'}</dd></div><div><dt>Source version</dt><dd>{latest?.sourceVersion.value || '—'}</dd></div></dl></details>}
         {state?.outdated && <div className="sonic-alert warn">The canonical audio revision changed after the latest scan. Re-scan before trusting comparisons.</div>}
         {error && <div className="sonic-alert error">{error}</div>}
         {notice && <div className="sonic-alert">{notice}</div>}

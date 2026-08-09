@@ -1,5 +1,21 @@
 # SHINOBIWAN Studio Changelog
 
+## 0.10.3 — Build 25 — 2026-08-09
+
+Codename: `phase-ux-module-polish`
+
+### PHASE UX — UX-4 Module polish
+
+- reorganizes Metadata into understandable Identity, Release, Discovery, Music details and canonical LaunchPAD theme groups;
+- removes backend-version language from the normal Metadata workflow while retaining validate-before-save, stale-write, quality and rollback guards;
+- removes the duplicate read-only asset list and makes the protected Assets Manager the single media surface;
+- aligns media upload/replace/delete controls, keeps destructive actions subdued and preserves explicit confirmation/progress;
+- makes embedded LRC Maker the primary Lyrics surface, condenses sync/source status and moves the plain-text editor behind an explicit disclosure;
+- preserves standalone LRC Maker as a visible fallback and leaves click/double-click/Space synchronization mechanics untouched;
+- leads SonicTrace with Analyze/Re-scan, progress and human state while moving engine ID, embedding and source version into secondary diagnostics;
+- preserves Phase 5 analysis and persistence, temporary-audio privacy, append-only history and browser-DSP fallback unchanged;
+- changes no Worker, route, R2 schema/data, LaunchPAD runtime, engine contract or Phase 7 code.
+
 ## 0.10.2 — Build 24 — 2026-08-09
 
 Codename: `phase-ux-track-workspace`

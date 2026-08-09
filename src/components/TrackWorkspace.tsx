@@ -4,7 +4,7 @@ import { routeHref, trackHref } from '../router';
 import { getCatalogTrack } from '../services/catalog-api';
 import { studioConfig } from '../services/config';
 import { openContextualLrcMaker } from '../services/lrc-maker';
-import type { StudioAsset, StudioTrackDetail, WorkspaceSection } from '../types/studio';
+import type { StudioTrackDetail, WorkspaceSection } from '../types/studio';
 import { AssetsManager } from './AssetsManager';
 import { EmbeddedLyricsStudio } from './EmbeddedLyricsStudio';
 import { LyricsEditorPanel } from './LyricsEditorPanel';
@@ -34,26 +34,8 @@ function formatDuration(seconds: number | null): string {
   return `${minutes}:${remaining}`;
 }
 
-function formatBytes(value: number | null | undefined): string {
-  if (!value || value <= 0) return '—';
-  if (value < 1024 * 1024) return `${Math.round(value / 1024)} KB`;
-  return `${(value / (1024 * 1024)).toFixed(1)} MB`;
-}
-
 function fullArtwork(track: StudioTrackDetail): string | null {
   return track.assets.cover?.fullUrl || track.assets.cover?.url || track.assets.thumbnail?.url || null;
-}
-
-function AssetRow({ label, asset }: { label: string; asset: StudioAsset | null }) {
-  return (
-    <div className="workspace-asset-row">
-      <div><strong>{label}</strong><span>{asset?.filename || 'Missing'}</span></div>
-      <div className="workspace-asset-meta">
-        <span>{asset ? formatBytes(asset.size) : '—'}</span>
-        {asset ? <a href={asset.fullUrl || asset.url} target="_blank" rel="noreferrer">Open ↗</a> : <b>Missing</b>}
-      </div>
-    </div>
-  );
 }
 
 function WorkspacePanel({ eyebrow, title, children, className = '' }: { eyebrow: string; title: string; children: ReactNode; className?: string }) {
@@ -194,29 +176,25 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
       )}
 
       {section === 'lyrics' && (
-        <>
-          <div className="workspace-two-col workspace-lyrics-grid">
-            <WorkspacePanel eyebrow="LYRICS / STATE" title="Lyrics synchronization"><div className="workspace-facts"><div><span>Source</span><strong>{track.assets.lyricsTxt ? 'lyrics.txt' : 'Missing'}</strong></div><div><span>Timestamp data</span><strong>{track.timestampsAvailable ? 'Detected' : 'No'}</strong></div><div><span>Sync status</span><strong>{syncedLyrics ? 'Ready' : 'Not synced'}</strong></div><div><span>Segments</span><strong>{track.lyricSegments.length}</strong></div></div><div className="workspace-note workspace-tool-link"><strong>No separate .lrc file is required.</strong><p>Only timestamps inside canonical lyrics.txt define synchronized health. LRC export remains optional.</p></div><button className="ghost-btn workspace-tool-link" type="button" disabled={!privateRead || !track.assets.audio || !track.assets.lyricsTxt} onClick={() => openContextualLrcMaker(track.id)}>Open LRC Maker standalone ↗</button>{(!track.assets.audio || !track.assets.lyricsTxt) && <p className="workspace-muted">Canonical audio and lyrics.txt are required before synchronization.</p>}</WorkspacePanel>
-            <WorkspacePanel eyebrow="LYRICS / PREVIEW" title={track.assets.lyricsTxt ? 'Catalog lyrics' : 'No lyrics'} className={`workspace-lyrics-panel${canEmbedLyrics ? ' workspace-lyrics-panel--embedded' : ''}`}>
-              {canEmbedLyrics
-                ? <EmbeddedLyricsStudio trackId={track.id} onSaved={refreshTrackAfterWrite} />
-                : lyricLines.length
-                  ? <div className="workspace-lyrics-lines">{lyricLines.map((line, index) => <p key={`${index}-${line}`}>{line}</p>)}</div>
-                  : <p className="workspace-muted">No lyric text is exposed for this track. Missing canonical lyrics.txt can be uploaded from Assets.</p>}
-            </WorkspacePanel>
-          </div>
-          <LyricsEditorPanel track={track} onSaved={refreshTrackAfterWrite} />
-        </>
+        <div className="workspace-lyrics-shell">
+          <section className="panel workspace-lyrics-status">
+            <div><span className="eyebrow">LYRICS</span><h3>{syncedLyrics ? 'Lyrics are synchronized' : track.assets.lyricsTxt ? 'Ready for timing' : 'Add lyrics to begin'}</h3><p><strong>lyrics.txt</strong> is the only canonical source. Timestamps inside it define synchronization; LRC export remains optional.</p></div>
+            <div className="workspace-lyrics-status-facts"><span>Source <b>{track.assets.lyricsTxt ? 'Ready' : 'Missing'}</b></span><span>Sync <b>{syncedLyrics ? 'Ready' : 'Not synced'}</b></span><span>Lines <b>{track.lyricSegments.length}</b></span></div>
+            <button className="ghost-btn" type="button" disabled={!privateRead || !track.assets.audio || !track.assets.lyricsTxt} onClick={() => openContextualLrcMaker(track.id)}>Open standalone fallback ↗</button>
+          </section>
+          <WorkspacePanel eyebrow="LYRICS / STUDIO" title={track.assets.lyricsTxt ? 'Synchronize lyrics' : 'No lyrics'} className={`workspace-lyrics-panel${canEmbedLyrics ? ' workspace-lyrics-panel--embedded' : ''}`}>
+            {canEmbedLyrics
+              ? <EmbeddedLyricsStudio trackId={track.id} onSaved={refreshTrackAfterWrite} />
+              : lyricLines.length
+                ? <div className="workspace-lyrics-lines">{lyricLines.map((line, index) => <p key={`${index}-${line}`}>{line}</p>)}</div>
+                : <p className="workspace-muted">No lyric text is available yet. Add canonical lyrics.txt from Assets to begin.</p>}
+          </WorkspacePanel>
+          <details className="workspace-lyrics-plain"><summary>Open plain-text lyrics editor</summary><p>Use this secondary editor for text cleanup or direct timestamp inspection.</p><LyricsEditorPanel track={track} onSaved={refreshTrackAfterWrite} /></details>
+        </div>
       )}
 
       {section === 'assets' && (
-        <>
-          <WorkspacePanel eyebrow="R2 / ASSETS" title="Canonical track assets">
-            <div className="workspace-asset-list"><AssetRow label="Audio" asset={track.assets.audio} /><AssetRow label="Cover" asset={track.assets.cover} /><AssetRow label="Thumbnail" asset={track.assets.thumbnail} /><AssetRow label="Lyrics TXT" asset={track.assets.lyricsTxt} /><AssetRow label="Video / Canvas" asset={track.assets.video} /></div>
-            <p className="workspace-footnote">{privateRead ? 'Canonical Track Manager/R2 asset projection. Published media keeps the proven public delivery URLs when available; private-only assets remain protected by Cloudflare Access.' : 'Safe public LaunchPAD fallback. Authenticate with Track Manager to expose private canonical state.'} Synchronized lyrics remain content-derived from timestamps; a separate .lrc sidecar is optional.</p>
-          </WorkspacePanel>
-          <AssetsManager track={track} onChanged={refreshTrackAfterWrite} />
-        </>
+        <AssetsManager track={track} onChanged={refreshTrackAfterWrite} />
       )}
 
       {section === 'versions' && (

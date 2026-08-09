@@ -34,8 +34,9 @@ for (const required of [
   'const canEmbedLyrics = privateRead && Boolean(track.assets.audio && track.assets.lyricsTxt);',
   '<EmbeddedLyricsStudio trackId={track.id} onSaved={refreshTrackAfterWrite} />',
   "workspace-lyrics-panel--embedded",
-  'Open LRC Maker standalone ↗',
-  'Only timestamps inside canonical lyrics.txt define synchronized health.',
+  'Open standalone fallback ↗',
+  '<strong>lyrics.txt</strong> is the only canonical source.',
+  'Timestamps inside it define synchronization; LRC export remains optional.',
 ]) assert.ok(workspace.includes(required), `Studio Lyrics workspace contract missing ${required}.`);
 
 for (const required of [

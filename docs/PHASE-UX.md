@@ -2,7 +2,7 @@
 
 Date opened: `2026-08-09`
 
-Status: **AUTHORIZED — UX-1 / UX-2 PRODUCTION GREEN / UX-3 LOCAL GREEN**
+Status: **AUTHORIZED — UX-1 / UX-2 / UX-3 PRODUCTION GREEN / UX-4 LOCAL GREEN**
 
 Phase 7: **NOT AUTHORIZED — ABSOLUTE STOP**
 
@@ -56,6 +56,10 @@ All four repositories were clean and synchronized with their upstream branches b
 - UX-2 merge commit: `e5781ca4013e3587aed7abef66f58fd64d7f6893`;
 - UX-2 production deploy workflow: `31315492537`;
 - UX-3 development branch: `codex/phase-ux-track-workspace`.
+- UX-3 PR: `#26`;
+- UX-3 merge commit: `8de766f45f5323a1b22bc26ac929c60709184b46`;
+- UX-3 production deploy workflow: `31315940358`;
+- UX-4 development branch: `codex/phase-ux-module-polish`.
 
 ## Information architecture decision
 
@@ -176,11 +180,15 @@ UX-3 implements a compact persistent context header and keeps the five track-loc
 
 ### UX-4 — Module polish
 
+Version target: Studio `0.10.3` / Build `25` / `phase-ux-module-polish`
+
 - Metadata form hierarchy and action bars;
 - Assets media-management cards;
 - Lyrics container and plain-editor progressive disclosure;
 - SonicTrace action/result hierarchy;
 - no engine or persistence changes.
+
+The slice groups the Metadata form, removes the duplicate Assets projection, makes embedded LRC Maker the primary Lyrics working surface, progressively discloses the plain-text editor, and prioritizes SonicTrace readiness/action/result state over engine diagnostics. All guarded write sequences and engine functions remain intact.
 
 ### UX-5 — Intelligence, responsive and accessibility closeout
 
@@ -245,6 +253,24 @@ UX-3 local validation:
 - rendered existing-track Overview smoke: PASS at the available 1280×720 browser viewport;
 - visible track identity, five local tools, readiness, next action, media, release and SonicTrace state: PASS;
 - no visible horizontal overflow, clipped action or render failure in the Overview smoke.
+
+UX-3 delivery validation:
+
+- PR `#26`: PASS;
+- GitHub Actions build `31315906748`: PASS;
+- merge commit `8de766f45f5323a1b22bc26ac929c60709184b46`;
+- Pages deploy workflow `31315940358`: PASS;
+- production smoke: Studio `0.10.2` / Build `24`, persistent Soft Addiction context, five local tools, prioritized SonicTrace action and complete Overview hierarchy rendered.
+
+UX-4 local validation:
+
+- private integration contract guard: PASS;
+- Phase 5 algorithms and Phase 6 Lyrics integration: PASS;
+- UX-1 foundation, UX-2 Catalog/Palette, UX-3 Workspace and UX-4 module guards: PASS;
+- TypeScript typecheck and Vite production build: PASS;
+- rendered Metadata, Assets, Lyrics and SonicTrace track-local views: PASS at the available desktop viewport;
+- canonical `accent` / `accent2`, `lyrics.txt`, private Track Manager and Cloudflare Access boundaries remain explicit;
+- no write control was invoked during the visual smoke.
 
 CI, PR, merge, deploy and smoke records will be appended per slice. Static Studio Pages deployment remains separate from Worker deployment. No Worker deployment is authorized for PHASE UX.
 

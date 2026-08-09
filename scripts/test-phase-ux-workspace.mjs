@@ -42,10 +42,10 @@ for (const required of [
 assert.ok(foundationCss.includes('.workspace-tabs { position: sticky; top: 205px;'), 'Desktop local navigation must remain sticky below the compact header.');
 assert.ok(foundationCss.includes('.workspace-tabs { top: 178px;'), 'Mobile local navigation must remain sticky below compact track context.');
 
-assert.equal(pkg.version, '0.10.2');
-assert.ok(release.includes("version: '0.10.2'"));
-assert.ok(release.includes('build: 24'));
-assert.ok(release.includes("codename: 'phase-ux-track-workspace'"));
+assert.equal(pkg.version, '0.10.3');
+assert.ok(release.includes("version: '0.10.3'"));
+assert.ok(release.includes('build: 25'));
+assert.ok(release.includes("codename: 'phase-ux-module-polish'"));
 
 for (const forbidden of ['phase7', 'phase-7']) assert.ok(!workspace.toLowerCase().includes(forbidden), `Phase 7 runtime marker found: ${forbidden}.`);
 

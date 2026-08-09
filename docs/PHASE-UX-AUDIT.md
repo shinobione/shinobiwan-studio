@@ -167,6 +167,10 @@ The previous always-expanded eight-row Content Health detail is replaced by comp
 - Human summary first, expandable diagnostics second.
 - Preserve revision and stale-write semantics internally.
 
+### UX-4 implementation decision
+
+The flat metadata field wall becomes five semantic groups: Identity, Release, Discovery, Music details and LaunchPAD theme. Validation remains an explicit non-mutating review gate before Save, but canonical revision and backend version wording no longer lead the normal workflow.
+
 ## Assets
 
 ### Problems
@@ -180,6 +184,10 @@ The previous always-expanded eight-row Content Health detail is replaced by comp
 - One media-management surface for Audio, Cover, Thumbnail, Lyrics TXT and Video.
 - Each asset card has current state, one primary upload/replace action, secondary open and subdued danger action.
 - Preserve progress, validation, confirmations and protected writes.
+
+### UX-4 implementation decision
+
+The duplicate read-only asset projection is removed from the tab. The existing protected Assets Manager becomes the single media surface, presented as responsive media cards with aligned actions. Cover palette extraction/save remains explicitly separate from cover upload.
 
 ## Lyrics / embedded LRC Maker
 
@@ -195,6 +203,10 @@ The previous always-expanded eight-row Content Health detail is replaced by comp
 - Plain text editor becomes secondary/collapsible when the embed is available.
 - Preserve simple-click/no-seek, double-click seek, Space timestamp-and-advance, canonical reread and fallback unchanged.
 
+### UX-4 implementation decision
+
+Embedded LRC Maker is now the primary full-width working surface. A compact status row explains source and synchronization, standalone LRC Maker remains the visible fallback, and the plain-text editor is available through explicit progressive disclosure. No timing mechanic or persistence behavior changes.
+
 ## SonicTrace
 
 ### Problems
@@ -207,6 +219,10 @@ The previous always-expanded eight-row Content Health detail is replaced by comp
 - Lead with readiness, Analyze action, progress and latest result.
 - Move model/GPU/source-version details into diagnostics.
 - Preserve Phase 5 persistence and 512D contracts unchanged.
+
+### UX-4 implementation decision
+
+The primary panel now leads with Analyze/Re-scan, progress, saved/current state and history count. Analysis IDs, engine version, embedding dimension and source version move into a diagnostics disclosure. Review-before-save, partial browser-DSP fallback and append-only persistence remain unchanged.
 
 ## Catalog Intelligence and Catalog Rebuild
 
