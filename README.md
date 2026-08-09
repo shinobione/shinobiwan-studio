@@ -2,15 +2,28 @@
 
 Artist Content & Intelligence Manager.
 
-**Release:** `0.10.7`
+**Release:** `0.10.8`
 
-**Build:** `29`
+**Build:** `30`
 
-**Codename:** `phase-ux-integration-parity-c1`
+**Codename:** `phase-ux-c2-5-a-polish`
 
-**Milestone:** PHASE UX — final integration parity corrective C1
+**Milestone:** PHASE UX C2.5-A — Studio frontend polish
 
 **Stop line:** Do not begin Phase 7 without explicit authorization.
+
+## PHASE UX C2.5-A — Build 30
+
+Build 30 is a frontend-only polish lot discovered during real-user C2.5-A smoke. It does not begin the canonical Album schema work.
+
+- removes the Intelligence track-list horizontal scrollbar that appeared on hover by keeping the list vertical-only and removing the translated hover geometry;
+- starts warming the canonical Catalog read as soon as the Studio shell is loaded, shares the in-flight request, keeps an in-memory snapshot for route revisits and force-refreshes only after a real catalog-changing action such as New Track creation;
+- replaces the ambiguous blank Catalog wait with an accessible loading status, animated activity indicator and responsive skeleton cards;
+- consumes LRC Maker embed `6.3.7`, whose Studio-only presentation keeps cleanup/audio confirmations inside the layout and aligns selected/current lyric lines with the Studio teal/cyan palette;
+- adds regression coverage for the loading/cache, overflow correction, embed pin and release markers;
+- changes no Track Manager route, Worker, R2 object, canonical Album schema, catalog projection contract, SonicTrace persistence or Phase 7 scope.
+
+The final PHASE UX checkpoint remains **NOT CREATED**. C2.5-B is **NOT STARTED**, C3 SonicTrace V2-E parity remains suspended, and Phase 7 remains forbidden.
 
 ## PHASE UX — Build 29
 
@@ -25,7 +38,7 @@ Build 29 is the Studio-only first corrective lot of the final integration parity
 
 The cross-repository C2 duration-validation correction is now production deployed and real-user validated. Track Manager `v5.16` / Studio bridge `v1.8` accepts request-scoped `observedAudioDuration` evidence from LRC Maker `6.3.6` on the existing guarded Lyrics routes. The canonical `lyrics.txt` save and reread passed in production and the false "last timestamp exceeds audio duration" blocker is gone.
 
-The C2 admin-only deployment used workflow run `31324447727`, source `1bbe0293e4e17968bb7e191f58e7ae1cdd95dadf` and Worker Version ID `5a83c6dd-cfb4-4be6-ab8d-16b5c34bdc2b`. The public Worker remained unchanged, no automated production R2 test mutation occurred, and Studio remains `0.10.7` / Build `29`.
+The C2 admin-only deployment used workflow run `31324447727`, source `1bbe0293e4e17968bb7e191f58e7ae1cdd95dadf` and Worker Version ID `5a83c6dd-cfb4-4be6-ab8d-16b5c34bdc2b`. The public Worker remained unchanged, no automated production R2 test mutation occurred, and Studio remained `0.10.7` / Build `29` at that checkpoint.
 
 C3 SonicTrace V2-E parity is suspended pending the C2.5 Album / Project architecture decision. The final PHASE UX checkpoint is not created and Phase 7 is not started.
 
@@ -219,7 +232,7 @@ Cloudflare Access   protected
 public Worker       v2.6 unchanged
 ```
 
-LRC Maker `6.3.6` is the active duration-evidence integration. The C2 real-user Lyrics smoke passed canonical playback, timestamp navigation, synchronized `lyrics.txt` save and canonical reread without changing the one-source Lyrics contract.
+LRC Maker `6.3.7` is the frontend embed consumed by Build 30. Its canonical duration-evidence behavior remains the proven `6.3.6` contract; 6.3.7 only changes embedded presentation. The C2 real-user Lyrics smoke passed canonical playback, timestamp navigation, synchronized `lyrics.txt` save and canonical reread without changing the one-source Lyrics contract.
 
 ## Security rules
 
@@ -238,38 +251,39 @@ See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md).
 
 ## Safety / rollback
 
-Pre-hardening snapshots:
+Current C2.5-A polish snapshots:
 
 ```text
-Studio:        safety/pre-post-phase6-hardening-20260809-1342
-LRC Maker:     safety/pre-post-phase6-hardening-20260809-1342
-LaunchPAD-APP: safety/pre-post-phase6-hardening-build67-20260809-1342
+Studio:        safety/pre-c2-5-a-studio-ux-polish-20260809-2037
+LRC Maker:     safety/pre-c2-5-a-studio-embed-polish-20260809-2037
+LaunchPAD-APP: safety/pre-c2-5-a-era-play-mobile-ux-20260809-2037
 ```
 
-The older final Phase 6 checkpoint remains the authoritative rollback point for the validated milestone itself.
+The older final Phase 6 checkpoint remains the authoritative rollback point for the validated Phase 6 milestone itself.
 
 ## Verification policy
 
-Studio Build 21 is protected by:
+Studio Build 30 is protected by:
 
 - private-read integration guards;
 - Phase 5 algorithm guards;
 - Phase 6 canonical Lyrics guards;
-- LRC Maker 6.3.5 embed pin;
+- LRC Maker 6.3.7 embed pin;
 - no-iframe guard;
 - Content Health timestamp-only synchronization guard;
-- 11px readability floor;
+- 11px readability floor for established useful microcopy;
+- C2.5-A Catalog warm/cache/loading and Intelligence overflow guards;
 - TypeScript;
 - Vite production build;
-- final Phase 6 production smoke history.
+- final Phase 6/C2 production smoke history.
 
-LRC Maker 6.3.5 additionally performs a real reducer transition test for `line N -> timestamp -> select N+1` and retains isolated simple-click/no-seek versus double-click/seek guards.
+LRC Maker 6.3.7 additionally preserves the real reducer transition test for `line N -> timestamp -> select N+1`, retains isolated simple-click/no-seek versus double-click/seek guards, and adds an embed-only UX guard for non-overlay notifications and readable Studio line states.
 
-We do not mutate a real production WAV/cover/lyrics object merely to manufacture a maintenance smoke test.
+We do not mutate a real production WAV/cover/lyrics object merely to manufacture a frontend smoke test.
 
 ## Phase 7 stop line
 
-**PHASE 6 IS COMPLETE. POST-PHASE-6 HARDENING IS MAINTENANCE. STOP BEFORE PHASE 7.**
+**PHASE 6 IS COMPLETE. C2.5-A IS FRONTEND UX WORK. STOP BEFORE PHASE 7.**
 
 Do not implement, scaffold, prepare, branch, merge or deploy any Phase 7 item without a new explicit user authorization.
 
@@ -281,6 +295,7 @@ npm run dev
 npm run check:private-read
 npm run check:phase5
 npm run check:phase6
+npm run check:ux
 npm run typecheck
 npm run build
 ```
