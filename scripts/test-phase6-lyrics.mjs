@@ -40,7 +40,7 @@ for (const required of [
 
 for (const required of [
   "const EMBED_TAG = 'shinobiwan-lyrics-studio'",
-  "const EMBED_VERSION = '6.3.1'",
+  "const EMBED_VERSION = '6.3.2'",
   "embed/lyrics-studio.js",
   "base.searchParams.set('v', EMBED_VERSION)",
   'void onSaved()',
@@ -59,4 +59,4 @@ const tinyFonts = [...`${lyricsCss}\n${embedCss}\n${readability}`.matchAll(/font
   .filter(size => size < 11);
 assert.deepEqual(tinyFonts, [], `Phase 6 must preserve the 11px readability floor; found ${tinyFonts.join(', ')}.`);
 
-console.log('Phase 6 Lyrics contract passed: direct embedded LRC Maker 6.3.1 engine, standalone fallback, canonical timestamps, guarded refresh and 11px readability floor.');
+console.log('Phase 6 Lyrics contract passed: direct embedded LRC Maker 6.3.2 engine, standalone fallback, canonical timestamps, guarded refresh and 11px readability floor.');
