@@ -137,13 +137,13 @@ for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog 
   assert.ok(!phase4Api.toLowerCase().includes(forbiddenPhase5.toLowerCase()), `Phase 5 leaked into Phase 4 client: ${forbiddenPhase5}`);
 }
 
-assert.ok(release.includes("version: '0.10.8'"), 'Studio release version must be 0.10.8.');
-assert.ok(release.includes('build: 30'), 'Studio release build must be 30.');
-assert.ok(release.includes("codename: 'phase-ux-c2-5-a-polish'"), 'Studio release codename must identify the PHASE UX C2.5-A polish milestone.');
-assert.equal(pkg.version, '0.10.8', 'package.json must match Studio 0.10.8.');
+assert.ok(release.includes("version: '0.10.9'"), 'Studio release version must be 0.10.9.');
+assert.ok(release.includes('build: 31'), 'Studio release build must be 31.');
+assert.ok(release.includes("codename: 'phase-ux-c2-5-a-lrc-638'"), 'Studio release codename must identify the LRC Maker 6.3.8 corrective integration.');
+assert.equal(pkg.version, '0.10.9', 'package.json must match Studio 0.10.9.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'Production build must run the integration regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase5'), 'Production build must run the Phase 5 algorithm guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase6'), 'Production build must run the embedded Phase 6 regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:ux'), 'Production build must run the PHASE UX regression guard.');
 
-console.log('Studio 0.10.8 Build 30 preserves Phase 0-6 contracts while applying frontend-only C2.5-A polish without starting Phase 7.');
+console.log('Studio 0.10.9 Build 31 preserves Phase 0-6 contracts while consuming the scoped LRC Maker 6.3.8 visual hotfix without starting Phase 7.');
