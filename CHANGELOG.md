@@ -1,5 +1,27 @@
 # SHINOBIWAN Studio Changelog
 
+## 0.9.4 — Build 19 — 2026-08-09
+
+Codename: `phase6-canonical-reread-hotfix`
+
+### Canonical Lyrics reread hotfix
+
+- consumes LRC Maker `6.3.3` in the embedded Lyrics Studio;
+- preserves canonical reread verification while comparing the same storage-normalized representation as Track Manager;
+- accepts an initial UTF-8 BOM removal and `CRLF` / `CR` to `LF` normalization without creating a false save failure;
+- keeps real lyric differences blocking after the canonical reread;
+- cache-bumps the embedded engine from `6.3.2` to `6.3.3`;
+- preserves Track Manager v5.15 / bridge v1.7, canonical `lyrics.txt`, R2 schema, SonicTrace and public LaunchPAD unchanged;
+- keeps the Phase 7 STOP LINE active.
+
+### Verification
+
+- LRC Maker PR #11 Build run `31289386927` passed before merge;
+- LRC Maker regression guards cover BOM normalization, CRLF/LF equivalence and true text mismatch;
+- Studio Phase 6 regression guards require the `6.3.3` embed cache key and forbid falling back to `6.3.2`;
+- one real protected canonical lyrics save + restoration remains required before the final Phase 6 checkpoint is created;
+- no backend Worker deployment or intentional production R2 write is introduced by the code hotfix itself.
+
 ## 0.9.3 — Build 18 — 2026-08-09
 
 Codename: `phase6-embed-editor-parity`
