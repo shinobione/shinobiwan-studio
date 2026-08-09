@@ -2,9 +2,9 @@
 
 Artist Content & Intelligence Manager.
 
-**Release:** `0.9.2`
-**Build:** `17`
-**Milestone:** Roadmap Phase 6 — embedded Lyrics Studio workflow complete + runtime hotfix
+**Release:** `0.9.3`
+**Build:** `18`
+**Milestone:** Roadmap Phase 6 — embedded Lyrics Studio workflow complete + editor parity hotfix
 **Stop line:** Do not begin Phase 7 without explicit authorization.
 
 ## Product role
@@ -23,7 +23,7 @@ Core rules:
 
 ## Roadmap Phase 6 status
 
-Build 16 completed the Phase 6C product criterion rather than treating navigation to a separate LRC Maker page as the primary workflow. Build 17 is a runtime-only consumer hotfix that points Studio at the browser-safe LRC Maker 6.3.1 embedded bundle and cache-busts the previous 6.3.0 asset.
+Build 16 completed the Phase 6C product criterion rather than treating navigation to a separate LRC Maker page as the primary workflow. Build 17 fixed the embedded browser runtime. Build 18 consumes LRC Maker 6.3.2 and restores the editing interactions required for practical timestamp correction inside Studio.
 
 > A canonical track opens its real LRC Maker synchronization engine directly inside the Studio Lyrics workspace, with protected audio and `lyrics.txt` already contextualized, guarded save through Track Manager, and immediate canonical refresh after save.
 
@@ -42,9 +42,12 @@ Implemented:
 - automatic Studio refresh after embedded save;
 - timestamps inside `lyrics.txt` remain the only “Synced Lyrics” signal;
 - optional `.lrc` export stays outside persistence and Content Health;
-- standalone LRC Maker remains available as a secondary fallback.
+- standalone LRC Maker remains available as a secondary fallback;
+- embedded Lyrics Studio exposes the shared **Supprimer les tags [ ]** and **Supprimer les lignes vides** utilities;
+- non-timestamp bracket tags can be removed without deleting valid LRC timestamps;
+- clicking a timestamped line immediately seeks the active audio to that timestamp for fast checking/re-timing.
 
-LRC Maker `6.3.1` produces the stable embedded asset at `build/embed/lyrics-studio.js`. Its embed build now inlines the React production environment and rejects residual browser-unsafe `process.env` references after build. Studio Build 17 lazy-loads that asset with a `6.3.1` cache key from the deployed LRC Maker GitHub Pages project.
+LRC Maker `6.3.2` produces the stable embedded asset at `build/embed/lyrics-studio.js`. Its embed build keeps the browser-runtime guard introduced in 6.3.1 and now shares the standalone cleanup utilities plus timestamp click-to-seek behavior. Studio Build 18 lazy-loads that asset with a `6.3.2` cache key from the deployed LRC Maker GitHub Pages project.
 
 See [`docs/PHASE-6-LYRICS-COMPLETE.md`](docs/PHASE-6-LYRICS-COMPLETE.md).
 
@@ -113,7 +116,7 @@ Cloudflare Access   protected
 public Worker       unchanged
 ```
 
-The protected backend keeps canonical lyrics context, validation, stale protection, save, catalog update when required, canonical reread and rollback behind specialized routes. Build 17 does not require another Worker deployment.
+The protected backend keeps canonical lyrics context, validation, stale protection, save, catalog update when required, canonical reread and rollback behind specialized routes. Build 18 does not require another Worker deployment.
 
 Public LaunchPAD remains a separate surface and is not modified by this Phase 6C hotfix.
 
@@ -160,8 +163,8 @@ timestamps inside lyrics.txt = synchronized
 
 The Lyrics workspace has two paths sharing the same canonical contract:
 
-1. **embedded Lyrics Studio** — the primary Build 17 workflow using LRC Maker 6.3.1's real synchronizer inside the right-hand workspace panel;
-2. **standalone LRC Maker** — retained as an advanced recovery/fallback path.
+1. **embedded Lyrics Studio** — the primary Build 18 workflow using LRC Maker 6.3.2's real synchronizer, cleanup tools and timestamp click-to-seek inside the right-hand workspace panel;
+2. **standalone LRC Maker** — retained as an advanced recovery/fallback path and sharing the same synchronization behavior.
 
 Both use the same protected Track Manager context/write authority. Neither creates a second lyrics source of truth.
 
@@ -229,14 +232,14 @@ It:
 
 ## Safety / rollback
 
-Current Phase 6C pre-patch checkpoints:
+Current Phase 6C hotfix checkpoints:
 
 ```text
-Studio:    safety/pre-phase6-embedded-lyrics-20260809-0147
-LRC Maker: safety/pre-phase6-embedded-lyrics-20260809-0147
+Studio:    safety/pre-build18-lrc-embed-parity-20260809-0310
+LRC Maker: safety/pre-lrc-embed-parity-20260809-0257
 ```
 
-Earlier Phase 4/5 safety branches remain untouched.
+Earlier Phase 4/5/6 safety branches remain untouched.
 
 See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md).
 
@@ -248,8 +251,9 @@ The current code is protected by:
 - protected admin-only backend deployment and Cloudflare Access verification;
 - Studio build-time integration guards;
 - Phase 5 algorithm guards;
-- Phase 6 embedded-engine regression guards, including the required LRC Maker `6.3.1` cache key;
+- Phase 6 embedded-engine regression guards, including the required LRC Maker `6.3.2` cache key;
 - LRC Maker format/lint/context guards;
+- LRC Maker embedded cleanup-parity + timestamp click-to-seek guards;
 - LRC Maker post-build embedded runtime guard rejecting residual `process.env` references;
 - TypeScript;
 - Vite production builds;
@@ -262,11 +266,11 @@ We do **not** replace or delete a production WAV/cover merely to manufacture a s
 
 ## Phase 7 stop line
 
-**STOP after Build 17.**
+**STOP after Build 18.**
 
 Do not begin any Phase 7 item.
 
-Wait for new user instructions after the deployed embedded Lyrics Studio smoke test.
+Wait for new user instructions after the deployed embedded Lyrics Studio parity smoke test.
 
 ## Development
 
