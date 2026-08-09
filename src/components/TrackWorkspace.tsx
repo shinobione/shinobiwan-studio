@@ -13,12 +13,10 @@ import { SonicTracePanel } from './SonicTracePanel';
 
 const TABS: Array<{ id: WorkspaceSection; label: string }> = [
   { id: 'overview', label: 'Overview' },
-  { id: 'intelligence', label: 'Audio Intelligence' },
-  { id: 'lyrics', label: 'Lyrics' },
-  { id: 'assets', label: 'Assets' },
-  { id: 'versions', label: 'Versions' },
   { id: 'metadata', label: 'Metadata' },
-  { id: 'publishing', label: 'Publishing' },
+  { id: 'assets', label: 'Assets' },
+  { id: 'lyrics', label: 'Lyrics' },
+  { id: 'intelligence', label: 'SonicTrace' },
 ];
 
 function displayDate(value: string | null, year: number | null): string {
@@ -114,12 +112,12 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
 
   return (
     <section className="track-workspace">
-      <div className="workspace-breadcrumbs"><a href={routeHref('catalog')}>Catalog</a><span>/</span><strong>{track.title}</strong></div>
+      <div className="workspace-breadcrumbs"><a href={routeHref('catalog')}>← Back to Catalog</a><span>/</span><strong>{track.title}</strong></div>
 
       <header className="workspace-header panel">
         <div className="workspace-cover">{artwork ? <img src={artwork} alt={`${track.title} cover`} /> : <span>{track.title.slice(0, 2).toUpperCase()}</span>}</div>
         <div className="workspace-title">
-          <span className="eyebrow">TRACK WORKSPACE / {track.id}</span><h2>{track.title}</h2><p>{track.album.title} · {displayDate(track.releaseDate, track.year)}</p>
+          <span className="eyebrow">TRACK WORKSPACE</span><h2>{track.title}</h2><p>{track.album.title} · {displayDate(track.releaseDate, track.year)}</p>
           <div className="workspace-header-tags"><span className="workspace-status">{track.status}</span><span>{privateRead ? 'PRIVATE READ' : 'PUBLIC FALLBACK'}</span>{(track.genres.length ? track.genres : ['Unclassified']).slice(0, 4).map(value => <span key={value}>{value}</span>)}</div>
         </div>
         <div className="workspace-summary"><span>CONTENT HEALTH</span><strong>{health.total}%</strong><small>Completeness, not artistic quality</small></div>

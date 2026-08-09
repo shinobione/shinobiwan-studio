@@ -15,13 +15,13 @@ import { getSonicTraceHealth } from './services/sonictrace-api';
 import type { ServiceStatus, StudioReadSource, StudioRoute, WorkspaceSection } from './types/studio';
 
 const NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
-  { route: 'dashboard', label: 'Dashboard', glyph: '◫' },
+  { route: 'dashboard', label: 'Dashboard', glyph: '⌂' },
   { route: 'catalog', label: 'Catalog', glyph: '♫' },
-  { route: 'intelligence', label: 'Audio Intelligence', glyph: '◇' },
-  { route: 'lyrics', label: 'Lyrics', glyph: '≋' },
-  { route: 'assets', label: 'Assets', glyph: '▧' },
-  { route: 'publishing', label: 'Publishing', glyph: '↗' },
-  { route: 'administration', label: 'Administration', glyph: '⌘' },
+  { route: 'intelligence', label: 'Intelligence', glyph: '◇' },
+];
+
+const UTILITY_NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
+  { route: 'administration', label: 'System', glyph: '⌘' },
 ];
 
 const shellCopy: Record<Exclude<StudioRoute, 'catalog'>, { eyebrow: string; title: string; body: string }> = {
@@ -94,7 +94,7 @@ export default function App() {
     return () => { active = false; };
   }, []);
 
-  const navTitle = trackId ? 'Track Workspace' : NAV.find(item => item.route === route)?.label;
+  const navTitle = trackId ? 'Track Workspace' : [...NAV, ...UTILITY_NAV].find(item => item.route === route)?.label || 'Studio';
   const privateRead = readSource === 'private';
   const readLayerLabel = privateRead ? 'Private' : readSource === 'public' ? 'Fallback' : '…';
   const readLayerDetail = privateRead ? 'Track Manager v5.15 · bridge v1.7' : readSource === 'public' ? 'LaunchPAD public read-only' : 'Checking Access session';
@@ -103,21 +103,22 @@ export default function App() {
     <div className="studio-shell">
       <aside className="sidebar">
         <a className="brand" href={routeHref('dashboard')} aria-label="SHINOBIWAN Studio home"><div className="brand-mark"><span>S</span></div><div><strong>SHINOBIWAN</strong><small>STUDIO</small></div></a>
-        <nav className="nav-list" aria-label="Studio navigation">{NAV.map(item => <a key={item.route} className={route === item.route ? 'active' : ''} href={routeHref(item.route)}><span className="nav-glyph" aria-hidden="true">{item.glyph}</span><span>{item.label}</span></a>)}</nav>
-        <div className="sidebar-foot"><span className="phase-tag">PHASE 6 · COMPLETE</span><p>v{studioRelease.version} · Build {studioRelease.build}<br />Canonical Lyrics workflow.</p></div>
+        <div className="nav-section-label">Studio</div>
+        <nav className="nav-list" aria-label="Studio navigation">{NAV.map(item => <a key={item.route} className={route === item.route ? 'active' : ''} href={routeHref(item.route)} aria-current={route === item.route ? 'page' : undefined}><span className="nav-glyph" aria-hidden="true">{item.glyph}</span><span>{item.label}</span></a>)}</nav>
+        <nav className="nav-list nav-list-utility" aria-label="Studio utilities">{UTILITY_NAV.map(item => <a key={item.route} className={route === item.route ? 'active' : ''} href={routeHref(item.route)} aria-current={route === item.route ? 'page' : undefined}><span className="nav-glyph" aria-hidden="true">{item.glyph}</span><span>{item.label}</span></a>)}</nav>
+        <div className="sidebar-foot"><span className="phase-tag">PHASE UX</span><p>v{studioRelease.version} · Build {studioRelease.build}<br />Private production workspace</p></div>
       </aside>
 
       <main className="main-area">
-        <header className="topbar"><div><span className="top-kicker">Artist Content & Intelligence Manager</span><h1>{navTitle}</h1></div><div className="top-actions"><ServicePill name="Catalog" status={catalog} /><ServicePill name="SonicTrace" status={sonic} />{adminMode && <span className="admin-badge">ADMIN UI</span>}</div></header>
+        <header className="topbar"><div><span className="top-kicker">SHINOBIWAN / PRODUCTION STUDIO</span><h1>{navTitle}</h1></div><div className="top-actions">{adminMode && <span className="admin-badge">ADMIN UI</span>}<details className="system-status"><summary><span className={`system-status-dot ${catalog.state === 'offline' || sonic.state === 'offline' ? 'has-issue' : ''}`} />System status</summary><div className="system-status-popover"><ServicePill name="Catalog" status={catalog} /><ServicePill name="SonicTrace" status={sonic} /></div></details></div></header>
 
         {route === 'dashboard' && (
           <>
             <section className="hero-grid">
-              <article className="hero-copy panel"><span className="eyebrow">SHINOBIWAN STUDIO / {studioRelease.version} · BUILD {studioRelease.build}</span><h2>One track.<br /><em>One workspace.</em></h2><p>The global cockpit for catalog data, canonical assets and durable SonicTrace Audio Intelligence.</p><div className="hero-actions"><a className="primary-btn" href={routeHref('catalog')}>Open Track Workspace <span>→</span></a><a className="ghost-btn" href={routeHref('intelligence')}>Catalog Intelligence →</a></div></article>
-              <article className="architecture-card panel"><div className="arch-head"><span>ARCHITECTURE</span><b>TRACK-CENTRIC</b></div><div className="track-core"><span>TRACK ID</span><strong>canonical slug</strong><small>R2 source of truth</small></div><div className="arch-branches"><div><span>CATALOG</span><strong>R2</strong></div><div><span>TRACK MANAGER</span><strong>TM</strong></div><div><span>LYRICS</span><strong>TXT</strong></div></div></article>
+              <article className="hero-copy panel"><span className="eyebrow">YOUR MUSIC PRODUCTION COCKPIT</span><h2>Every track.<br /><em>Ready to move.</em></h2><p>Add music, manage releases, synchronize lyrics and launch audio analysis from one calm workspace.</p><div className="hero-actions"><a className="primary-btn" href={routeHref('catalog')}>Browse catalog <span>→</span></a><a className="ghost-btn" href={routeHref('intelligence')}>Explore intelligence</a></div></article>
+              <article className="workflow-card panel"><div className="workflow-head"><span>TODAY'S WORKFLOW</span><b>TRACK-CENTRIC</b></div><ol><li><span>01</span><div><strong>Choose a track</strong><small>Find it fast in Catalog.</small></div></li><li><span>02</span><div><strong>Complete the work</strong><small>Metadata, media and lyrics stay together.</small></div></li><li><span>03</span><div><strong>Analyze and release</strong><small>SonicTrace and readiness at a glance.</small></div></li></ol></article>
             </section>
-            <section className="status-grid"><article className="metric panel"><span>READ LAYER</span><strong>{readLayerLabel}</strong><small>{readLayerDetail}</small></article><article className="metric panel"><span>WORKSPACE</span><strong>Live</strong><small>Catalog + operations + Audio Intelligence</small></article><article className="metric panel"><span>LYRICS</span><strong>TXT</strong><small>Context · timestamps · guarded save</small></article><article className="metric panel"><span>PHASE</span><strong>6</strong><small>Complete · stop before Phase 7</small></article></section>
-            <EmptyState eyebrow={shellCopy.dashboard.eyebrow} title={shellCopy.dashboard.title} body={shellCopy.dashboard.body} />
+            <section className="status-grid"><article className="metric panel"><span>CATALOG ACCESS</span><strong>{readLayerLabel}</strong><small>{readLayerDetail}</small></article><article className="metric panel"><span>TRACK WORKSPACE</span><strong>Ready</strong><small>All production tools in context</small></article><article className="metric panel"><span>LYRICS ENGINE</span><strong>6.3.5</strong><small>Embedded sync + standalone fallback</small></article></section>
           </>
         )}
 

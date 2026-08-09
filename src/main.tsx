@@ -9,6 +9,7 @@ import './lyrics-editor.css';
 import './lyrics-embed.css';
 import './phase4-operations.css';
 import './sonictrace.css';
+import './ux-foundation.css';
 import './readability.css';
 
 createRoot(document.getElementById('root')!).render(

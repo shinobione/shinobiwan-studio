@@ -2,11 +2,29 @@
 
 Artist Content & Intelligence Manager.
 
-**Release:** `0.9.6`  
-**Build:** `21`  
-**Codename:** `post-phase6-hardening`  
-**Milestone:** Post-Phase-6 Hardening — Phase 6 remains COMPLETE / production validated  
+**Release:** `0.10.0`
+
+**Build:** `22`
+
+**Codename:** `phase-ux-foundation`
+
+**Milestone:** PHASE UX — UX-1 foundation
+
 **Stop line:** Do not begin Phase 7 without explicit authorization.
+
+## PHASE UX — Build 22
+
+Build 22 starts the authorized PHASE UX frontend program without changing any backend or Phase 4/5/6 engine contract.
+
+- focuses global navigation on Dashboard, Catalog and Intelligence;
+- separates System/Administration from daily production work;
+- normalizes the Track Workspace around Overview, Metadata, Assets, Lyrics and SonicTrace;
+- introduces Studio-owned LaunchPAD-aligned design tokens, control geometry, focus states and reduced-motion behavior;
+- replaces architecture-heavy Dashboard copy with a clear music-production workflow;
+- preserves legacy deep links, standalone fallbacks, guarded writes, canonical rereads and the `lyrics.txt` contract;
+- makes no Worker, R2, manifest, SonicTrace or LRC Maker runtime change.
+
+See `docs/PHASE-UX.md` and `docs/PHASE-UX-AUDIT.md`.
 
 ## Product role
 
