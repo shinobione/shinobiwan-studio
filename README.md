@@ -2,28 +2,27 @@
 
 Artist Content & Intelligence Manager.
 
-**Release:** `0.10.1`
+**Release:** `0.10.2`
 
-**Build:** `23`
+**Build:** `24`
 
-**Codename:** `phase-ux-catalog-intake`
+**Codename:** `phase-ux-track-workspace`
 
-**Milestone:** PHASE UX — UX-2 Catalog + New Track
+**Milestone:** PHASE UX — UX-3 Track Workspace
 
 **Stop line:** Do not begin Phase 7 without explicit authorization.
 
-## PHASE UX — Build 23
+## PHASE UX — Build 24
 
-Build 23 delivers the UX-2 catalog and track-intake slice without changing any backend or Phase 4/5/6 engine contract.
+Build 24 delivers the UX-3 Track Workspace and action-led Overview without changing any backend or Phase 4/5/6 engine contract.
 
-- keeps the catalog visible by default behind one obvious `+ New Track` action;
-- turns New Track into Basics, Media and Review steps with an automatically generated identifier;
-- accepts cover, audio, canonical lyrics TXT and Canvas through the existing protected create/asset routes;
-- generates the same useful 512 px WebP thumbnail behavior as Track Manager;
-- ports Track Manager Feature 10.3 cover extraction and uses only canonical `accent` / `accent2` manifest fields;
-- previews both colors as visible swatches and values before creation;
-- prevents existing cover replacement from silently overwriting a saved palette, with explicit extract and save actions;
-- adds executable regression coverage for palette extraction, rendering, explicit updates and contract reuse;
+- compacts and preserves track context with cover, title, release, status, readiness and saved cover palette;
+- keeps five obvious local tools: Overview, Metadata, Assets, Lyrics and SonicTrace;
+- redesigns Overview around readiness, concrete next actions, media state, music details, release and analysis;
+- keeps Content Health strictly about completeness and moves raw source/revision information into secondary diagnostics;
+- adds `aria-current` to local navigation and responsive sticky positioning for desktop, laptop, tablet and mobile;
+- preserves Metadata, Assets, embedded/standalone Lyrics and SonicTrace integrations unchanged;
+- adds a dedicated UX-3 regression guard for context, navigation, action hierarchy, responsive layout and engine availability;
 - makes no Worker, R2, manifest, SonicTrace or LRC Maker runtime change.
 
 See `docs/PHASE-UX.md` and `docs/PHASE-UX-AUDIT.md`.

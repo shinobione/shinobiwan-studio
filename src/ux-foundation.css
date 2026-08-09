@@ -199,7 +199,7 @@ button.ghost-btn {
 .metric span, .metric small { font-size: 11px; }
 
 .workspace-header { position: sticky; top: 88px; z-index: 9; border-radius: var(--studio-radius-lg); }
-.workspace-tabs { position: sticky; top: 250px; z-index: 8; justify-content: center; padding: 6px; border-color: var(--studio-border); background: rgba(9, 7, 17, .9); backdrop-filter: blur(18px); }
+.workspace-tabs { position: sticky; top: 205px; z-index: 8; justify-content: center; padding: 6px; border-color: var(--studio-border); background: rgba(9, 7, 17, .9); backdrop-filter: blur(18px); }
 .workspace-tabs a { min-height: var(--studio-control-height-compact); padding: 0 18px; font-size: 11px; border-radius: var(--studio-radius-sm); }
 .workspace-tabs a.active { color: #fff; background: linear-gradient(90deg, rgba(84, 232, 224, .13), rgba(100, 120, 255, .1)); }
 .workspace-breadcrumbs { font-size: 11px; }
@@ -225,7 +225,7 @@ button.ghost-btn {
   .workflow-card { min-height: auto; }
   .status-grid { grid-template-columns: 1fr; }
   .workspace-header { top: 72px; }
-  .workspace-tabs { top: 232px; justify-content: flex-start; }
+  .workspace-tabs { top: 178px; justify-content: flex-start; }
 }
 
 @media (max-width: 470px) {

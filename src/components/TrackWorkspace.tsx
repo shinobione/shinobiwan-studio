@@ -60,6 +60,17 @@ function WorkspacePanel({ eyebrow, title, children, className = '' }: { eyebrow:
   return <article className={`panel workspace-panel ${className}`.trim()}><span className="eyebrow">{eyebrow}</span><h3>{title}</h3>{children}</article>;
 }
 
+function healthDestination(id: string): WorkspaceSection {
+  if (id === 'metadata' || id === 'publication') return 'metadata';
+  if (id === 'lyricsTxt' || id === 'syncedLyrics') return 'lyrics';
+  if (id === 'sonicTrace') return 'intelligence';
+  return 'assets';
+}
+
+function mediaState(label: string, ready: boolean, detail: string, href: string) {
+  return { label, ready, detail, href };
+}
+
 export function TrackWorkspace({ trackId, section }: { trackId: string; section: WorkspaceSection }) {
   const [track, setTrack] = useState<StudioTrackDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -109,36 +120,72 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
   const canEmbedLyrics = privateRead && Boolean(track.assets.audio && track.assets.lyricsTxt);
   const qualityCounts = track.quality?.counts;
   const healthStyle = { '--health-angle': `${health.total * 3.6}deg` } as CSSProperties;
+  const trackStyle = {
+    '--track-accent': /^#[0-9a-f]{6}$/i.test(track.accent || '') ? track.accent : '#54e8e0',
+    '--track-accent2': /^#[0-9a-f]{6}$/i.test(track.accent2 || '') ? track.accent2 : '#6478ff',
+  } as CSSProperties;
+  const attention = health.items.filter(item => item.state !== 'complete');
+  const media = [
+    mediaState('Audio', Boolean(track.assets.audio), track.assets.audio?.filename || 'Add master audio', trackHref(track.id, 'assets')),
+    mediaState('Cover', Boolean(track.assets.cover), track.assets.cover?.filename || 'Add artwork', trackHref(track.id, 'assets')),
+    mediaState('Lyrics', Boolean(track.assets.lyricsTxt), syncedLyrics ? 'Timestamped and synced' : track.assets.lyricsTxt ? 'TXT ready for timing' : 'Add lyrics.txt', trackHref(track.id, 'lyrics')),
+    mediaState('Canvas', Boolean(track.assets.video), track.assets.video?.filename || 'Optional video', trackHref(track.id, 'assets')),
+  ];
 
   return (
     <section className="track-workspace">
       <div className="workspace-breadcrumbs"><a href={routeHref('catalog')}>← Back to Catalog</a><span>/</span><strong>{track.title}</strong></div>
 
-      <header className="workspace-header panel">
+      <header className="workspace-header panel" style={trackStyle}>
         <div className="workspace-cover">{artwork ? <img src={artwork} alt={`${track.title} cover`} /> : <span>{track.title.slice(0, 2).toUpperCase()}</span>}</div>
         <div className="workspace-title">
           <span className="eyebrow">TRACK WORKSPACE</span><h2>{track.title}</h2><p>{track.album.title} · {displayDate(track.releaseDate, track.year)}</p>
-          <div className="workspace-header-tags"><span className="workspace-status">{track.status}</span><span>{privateRead ? 'PRIVATE READ' : 'PUBLIC FALLBACK'}</span>{(track.genres.length ? track.genres : ['Unclassified']).slice(0, 4).map(value => <span key={value}>{value}</span>)}</div>
+          <div className="workspace-header-tags"><span className="workspace-status">{track.status}</span>{(track.genres.length ? track.genres : ['Unclassified']).slice(0, 3).map(value => <span key={value}>{value}</span>)}</div>
         </div>
-        <div className="workspace-summary"><span>CONTENT HEALTH</span><strong>{health.total}%</strong><small>Completeness, not artistic quality</small></div>
+        <div className="workspace-summary">
+          <span>READINESS</span><strong>{health.total}%</strong><small>{attention.length ? `${attention.length} item${attention.length === 1 ? '' : 's'} need attention` : 'Production checklist complete'}</small>
+          {track.accent && track.accent2 && <div className="workspace-palette" aria-label={`Cover palette accent ${track.accent}, accent2 ${track.accent2}`}><i style={{ background: track.accent }} /><i style={{ background: track.accent2 }} /></div>}
+        </div>
       </header>
 
-      <nav className="workspace-tabs" aria-label="Track Workspace sections">{TABS.map(tab => <a key={tab.id} className={section === tab.id ? 'active' : ''} href={trackHref(track.id, tab.id)}>{tab.label}</a>)}</nav>
+      <nav className="workspace-tabs" aria-label="Track Workspace sections">{TABS.map(tab => <a key={tab.id} className={section === tab.id ? 'active' : ''} aria-current={section === tab.id ? 'page' : undefined} href={trackHref(track.id, tab.id)}>{tab.label}</a>)}</nav>
 
       {section === 'overview' && (
         <div className="workspace-overview-grid">
-          <WorkspacePanel eyebrow="CONTENT / HEALTH" title="Track completeness" className="health-panel">
-            <div className="health-layout">
-              <div className="health-ring" style={healthStyle}><div><strong>{health.total}</strong><span>/ 100</span></div></div>
-              <div className="health-list">{health.items.map(current => <div className={`health-row health-${current.state}`} key={current.id}><div className="health-row-head"><strong>{current.label}</strong><span>{current.score}/{current.max}</span></div><div className="health-bar"><i style={{ width: `${(current.score / current.max) * 100}%` }} /></div><small>{current.detail}</small></div>)}</div>
+          <WorkspacePanel eyebrow="OVERVIEW / READINESS" title={attention.length ? 'Finish what matters next' : 'Ready for production'} className="workspace-readiness-panel">
+            <div className="workspace-readiness-layout">
+              <div className="health-ring health-ring-compact" style={healthStyle}><div><strong>{health.total}</strong><span>complete</span></div></div>
+              <div className="workspace-readiness-copy">
+                <strong>{attention.length ? `${attention.length} checklist item${attention.length === 1 ? '' : 's'} remain` : 'Every tracked requirement is complete'}</strong>
+                <p>Content Health measures operational completeness only. It never judges the music.</p>
+                <div className="workspace-health-pills">{health.items.map(item => <span className={item.state} key={item.id}>{item.label}<b>{item.state === 'complete' ? 'Ready' : `${item.score}/${item.max}`}</b></span>)}</div>
+              </div>
+              {attention[0]
+                ? <a className="primary-btn workspace-next-action" href={trackHref(track.id, healthDestination(attention[0].id))}>Continue with {attention[0].label}</a>
+                : <a className="ghost-btn workspace-next-action" href={trackHref(track.id, 'metadata')}>Review metadata</a>}
             </div>
           </WorkspacePanel>
-          <WorkspacePanel eyebrow="TRACK / SNAPSHOT" title="Quick facts">
-            <div className="workspace-facts"><div><span>BPM</span><strong>{track.bpm ?? '—'}</strong></div><div><span>Key</span><strong>{track.key || '—'}</strong></div><div><span>Duration</span><strong>{formatDuration(track.duration)}</strong></div><div><span>Language</span><strong>{track.languages.join(', ') || '—'}</strong></div><div><span>Lyrics</span><strong>{syncedLyrics ? 'Synced' : track.assets.lyricsTxt ? 'TXT ready' : 'Missing'}</strong></div><div><span>Canvas</span><strong>{track.assets.video ? 'Ready' : 'Missing'}</strong></div></div>
+
+          <WorkspacePanel eyebrow="NEXT / ACTIONS" title="Needs attention" className="workspace-attention-panel">
+            <div className="workspace-action-list">
+              {attention.slice(0, 4).map(item => <a href={trackHref(track.id, healthDestination(item.id))} key={item.id}><span className={item.state}>{item.state === 'missing' ? 'Missing' : 'Partial'}</span><div><strong>{item.label}</strong><small>{item.detail}</small></div><b>Open →</b></a>)}
+              {!attention.length && <div className="workspace-complete-state"><strong>Nothing blocking the checklist.</strong><p>You can still refine metadata, media, lyrics or analysis whenever needed.</p></div>}
+            </div>
+          </WorkspacePanel>
+
+          <WorkspacePanel eyebrow="MEDIA / AT A GLANCE" title="Production media" className="workspace-media-panel">
+            <div className="workspace-media-grid">{media.map(item => <a href={item.href} key={item.label}><span className={item.ready ? 'ready' : 'missing'}>{item.ready ? '✓' : '+'}</span><div><strong>{item.label}</strong><small>{item.detail}</small></div></a>)}</div>
+          </WorkspacePanel>
+
+          <WorkspacePanel eyebrow="TRACK / SNAPSHOT" title="Music details" className="workspace-snapshot-panel">
+            <div className="workspace-facts"><div><span>BPM</span><strong>{track.bpm ?? '—'}</strong></div><div><span>Key</span><strong>{track.key || '—'}</strong></div><div><span>Duration</span><strong>{formatDuration(track.duration)}</strong></div><div><span>Language</span><strong>{track.languages.join(', ') || '—'}</strong></div></div>
             {track.assets.audio && <audio className="workspace-audio" controls preload="metadata" src={track.assets.audio.url} />}
           </WorkspacePanel>
-          <WorkspacePanel eyebrow="ACTIVITY / SOURCE" title="Recent activity"><div className="workspace-note"><strong>{track.updatedAt ? privateRead ? 'Canonical manifest revision detected' : 'Latest public asset revision detected' : 'Activity history unavailable'}</strong><p>{track.updatedAt ? `${new Date(track.updatedAt).toLocaleString()} · ${privateRead ? 'Track Manager private read' : 'LaunchPAD public fallback'}` : privateRead ? 'Track Manager did not expose an updatedAt value for this manifest.' : 'The public fallback does not expose admin activity history.'}</p></div></WorkspacePanel>
-          <WorkspacePanel eyebrow="NEXT / GAPS" title="What still needs attention"><div className="workspace-gap-list">{health.items.filter(current => current.state !== 'complete').map(current => <div key={current.id}><span>{current.label}</span><strong>{current.detail}</strong></div>)}{health.items.every(current => current.state === 'complete') && <p>Everything tracked by Content Health is complete.</p>}</div></WorkspacePanel>
+
+          <WorkspacePanel eyebrow="RELEASE / INTELLIGENCE" title="Release and analysis" className="workspace-release-panel">
+            <div className="workspace-release-states"><div><span>Release</span><strong>{track.publishing.catalogVisible ? 'Live in catalog' : track.status === 'draft' ? 'Draft' : track.status}</strong><a href={trackHref(track.id, 'metadata')}>Manage release →</a></div><div><span>SonicTrace</span><strong>{track.audioIntelligence.available ? track.audioIntelligence.outdated ? 'Update needed' : 'Analysis ready' : 'Not analyzed'}</strong><a href={trackHref(track.id, 'intelligence')}>{track.audioIntelligence.available ? 'Open analysis' : 'Analyze track'} →</a></div></div>
+            <details className="workspace-diagnostics"><summary>Source diagnostics</summary><dl><div><dt>Read source</dt><dd>{privateRead ? 'Track Manager private catalog' : 'LaunchPAD public catalog'}</dd></div><div><dt>Last update</dt><dd>{track.updatedAt ? new Date(track.updatedAt).toLocaleString() : 'Not available'}</dd></div><div><dt>trackId</dt><dd>{track.id}</dd></div></dl></details>
+          </WorkspacePanel>
         </div>
       )}
 
