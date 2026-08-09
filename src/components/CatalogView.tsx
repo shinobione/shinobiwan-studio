@@ -7,6 +7,26 @@ import { TrackCreatePanel } from './TrackCreatePanel';
 type ContentFilter = 'all' | 'missing-lyrics' | 'missing-video' | 'timestamped' | 'core-complete';
 type SortMode = 'newest' | 'title' | 'album';
 
+let catalogCache: StudioTrack[] | null = null;
+let catalogRequest: Promise<StudioTrack[]> | null = null;
+
+function requestCatalog(force = false): Promise<StudioTrack[]> {
+  if (!force && catalogCache) return Promise.resolve(catalogCache);
+  if (!force && catalogRequest) return catalogRequest;
+  const request = getCatalogTracks().then(items => {
+    catalogCache = items;
+    return items;
+  });
+  catalogRequest = request.finally(() => {
+    if (catalogRequest === request || catalogRequest) catalogRequest = null;
+  });
+  return catalogRequest;
+}
+
+// CatalogView is imported with the Studio shell, so begin the canonical read in the
+// background before the user opens Catalog. Re-visits use the in-memory snapshot.
+void requestCatalog().catch(() => {});
+
 function safeDate(value: string | null): number {
   const parsed = value ? Date.parse(value) : 0;
   return Number.isFinite(parsed) ? parsed : 0;
@@ -34,9 +54,29 @@ function contentMatches(track: StudioTrack, filter: ContentFilter): boolean {
   return true;
 }
 
+function CatalogLoadingState() {
+  return (
+    <div className="catalog-loading" role="status" aria-live="polite">
+      <div className="catalog-loading-status panel">
+        <span className="catalog-loading-orb" aria-hidden="true" />
+        <div><strong>Loading canonical catalog</strong><span>Track Manager, public projection and catalog metadata are being resolved…</span></div>
+      </div>
+      <div className="catalog-skeleton-grid" aria-hidden="true">
+        {Array.from({ length: 6 }, (_, index) => (
+          <div className="catalog-skeleton-card panel" key={index}>
+            <div className="catalog-skeleton-artwork" />
+            <div className="catalog-skeleton-body"><i /><i /><span><b /><b /><b /></span></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function CatalogView() {
-  const [tracks, setTracks] = useState<StudioTrack[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [tracks, setTracks] = useState<StudioTrack[]>(() => catalogCache || []);
+  const [loading, setLoading] = useState(() => !catalogCache);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [album, setAlbum] = useState('all');
@@ -44,16 +84,19 @@ export function CatalogView() {
   const [sortMode, setSortMode] = useState<SortMode>('newest');
   const [showCreate, setShowCreate] = useState(false);
 
-  async function loadCatalog() {
-    setLoading(true);
+  async function loadCatalog(force = false) {
+    const hasSnapshot = Boolean(catalogCache?.length || tracks.length);
+    if (hasSnapshot) setRefreshing(true);
+    else setLoading(true);
     try {
-      const items = await getCatalogTracks();
+      const items = await requestCatalog(force);
       setTracks(items);
       setError(null);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : String(reason));
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }
 
@@ -106,7 +149,7 @@ export function CatalogView() {
         </div>
       </div>
 
-      {showCreate && <TrackCreatePanel privateRead={privateRead} onCancel={() => setShowCreate(false)} onCreated={async () => { await loadCatalog(); setShowCreate(false); }} />}
+      {showCreate && <TrackCreatePanel privateRead={privateRead} onCancel={() => setShowCreate(false)} onCreated={async () => { await loadCatalog(true); setShowCreate(false); }} />}
 
       <div className="catalog-toolbar panel">
         <label className="catalog-search"><span>Search</span><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Title, album, genre, mood…" /></label>
@@ -115,13 +158,13 @@ export function CatalogView() {
         <label><span>Sort</span><select value={sortMode} onChange={event => setSortMode(event.target.value as SortMode)}><option value="newest">Newest first</option><option value="title">Title A–Z</option><option value="album">Album A–Z</option></select></label>
       </div>
 
-      {loading && <div className="catalog-message panel">Loading canonical catalog…</div>}
+      {loading && <CatalogLoadingState />}
       {!loading && error && <div className="catalog-message catalog-error panel"><strong>Catalog unavailable</strong><span>{error}</span></div>}
 
       {!loading && !error && (
         <>
           <div className="catalog-resultline">
-            <span>{filtered.length} of {tracks.length} tracks · {privateRead ? 'private canonical' : 'public fallback'}</span>
+            <span>{filtered.length} of {tracks.length} tracks · {privateRead ? 'private canonical' : 'public fallback'}{refreshing ? ' · refreshing…' : ''}</span>
             {(query || album !== 'all' || contentFilter !== 'all') && <button type="button" onClick={() => { setQuery(''); setAlbum('all'); setContentFilter('all'); }}>Clear filters</button>}
           </div>
 
