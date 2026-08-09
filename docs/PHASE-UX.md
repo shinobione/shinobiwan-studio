@@ -375,4 +375,12 @@ C1 remains Studio-only. Release `0.10.7` / Build `29` / `phase-ux-integration-pa
 
 The authoritative diagnoses and next contracts are recorded in `docs/PHASE-UX-DURATION-AUTHORITY.md` and `docs/PHASE-UX-SONICTRACE-INTEGRATION-PARITY.md`.
 
-Final PHASE UX acceptance remains pending real user smoke. The final `safety/phase-ux-complete-*` checkpoint must not be created before that acceptance.
+At C1 closeout, final PHASE UX acceptance still awaited cross-repository corrections and real-user smoke. C2 has since passed its real-user Lyrics smoke, but C2.5, C3 and later final acceptance remain pending; the final `safety/phase-ux-complete-*` checkpoint must not yet be created.
+
+## C2 duration-evidence production closeout
+
+C2 is now **REAL-USER VALIDATED** without a Studio release/build change. Studio remains `0.10.7` / Build `29`; Track Manager `v5.16` / Studio bridge `v1.8` was deployed admin-only from `1bbe0293e4e17968bb7e191f58e7ae1cdd95dadf` by workflow `31324447727` (Worker Version ID `5a83c6dd-cfb4-4be6-ab8d-16b5c34bdc2b`), and LRC Maker `6.3.6` supplies the optional observed canonical-audio duration evidence.
+
+The production smoke proved canonical audio playback, timestamp navigation, synchronized `tracks/<slug>/lyrics.txt` save and canonical reread. The false "last timestamp exceeds audio duration" blocker is gone. `lyrics.txt` remains the only canonical lyrics source; `.lrc` remains optional export/compatibility only.
+
+The C2 deployment did not deploy the public Worker, mutate production R2 for testing, change SonicTrace runtime or change LaunchPAD public runtime. The final PHASE UX checkpoint remains **NOT CREATED**. C3 SonicTrace V2-E parity is suspended pending the C2.5 Album / Project architecture decision. Phase 7 is **NOT STARTED**.

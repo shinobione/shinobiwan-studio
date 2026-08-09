@@ -2,7 +2,7 @@
 
 Date established: 2026-08-08  
 Hardened: 2026-08-09  
-Current Studio hardening release: `0.9.6` / Build `21` / codename `post-phase6-hardening`
+Current Studio release: `0.10.7` / Build `29` / codename `phase-ux-integration-parity-c1`
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -52,6 +52,29 @@ public media Worker remains v2.6
 ```
 
 This public hotfix did not deploy either Worker and did not mutate R2.
+
+## Current PHASE UX C2 production overlay
+
+The frozen Phase 6 baseline above remains an immutable historical checkpoint. The current production integration has advanced through a separate PHASE UX C2 lot:
+
+```text
+Studio
+  0.10.7 / Build 29
+
+LRC Maker
+  6.3.6
+  source 32345063353ab251690bf1fd728deb97b21c5ddf
+
+Track Manager / LaunchPAD backend
+  Track Manager v5.16 / Studio bridge v1.8
+  source 1bbe0293e4e17968bb7e191f58e7ae1cdd95dadf
+  deployment run 31324447727
+  Worker Version ID 5a83c6dd-cfb4-4be6-ab8d-16b5c34bdc2b
+  target admin
+  public Worker unchanged v2.6
+```
+
+C2 real-user Lyrics smoke passed canonical playback, timestamp navigation, synchronized canonical `lyrics.txt` save and reread. Observed canonical-audio duration is request-scoped validation evidence only and never a second persisted duration authority. The final PHASE UX checkpoint remains uncreated; C3 is suspended pending C2.5; Phase 7 is not started.
 
 ## Restoration checkpoints
 
@@ -103,10 +126,11 @@ Track Manager remains the protected production R2 write/admin authority and stan
 Current deployed private backend:
 
 ```text
-Track Manager v5.15
-Studio bridge v1.7
-source SHA 23a7b494b89d4958f573f0889057b53a44aa23b6
-workflow run 31288949405
+Track Manager v5.16
+Studio bridge v1.8
+source SHA 1bbe0293e4e17968bb7e191f58e7ae1cdd95dadf
+workflow run 31324447727
+Worker Version ID 5a83c6dd-cfb4-4be6-ab8d-16b5c34bdc2b
 deployment target admin
 public Worker unchanged v2.6
 ```
@@ -117,7 +141,7 @@ SonicTrace remains the audio-intelligence compute engine. R2 sidecars hold durab
 
 ### LRC Maker
 
-LRC Maker is integrated as the real Lyrics engine and remains available standalone. Post-Phase-6 hardening advances it to 6.3.5 only to strengthen synchronization regression coverage; the validated native interaction remains unchanged.
+LRC Maker `6.3.6` is integrated as the real Lyrics engine and remains available standalone. It supplies observed canonical-audio duration evidence on the existing guarded C2 Lyrics routes while preserving the validated native interaction.
 
 ## Canonical lyrics boundary
 
