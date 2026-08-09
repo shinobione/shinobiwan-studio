@@ -2,15 +2,28 @@
 
 Artist Content & Intelligence Manager.
 
-**Release:** `0.10.6`
+**Release:** `0.10.7`
 
-**Build:** `28`
+**Build:** `29`
 
-**Codename:** `phase-ux-live-smoke-intake-order`
+**Codename:** `phase-ux-integration-parity-c1`
 
-**Milestone:** PHASE UX — production-smoke corrective release
+**Milestone:** PHASE UX — final integration parity corrective C1
 
 **Stop line:** Do not begin Phase 7 without explicit authorization.
+
+## PHASE UX — Build 29
+
+Build 29 is the Studio-only first corrective lot of the final integration parity audit.
+
+- adds a dedicated Studio favicon;
+- displays duration measured from the canonical audio element while retaining the manifest value as diagnostic evidence;
+- classifies saved SonicTrace profiles as `FULL`, `PARTIAL` or `OUTDATED` without changing persistence;
+- documents the duration authority and current SonicTrace/V2-E parity gaps;
+- adds regression coverage for these behaviors;
+- makes no Worker, R2, backend, LRC Maker or Phase 7 runtime change.
+
+The Track Manager/LRC Maker duration-validation correction and the SonicTrace private-network connectivity correction remain separate guarded cross-repository lots.
 
 ## PHASE UX — Build 28
 

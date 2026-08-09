@@ -46,6 +46,7 @@
 .workspace-facts div { min-width: 0; padding: 12px; border: 1px solid rgba(133,231,226,.08); border-radius: 10px; background: rgba(255,255,255,.012); }
 .workspace-facts span { display: block; color: #566b70; font-size: 7px; text-transform: uppercase; font-weight: 900; letter-spacing: .1em; }
 .workspace-facts strong { display: block; margin-top: 5px; overflow: hidden; text-overflow: ellipsis; color: #d3e6e6; font-size: 10px; }
+.workspace-facts small { display: block; margin-top: 4px; color: var(--studio-text-dim); font-size: 11px; line-height: 1.35; }
 .workspace-audio { width: 100%; margin-top: 16px; filter: saturate(.65) hue-rotate(120deg); }
 .workspace-note { padding: 16px; border: 1px solid rgba(82,227,214,.09); border-radius: 11px; background: rgba(82,227,214,.018); }
 .workspace-note strong { color: #c7dddd; font-size: 11px; }

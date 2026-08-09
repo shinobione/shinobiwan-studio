@@ -1,5 +1,19 @@
 # SHINOBIWAN Studio Changelog
 
+## 0.10.7 — Build 29 — 2026-08-09
+
+Codename: `phase-ux-integration-parity-c1`
+
+### PHASE UX — final integration parity C1
+
+- adds the missing Studio favicon;
+- measures canonical audio duration in the Track Workspace and uses it as a display fallback without silently rewriting manifest metadata;
+- exposes manifest/audio duration disagreement rather than hiding it;
+- classifies durable SonicTrace profiles as `FULL`, `PARTIAL` or `OUTDATED` from saved layers and source-version freshness;
+- explains missing layers for partial profiles and keeps browser-DSP-only saves explicitly partial;
+- records the authoritative duration diagnosis and the standalone V2-E versus Studio parity matrix;
+- adds a focused read-only regression guard and preserves all Phase 0–6, PHASE UX and Phase 7 STOP boundaries.
+
 ## 0.10.6 — Build 28 — 2026-08-09
 
 Codename: `phase-ux-live-smoke-intake-order`
