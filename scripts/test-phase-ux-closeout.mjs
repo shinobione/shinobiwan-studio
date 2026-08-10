@@ -7,8 +7,6 @@ const sonicCss = read('src/sonictrace.css');
 const foundationCss = read('src/ux-foundation.css');
 const app = read('src/App.tsx');
 const workspace = read('src/components/TrackWorkspace.tsx');
-const pkg = JSON.parse(read('package.json'));
-const release = read('src/release.ts');
 
 for (const engineContract of [
   'getSonicTraceCatalog()',
@@ -60,9 +58,4 @@ for (const source of [app, workspace, intelligence]) {
   for (const forbidden of ['phase7', 'phase-7']) assert.ok(!source.toLowerCase().includes(forbidden), `Unauthorized Phase 7 runtime marker found: ${forbidden}.`);
 }
 
-assert.equal(pkg.version, '0.10.9');
-assert.ok(release.includes("version: '0.10.9'"));
-assert.ok(release.includes('build: 31'));
-assert.ok(release.includes("codename: 'phase-ux-c2-5-a-lrc-638'"));
-
-console.log('PHASE UX UX-5 guard passed: purposeful Catalog Intelligence, responsive reflow, accessible selection/status semantics, Build 31 identity and Phase 7 STOP protected.');
+console.log('PHASE UX UX-5 guard passed: purposeful Catalog Intelligence, responsive reflow, accessible selection/status semantics and Phase 7 STOP protected. Current build identity is owned by the active milestone guard.');

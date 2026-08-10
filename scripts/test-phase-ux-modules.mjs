@@ -10,8 +10,6 @@ const metadataCss = read('src/metadata-validation.css');
 const workspaceCss = read('src/workspace.css');
 const assetsCss = read('src/phase4-operations.css');
 const sonicCss = read('src/sonictrace.css');
-const pkg = JSON.parse(read('package.json'));
-const release = read('src/release.ts');
 
 for (const group of ['Identity', 'Release', 'Discovery', 'Music details', 'LaunchPAD theme']) {
   assert.ok(metadata.includes(`title="${group}"`), `Metadata form is missing the ${group} group.`);
@@ -47,10 +45,6 @@ for (const marker of ['Understand this track', 'Analysis ready', 'Analyze with S
 for (const protectedBehavior of ['fetchCanonicalAudio', 'analyzeBrowserDsp', 'runSonicTraceAnalysis', 'browserOnlyAnalysis', 'saveSonicTraceAnalysis']) assert.ok(sonic.includes(protectedBehavior));
 for (const marker of ['.sonic-progress', '.sonic-diagnostics', '.sonic-intro p']) assert.ok(sonicCss.includes(marker));
 
-assert.equal(pkg.version, '0.10.9');
-assert.ok(release.includes("version: '0.10.9'"));
-assert.ok(release.includes('build: 31'));
-assert.ok(release.includes("codename: 'phase-ux-c2-5-a-lrc-638'"));
 for (const source of [workspace, metadata, assets, sonic]) for (const forbidden of ['phase7', 'phase-7']) assert.ok(!source.toLowerCase().includes(forbidden));
 
-console.log('PHASE UX UX-4 guard passed: grouped metadata, single media manager, embedded-first Lyrics, action-led SonicTrace and Build 31 identity preserve all guarded engines.');
+console.log('PHASE UX UX-4 guard passed: grouped metadata, single media manager, embedded-first Lyrics, action-led SonicTrace and guarded engines remain intact. Current build identity is owned by the active milestone guard.');

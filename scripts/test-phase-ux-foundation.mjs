@@ -6,16 +6,18 @@ const app = read('src/App.tsx');
 const workspace = read('src/components/TrackWorkspace.tsx');
 const router = read('src/router.ts');
 const css = read('src/ux-foundation.css');
-const pkg = JSON.parse(read('package.json'));
+const albumCss = read('src/c2-5-d-navigation.css');
 const release = read('src/release.ts');
 
 const primaryNav = app.slice(app.indexOf('const NAV:'), app.indexOf('const UTILITY_NAV:'));
 for (const required of [
   "route: 'dashboard'",
   "route: 'catalog'",
+  "route: 'albums'",
   "route: 'intelligence'",
   "label: 'Dashboard'",
   "label: 'Catalog'",
+  "label: 'Albums / Projects'",
   "label: 'Intelligence'",
 ]) assert.ok(primaryNav.includes(required), `Primary Studio navigation is missing ${required}.`);
 for (const forbidden of ["route: 'lyrics'", "route: 'assets'", "route: 'publishing'", "route: 'administration'"]) {
@@ -42,16 +44,12 @@ for (const token of [
   '--studio-transition:', '@media (prefers-reduced-motion: reduce)', ':focus-visible',
 ]) assert.ok(css.includes(token), `PHASE UX design system is missing ${token}.`);
 
-assert.ok(css.includes('grid-template-columns: repeat(3, 1fr)'), 'Mobile navigation must expose three primary destinations.');
+assert.ok(albumCss.includes('grid-template-columns: repeat(4, minmax(0, 1fr))'), 'C2.5-D mobile navigation must fit four primary Studio destinations in one row.');
 assert.ok(css.includes('.nav-list-utility { display: none; }'), 'Mobile must keep utility navigation secondary.');
 assert.ok(app.includes('codename') || release.includes('phase-ux-'));
-assert.equal(pkg.version, '0.10.9');
-assert.ok(release.includes("version: '0.10.9'"));
-assert.ok(release.includes('build: 31'));
-assert.ok(release.includes("codename: 'phase-ux-c2-5-a-lrc-638'"));
 
 for (const forbidden of ['phase7', 'phase-7', 'Phase 7 runtime']) {
-  assert.ok(!`${app}\n${workspace}\n${css}`.toLowerCase().includes(forbidden.toLowerCase()), `Unauthorized Phase 7 runtime marker found: ${forbidden}.`);
+  assert.ok(!`${app}\n${workspace}\n${css}\n${albumCss}`.toLowerCase().includes(forbidden.toLowerCase()), `Unauthorized Phase 7 runtime marker found: ${forbidden}.`);
 }
 
-console.log('PHASE UX foundation guard passed: focused navigation, shared tokens, readable responsive controls, legacy deep links, Build 31 identity and Phase 7 STOP preserved.');
+console.log('PHASE UX foundation guard passed: four focused primary destinations, shared tokens, readable responsive controls, legacy deep links and Phase 7 STOP preserved. Current build identity is owned by the active milestone guard.');
