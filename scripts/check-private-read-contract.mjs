@@ -91,12 +91,12 @@ for (const required of [
   '<LyricsEditorPanel track={track} onSaved={refreshTrackAfterWrite} />',
   '<MetadataValidationPanel track={track} onSaved={refreshTrackAfterWrite} />',
   '<SonicTracePanel track={track} onSaved={refreshTrackAfterWrite} />',
-  'Track Manager v5.15 · bridge v1.7',
+  'Track Manager v5.17 · bridge v1.9',
   'PHASE 5 / COMPLETE',
-]) assert.ok(workspace.includes(required), `Workspace Build 15 contract missing ${required}.`);
+]) assert.ok(workspace.includes(required), `Workspace integration contract missing ${required}.`);
 
 for (const required of [
-  'Track Manager v5.15 · bridge v1.7', 'LYRICS / CANONICAL', 'lyrics.txt is the single canonical source.',
+  'Track Manager v5.17 · bridge v1.9', 'LYRICS / CANONICAL', 'lyrics.txt is the single canonical source.',
   '<CatalogRebuildPanel privateRead={privateRead} />', '<CatalogIntelligenceView />', 'PHASE 6 / COMPLETE',
 ]) assert.ok(app.includes(required), `Studio integration contract missing ${required}.`);
 
@@ -137,13 +137,13 @@ for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog 
   assert.ok(!phase4Api.toLowerCase().includes(forbiddenPhase5.toLowerCase()), `Phase 5 leaked into Phase 4 client: ${forbiddenPhase5}`);
 }
 
-assert.ok(release.includes("version: '0.10.9'"), 'Studio release version must be 0.10.9.');
-assert.ok(release.includes('build: 31'), 'Studio release build must be 31.');
-assert.ok(release.includes("codename: 'phase-ux-c2-5-a-lrc-638'"), 'Studio release codename must identify the LRC Maker 6.3.8 corrective integration.');
-assert.equal(pkg.version, '0.10.9', 'package.json must match Studio 0.10.9.');
+assert.ok(release.includes("version: '0.11.0'"), 'Studio release version must be 0.11.0.');
+assert.ok(release.includes('build: 32'), 'Studio release build must be 32.');
+assert.ok(release.includes("codename: 'phase-ux-c2-5-d1-studio-album-management'"), 'Studio release codename must identify C2.5-D1 Album Management.');
+assert.equal(pkg.version, '0.11.0', 'package.json must match Studio 0.11.0.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'Production build must run the integration regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase5'), 'Production build must run the Phase 5 algorithm guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase6'), 'Production build must run the embedded Phase 6 regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:ux'), 'Production build must run the PHASE UX regression guard.');
 
-console.log('Studio 0.10.9 Build 31 preserves Phase 0-6 contracts while consuming the scoped LRC Maker 6.3.8 visual hotfix without starting Phase 7.');
+console.log('Studio 0.11.0 Build 32 preserves Phase 0-6 contracts while adding guarded C2.5-D1 Album Management without starting Phase 7.');
