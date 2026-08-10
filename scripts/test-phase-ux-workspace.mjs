@@ -5,8 +5,6 @@ const read = path => fs.readFileSync(path, 'utf8');
 const workspace = read('src/components/TrackWorkspace.tsx');
 const workspaceCss = read('src/workspace.css');
 const foundationCss = read('src/ux-foundation.css');
-const pkg = JSON.parse(read('package.json'));
-const release = read('src/release.ts');
 
 for (const tab of [
   "{ id: 'overview', label: 'Overview' }",
@@ -44,11 +42,6 @@ assert.ok(foundationCss.includes('.workspace-tabs { position: sticky; top: 76px;
 assert.ok(foundationCss.includes('.workspace-tabs { top: 72px;'), 'Mobile local navigation must remain sticky below the mobile topbar.');
 assert.ok(workspace.includes('workspace-sticky-context'), 'Sticky navigation must retain compact track identity and readiness context.');
 
-assert.equal(pkg.version, '0.10.9');
-assert.ok(release.includes("version: '0.10.9'"));
-assert.ok(release.includes('build: 31'));
-assert.ok(release.includes("codename: 'phase-ux-c2-5-a-lrc-638'"));
-
 for (const forbidden of ['phase7', 'phase-7']) assert.ok(!workspace.toLowerCase().includes(forbidden), `Phase 7 runtime marker found: ${forbidden}.`);
 
-console.log('PHASE UX UX-3 guard passed: persistent track context, five local tools, action-led Overview, secondary diagnostics, responsive layout and Build 31 identity protected.');
+console.log('PHASE UX UX-3 guard passed: persistent track context, five local tools, action-led Overview, secondary diagnostics, responsive layout and Phase 7 STOP protected. Current build identity is owned by the active milestone guard.');

@@ -12,6 +12,8 @@ import './sonictrace.css';
 import './ux-foundation.css';
 import './readability.css';
 import './c2-5-a-polish.css';
+import './album-management.css';
+import './c2-5-d-navigation.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

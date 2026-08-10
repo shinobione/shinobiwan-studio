@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { resolveAdminMode } from './admin-mode';
+import { AlbumManager } from './components/AlbumManager';
 import { CatalogRebuildPanel } from './components/CatalogRebuildPanel';
 import { CatalogView } from './components/CatalogView';
 import { CatalogIntelligenceView } from './components/CatalogIntelligenceView';
@@ -17,6 +18,7 @@ import type { ServiceStatus, StudioReadSource, StudioRoute, WorkspaceSection } f
 const NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
   { route: 'dashboard', label: 'Dashboard', glyph: '⌂' },
   { route: 'catalog', label: 'Catalog', glyph: '♫' },
+  { route: 'albums', label: 'Albums / Projects', glyph: '▣' },
   { route: 'intelligence', label: 'Intelligence', glyph: '◇' },
 ];
 
@@ -24,7 +26,7 @@ const UTILITY_NAV: Array<{ route: StudioRoute; label: string; glyph: string }> =
   { route: 'administration', label: 'System', glyph: '⌘' },
 ];
 
-const shellCopy: Record<Exclude<StudioRoute, 'catalog'>, { eyebrow: string; title: string; body: string }> = {
+const shellCopy: Record<Exclude<StudioRoute, 'catalog' | 'albums'>, { eyebrow: string; title: string; body: string }> = {
   dashboard: {
     eyebrow: 'PHASE 6 / COMPLETE',
     title: 'Canonical lyrics now have one protected workflow.',
@@ -97,7 +99,7 @@ export default function App() {
   const navTitle = trackId ? 'Track Workspace' : [...NAV, ...UTILITY_NAV].find(item => item.route === route)?.label || 'Studio';
   const privateRead = readSource === 'private';
   const readLayerLabel = privateRead ? 'Private' : readSource === 'public' ? 'Fallback' : '…';
-  const readLayerDetail = privateRead ? 'Track Manager v5.15 · bridge v1.7' : readSource === 'public' ? 'LaunchPAD public read-only' : 'Checking Access session';
+  const readLayerDetail = privateRead ? 'Track Manager v5.17 · bridge v1.9' : readSource === 'public' ? 'LaunchPAD public read-only' : 'Checking Access session';
 
   return (
     <div className="studio-shell">
@@ -115,18 +117,18 @@ export default function App() {
         {route === 'dashboard' && (
           <>
             <section className="hero-grid">
-              <article className="hero-copy panel"><span className="eyebrow">YOUR MUSIC PRODUCTION COCKPIT</span><h2>Every track.<br /><em>Ready to move.</em></h2><p>Add music, manage releases, synchronize lyrics and launch audio analysis from one calm workspace.</p><div className="hero-actions"><a className="primary-btn" href={routeHref('catalog')}>Browse catalog <span>→</span></a><a className="ghost-btn" href={routeHref('intelligence')}>Explore intelligence</a></div></article>
+              <article className="hero-copy panel"><span className="eyebrow">YOUR MUSIC PRODUCTION COCKPIT</span><h2>Every track.<br /><em>Ready to move.</em></h2><p>Add music, manage releases, synchronize lyrics and launch audio analysis from one calm workspace.</p><div className="hero-actions"><a className="primary-btn" href={routeHref('catalog')}>Browse catalog <span>→</span></a><a className="ghost-btn" href={routeHref('albums')}>Manage releases</a></div></article>
               <article className="workflow-card panel"><div className="workflow-head"><span>TODAY'S WORKFLOW</span><b>TRACK-CENTRIC</b></div><ol><li><span>01</span><div><strong>Choose a track</strong><small>Find it fast in Catalog.</small></div></li><li><span>02</span><div><strong>Complete the work</strong><small>Metadata, media and lyrics stay together.</small></div></li><li><span>03</span><div><strong>Analyze and release</strong><small>SonicTrace and readiness at a glance.</small></div></li></ol></article>
             </section>
-            <section className="status-grid"><article className="metric panel"><span>CATALOG ACCESS</span><strong>{readLayerLabel}</strong><small>{readLayerDetail}</small></article><article className="metric panel"><span>TRACK WORKSPACE</span><strong>Ready</strong><small>All production tools in context</small></article><article className="metric panel"><span>LYRICS ENGINE</span><strong>6.3.5</strong><small>Embedded sync + standalone fallback</small></article></section>
+            <section className="status-grid"><article className="metric panel"><span>CATALOG ACCESS</span><strong>{readLayerLabel}</strong><small>{readLayerDetail}</small></article><article className="metric panel"><span>TRACK WORKSPACE</span><strong>Ready</strong><small>All production tools in context</small></article><article className="metric panel"><span>LYRICS ENGINE</span><strong>6.3.8</strong><small>Embedded sync + standalone fallback</small></article></section>
           </>
         )}
 
         {route === 'catalog' && (trackId ? <TrackWorkspace trackId={trackId} section={trackSection} /> : <CatalogView />)}
-
+        {route === 'albums' && <AlbumManager />}
         {route === 'intelligence' && <CatalogIntelligenceView />}
 
-        {route !== 'dashboard' && route !== 'catalog' && route !== 'intelligence' && (
+        {route !== 'dashboard' && route !== 'catalog' && route !== 'albums' && route !== 'intelligence' && (
           <>
             <EmptyState eyebrow={shellCopy[route].eyebrow} title={shellCopy[route].title} body={shellCopy[route].body} />
             {route === 'administration' && (
