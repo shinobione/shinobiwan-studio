@@ -34,10 +34,19 @@ const byTitle = resolver.resolveIntakeAlbum('', 'Ghost Signal', albums);
 assert.equal(byTitle.kind, 'existing');
 assert.equal(byTitle.album.id, 'ghost-signal');
 
+const existingOverStaleSingles = resolver.resolveIntakeAlbum('singles', 'Ghost Signal', albums);
+assert.equal(existingOverStaleSingles.kind, 'existing');
+assert.equal(existingOverStaleSingles.album.id, 'ghost-signal');
+
 const missing = resolver.resolveIntakeAlbum('', 'Never Existing Project', albums);
 assert.equal(missing.kind, 'missing');
 assert.equal(missing.ready, false);
 assert.equal(missing.requestedId, 'never-existing-project');
+
+const missingOverStaleSingles = resolver.resolveIntakeAlbum('singles', 'ALBUM TEST QUI N\'EXISTE PAS', albums);
+assert.equal(missingOverStaleSingles.kind, 'missing');
+assert.equal(missingOverStaleSingles.ready, false);
+assert.equal(missingOverStaleSingles.requestedId, 'album-test-qui-n-existe-pas');
 
 for (const id of ['released-album', 'old-project']) {
   const blocked = resolver.resolveIntakeAlbum(id, '', albums);
@@ -69,9 +78,13 @@ assert.ok(!createFunction.includes('createAdminAlbum('), 'Final track creation m
 assert.ok(intakeUi.includes("disabled={busy || albumCreating || (step === 1 && Boolean(problems.length)) || (step === 2 && (!basicsValid || !albumReady))}"), 'Unknown/blocked Album references must prevent Review.');
 assert.ok(albumApi.includes("'ALBUM_WRITE_TRANSPORT'"), 'Ambiguous Album transport must be distinguishable for canonical reread recovery.');
 assert.ok(main.includes("import './c2-5-d2-intake.css';"), 'D2 intake styles must load after D1 styles.');
-assert.ok(release.includes("version: '0.11.1'") && release.includes('build: 33'), 'C2.5-D2 release must be v0.11.1 Build 33.');
-assert.ok(release.includes("codename: 'phase-ux-c2-5-d2-new-track-album-binding'"));
-assert.equal(pkg.version, '0.11.1');
+
+const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+assert.match(releaseVersion, /^0\.11\./, 'C2.5-D2 ancestry must remain on Studio 0.11.x or later until deliberately superseded.');
+assert.ok(releaseBuild >= 33, 'C2.5-D2 ancestry must remain at Build 33 or later.');
+assert.match(release, /codename:\s*'phase-ux-c2-5-d2-/, 'Current D2 lineage must stay explicitly named.');
+assert.match(pkg.version, /^0\.11\./);
 assert.ok(String(pkg.scripts?.['check:ux'] || '').includes('test-phase-ux-c2-5-d2-intake.mjs'));
 
-console.log('Studio 0.11.1 Build 33 resolves New Track Album references canonically, blocks phantom IDs, stages recoverably in Singles and binds only newly-created tracks through guarded Track Manager writes.');
+console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves D2 canonical Album binding and now lets an explicit non-Singles Album request override the safe transitional Singles default.`);

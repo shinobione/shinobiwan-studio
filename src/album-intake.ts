@@ -33,9 +33,12 @@ export function resolveIntakeAlbum(
   const normalizedId = canonicalAlbumId(rawId);
   const normalizedTitle = canonicalAlbumId(rawTitle);
 
+  // `singles` is the safe initial track state, but it must never override an
+  // explicit non-Singles Album request typed or parsed later in the intake.
+  const explicitNonSinglesTitle = Boolean(normalizedTitle && normalizedTitle !== 'singles');
   const singlesRequested =
     (!normalizedId && !normalizedTitle) ||
-    normalizedId === 'singles' ||
+    (!explicitNonSinglesTitle && normalizedId === 'singles') ||
     (!normalizedId && normalizedTitle === 'singles');
 
   if (singlesRequested) {
@@ -49,7 +52,9 @@ export function resolveIntakeAlbum(
     };
   }
 
-  const requestedId = normalizedId || normalizedTitle;
+  const requestedId = normalizedId && normalizedId !== 'singles'
+    ? normalizedId
+    : normalizedTitle || normalizedId;
   const requestedTitle = rawTitle || rawId || requestedId;
   const exactId = albums.find(album => album.id === requestedId) || null;
   const titleMatches = rawTitle
