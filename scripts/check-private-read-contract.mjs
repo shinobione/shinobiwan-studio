@@ -137,13 +137,15 @@ for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog 
   assert.ok(!phase4Api.toLowerCase().includes(forbiddenPhase5.toLowerCase()), `Phase 5 leaked into Phase 4 client: ${forbiddenPhase5}`);
 }
 
-assert.ok(release.includes("version: '0.11.1'"), 'Studio release version must be 0.11.1.');
-assert.ok(release.includes('build: 33'), 'Studio release build must be 33.');
-assert.ok(release.includes("codename: 'phase-ux-c2-5-d2-new-track-album-binding'"), 'Studio release codename must identify C2.5-D2 New Track Album binding.');
-assert.equal(pkg.version, '0.11.1', 'package.json must match Studio 0.11.1.');
+const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+assert.match(releaseVersion, /^0\.11\./, 'Studio private-read ancestry must remain on the validated 0.11.x line until deliberately superseded.');
+assert.ok(releaseBuild >= 33, 'Studio private-read ancestry must remain at Build 33 or later.');
+assert.match(release, /codename:\s*'phase-ux-c2-5-d2-/, 'Studio release codename must remain in the C2.5-D2 lineage while this hotfix is active.');
+assert.equal(pkg.version, releaseVersion, 'package.json must match the current Studio release version.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'Production build must run the integration regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase5'), 'Production build must run the Phase 5 algorithm guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase6'), 'Production build must run the embedded Phase 6 regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:ux'), 'Production build must run the PHASE UX regression guard.');
 
-console.log('Studio 0.11.1 Build 33 preserves Phase 0-6 contracts while completing C2.5-D New Track canonical Album binding without starting C2.5-E or Phase 7.');
+console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves Phase 0-6/private-read contracts while keeping C2.5-D Album binding guarded and Phase 7 stopped.`);
