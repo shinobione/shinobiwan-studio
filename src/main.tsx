@@ -14,6 +14,7 @@ import './readability.css';
 import './c2-5-a-polish.css';
 import './album-management.css';
 import './c2-5-d-navigation.css';
+import './c2-5-d2-intake.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

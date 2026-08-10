@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
+import { canonicalAlbumId, resolveIntakeAlbum, safeInitialTrackAlbum, type IntakeAlbumResolution } from '../album-intake';
 import { createCoverThumbnail, extractCoverPalette, type CoverPalette } from '../cover-palette';
-import { trackHref } from '../router';
-import type { AdminAssetKind, AdminMetadataPatch } from '../services/admin-api';
+import { routeHref, trackHref } from '../router';
+import { AlbumAdminError, createAdminAlbum, getAdminAlbum, getAdminAlbums, moveAdminAlbumTrack, type AdminAlbumSummary, type AdminAlbumType } from '../services/album-admin-api';
+import { getAdminTrack, type AdminAssetKind, type AdminMetadataPatch } from '../services/admin-api';
 import { createAdminTrack, Phase4AdminError, phase4ErrorPresentation, uploadAdminTrackAsset, type Phase4ErrorPresentation } from '../services/phase4-admin-api';
 import {
   canonicalIntakeSlug,
@@ -49,9 +51,24 @@ function ErrorNotice({ error, createdTrackId }: { error: Phase4ErrorPresentation
       <strong>{createdTrackId ? 'DRAFT CREATED · ACTION NEEDED' : error.title.toUpperCase()}</strong>
       <span>{error.message}</span><b>{error.nextAction}</b>
       {error.technicalDetails && <details><summary>Technical details</summary><code>{error.technicalDetails}</code></details>}
-      {createdTrackId && <a className="ghost-btn compact" href={trackHref(createdTrackId, 'assets')}>Continue safely in Assets</a>}
+      {createdTrackId && <a className="ghost-btn compact" href={trackHref(createdTrackId, 'overview')}>Open recoverable draft</a>}
     </div>
   );
+}
+
+function albumErrorPresentation(reason: unknown): Phase4ErrorPresentation {
+  if (reason instanceof AlbumAdminError) {
+    return {
+      title: 'Canonical Album action failed',
+      message: reason.message,
+      nextAction: reason.code === 'ALBUM_WRITE_TRANSPORT'
+        ? 'Do not retry blindly. Reload canonical Album and track state first.'
+        : 'Resolve the Album state in Albums / Projects, then return to this intake.',
+      retrySafe: false,
+      technicalDetails: [reason.code, reason.currentUpdatedAt].filter(Boolean).join(' · ') || null,
+    };
+  }
+  return phase4ErrorPresentation(reason);
 }
 
 export function TrackCreatePanel({ privateRead, onCreated, onCancel }: { privateRead: boolean; onCreated?: () => Promise<void> | void; onCancel?: () => void }) {
@@ -68,6 +85,11 @@ export function TrackCreatePanel({ privateRead, onCreated, onCancel }: { private
   const [progress, setProgress] = useState<string[]>([]);
   const [error, setError] = useState<Phase4ErrorPresentation | null>(null);
   const [createdTrackId, setCreatedTrackId] = useState<string | null>(null);
+  const [albums, setAlbums] = useState<AdminAlbumSummary[]>([]);
+  const [albumLoading, setAlbumLoading] = useState(privateRead);
+  const [albumReadError, setAlbumReadError] = useState<string | null>(null);
+  const [albumCreating, setAlbumCreating] = useState(false);
+  const [newAlbumType, setNewAlbumType] = useState<AdminAlbumType>('album');
 
   const cover = intakeFileForRole(assignments, 'cover');
   const audio = intakeFileForRole(assignments, 'audio');
@@ -77,7 +99,33 @@ export function TrackCreatePanel({ privateRead, onCreated, onCancel }: { private
   const effectiveSlug = values.slug.trim() || canonicalIntakeSlug(values.title);
   const basicsValid = values.title.trim().length > 0 && /^[a-z0-9][a-z0-9-]{0,119}$/.test(effectiveSlug);
   const selectedMedia = [cover, audio, lyrics, video].filter(Boolean).length;
-  const canSubmit = privateRead && basicsValid && !problems.length && !busy && !paletteBusy;
+  const albumResolution = useMemo<IntakeAlbumResolution>(
+    () => resolveIntakeAlbum(values.albumId, values.albumTitle, albums),
+    [albums, values.albumId, values.albumTitle],
+  );
+  const albumReady = !albumLoading && !albumReadError && albumResolution.ready;
+  const canSubmit = privateRead && basicsValid && albumReady && !problems.length && !busy && !paletteBusy && !albumCreating;
+
+  async function loadAlbums() {
+    if (!privateRead) {
+      setAlbums([]);
+      setAlbumLoading(false);
+      setAlbumReadError(null);
+      return;
+    }
+    setAlbumLoading(true);
+    try {
+      const payload = await getAdminAlbums();
+      setAlbums(payload.albums || []);
+      setAlbumReadError(null);
+    } catch (reason) {
+      setAlbumReadError(reason instanceof Error ? reason.message : String(reason));
+    } finally {
+      setAlbumLoading(false);
+    }
+  }
+
+  useEffect(() => { void loadAlbums(); }, [privateRead]);
 
   useEffect(() => {
     if (!cover) { setPalette(null); return; }
@@ -95,6 +143,45 @@ export function TrackCreatePanel({ privateRead, onCreated, onCancel }: { private
     setManualFields(previous => new Set(previous).add(field));
     setSources(previous => { const next = { ...previous }; delete next[field]; return next; });
     setPreserved(previous => previous.filter(item => item !== field));
+  }
+
+  function chooseCanonicalAlbum(albumId: string) {
+    if (albumId === 'singles') {
+      setValues(previous => ({ ...previous, albumId: 'singles', albumTitle: 'Singles' }));
+    } else {
+      const album = albums.find(item => item.id === albumId);
+      if (!album) return;
+      setValues(previous => ({ ...previous, albumId: album.id, albumTitle: album.title }));
+    }
+    setManualFields(previous => new Set(previous).add('albumId').add('albumTitle'));
+    setSources(previous => { const next = { ...previous }; delete next.albumId; delete next.albumTitle; return next; });
+    setPreserved(previous => previous.filter(item => item !== 'albumId' && item !== 'albumTitle'));
+  }
+
+  async function createRequestedAlbumDraft() {
+    if (albumResolution.kind !== 'missing' || albumCreating) return;
+    const requestedId = canonicalAlbumId(albumResolution.requestedId);
+    const requestedTitle = albumResolution.requestedTitle.trim();
+    if (!requestedId || !requestedTitle) return;
+    if (!globalThis.confirm(`Create canonical ${newAlbumType.toUpperCase()} draft “${requestedTitle}”?\n\nThis writes albums/${requestedId}/manifest.json now. It does not migrate any legacy Album or attach an existing track.`)) return;
+    setAlbumCreating(true);
+    setError(null);
+    try {
+      const result = await createAdminAlbum({
+        id: requestedId,
+        title: requestedTitle,
+        type: newAlbumType,
+        year: numeric(values.year),
+        releaseDate: values.releaseDate || null,
+      });
+      if (!result.clientVerified || !result.album) throw new AlbumAdminError(result.verificationWarning || 'The new Album draft could not be canonically verified.');
+      await loadAlbums();
+      setValues(previous => ({ ...previous, albumId: result.album!.id, albumTitle: result.album!.title }));
+    } catch (reason) {
+      setError(albumErrorPresentation(reason));
+    } finally {
+      setAlbumCreating(false);
+    }
   }
 
   async function applyTxt(file: File) {
@@ -134,11 +221,12 @@ export function TrackCreatePanel({ privateRead, onCreated, onCancel }: { private
     finally { setPaletteBusy(false); }
   }
 
-  function metadataPatch(): AdminMetadataPatch {
+  function metadataPatch(resolution: IntakeAlbumResolution): AdminMetadataPatch {
     const genres = splitValues(values.genres);
+    const targetsCanonicalAlbum = resolution.kind === 'existing';
     return {
-      title: values.title.trim(), status: 'draft', type: values.type || 'single', year: numeric(values.year), releaseDate: values.releaseDate || null,
-      album: { id: canonicalIntakeSlug(values.albumId || values.albumTitle) || 'singles', title: values.albumTitle.trim() || 'Singles' },
+      title: values.title.trim(), status: 'draft', type: targetsCanonicalAlbum ? 'album-track' : (values.type || 'single'), year: numeric(values.year), releaseDate: values.releaseDate || null,
+      album: safeInitialTrackAlbum(),
       languages: splitValues(values.languages), genres, tags: splitValues(values.tags), moods: splitValues(values.moods), themes: splitValues(values.themes),
       era: values.era.trim() || null, energy: values.energy.trim() || null, bpm: numeric(values.bpm), key: values.key.trim() || null,
       keyConfidence: numeric(values.keyConfidence), explicit: values.explicit === 'explicit',
@@ -146,15 +234,51 @@ export function TrackCreatePanel({ privateRead, onCreated, onCancel }: { private
     };
   }
 
-  async function create() {
-    if (!canSubmit) return;
-    if (!globalThis.confirm(`Create "${values.title.trim()}" as a new draft?\n\n${selectedMedia} selected media file${selectedMedia === 1 ? '' : 's'} will be uploaded sequentially after the canonical draft reread.`)) return;
-    setBusy(true); setError(null); setCreatedTrackId(null); setProgress(['Preparing canonical draft…']);
+  async function bindNewTrackToCanonicalAlbum(trackId: string, resolution: IntakeAlbumResolution) {
+    if (resolution.kind !== 'existing') return;
+    const targetRead = await getAdminAlbum(resolution.album.id);
+    const target = targetRead.album?.manifest;
+    if (!target?.updatedAt) throw new Phase4AdminError('Canonical target Album revision is unavailable. The new track remains a safe draft in Singles.', null, 'ALBUM_BIND_REVISION_UNAVAILABLE');
+    if (target.status !== 'draft') throw new Phase4AdminError(`Canonical Album “${target.title}” is now ${target.status}. The new track remains a safe draft in Singles.`, 409, 'ALBUM_BIND_TARGET_NOT_DRAFT', target.updatedAt);
+
     try {
-      const result = await createAdminTrack(effectiveSlug, metadataPatch());
+      const moved = await moveAdminAlbumTrack(target.id, {
+        trackId,
+        sourceAlbumId: null,
+        expectedTargetUpdatedAt: target.updatedAt,
+        targetIndex: target.trackIds.length,
+      });
+      if (!moved.clientVerified) throw new Phase4AdminError(moved.verificationWarning || 'Album binding could not be canonically verified. Inspect both Album and track before retrying.', null, 'ALBUM_BIND_UNVERIFIED');
+    } catch (reason) {
+      if (reason instanceof AlbumAdminError && reason.code === 'ALBUM_WRITE_TRANSPORT') {
+        try {
+          const [albumReread, trackReread] = await Promise.all([getAdminAlbum(target.id), getAdminTrack(trackId)]);
+          const membershipPresent = albumReread.album?.manifest?.trackIds.includes(trackId) === true;
+          const trackCacheMatches = trackReread.track?.manifest?.album?.id === target.id;
+          if (membershipPresent && trackCacheMatches) return;
+        } catch {
+          // Preserve the ambiguous state below. Never blind-retry a potentially committed move.
+        }
+        throw new Phase4AdminError('Album binding response was lost and canonical reread did not verify the move. Do not retry blindly; inspect the track and Album first.', null, 'ALBUM_BIND_AMBIGUOUS');
+      }
+      if (reason instanceof AlbumAdminError) throw new Phase4AdminError(reason.message, reason.status, reason.code || 'ALBUM_BIND_REJECTED', reason.currentUpdatedAt, reason.rollback as Record<string, boolean> | null);
+      throw reason;
+    }
+  }
+
+  async function create() {
+    const resolution = albumResolution;
+    if (!canSubmit || !resolution.ready) return;
+    const targetCopy = resolution.kind === 'existing'
+      ? `\n\nSafe binding plan: create recoverable draft in Singles → upload selected assets → bind to canonical draft “${resolution.album.title}”.`
+      : '\n\nThis track will remain in transitional Singles.';
+    if (!globalThis.confirm(`Create “${values.title.trim()}” as a new draft?\n\n${selectedMedia} selected media file${selectedMedia === 1 ? '' : 's'} will be uploaded sequentially after the canonical draft reread.${targetCopy}`)) return;
+    setBusy(true); setError(null); setCreatedTrackId(null); setProgress(['Preparing recoverable canonical draft…']);
+    try {
+      const result = await createAdminTrack(effectiveSlug, metadataPatch(resolution));
       if (!result.clientVerified) throw new Phase4AdminError('The draft was created but its canonical reread could not be verified. Open Track Manager before continuing.', null, 'CREATE_UNVERIFIED');
       setCreatedTrackId(effectiveSlug);
-      setProgress(['Draft created', 'Canonical draft reread verified']);
+      setProgress(['Draft created in recoverable Singles state', 'Canonical draft reread verified']);
       let revision = result.track?.updatedAt || '';
       const uploads: Array<{ kind: AdminAssetKind; file: File; label: string }> = [];
       if (cover) { uploads.push({ kind: 'cover', file: cover, label: 'Cover' }); uploads.push({ kind: 'thumbnail', file: await createCoverThumbnail(cover), label: 'Cover thumbnail' }); }
@@ -173,6 +297,11 @@ export function TrackCreatePanel({ privateRead, onCreated, onCancel }: { private
         if (!response.clientVerified || !response.updatedAt) throw new Phase4AdminError(`${upload.label} could not be verified. Reload the track before continuing.`, null, 'ASSET_UPLOAD_UNVERIFIED');
         revision = response.updatedAt;
       }
+      if (resolution.kind === 'existing') {
+        setProgress(previous => [...previous, `Binding new track to canonical Album “${resolution.album.title}”…`]);
+        await bindNewTrackToCanonicalAlbum(effectiveSlug, resolution);
+        setProgress(previous => [...previous, 'Canonical Album membership + track cache verified']);
+      }
       setProgress(previous => [...previous, 'Opening Track Workspace…']);
       await onCreated?.();
       globalThis.location.hash = trackHref(effectiveSlug, uploads.length ? 'assets' : 'overview').replace(/^#/, '');
@@ -181,6 +310,7 @@ export function TrackCreatePanel({ privateRead, onCreated, onCancel }: { private
   }
 
   const provenanceEntries = useMemo(() => Object.entries(sources) as Array<[IntakeFieldName, NonNullable<IntakeFieldSources[IntakeFieldName]>]>, [sources]);
+  const canonicalSelectValue = albumResolution.kind === 'existing' ? albumResolution.album.id : albumResolution.kind === 'singles' ? 'singles' : '';
 
   return (
     <article className="panel phase4-create-panel intake-flow">
@@ -191,7 +321,8 @@ export function TrackCreatePanel({ privateRead, onCreated, onCancel }: { private
       {step === 2 && <section className="intake-step-panel">
         <div className="phase4-create-grid intake-metadata-grid">
           <label><span>Title <b>Required</b></span><input autoFocus value={values.title} onChange={event => updateField('title', event.target.value)} /></label>
-          <label><span>Album</span><input value={values.albumTitle} onChange={event => updateField('albumTitle', event.target.value)} /></label>
+          <label><span>Album request</span><input value={values.albumTitle} onChange={event => updateField('albumTitle', event.target.value)} placeholder="Singles or canonical Album title" /></label>
+          <label><span>Canonical target</span><select value={canonicalSelectValue} onChange={event => chooseCanonicalAlbum(event.target.value)}><option value="">Resolve requested Album…</option><option value="singles">Singles (no canonical Album membership)</option>{albums.map(album => <option key={album.id} value={album.id}>{album.title} · {album.status.toUpperCase()} · {album.type.toUpperCase()}</option>)}</select></label>
           <label><span>Type</span><select value={values.type} onChange={event => updateField('type', event.target.value)}><option value="single">Single</option><option value="album-track">Album track</option><option value="demo">Demo</option></select></label>
           <label><span>Release date</span><input type="date" value={values.releaseDate} onChange={event => updateField('releaseDate', event.target.value)} /></label>
           <label><span>Languages</span><input value={values.languages} onChange={event => updateField('languages', event.target.value)} placeholder="English, French" /></label>
@@ -204,7 +335,14 @@ export function TrackCreatePanel({ privateRead, onCreated, onCancel }: { private
           <label><span>Energy</span><input value={values.energy} onChange={event => updateField('energy', event.target.value)} /></label>
           <label><span>Explicit</span><select value={values.explicit} onChange={event => updateField('explicit', event.target.value)}><option value="clean">Clean</option><option value="explicit">Explicit</option></select></label>
         </div>
-        <details className="intake-technical"><summary>Technical identifier and extended metadata</summary><div className="phase4-create-grid"><label><span>trackId</span><input value={values.slug} onChange={event => updateField('slug', event.target.value)} placeholder={canonicalIntakeSlug(values.title) || 'generated-from-title'} /></label><label><span>Album ID</span><input value={values.albumId} onChange={event => updateField('albumId', event.target.value)} /></label><label><span>Year</span><input inputMode="numeric" value={values.year} onChange={event => updateField('year', event.target.value)} /></label><label><span>Era</span><input value={values.era} onChange={event => updateField('era', event.target.value)} /></label></div></details>
+        <div className={`intake-album-resolution ${albumResolution.kind}`} role={albumResolution.ready ? 'status' : 'alert'}>
+          <div><strong>{albumLoading ? 'Resolving canonical Albums…' : albumResolution.kind === 'singles' ? 'Singles / no Album binding' : albumResolution.kind === 'existing' ? `Canonical draft: ${albumResolution.album.title}` : albumResolution.kind === 'missing' ? `Canonical Album missing: ${albumResolution.requestedTitle}` : `Album binding blocked: ${albumResolution.album.title}`}</strong><span>{albumReadError || albumResolution.reason}</span></div>
+          {albumResolution.kind === 'existing' && <small>{albumResolution.album.id} · {albumResolution.album.type.toUpperCase()} · {albumResolution.album.trackIds.length} current tracks</small>}
+          {albumResolution.kind === 'missing' && !albumReadError && <div className="intake-album-create"><select aria-label="New canonical release type" value={newAlbumType} onChange={event => setNewAlbumType(event.target.value as AdminAlbumType)}><option value="album">Album</option><option value="ep">EP</option><option value="collection">Collection</option></select><button className="ghost-btn compact" type="button" disabled={albumCreating || albumLoading} onClick={() => void createRequestedAlbumDraft()}>{albumCreating ? 'Creating…' : `Create canonical ${newAlbumType} draft`}</button></div>}
+          {albumResolution.kind === 'blocked' && <a className="ghost-btn compact" href={routeHref('albums')}>Open Albums / Projects</a>}
+          {albumReadError && <button className="ghost-btn compact" type="button" onClick={() => void loadAlbums()}>Retry Album read</button>}
+        </div>
+        <details className="intake-technical"><summary>Technical identifier and extended metadata</summary><div className="phase4-create-grid"><label><span>trackId</span><input value={values.slug} onChange={event => updateField('slug', event.target.value)} placeholder={canonicalIntakeSlug(values.title) || 'generated-from-title'} /></label><label><span>Requested Album ID</span><input value={values.albumId} onChange={event => updateField('albumId', event.target.value)} /></label><label><span>Year</span><input inputMode="numeric" value={values.year} onChange={event => updateField('year', event.target.value)} /></label><label><span>Era</span><input value={values.era} onChange={event => updateField('era', event.target.value)} /></label></div></details>
       </section>}
 
       {step === 1 && <section className="intake-step-panel intake-media-step">
@@ -218,14 +356,14 @@ export function TrackCreatePanel({ privateRead, onCreated, onCancel }: { private
       </section>}
 
       {step === 3 && <section className="intake-step-panel intake-review">
-        <div className="intake-review-summary"><div><span>Track</span><strong>{values.title.trim()}</strong><small>{values.albumTitle.trim() || 'Singles'} · {values.type}</small></div><div><span>Classified media</span><strong>{selectedMedia}</strong><small>{assignments.filter(item => item.role !== 'ignore').map(item => ROLE_LABELS[item.role]).join(' · ') || 'No media selected'}</small></div><div><span>Initial state</span><strong>Draft</strong><small>Canonical Track Manager write, followed by sequential verified asset writes.</small></div></div>
-        <div className="intake-review-metadata"><strong>Metadata to create</strong><dl><div><dt>trackId</dt><dd>{effectiveSlug}</dd></div><div><dt>Genres / tags</dt><dd>{[values.genres, values.tags].filter(Boolean).join(' · ') || '—'}</dd></div><div><dt>Moods</dt><dd>{values.moods || '—'}</dd></div><div><dt>Themes</dt><dd>{values.themes || '—'}</dd></div><div><dt>Release</dt><dd>{values.releaseDate || values.year || '—'}</dd></div><div><dt>Music</dt><dd>{[values.bpm && `${values.bpm} BPM`, values.key].filter(Boolean).join(' · ') || '—'}</dd></div></dl></div>
+        <div className="intake-review-summary"><div><span>Track</span><strong>{values.title.trim()}</strong><small>{albumResolution.kind === 'existing' ? albumResolution.album.title : 'Singles'} · {albumResolution.kind === 'existing' ? 'album-track' : values.type}</small></div><div><span>Classified media</span><strong>{selectedMedia}</strong><small>{assignments.filter(item => item.role !== 'ignore').map(item => ROLE_LABELS[item.role]).join(' · ') || 'No media selected'}</small></div><div><span>Initial state</span><strong>Recoverable draft</strong><small>{albumResolution.kind === 'existing' ? 'Create in Singles first, then bind transactionally after verified uploads.' : 'Canonical Track Manager draft in transitional Singles.'}</small></div></div>
+        <div className="intake-review-metadata"><strong>Metadata to create</strong><dl><div><dt>trackId</dt><dd>{effectiveSlug}</dd></div><div><dt>Album binding</dt><dd>{albumResolution.kind === 'existing' ? `${albumResolution.album.title} · after uploads` : 'Singles'}</dd></div><div><dt>Genres / tags</dt><dd>{[values.genres, values.tags].filter(Boolean).join(' · ') || '—'}</dd></div><div><dt>Moods</dt><dd>{values.moods || '—'}</dd></div><div><dt>Themes</dt><dd>{values.themes || '—'}</dd></div><div><dt>Release</dt><dd>{values.releaseDate || values.year || '—'}</dd></div><div><dt>Music</dt><dd>{[values.bpm && `${values.bpm} BPM`, values.key].filter(Boolean).join(' · ') || '—'}</dd></div></dl></div>
         {cover && <div className="intake-cover-workbench compact"><CoverImagePreview file={cover} alt="Cover review" /><CoverPalettePreview palette={palette} editable onChange={setPalette} title="Palette review" busy={paletteBusy} onRecalculate={() => void calculatePalette()} note="These exact canonical accent / accent2 values will be saved on draft creation." /></div>}
-        <details className="intake-technical"><summary>Write contract</summary><p>Studio uses Track Manager’s existing create and one-asset-at-a-time routes. It never writes R2 directly, never creates an alternate palette or lyrics source, and only accepts TXT for canonical lyrics.</p></details>
+        <details className="intake-technical"><summary>Write contract</summary><p>Studio creates the track in a recoverable Singles state, uses Track Manager’s existing one-asset-at-a-time routes, then binds only this newly-created track to an already-canonical draft Album. It never writes R2 directly, never creates a phantom albumId, never migrates an existing legacy track, and never blind-retries an ambiguous Album move.</p></details>
       </section>}
 
       {busy && <div className="intake-progress-stages" aria-live="polite">{progress.map((item, index) => <span key={`${index}-${item}`}>{item}</span>)}</div>}
-      <div className="intake-actions"><button className="ghost-btn" type="button" disabled={busy || step === 1} onClick={() => setStep(previous => Math.max(1, previous - 1) as 1 | 2 | 3)}>Back</button>{step < 3 ? <button className="primary-btn" type="button" disabled={busy || (step === 1 && Boolean(problems.length)) || (step === 2 && !basicsValid)} onClick={() => setStep(previous => Math.min(3, previous + 1) as 1 | 2 | 3)}>Continue</button> : <button className="primary-btn" type="button" disabled={!canSubmit} onClick={() => void create()}>{busy ? 'Working…' : 'Create canonical draft'}</button>}</div>
+      <div className="intake-actions"><button className="ghost-btn" type="button" disabled={busy || step === 1} onClick={() => setStep(previous => Math.max(1, previous - 1) as 1 | 2 | 3)}>Back</button>{step < 3 ? <button className="primary-btn" type="button" disabled={busy || albumCreating || (step === 1 && Boolean(problems.length)) || (step === 2 && (!basicsValid || !albumReady))} onClick={() => setStep(previous => Math.min(3, previous + 1) as 1 | 2 | 3)}>Continue</button> : <button className="primary-btn" type="button" disabled={!canSubmit} onClick={() => void create()}>{busy ? 'Working…' : 'Create canonical draft'}</button>}</div>
       {error && <ErrorNotice error={error} createdTrackId={createdTrackId} />}
     </article>
   );

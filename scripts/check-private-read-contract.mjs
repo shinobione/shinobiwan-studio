@@ -80,7 +80,7 @@ for (const required of [
 ]) assert.ok(assets.includes(required), `Assets Manager missing ${required}.`);
 
 for (const required of [
-  'NEW TRACK', 'Build a canonical draft from the files you already have', 'Create canonical draft', 'globalThis.confirm', 'createAdminTrack', 'uploadAdminTrackAsset', "uploads.length ? 'assets' : 'overview'", "Initial state</span><strong>Draft",
+  'NEW TRACK', 'Build a canonical draft from the files you already have', 'Create canonical draft', 'globalThis.confirm', 'createAdminTrack', 'uploadAdminTrackAsset', "uploads.length ? 'assets' : 'overview'", 'Initial state</span><strong>Recoverable draft',
 ]) assert.ok(create.includes(required), `Track create UI missing ${required}.`);
 
 for (const required of ['TRACK MANAGER / CATALOG', 'Explicit catalog rebuild', 'REBUILD the canonical catalog/index.json', 'globalThis.confirm', 'rebuildAdminCatalog']) assert.ok(rebuild.includes(required), `Catalog rebuild UI missing ${required}.`);
@@ -137,13 +137,13 @@ for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog 
   assert.ok(!phase4Api.toLowerCase().includes(forbiddenPhase5.toLowerCase()), `Phase 5 leaked into Phase 4 client: ${forbiddenPhase5}`);
 }
 
-assert.ok(release.includes("version: '0.11.0'"), 'Studio release version must be 0.11.0.');
-assert.ok(release.includes('build: 32'), 'Studio release build must be 32.');
-assert.ok(release.includes("codename: 'phase-ux-c2-5-d1-studio-album-management'"), 'Studio release codename must identify C2.5-D1 Album Management.');
-assert.equal(pkg.version, '0.11.0', 'package.json must match Studio 0.11.0.');
+assert.ok(release.includes("version: '0.11.1'"), 'Studio release version must be 0.11.1.');
+assert.ok(release.includes('build: 33'), 'Studio release build must be 33.');
+assert.ok(release.includes("codename: 'phase-ux-c2-5-d2-new-track-album-binding'"), 'Studio release codename must identify C2.5-D2 New Track Album binding.');
+assert.equal(pkg.version, '0.11.1', 'package.json must match Studio 0.11.1.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'Production build must run the integration regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase5'), 'Production build must run the Phase 5 algorithm guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase6'), 'Production build must run the embedded Phase 6 regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:ux'), 'Production build must run the PHASE UX regression guard.');
 
-console.log('Studio 0.11.0 Build 32 preserves Phase 0-6 contracts while adding guarded C2.5-D1 Album Management without starting Phase 7.');
+console.log('Studio 0.11.1 Build 33 preserves Phase 0-6 contracts while completing C2.5-D New Track canonical Album binding without starting C2.5-E or Phase 7.');

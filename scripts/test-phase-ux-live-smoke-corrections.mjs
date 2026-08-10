@@ -48,7 +48,7 @@ for (const marker of ['multiple', 'onDrop=', 'mergeIntakeFiles', 'parseTrackTxt'
 assert.ok(create.includes("intakeFileForRole(assignments, 'lyrics')"));
 assert.ok(create.includes("type=\"file\" multiple"));
 assert.ok(create.indexOf('{step === 1 && <section className="intake-step-panel intake-media-step">') > -1, 'Multi-file drop must be the first New Track step.');
-assert.ok(create.includes("(step === 2 && !basicsValid)"), 'Metadata validation must gate the transition from step two to Review.');
+assert.ok(create.includes("(step === 2 && (!basicsValid || !albumReady))"), 'Metadata + canonical Album resolution must gate the transition from step two to Review.');
 assert.ok(create.includes('CoverImagePreview'));
 
 const uploadTransport = service.slice(service.indexOf('async function uploadViaFetch'), service.indexOf('export async function createAdminTrack'));
@@ -84,4 +84,4 @@ for (const source of [create, assets, service, workspace]) {
   for (const forbidden of ['phase7', 'phase-7']) assert.ok(!source.toLowerCase().includes(forbidden), `Unauthorized Phase 7 runtime marker found: ${forbidden}.`);
 }
 
-console.log('PHASE UX live-smoke corrective guard passed: Track Manager intake parity, simple multipart upload, canonical lost-response recovery, editable palette and non-overlapping sticky context protected.');
+console.log('PHASE UX live-smoke corrective guard passed: Track Manager intake parity, canonical Album gating, simple multipart upload, canonical lost-response recovery, editable palette and non-overlapping sticky context protected.');
