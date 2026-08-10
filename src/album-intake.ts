@@ -28,11 +28,17 @@ export function resolveIntakeAlbum(
   requestedAlbumTitle: string,
   albums: IntakeAlbumCandidate[],
 ): IntakeAlbumResolution {
+  const rawId = String(requestedAlbumId || '').trim();
   const rawTitle = String(requestedAlbumTitle || '').trim();
-  const requestedTitle = rawTitle || 'Singles';
-  const requestedId = canonicalAlbumId(String(requestedAlbumId || '').trim() || requestedTitle) || 'singles';
+  const normalizedId = canonicalAlbumId(rawId);
+  const normalizedTitle = canonicalAlbumId(rawTitle);
 
-  if (requestedId === 'singles' || requestedTitle.toLowerCase() === 'singles') {
+  const singlesRequested =
+    (!normalizedId && !normalizedTitle) ||
+    normalizedId === 'singles' ||
+    (!normalizedId && normalizedTitle === 'singles');
+
+  if (singlesRequested) {
     return {
       kind: 'singles',
       requestedId: 'singles',
@@ -43,8 +49,12 @@ export function resolveIntakeAlbum(
     };
   }
 
+  const requestedId = normalizedId || normalizedTitle;
+  const requestedTitle = rawTitle || rawId || requestedId;
   const exactId = albums.find(album => album.id === requestedId) || null;
-  const titleMatches = albums.filter(album => canonicalAlbumId(album.title) === canonicalAlbumId(requestedTitle));
+  const titleMatches = rawTitle
+    ? albums.filter(album => canonicalAlbumId(album.title) === normalizedTitle)
+    : [];
   const album = exactId || (titleMatches.length === 1 ? titleMatches[0] : null);
 
   if (!album) {
