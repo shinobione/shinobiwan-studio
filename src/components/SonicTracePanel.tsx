@@ -18,6 +18,7 @@ import {
 import type { SonicTraceAnalysis, SonicTraceAnalysisState, StudioTrackDetail } from '../types/studio';
 
 function numeric(value: unknown): number | null {
+  if (value == null || value === '') return null;
   const number = Number(value);
   return Number.isFinite(number) ? number : null;
 }
@@ -178,6 +179,7 @@ export function SonicTracePanel({ track, onSaved }: { track: StudioTrackDetail; 
         {state && <details className="sonic-diagnostics"><summary>Engine diagnostics</summary><dl><div><dt>Analysis ID</dt><dd>{latest?.analysisId || '—'}</dd></div><div><dt>Engine</dt><dd>{engineLabel(latest)}</dd></div><div><dt>Embedding</dt><dd>{sonicTraceEmbeddingReady(latest) ? '512D' : 'Missing'}</dd></div><div><dt>Source version</dt><dd>{latest?.sourceVersion.value || '—'}</dd></div></dl></details>}
         {state?.outdated && <div className="sonic-alert warn">The canonical audio revision changed after the latest scan. Re-scan before trusting comparisons.</div>}
         {latest && profileState === 'partial' && <div className="sonic-alert warn">This saved profile is usable but incomplete. Missing or unavailable deep layers: {missingLayers.join(', ')}. Re-scan while the local SonicTrace coordinator is healthy to produce a FULL profile.</div>}
+        {latest && profileState === 'unavailable' && <div className="sonic-alert warn">Deep Audio was unavailable for this saved scan. Browser DSP is retained, but mastering, Neural, embedding and structure must not be presented as completed layers.</div>}
         {error && <div className="sonic-alert error">{error}</div>}
         {notice && <div className="sonic-alert">{notice}</div>}
       </article>
