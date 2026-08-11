@@ -13,6 +13,7 @@ export function CoverPalettePreview({
   onRecalculate,
   editable = false,
   onChange,
+  fieldLabels,
 }: {
   palette: CoverPalette | null;
   title?: string;
@@ -22,6 +23,7 @@ export function CoverPalettePreview({
   onRecalculate?: () => void;
   editable?: boolean;
   onChange?: (palette: CoverPalette) => void;
+  fieldLabels?: Partial<Record<keyof CoverPalette, string>>;
 }) {
   const [drafts, setDrafts] = useState<CoverPalette>(palette || { accent: '#1db954', accent2: '#556bff' });
   const [pickerError, setPickerError] = useState<string | null>(null);
@@ -57,18 +59,21 @@ export function CoverPalettePreview({
       </div>
       {palette ? (
         <div className="cover-palette-swatches" data-palette-fields={COVER_PALETTE_FIELDS.join(',')}>
-          {COVER_PALETTE_FIELDS.map(field => editable ? (
-            <div className="cover-palette-swatch cover-palette-swatch--editable" key={field}>
-              <input className="cover-color-input" type="color" aria-label={`${field} color picker`} value={validHex(drafts[field]) ? drafts[field] : palette[field]} onChange={event => commit(field, event.target.value)} />
-              <label><b>{field}</b><input className="cover-hex-input" value={drafts[field]} inputMode="text" spellCheck={false} aria-label={`${field} HEX value`} onChange={event => setDrafts(previous => ({ ...previous, [field]: event.target.value }))} onBlur={event => commit(field, event.target.value)} onKeyDown={event => { if (event.key === 'Enter') commit(field, event.currentTarget.value); }} /></label>
-              {eyeDropper && <button className="ghost-btn compact cover-eyedropper" type="button" onClick={() => void sample(field)} aria-label={`Sample ${field} from the screen`}>Sample</button>}
-            </div>
-          ) : (
-            <div className="cover-palette-swatch" key={field}>
-              <i style={{ backgroundColor: palette[field] }} aria-hidden="true" />
-              <span><b>{field}</b><code>{palette[field]}</code></span>
-            </div>
-          ))}
+          {COVER_PALETTE_FIELDS.map(field => {
+            const label = fieldLabels?.[field] || field;
+            return editable ? (
+              <div className="cover-palette-swatch cover-palette-swatch--editable" key={field}>
+                <input className="cover-color-input" type="color" aria-label={`${label} color picker`} value={validHex(drafts[field]) ? drafts[field] : palette[field]} onChange={event => commit(field, event.target.value)} />
+                <label><b>{label}</b><input className="cover-hex-input" value={drafts[field]} inputMode="text" spellCheck={false} aria-label={`${label} HEX value`} onChange={event => setDrafts(previous => ({ ...previous, [field]: event.target.value }))} onBlur={event => commit(field, event.target.value)} onKeyDown={event => { if (event.key === 'Enter') commit(field, event.currentTarget.value); }} /></label>
+                {eyeDropper && <button className="ghost-btn compact cover-eyedropper" type="button" onClick={() => void sample(field)} aria-label={`Sample ${label} from the screen`}>Sample</button>}
+              </div>
+            ) : (
+              <div className="cover-palette-swatch" key={field}>
+                <i style={{ backgroundColor: palette[field] }} aria-hidden="true" />
+                <span><b>{label}</b><code>{palette[field]}</code></span>
+              </div>
+            );
+          })}
         </div>
       ) : <p className="cover-palette-empty">Select a valid cover to preview both colors.</p>}
       {editable && !eyeDropper && <p className="cover-palette-support">Native eyedropper is not available in this browser. Color picker and HEX editing remain available.</p>}
