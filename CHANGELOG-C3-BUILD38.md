@@ -29,4 +29,12 @@ Date: 2026-08-11
 
 ## Real-user acceptance
 
-Build 38 is not C3-complete until the local SonicTrace coordinator is updated/restarted and Studio completes a real canonical scan against the new SonicTrace Build 06 backend.
+**PASS — 2026-08-11.**
+
+The Build 38 C3-A semantics, carried forward into Studio `v0.13.3 · Build 41`, were validated against the updated/restarted SonicTrace `V2-E · BUILD 06` local coordinator on the canonical audio for **Stick to You**.
+
+The unsaved review returned a truthful **FULL** profile with DSP, mastering, Neural, finite 512D embedding, structure and semantic summary all ready. Observed mastering values were `-13.7 LUFS` and `-0.8 dBTP`; Browser RMS was `-15.8 dBFS`; structure reported 9 sections. The new draft was deliberately not persisted during the smoke.
+
+The exact historical audio that originally emitted `FFmpeg loudnorm did not return a measurement block` could not be reliably reidentified. The degraded failure branch is therefore closed by the dedicated parser/fallback and Studio-envelope regression tests in SonicTrace Build 06 together with this real-user full-stack integration smoke, rather than by fabricating a production failure.
+
+Post-pass checkpoint: `safety/c3-a-real-user-pass-20260811-1900`.

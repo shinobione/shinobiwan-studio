@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — CURRENT ROADMAP
 
-Updated: 2026-08-11 after C2.5 closeout, C3-A implementation, the focused Album UX corrective, the Album palette slice and the Build 41 New Track real-user pass.
+Updated: 2026-08-11 after C2.5 closeout, focused Album UX/palette validation, Build 41 New Track validation and the C3-A Deep Audio real-user pass.
 
 This file is the concise current roadmap. Historical release details remain in the milestone-specific documents and Git history.
 
@@ -88,24 +88,28 @@ See `docs/PHASE-UX-C2-5-CLOSEOUT.md`.
 Status: **IN PROGRESS**
 
 #### C3-A — Deep Audio resilience + truthful profile semantics
-Status: **IMPLEMENTED CANDIDATE — REAL USER SMOKE PENDING**
+Status: **COMPLETE — REAL USER PASS**
 
-Candidate engine/UI releases:
+Validated engine/UI releases:
 
 - SonicTrace `V2-E · BUILD 06` / Deep Audio `2.0.1-alpha`;
-- Studio Deep Audio baseline `v0.13.0 · Build 38`, carried forward into current Studio Build 41.
+- Studio C3-A semantics introduced in `v0.13.0 · Build 38` and carried forward into current Studio `v0.13.3 · Build 41`.
 
-Scope:
+Delivered:
 
 - robust FFmpeg `loudnorm` measurement parsing;
 - real FFmpeg EBU R128 fallback;
 - unavailable mastering measurements become warnings instead of aborting Neural / embedding / structure;
 - accurate `FULL / PARTIAL / UNAVAILABLE / OUTDATED` profile semantics;
-- distinguish coordinator transport/offline failures from coordinator processing failures;
+- coordinator transport/offline failures are distinguished from coordinator processing failures;
 - null mastering values render as missing, never as numeric zero;
 - schema v1, Track Manager persistence and R2 paths unchanged.
 
-Acceptance still requires a real canonical Studio scan after the local SonicTrace coordinator is updated/restarted. Prefer a track that previously triggered the loudnorm measurement-block failure.
+Real-user acceptance on 2026-08-11 used canonical audio for **Stick to You** after updating/restarting the local SonicTrace coordinator. `REVIEW / NOT SAVED` returned a FULL profile with DSP, mastering, Neural, 512D embedding, structure and semantic summary ready; observed values included `-13.7 LUFS`, `-0.8 dBTP`, Browser RMS `-15.8 dBFS` and 9 detected sections. No new analysis was saved during the smoke.
+
+The exact historical audio that originally triggered the loudnorm measurement-block error could not be reliably reidentified. The degraded-mastering path remains directly covered by SonicTrace parser/fallback tests and the contract regression proving unavailable mastering retains Neural, embedding and structure. Post-pass checkpoint: `safety/c3-a-real-user-pass-20260811-1900` on Studio and SonicTrace.
+
+See `docs/PHASE-UX-C3-DEEP-AUDIO-RESILIENCE.md` and `CHANGELOG-C3-BUILD38.md`.
 
 #### C3-UX corrective — Focused Album workspace + canonical palette
 Status: **COMPLETE — REAL USER PASS**
@@ -152,12 +156,10 @@ Real-user retry passed on 2026-08-11 with **Stick to You** after checking canoni
 
 See `docs/PHASE-UX-C3-TRACK-CREATE-CAPABILITY-HOTFIX.md` and `CHANGELOG-C3-BUILD41.md`.
 
-**Next active step: resume the existing C3-A local-GPU smoke.** C3-A remains unaccepted until that scan passes.
-
 #### C3-B — Studio V2-E parity
-Status: **NOT STARTED**
+Status: **NEXT / NOT STARTED**
 
-Planned read-only intelligence parity after C3-A smoke:
+Planned read-only intelligence parity now unlocked by the C3-A pass:
 
 - deterministic 2D projection from canonical persisted 512D embeddings;
 - acoustic zones separate from sonic/style families;
@@ -244,20 +246,15 @@ There is currently **no official Phase 11**.
 ## Current runtime / candidate baseline
 
 ```text
-Last fully real-user baseline:
-Studio          0.12.2 / Build 37
-LaunchPAD       2026.08.11.89
+Validated PHASE UX runtime line:
+Studio          0.13.3 / Build 41
+LaunchPAD       2026.08.11.90
 Track Manager   v5.19
 Studio bridge   v1.11
 Public Worker   v2.7
-SonicTrace      V2-E Build 05
-LRC Maker       6.3.8
-
-Current C3 candidate:
-Studio          0.13.3 / Build 41
-LaunchPAD       2026.08.11.90
 SonicTrace      V2-E Build 06
 Deep Audio      2.0.1-alpha
+LRC Maker       6.3.8
 ```
 
-The focused C3 Album UX/palette slice and the Build 41 New Track capability hotfix are now real-user validated. Build 41 still carries the C3-A Build 38 Deep Audio candidate, which remains pending its local-GPU canonical scan. LaunchPAD Build 90 is frontend-only and consumes canonical Album palette metadata without changing Worker v2.7 or R2 authority. UI and New Track passes do not fabricate Deep Audio acceptance.
+C3-A, the focused C3 Album UX/palette slice and the Build 41 New Track capability hotfix are now real-user validated. C3-B is the next active implementation slice. LaunchPAD Build 90 remains frontend-only and consumes canonical Album palette metadata without changing Worker v2.7 or R2 authority.
