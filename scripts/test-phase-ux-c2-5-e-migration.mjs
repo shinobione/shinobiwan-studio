@@ -46,7 +46,7 @@ assert.ok(css.includes('.album-migration-stack') && css.includes('@media(max-wid
 
 const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
-assert.match(releaseVersion, /^0\.(?:12|13|14)\./, 'C2.5-E ancestry must remain on a validated/successor PHASE UX C2.5/C3 Studio release line until deliberately superseded.');
+assert.match(releaseVersion, /^0\.(?:12|13|14|15)\./, 'C2.5-E ancestry must remain on a validated/successor PHASE UX C2.5/C3 Studio release line until deliberately superseded.');
 assert.ok(releaseBuild >= 35, 'C2.5-E ancestry must remain at Build 35 or later.');
 assert.match(release, /codename:\s*'phase-ux-(?:c2-5-e|c3)-/, 'Current release must remain explicitly inside validated PHASE UX C2.5-E/C3 while the migration contract is inherited.');
 assert.equal(pkg.version, releaseVersion, 'package.json must match the active Studio PHASE UX release.');
