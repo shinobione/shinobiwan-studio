@@ -113,8 +113,20 @@ for (const required of [
   'Browser DSP', 'append-only history', 'never stores the audio',
 ]) assert.ok(sonicPanel.includes(required), `SonicTrace workspace UI is missing ${required}.`);
 
-for (const required of ['Understand your catalog', 'SIMILARITY READY', 'CLOSEST SOUND', 'SONIC FAMILIES', 'entry.embedding?.dimension === 512']) assert.ok(intelligenceView.includes(required), `Catalog Intelligence UI is missing ${required}.`);
-for (const required of ['cosineSimilarity', 'nearestTracks', 'clusterTracks', 'vector.length === 512']) assert.ok(intelligenceMath.includes(required), `Catalog Intelligence engine missing ${required}.`);
+for (const required of [
+  'SONICTRACE / C3-B / CANONICAL V2-E', 'See the shape of your catalog.',
+  'Position = proximity. Color = family. Zone = neighborhood.', 'CLOSEST SOUND', 'SONIC FAMILIES',
+  'ALBUM / PROJECT INTELLIGENCE', 'READ ONLY · canonical order unchanged',
+  'getSonicTraceCatalog', 'getAdminAlbums', 'getCatalogTracks',
+]) assert.ok(intelligenceView.includes(required), `Catalog Intelligence C3-B UI is missing ${required}.`);
+for (const forbidden of ['indexedDB', 'saveAdminAlbumMetadata', 'saveAdminAlbumMembership', 'moveAdminAlbumTrack']) {
+  assert.ok(!intelligenceView.includes(forbidden), `Catalog Intelligence C3-B must remain canonical-read/read-only; found ${forbidden}.`);
+}
+for (const required of [
+  'cosineSimilarity', 'nearestTracks', 'validEmbedding', 'projectTracks', 'clusterAcousticZones',
+  'analyzeStyleFamilies', 'catalogInsights', 'analyzeProject', 'analyzeCatalog', 'vector.length === 512',
+]) assert.ok(intelligenceMath.includes(required), `Catalog Intelligence C3-B engine missing ${required}.`);
+assert.ok(!intelligenceMath.includes('indexedDB'), 'Studio C3-B intelligence math must not depend on standalone SonicTrace IndexedDB.');
 
 const tinyPhase5Fonts = [...sonicCss.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)]
   .map(match => Number(match[1]))
@@ -141,14 +153,15 @@ for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog 
 
 const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
-assert.match(releaseVersion, /^0\.(?:11|12|13)\./, 'Studio private-read ancestry must remain on the validated PHASE UX release lines until deliberately superseded.');
+assert.match(releaseVersion, /^0\.(?:11|12|13|14)\./, 'Studio private-read ancestry must remain on the validated/successor PHASE UX release lines while C3 advances deliberately.');
 assert.ok(releaseBuild >= 33, 'Studio private-read ancestry must remain at Build 33 or later.');
 assert.match(release, /codename:\s*'phase-ux-(?:c2-5|c3)-/, 'Studio release codename must remain explicitly inside the validated PHASE UX C2.5/C3 lineage while Phase 7 is locked.');
 assert.equal(pkg.version, releaseVersion, 'package.json must match the current Studio release version.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'Production build must run the integration regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase5'), 'Production build must run the Phase 5 algorithm guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase6'), 'Production build must run the embedded Phase 6 regression guard.');
-assert.ok(String(pkg.scripts?.build || '').includes('check:c3'), 'Production build must run the C3 Deep Audio semantics guard.');
+assert.ok(String(pkg.scripts?.build || '').includes('check:c3'), 'Production build must run the C3 semantics/parity guards.');
+assert.ok(String(pkg.scripts?.check\:c3 || pkg.scripts?.['check:c3'] || '').includes('test-phase-ux-c3-b-v2e-parity.mjs'), 'C3 build guard must include the V2-E parity regression test.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:ux'), 'Production build must run the PHASE UX regression guard.');
 
 console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves Phase 0-6/C2.5 contracts while C3 advances under PHASE UX and Phase 7 remains stopped.`);
