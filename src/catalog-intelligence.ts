@@ -644,14 +644,18 @@ export function analyzeProject(trackIds: string[], entries: SonicTraceCatalogEnt
   let bridge: { trackId: string; percent: number } | null = null;
   if (usable.length >= 3) {
     let bestScore = Number.NEGATIVE_INFINITY;
-    usable.forEach((entry, index) => {
+    for (let index = 0; index < usable.length; index += 1) {
+      const entry = usable[index];
       const scores = matrix[index].filter((_, otherIndex) => otherIndex !== index).sort((left, right) => right - left);
       const take = Math.min(4, scores.length);
       const value = average(scores.slice(0, take));
       const spread = scores.length ? scores[0] - scores[scores.length - 1] : 0;
       const score = value - spread * 0.12;
-      if (score > bestScore) { bestScore = score; bridge = { trackId: entry.trackId, percent: Math.round(score * 100) }; }
-    });
+      if (score > bestScore) {
+        bestScore = score;
+        bridge = { trackId: entry.trackId, percent: Math.round(score * 100) };
+      }
+    }
   }
   const order = sequenceProject(usable, matrix, catalogById);
   const proposedSequence = order.map((usableIndex, position): ProjectSequenceItem => {
