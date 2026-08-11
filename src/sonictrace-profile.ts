@@ -1,12 +1,13 @@
 import type { SonicTraceAnalysis } from './types/studio';
 
-export type SonicTraceProfileState = 'full' | 'partial' | 'outdated';
+export type SonicTraceProfileState = 'full' | 'partial' | 'unavailable' | 'outdated';
 
 function record(value: unknown): Record<string, unknown> | null {
   return value && typeof value === 'object' ? value as Record<string, unknown> : null;
 }
 
 function finite(value: unknown): boolean {
+  if (value == null || value === '') return false;
   return Number.isFinite(Number(value));
 }
 
@@ -37,9 +38,20 @@ export function sonicTraceEmbeddingReady(analysis: SonicTraceAnalysis | null): b
   );
 }
 
+function deepAudioUnavailable(analysis: SonicTraceAnalysis): boolean {
+  const provenance = record(analysis.provenance);
+  const explicitlyUnavailable = provenance?.deepAudio === 'unavailable';
+  const noDeepLayers = !sonicTraceMasteringReady(analysis)
+    && !analysis.neural
+    && !sonicTraceEmbeddingReady(analysis)
+    && !analysis.structure;
+  return Boolean(explicitlyUnavailable && noDeepLayers);
+}
+
 export function sonicTraceProfileState(analysis: SonicTraceAnalysis | null, outdated: boolean): SonicTraceProfileState | null {
   if (!analysis) return null;
   if (outdated) return 'outdated';
+  if (deepAudioUnavailable(analysis)) return 'unavailable';
   const full = Boolean(
     analysis.dsp
       && sonicTraceMasteringReady(analysis)
@@ -53,6 +65,7 @@ export function sonicTraceProfileState(analysis: SonicTraceAnalysis | null, outd
 export function sonicTraceProfileLabel(state: SonicTraceProfileState | null): string {
   if (state === 'full') return 'FULL';
   if (state === 'partial') return 'PARTIAL';
+  if (state === 'unavailable') return 'UNAVAILABLE';
   if (state === 'outdated') return 'OUTDATED';
   return 'NOT ANALYZED';
 }
