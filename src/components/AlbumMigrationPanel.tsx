@@ -3,7 +3,12 @@ import { AlbumAdminError } from '../services/album-admin-api';
 import { applyAdminAlbumMigration, getAdminAlbumMigrationDryRun, type AlbumMigrationCandidate, type AlbumMigrationDryRun } from '../services/album-migration-api';
 
 function messageOf(reason: unknown) {
-  if (reason instanceof AlbumAdminError) return `${reason.message}${reason.code ? ` [${reason.code}]` : ''}`;
+  if (reason instanceof AlbumAdminError) {
+    const status = reason.status ? ` · HTTP ${reason.status}` : '';
+    const code = reason.code ? ` [${reason.code}]` : '';
+    const rollback = reason.rollback ? ` · rollback ${JSON.stringify(reason.rollback)}` : '';
+    return `${reason.message}${code}${status}${rollback}`;
+  }
   return reason instanceof Error ? reason.message : String(reason);
 }
 function move(list: string[], from: number, to: number) {
@@ -93,13 +98,18 @@ export function AlbumMigrationPanel() {
     };
   }, [plan]);
 
-  async function load() {
-    setLoading(true); setError(null);
+  async function load({ preserveError = false }: { preserveError?: boolean } = {}) {
+    setLoading(true);
+    if (!preserveError) setError(null);
     try {
       const next = await getAdminAlbumMigrationDryRun();
       setPlan(next);
       setOrders(current => Object.fromEntries(next.albums.map(album => [album.id, current[album.id] && current[album.id].length === album.proposedTrackIds.length && current[album.id].every(id => album.proposedTrackIds.includes(id)) ? current[album.id] : [...album.proposedTrackIds]])));
-    } catch (reason) { setError(messageOf(reason)); }
+    } catch (reason) {
+      const loadError = messageOf(reason);
+      if (preserveError) setError(current => current || loadError);
+      else setError(loadError);
+    }
     finally { setLoading(false); }
   }
   useEffect(()=>{ void load(); },[]);
@@ -133,8 +143,9 @@ export function AlbumMigrationPanel() {
       setTyped(current=>({...current,[candidate.id]:''}));
       await load();
     } catch (reason) {
-      setError(`${messageOf(reason)} Reload the dry-run before any retry.`);
-      await load().catch(()=>{});
+      const diagnostic = `${messageOf(reason)} Reloaded the dry-run without clearing this failure. Do not retry until the diagnostic is reviewed.`;
+      setError(diagnostic);
+      await load({ preserveError: true }).catch(()=>{});
     } finally { setBusy(null); }
   }
 
@@ -142,7 +153,7 @@ export function AlbumMigrationPanel() {
     <article className="panel album-migration-intro"><div><span className="eyebrow">PHASE UX · C2.5-E</span><h2>Legacy Albums → canonical R2</h2><p>This cockpit starts read-only. It derives candidates from live R2 track manifests, never from a stale hardcoded track list. There is no batch migration.</p></div><button className="ghost-btn" disabled={loading||Boolean(busy)} onClick={()=>void load()}>{loading?'Reading…':'Refresh dry-run'}</button></article>
     {plan && <article className="panel album-migration-proof"><div><span>Migration</span><code>{plan.migrationId}</code></div><div><span>Source ref</span><code>{plan.sourceRef.slice(0,12)}…</code></div><div><span>Generated</span><strong>{new Date(plan.generatedAt).toLocaleString()}</strong></div><div><span>Writes</span><strong>{plan.writesPerformed ? 'UNEXPECTED' : '0 · READ ONLY'}</strong></div></article>}
     {plan && reviewStats && <article className="panel album-migration-review"><div className="album-migration-review-head"><div><span className="eyebrow">C2.5-E2 / REVIEW PACK</span><h3>Archive the dry-run before any write</h3><p>Export the exact live plan for offline review, or copy a token-free summary for discussion. Neither action calls the migration write endpoint.</p></div><div className="album-migration-review-actions"><button className="ghost-btn" disabled={Boolean(busy)} onClick={exportDryRun}>Download dry-run JSON</button><button className="ghost-btn" disabled={Boolean(busy)} onClick={()=>void copySummary()}>Copy review summary</button></div></div><div className="album-migration-review-stats"><div className="album-migration-review-stat"><span>READY TO REVIEW</span><strong>{reviewStats.ready}</strong></div><div className="album-migration-review-stat"><span>BLOCKED</span><strong>{reviewStats.blocked}</strong></div><div className="album-migration-review-stat"><span>ALREADY CANONICAL</span><strong>{reviewStats.canonical}</strong></div><div className="album-migration-review-stat"><span>SINGLES / LOCKED</span><strong>{reviewStats.singles}</strong></div></div><p className="album-migration-review-warning">Downloaded JSON contains state tokens and private catalog metadata. Keep it local/private; the copyable review summary deliberately excludes state tokens.</p></article>}
-    {error && <div className="album-error">{error}</div>}{notice && <div className="album-notice">{notice}</div>}
+    {error && <div className="album-error" role="alert"><strong>Migration diagnostic</strong><br/>{error}</div>}{notice && <div className="album-notice">{notice}</div>}
     {plan?.albums.map(candidate => <CandidateCard key={candidate.id} candidate={candidate} order={orders[candidate.id]||candidate.proposedTrackIds} setOrder={ids=>setOrders(current=>({...current,[candidate.id]:ids}))} typed={typed[candidate.id]||''} setTyped={value=>setTyped(current=>({...current,[candidate.id]:value}))} orderConfirmed={Boolean(orderConfirmed[candidate.id])} setOrderConfirmed={value=>setOrderConfirmed(current=>({...current,[candidate.id]:value}))} busy={busy===candidate.id} onApply={()=>apply(candidate)}/>)}
     {plan && <article className="panel album-migration-singles"><div><span className="eyebrow">SINGLES / LOCKED</span><h3>Singles stays transitional in C2.5-E</h3><p>{plan.singles.candidateCount} track{plan.singles.candidateCount===1?'':'s'} currently use the legacy Singles cache. They are <strong>not</strong> converted into a canonical Album here.</p><small>{plan.singles.reason}</small></div><span className="album-migration-state locked">FUTURE VIRTUAL COLLECTION</span></article>}
   </section>;
