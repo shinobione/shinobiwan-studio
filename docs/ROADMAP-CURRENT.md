@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — CURRENT ROADMAP
 
-Updated: 2026-08-11 after C2.5 closeout, C3-A implementation, the focused Album UX corrective, the Album palette slice and the Build 41 New Track capability hotfix.
+Updated: 2026-08-11 after C2.5 closeout, C3-A implementation, the focused Album UX corrective, the Album palette slice and the Build 41 New Track real-user pass.
 
 This file is the concise current roadmap. Historical release details remain in the milestone-specific documents and Git history.
 
@@ -93,7 +93,7 @@ Status: **IMPLEMENTED CANDIDATE — REAL USER SMOKE PENDING**
 Candidate engine/UI releases:
 
 - SonicTrace `V2-E · BUILD 06` / Deep Audio `2.0.1-alpha`;
-- Studio Deep Audio baseline `v0.13.0 · Build 38`.
+- Studio Deep Audio baseline `v0.13.0 · Build 38`, carried forward into current Studio Build 41.
 
 Scope:
 
@@ -108,7 +108,7 @@ Scope:
 Acceptance still requires a real canonical Studio scan after the local SonicTrace coordinator is updated/restarted. Prefer a track that previously triggered the loudnorm measurement-block failure.
 
 #### C3-UX corrective — Focused Album workspace + canonical palette
-Status: **IMPLEMENTED CANDIDATE — REAL USER UI CHECK PENDING**
+Status: **COMPLETE — REAL USER PASS**
 
 Studio `v0.13.1 · Build 39` fixed the post-C2.5 Album-management composition:
 
@@ -118,7 +118,7 @@ Studio `v0.13.1 · Build 39` fixed the post-C2.5 Album-management composition:
 - current canonical artwork is visible in the editor;
 - completed C2.5-E migration tooling lives in `System` as a collapsed maintenance/archive disclosure.
 
-Studio `v0.13.2 · Build 40` + LaunchPAD `2026.08.11.90` add the small palette slice requested before C3-A smoke:
+Studio `v0.13.2 · Build 40` + LaunchPAD `2026.08.11.90` added the requested palette slice:
 
 - raw `Accent` / `Accent 2` inputs are replaced with **Primary color** / **Secondary color** controls;
 - native color picker + validated HEX editing + optional eyedropper;
@@ -128,14 +128,14 @@ Studio `v0.13.2 · Build 40` + LaunchPAD `2026.08.11.90` add the small palette s
 - missing or malformed colors use the existing LaunchPAD visual fallback;
 - no Worker version, R2 data, Album membership/order, player, queue or Lyrics path changes.
 
-Track Manager remains the sole protected Album write authority.
+Real-user review confirmed the focused Album workspace, Tracklist controls, canonical artwork view and palette-driven public Album presentation. Track Manager remains the sole protected Album write authority.
 
 See `docs/PHASE-UX-C3-ALBUMS-FOCUSED-WORKSPACE.md`, `CHANGELOG-C3-BUILD40.md` and LaunchPAD `CHANGELOG-C3-ALBUM-PALETTE-BUILD90.md`.
 
 #### C3 operational hotfix — New Track additive capability compatibility
-Status: **IMPLEMENTED CANDIDATE — REAL USER RETRY PENDING**
+Status: **COMPLETE — REAL USER PASS**
 
-Studio `v0.13.3 · Build 41` fixes the real-user New Track pre-write failure where the legacy Phase 4 capability guard rejected Track Manager v5.19 / bridge v1.11 for advertising legitimate newer Album capabilities.
+Studio `v0.13.3 · Build 41` fixed the real-user New Track pre-write failure where the legacy Phase 4 capability guard rejected Track Manager v5.19 / bridge v1.11 for advertising legitimate newer Album capabilities.
 
 The compatibility rule is now operation-specific:
 
@@ -148,9 +148,11 @@ The compatibility rule is now operation-specific:
 
 Regression coverage includes the exact current capability list (`album-create`, `album-metadata`, `album-membership`, `album-move`, `album-assets`, `album-migration`) plus a synthetic future capability.
 
+Real-user retry passed on 2026-08-11 with **Stick to You** after checking canonical state before retry. The New Track flow completed successfully under Build 41. Post-pass rollback anchor: `safety/post-build41-real-user-pass-20260811-1833`.
+
 See `docs/PHASE-UX-C3-TRACK-CREATE-CAPABILITY-HOTFIX.md` and `CHANGELOG-C3-BUILD41.md`.
 
-After Build 41 is deployed, reload canonical Studio state and verify the intended `trackId` is absent before retrying New Track. Then resume the existing C3-A local-GPU smoke. C3-A remains unaccepted until that scan passes.
+**Next active step: resume the existing C3-A local-GPU smoke.** C3-A remains unaccepted until that scan passes.
 
 #### C3-B — Studio V2-E parity
 Status: **NOT STARTED**
@@ -258,4 +260,4 @@ SonicTrace      V2-E Build 06
 Deep Audio      2.0.1-alpha
 ```
 
-Build 41 contains the C3-A Build 38 semantics, focused Album UX corrective, Album palette controls and the isolated New Track additive-capability hotfix. LaunchPAD Build 90 is frontend-only and consumes canonical Album palette metadata without changing Worker v2.7 or R2 authority. C3-A is not accepted until real-user local-GPU validation passes. UI-only or source-only checks do not fabricate Deep Audio acceptance.
+The focused C3 Album UX/palette slice and the Build 41 New Track capability hotfix are now real-user validated. Build 41 still carries the C3-A Build 38 Deep Audio candidate, which remains pending its local-GPU canonical scan. LaunchPAD Build 90 is frontend-only and consumes canonical Album palette metadata without changing Worker v2.7 or R2 authority. UI and New Track passes do not fabricate Deep Audio acceptance.
