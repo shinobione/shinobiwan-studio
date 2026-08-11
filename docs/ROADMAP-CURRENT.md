@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — CURRENT ROADMAP
 
-Updated: 2026-08-11 after C2.5 closeout, focused Album UX/palette validation, Build 41 New Track validation and the C3-A Deep Audio real-user pass.
+Updated: 2026-08-11 after C2.5 closeout, focused Album UX/palette validation, Build 41 New Track validation, C3-A Deep Audio real-user pass and C3-B V2-E parity implementation.
 
 This file is the concise current roadmap. Historical release details remain in the milestone-specific documents and Git history.
 
@@ -93,7 +93,7 @@ Status: **COMPLETE — REAL USER PASS**
 Validated engine/UI releases:
 
 - SonicTrace `V2-E · BUILD 06` / Deep Audio `2.0.1-alpha`;
-- Studio C3-A semantics introduced in `v0.13.0 · Build 38` and carried forward into current Studio `v0.13.3 · Build 41`.
+- Studio C3-A semantics introduced in `v0.13.0 · Build 38` and carried forward into current Studio releases.
 
 Delivered:
 
@@ -157,19 +157,33 @@ Real-user retry passed on 2026-08-11 with **Stick to You** after checking canoni
 See `docs/PHASE-UX-C3-TRACK-CREATE-CAPABILITY-HOTFIX.md` and `CHANGELOG-C3-BUILD41.md`.
 
 #### C3-B — Studio V2-E parity
-Status: **NEXT / NOT STARTED**
+Status: **IMPLEMENTED CANDIDATE — REAL USER SMOKE PENDING**
 
-Planned read-only intelligence parity now unlocked by the C3-A pass:
+Studio `v0.14.0 · Build 42` implements the planned canonical read-only parity layer:
 
-- deterministic 2D projection from canonical persisted 512D embeddings;
-- acoustic zones separate from sonic/style families;
-- redundant pairs, outliers and bridges;
-- canonical Album/Project intelligence using Album `trackIds` + canonical SonicTrace sidecars;
-- advisory coherence / bridge / proposed sequence only; never silently rewrite artistic Album order;
-- standalone SonicTrace IndexedDB remains local standalone memory, not Studio/R2 authority.
+- deterministic 2D projection from canonical persisted finite 512D embeddings;
+- stable acoustic K-means zones in the projected space;
+- Neural genre-derived sonic/style families kept separate from acoustic zones;
+- explicit visual semantics: **position = embedding proximity, color = sonic family, zone = acoustic neighborhood**;
+- redundant/very-close pairs, neighborhood outliers and cross-zone bridge candidates;
+- canonical Album/Project intelligence using protected Album `trackIds` plus canonical SonicTrace sidecars;
+- project embedding coverage, mean coherence, outliers and bridge candidate;
+- advisory continuity sequence using embedding proximity plus available Neural energy/BPM/key enrichment;
+- every recommendation preserves original canonical index provenance and exposes no automatic order-write action;
+- standalone SonicTrace IndexedDB remains standalone local memory and is never Studio/R2 authority.
+
+C3-B is intentionally read-only. It adds no Track Manager mutation call, no R2 write, no Worker change, no LaunchPAD runtime change and no SonicTrace runtime/schema change.
+
+Regression coverage protects deterministic projection/zone identity, Neural-family separation, catalog signals and non-mutation of canonical `album.trackIds`.
+
+Safety checkpoint: `safety/pre-c3-b-v2e-parity-20260811-1910`.
+
+Real-user acceptance still requires the deployed Build 42 Intelligence surface to be checked against the real canonical catalog and at least one canonical Album. Do not mark C3-B complete from CI alone.
+
+See `docs/PHASE-UX-C3-B-V2E-PARITY.md` and `CHANGELOG-C3-BUILD42.md`.
 
 #### C3-C — Premium interaction polish / motion feel
-Status: **NOT STARTED**
+Status: **BLOCKED UNTIL C3-B REAL USER PASS**
 
 Final cross-app interaction-quality pass before PHASE UX closeout. This is a presentation/interaction layer, not a new data or architecture phase.
 
@@ -246,7 +260,7 @@ There is currently **no official Phase 11**.
 ## Current runtime / candidate baseline
 
 ```text
-Validated PHASE UX runtime line:
+Validated through C3-A / Build 41 operational smoke:
 Studio          0.13.3 / Build 41
 LaunchPAD       2026.08.11.90
 Track Manager   v5.19
@@ -255,6 +269,16 @@ Public Worker   v2.7
 SonicTrace      V2-E Build 06
 Deep Audio      2.0.1-alpha
 LRC Maker       6.3.8
+
+Current C3-B candidate:
+Studio          0.14.0 / Build 42
+LaunchPAD       2026.08.11.90   (unchanged)
+Track Manager   v5.19           (unchanged)
+Studio bridge   v1.11           (unchanged)
+Public Worker   v2.7            (unchanged)
+SonicTrace      V2-E Build 06   (unchanged)
+Deep Audio      2.0.1-alpha     (unchanged)
+LRC Maker       6.3.8           (unchanged)
 ```
 
-C3-A, the focused C3 Album UX/palette slice and the Build 41 New Track capability hotfix are now real-user validated. C3-B is the next active implementation slice. LaunchPAD Build 90 remains frontend-only and consumes canonical Album palette metadata without changing Worker v2.7 or R2 authority.
+C3-A, the focused C3 Album UX/palette slice and the Build 41 New Track capability hotfix are real-user validated. Build 42 is the C3-B implementation candidate and must pass its real-user Intelligence smoke before C3-C becomes active. Phase 7 remains locked.
