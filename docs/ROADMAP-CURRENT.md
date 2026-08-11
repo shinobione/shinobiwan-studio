@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — CURRENT ROADMAP
 
-Updated: 2026-08-11 after PHASE UX C2.5 real-user closeout.
+Updated: 2026-08-11 after C2.5 closeout and C3-A implementation start.
 
 This file is the concise current roadmap. Historical release details remain in the milestone-specific documents and Git history.
 
@@ -85,19 +85,41 @@ LaunchPAD Build 89 + public Worker v2.7 consume canonical R2 Albums. Public auth
 See `docs/PHASE-UX-C2-5-CLOSEOUT.md`.
 
 ### C3 — SonicTrace Deep Audio / V2-E parity
-Status: **NEXT — NOT STARTED**
+Status: **IN PROGRESS**
 
-Scope to address carefully:
+#### C3-A — Deep Audio resilience + truthful profile semantics
+Status: **IMPLEMENTED CANDIDATE — REAL USER SMOKE PENDING**
 
-- robust FFmpeg `loudnorm` measurement handling;
-- accurate distinction between backend offline vs mastering/deep-analysis failure;
-- full Studio ↔ SonicTrace V2-E parity;
-- preserve Browser DSP fallback while avoiding misleading FULL/PARTIAL semantics;
-- preserve GPU cluster behavior and existing Catalog Intelligence persistence;
-- evaluate Album/Project intelligence only where it respects canonical Album authority;
-- no R2/schema churn unless explicitly required and reviewed.
+Candidate releases:
 
-After C3:
+- SonicTrace `V2-E · BUILD 06` / Deep Audio `2.0.1-alpha`;
+- Studio `v0.13.0 · Build 38`.
+
+Scope:
+
+- robust FFmpeg `loudnorm` measurement parsing;
+- real FFmpeg EBU R128 fallback;
+- unavailable mastering measurements become warnings instead of aborting Neural / embedding / structure;
+- accurate `FULL / PARTIAL / UNAVAILABLE / OUTDATED` profile semantics;
+- distinguish coordinator transport/offline failures from coordinator processing failures;
+- null mastering values render as missing, never as numeric zero;
+- schema v1, Track Manager persistence and R2 paths unchanged.
+
+Acceptance requires a real canonical Studio scan after the local SonicTrace coordinator is updated/restarted. Prefer a track that previously triggered the loudnorm measurement-block failure.
+
+#### C3-B — Studio V2-E parity
+Status: **NOT STARTED**
+
+Planned read-only intelligence parity after C3-A smoke:
+
+- deterministic 2D projection from canonical persisted 512D embeddings;
+- acoustic zones separate from sonic/style families;
+- redundant pairs, outliers and bridges;
+- canonical Album/Project intelligence using Album `trackIds` + canonical SonicTrace sidecars;
+- advisory coherence / bridge / proposed sequence only; never silently rewrite artistic Album order;
+- standalone SonicTrace IndexedDB remains local standalone memory, not Studio/R2 authority.
+
+After C3-B:
 
 - final PHASE UX cross-app real-user smoke;
 - documentation reconciliation;
@@ -152,9 +174,10 @@ Potential mature extractions only after behavior is stable:
 
 There is currently **no official Phase 11**.
 
-## Current runtime baseline
+## Current runtime / candidate baseline
 
 ```text
+Last real-user baseline:
 Studio          0.12.2 / Build 37
 LaunchPAD       2026.08.11.89
 Track Manager   v5.19
@@ -162,6 +185,11 @@ Studio bridge   v1.11
 Public Worker   v2.7
 SonicTrace      V2-E Build 05
 LRC Maker       6.3.8
+
+C3-A candidate:
+Studio          0.13.0 / Build 38
+SonicTrace      V2-E Build 06
+Deep Audio      2.0.1-alpha
 ```
 
-Documentation-only closeouts do not bump runtime versions.
+C3-A is not accepted until real-user local-GPU validation passes. Documentation-only closeouts do not fabricate runtime versions.
