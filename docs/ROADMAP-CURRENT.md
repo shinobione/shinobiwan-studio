@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — CURRENT ROADMAP
 
-Updated: 2026-08-11 after C2.5 closeout, C3-A implementation, the focused Album UX corrective and the Album palette slice.
+Updated: 2026-08-11 after C2.5 closeout, C3-A implementation, the focused Album UX corrective, the Album palette slice and the Build 41 New Track capability hotfix.
 
 This file is the concise current roadmap. Historical release details remain in the milestone-specific documents and Git history.
 
@@ -132,7 +132,25 @@ Track Manager remains the sole protected Album write authority.
 
 See `docs/PHASE-UX-C3-ALBUMS-FOCUSED-WORKSPACE.md`, `CHANGELOG-C3-BUILD40.md` and LaunchPAD `CHANGELOG-C3-ALBUM-PALETTE-BUILD90.md`.
 
-After the Build 40 / Build 90 UI check, resume the existing C3-A local-GPU smoke immediately. C3-A remains unaccepted until that scan passes.
+#### C3 operational hotfix — New Track additive capability compatibility
+Status: **IMPLEMENTED CANDIDATE — REAL USER RETRY PENDING**
+
+Studio `v0.13.3 · Build 41` fixes the real-user New Track pre-write failure where the legacy Phase 4 capability guard rejected Track Manager v5.19 / bridge v1.11 for advertising legitimate newer Album capabilities.
+
+The compatibility rule is now operation-specific:
+
+- Track Create requires `track-create`;
+- track asset mutation requires `assets`;
+- catalog rebuild requires `catalog-rebuild`;
+- unrelated current/future `manage` capabilities are additive and do not invalidate the bridge;
+- a missing required capability still blocks the operation;
+- no Track Manager, Worker, R2, schema, Album authority or transaction-order change.
+
+Regression coverage includes the exact current capability list (`album-create`, `album-metadata`, `album-membership`, `album-move`, `album-assets`, `album-migration`) plus a synthetic future capability.
+
+See `docs/PHASE-UX-C3-TRACK-CREATE-CAPABILITY-HOTFIX.md` and `CHANGELOG-C3-BUILD41.md`.
+
+After Build 41 is deployed, reload canonical Studio state and verify the intended `trackId` is absent before retrying New Track. Then resume the existing C3-A local-GPU smoke. C3-A remains unaccepted until that scan passes.
 
 #### C3-B — Studio V2-E parity
 Status: **NOT STARTED**
@@ -234,10 +252,10 @@ SonicTrace      V2-E Build 05
 LRC Maker       6.3.8
 
 Current C3 candidate:
-Studio          0.13.2 / Build 40
+Studio          0.13.3 / Build 41
 LaunchPAD       2026.08.11.90
 SonicTrace      V2-E Build 06
 Deep Audio      2.0.1-alpha
 ```
 
-Build 40 contains the C3-A Build 38 semantics plus the focused Album UX corrective and Album palette controls. LaunchPAD Build 90 is frontend-only and consumes canonical Album palette metadata without changing Worker v2.7 or R2 authority. C3-A is not accepted until real-user local-GPU validation passes. UI-only checks do not fabricate Deep Audio acceptance.
+Build 41 contains the C3-A Build 38 semantics, focused Album UX corrective, Album palette controls and the isolated New Track additive-capability hotfix. LaunchPAD Build 90 is frontend-only and consumes canonical Album palette metadata without changing Worker v2.7 or R2 authority. C3-A is not accepted until real-user local-GPU validation passes. UI-only or source-only checks do not fabricate Deep Audio acceptance.
