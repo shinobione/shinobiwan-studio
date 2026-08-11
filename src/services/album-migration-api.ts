@@ -129,4 +129,4 @@ export async function applyAdminAlbumMigration(input: {
   return payload;
 }
 
-export const albumMigrationService = Object.freeze({ intent: MIGRATION_INTENT, transport: 'Track Manager v5.18 / bridge v1.10 only' });
+export const albumMigrationService = Object.freeze({ intent: MIGRATION_INTENT, transport: 'Track Manager v5.19 / bridge v1.11 only' });

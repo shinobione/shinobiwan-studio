@@ -5,8 +5,8 @@ Artist Content & Intelligence Manager — private orchestration cockpit for the 
 ## Current PHASE UX release line
 
 ```text
-Studio          v0.13.0 · Build 38
-Codename        phase-ux-c3-deep-audio-resilience
+Studio          v0.13.1 · Build 39
+Codename        phase-ux-c3-albums-focused-workspace
 
 LaunchPAD       2026.08.11.89
 Public Worker   v2.7
@@ -21,7 +21,7 @@ Deep Audio      2.0.1-alpha
 LRC Maker       6.3.8
 ```
 
-C2.5 remains the last fully real-user-validated milestone. Build 38 / SonicTrace Build 06 is the C3-A candidate and must still pass the local-GPU real-user smoke before C3-A is accepted.
+C2.5 remains the last fully real-user-validated milestone. Build 39 contains the C3-A Build 38 Deep Audio candidate plus the isolated C3 Album UX corrective. The Album UX still needs a real-user UI check, then C3-A resumes its local-GPU smoke before it can be accepted.
 
 Historical implementation details remain in milestone-specific docs/changelogs and Git history.
 
@@ -31,17 +31,29 @@ Historical implementation details remain in milestone-specific docs/changelogs a
 
 The final C2.5-F smoke passed on desktop and mobile on 2026-08-11. LaunchPAD Build 89 displays the three canonical R2 Albums plus virtual Singles through public Worker v2.7.
 
-**C3 — SonicTrace Deep Audio / V2-E parity is now STARTED.**
+**C3 — SonicTrace Deep Audio / V2-E parity is IN PROGRESS.**
 
-C3-A focuses on the real-user `FFmpeg loudnorm did not return a measurement block` failure and truthful `FULL / PARTIAL / UNAVAILABLE / OUTDATED` Studio semantics. C3-B remains the V2-E parity layer after C3-A real-user validation.
+C3-A addresses the real-user `FFmpeg loudnorm did not return a measurement block` failure and truthful `FULL / PARTIAL / UNAVAILABLE / OUTDATED` Studio semantics.
+
+Before running the C3-A local-GPU smoke, Build 39 corrects a post-C2.5 Album UX debt found during real-user review:
+
+- Albums / Projects is now a cover-first canonical release library;
+- opening one Album shows only that Album;
+- Album editing is focused into `Overview / Tracklist / Assets` tabs;
+- the current canonical cover is visible in the editor;
+- completed C2.5-E migration tooling moves to `System` as a collapsed maintenance/archive surface.
+
+C3-B remains the V2-E parity layer after C3-A real-user validation.
 
 See:
 
 - [`docs/PHASE-UX-C2-5-CLOSEOUT.md`](docs/PHASE-UX-C2-5-CLOSEOUT.md)
 - [`docs/PHASE-UX-C3-DEEP-AUDIO-RESILIENCE.md`](docs/PHASE-UX-C3-DEEP-AUDIO-RESILIENCE.md)
+- [`docs/PHASE-UX-C3-ALBUMS-FOCUSED-WORKSPACE.md`](docs/PHASE-UX-C3-ALBUMS-FOCUSED-WORKSPACE.md)
 - [`docs/ROADMAP-CURRENT.md`](docs/ROADMAP-CURRENT.md)
 - [`CHANGELOG-C2-5-CLOSEOUT.md`](CHANGELOG-C2-5-CLOSEOUT.md)
 - [`CHANGELOG-C3-BUILD38.md`](CHANGELOG-C3-BUILD38.md)
+- [`CHANGELOG-C3-BUILD39.md`](CHANGELOG-C3-BUILD39.md)
 
 ## Important roadmap status
 
@@ -91,6 +103,8 @@ Current canonical Album set:
 
 LaunchPAD currently exposes 30 public tracks and three canonical Albums; Singles is virtual.
 
+Build 39 Studio Album management reads private canonical manifests through Track Manager and reads artwork previews from the already validated public Worker v2.7 `/albums` canonical projection. Public artwork failure never authorizes a direct Studio R2 write path.
+
 ## Canonical Lyrics contract
 
 This rule is non-negotiable:
@@ -129,6 +143,25 @@ tracks/<slug>/analysis/sonictrace/history/<analysisId>.json
 ```
 
 Track Manager remains the only protected write authority. The C3 release itself performs no R2 write.
+
+## C3 Album UX corrective
+
+Build 39 removes completed migration scaffolding from the daily Albums workflow without deleting the tooling:
+
+```text
+Albums / Projects
+  -> cover-first canonical library
+  -> one selected Album at a time
+      -> Overview
+      -> Tracklist
+      -> Assets
+
+System
+  -> Album migration archive · C2.5 complete
+     (collapsed by default)
+```
+
+Ordered `album.trackIds` remains the only canonical membership/artistic-order authority. Metadata, membership, move and asset mutations use the same guarded Track Manager APIs as C2.5-D. Whole-Album deletion remains unavailable.
 
 ## Completed architecture phases
 
@@ -197,6 +230,12 @@ See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md).
 
 ## Safety / rollback
 
+C3 Album UX checkpoint:
+
+```text
+safety/pre-c3-ux-albums-20260811-1530
+```
+
 C3 pre-work checkpoint:
 
 ```text
@@ -218,39 +257,3 @@ Older validated Phase 6 checkpoints remain historical rollback anchors.
 Real-user smoke remains authoritative for user-facing milestone acceptance. CI is necessary but not sufficient.
 
 Do not mutate production WAV/cover/lyrics/Album objects merely to manufacture a frontend smoke test.
-
-Source merge, web deployment, local Deep Audio runtime, Worker deployment and R2/catalog mutation are separate facts and must remain separately auditable.
-
-## Development
-
-```bash
-npm install
-npm run dev
-npm run check:private-read
-npm run check:phase5
-npm run check:phase6
-npm run check:c3
-npm run check:ux
-npm run typecheck
-npm run build
-```
-
-## Production URL
-
-```text
-https://shinobione.github.io/shinobiwan-studio/
-```
-
-## Versioning discipline
-
-A real Studio runtime release updates together:
-
-1. `package.json`;
-2. `src/release.ts`;
-3. visible version/build/codename copy;
-4. changelog + affected docs;
-5. README;
-6. security/integration regression guards;
-7. PR dependency and rollback notes.
-
-Documentation-only milestone closeouts do **not** fabricate a runtime build/version bump.

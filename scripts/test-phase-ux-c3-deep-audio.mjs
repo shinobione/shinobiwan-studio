@@ -30,8 +30,11 @@ assert.ok(!panel.includes('SonicTrace Deep Audio is offline. Browser DSP complet
 assert.ok(api.includes("provenance: { dsp: 'measured-in-browser', deepAudio: 'unavailable' }"), 'Browser-only fallback must keep explicit Deep Audio unavailable provenance.');
 assert.ok(api.includes("xhr.onerror = () => reject(new SonicTraceError('SonicTrace Deep Audio node is offline or blocked by the browser."), 'Transport failures must remain distinguishable from HTTP processing failures.');
 
-assert.ok(release.includes("version: '0.13.0'"), 'C3 Studio release must be v0.13.0.');
-assert.ok(release.includes('build: 38'), 'C3 Studio release must be Build 38.');
-assert.ok(release.includes("codename: 'phase-ux-c3-deep-audio-resilience'"), 'C3 Studio release codename is missing.');
+const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
+assert.ok(/^0\.13\.\d+$/.test(version), `C3 Studio release must stay on the 0.13.x line, got ${version}.`);
+assert.ok(build >= 38, `C3 Studio build must be >= 38, got ${build}.`);
+assert.ok(codename.startsWith('phase-ux-c3-'), `C3 Studio release codename must stay on the phase-ux-c3-* lineage, got ${codename}.`);
 
 console.log('C3 Deep Audio FULL/PARTIAL/UNAVAILABLE semantics and transport-vs-processing guards passed.');

@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — CURRENT ROADMAP
 
-Updated: 2026-08-11 after C2.5 closeout and C3-A implementation start.
+Updated: 2026-08-11 after C2.5 closeout, C3-A implementation and the C3 Album UX corrective.
 
 This file is the concise current roadmap. Historical release details remain in the milestone-specific documents and Git history.
 
@@ -90,10 +90,10 @@ Status: **IN PROGRESS**
 #### C3-A — Deep Audio resilience + truthful profile semantics
 Status: **IMPLEMENTED CANDIDATE — REAL USER SMOKE PENDING**
 
-Candidate releases:
+Candidate engine/UI releases:
 
 - SonicTrace `V2-E · BUILD 06` / Deep Audio `2.0.1-alpha`;
-- Studio `v0.13.0 · Build 38`.
+- Studio Deep Audio baseline `v0.13.0 · Build 38`.
 
 Scope:
 
@@ -105,7 +105,24 @@ Scope:
 - null mastering values render as missing, never as numeric zero;
 - schema v1, Track Manager persistence and R2 paths unchanged.
 
-Acceptance requires a real canonical Studio scan after the local SonicTrace coordinator is updated/restarted. Prefer a track that previously triggered the loudnorm measurement-block failure.
+Acceptance still requires a real canonical Studio scan after the local SonicTrace coordinator is updated/restarted. Prefer a track that previously triggered the loudnorm measurement-block failure.
+
+#### C3-UX corrective — Focused Album workspace
+Status: **IMPLEMENTED CANDIDATE — REAL USER UI CHECK PENDING**
+
+Studio `v0.13.1 · Build 39` fixes the post-C2.5 Album-management composition before resuming the C3-A smoke:
+
+- Albums / Projects becomes a canonical cover-first library;
+- selecting one Album renders only that Album;
+- focused `Overview / Tracklist / Assets` tabs replace the previous endless stacked editor flow;
+- current canonical artwork is visible in the editor;
+- completed C2.5-E migration tooling moves to `System` as a collapsed maintenance/archive disclosure;
+- Track Manager write authority and all Album guards stay unchanged;
+- no LaunchPAD, Worker, R2 or SonicTrace backend mutation.
+
+See `docs/PHASE-UX-C3-ALBUMS-FOCUSED-WORKSPACE.md`.
+
+After the Build 39 UI check, resume the existing C3-A local-GPU smoke immediately. C3-A remains unaccepted until that scan passes.
 
 #### C3-B — Studio V2-E parity
 Status: **NOT STARTED**
@@ -177,7 +194,7 @@ There is currently **no official Phase 11**.
 ## Current runtime / candidate baseline
 
 ```text
-Last real-user baseline:
+Last fully real-user baseline:
 Studio          0.12.2 / Build 37
 LaunchPAD       2026.08.11.89
 Track Manager   v5.19
@@ -186,10 +203,10 @@ Public Worker   v2.7
 SonicTrace      V2-E Build 05
 LRC Maker       6.3.8
 
-C3-A candidate:
-Studio          0.13.0 / Build 38
+Current C3 candidate:
+Studio          0.13.1 / Build 39
 SonicTrace      V2-E Build 06
 Deep Audio      2.0.1-alpha
 ```
 
-C3-A is not accepted until real-user local-GPU validation passes. Documentation-only closeouts do not fabricate runtime versions.
+Build 39 contains the C3-A Build 38 semantics plus the isolated Albums UX corrective. C3-A is not accepted until real-user local-GPU validation passes. Documentation-only or UI-only checks do not fabricate Deep Audio acceptance.

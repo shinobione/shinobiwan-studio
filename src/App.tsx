@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { resolveAdminMode } from './admin-mode';
-import { AlbumManager } from './components/AlbumManager';
 import { AlbumMigrationPanel } from './components/AlbumMigrationPanel';
+import { AlbumsWorkspace } from './components/AlbumsWorkspace';
 import { CatalogRebuildPanel } from './components/CatalogRebuildPanel';
 import { CatalogView } from './components/CatalogView';
 import { CatalogIntelligenceView } from './components/CatalogIntelligenceView';
@@ -34,9 +34,9 @@ const shellCopy: Record<Exclude<StudioRoute, 'catalog' | 'albums'>, { eyebrow: s
     body: 'Studio, LRC Maker and Track Manager share the canonical trackId while lyrics.txt remains the single source of truth for text and synchronization.',
   },
   intelligence: {
-    eyebrow: 'SONICTRACE / PHASE 5',
+    eyebrow: 'SONICTRACE / C3',
     title: 'Audio Intelligence is catalog-linked.',
-    body: 'SonicTrace analyses are persisted as private R2 sidecars under the canonical trackId, with 512D similarity, clusters, history and source-version freshness checks.',
+    body: 'SonicTrace analyses are persisted as private R2 sidecars under the canonical trackId, with truthful FULL/PARTIAL/UNAVAILABLE status, 512D similarity, history and source-version freshness checks.',
   },
   lyrics: {
     eyebrow: 'LYRICS / CANONICAL',
@@ -55,8 +55,8 @@ const shellCopy: Record<Exclude<StudioRoute, 'catalog' | 'albums'>, { eyebrow: s
   },
   administration: {
     eyebrow: 'SYSTEM / ADMINISTRATION',
-    title: 'Phase 4 operational fallback is preserved.',
-    body: 'The old Track Manager remains available as the protected fallback. LRC Maker is context-linked for timing work while Track Manager remains the sole R2 write authority.',
+    title: 'Operational fallbacks and maintenance stay out of daily workflows.',
+    body: 'Track Manager remains the protected write authority and fallback. Completed migration tooling is archived here instead of being mixed into normal Album management.',
   },
 };
 
@@ -100,7 +100,7 @@ export default function App() {
   const navTitle = trackId ? 'Track Workspace' : [...NAV, ...UTILITY_NAV].find(item => item.route === route)?.label || 'Studio';
   const privateRead = readSource === 'private';
   const readLayerLabel = privateRead ? 'Private' : readSource === 'public' ? 'Fallback' : '…';
-  const readLayerDetail = privateRead ? 'Track Manager v5.18 · bridge v1.10' : readSource === 'public' ? 'LaunchPAD public read-only' : 'Checking Access session';
+  const readLayerDetail = privateRead ? 'Track Manager v5.19 · bridge v1.11' : readSource === 'public' ? 'LaunchPAD public read-only' : 'Checking Access session';
 
   return (
     <div className="studio-shell">
@@ -126,7 +126,7 @@ export default function App() {
         )}
 
         {route === 'catalog' && (trackId ? <TrackWorkspace trackId={trackId} section={trackSection} /> : <CatalogView />)}
-        {route === 'albums' && <><AlbumManager /><AlbumMigrationPanel /></>}
+        {route === 'albums' && <AlbumsWorkspace />}
         {route === 'intelligence' && <CatalogIntelligenceView />}
 
         {route !== 'dashboard' && route !== 'catalog' && route !== 'albums' && route !== 'intelligence' && (
@@ -140,6 +140,11 @@ export default function App() {
                   <a className="tool-card panel" href={studioConfig.sonicTraceUrl} target="_blank" rel="noreferrer"><b>ST</b><span>SonicTrace</span><small>Standalone engine fallback ↗</small></a>
                   <a className="tool-card panel" href={studioConfig.lrcMakerUrl} target="_blank" rel="noreferrer"><b>LM</b><span>LRC Maker</span><small>Advanced lyrics synchronization ↗</small></a>
                 </section>
+                <details className="panel c3-album-maintenance">
+                  <summary>Album migration archive · C2.5 complete</summary>
+                  <p className="c3-album-maintenance-copy">Historical one-Album-at-a-time migration tooling is preserved for diagnostics and audit, but removed from the daily Albums workspace. It stays closed by default.</p>
+                  <AlbumMigrationPanel />
+                </details>
               </>
             )}
           </>
