@@ -146,7 +146,27 @@ Planned read-only intelligence parity after C3-A smoke:
 - advisory coherence / bridge / proposed sequence only; never silently rewrite artistic Album order;
 - standalone SonicTrace IndexedDB remains local standalone memory, not Studio/R2 authority.
 
-After C3-B:
+#### C3-C — Premium interaction polish / motion feel
+Status: **NOT STARTED**
+
+Final cross-app interaction-quality pass before PHASE UX closeout. This is a presentation/interaction layer, not a new data or architecture phase.
+
+Planned themes:
+
+- tactile button press/release states so clicks feel intentional rather than static;
+- subtle glow / light response on primary actions and active controls;
+- short, coherent hover/focus/selection transitions across Studio and LaunchPAD;
+- smoother panel, tab, disclosure, modal and state transitions where they improve orientation;
+- premium feedback for success, loading, active, disabled and destructive states without noisy animation;
+- consistent micro-interactions for cards, icon buttons, toggles, sliders and track/Album actions;
+- motion timings and easing standardized as shared design tokens instead of one-off effects;
+- preserve mobile responsiveness, keyboard focus visibility and `prefers-reduced-motion` accessibility;
+- no gratuitous layout shifts, no fake progress, no animation that delays an actual action;
+- no changes to canonical data, Worker/R2 authority, player semantics or specialized-tool contracts merely for visual polish.
+
+Target feel: restrained, responsive and premium — visible enough that interactions feel alive, subtle enough that the UI never becomes a neon arcade.
+
+After C3-C:
 
 - final PHASE UX cross-app real-user smoke;
 - documentation reconciliation;
