@@ -13,7 +13,6 @@ const TRACK_CREATE_INTENT = 'track-create-v1';
 const ASSET_UPLOAD_INTENT = 'asset-upload-v1';
 const ASSET_DELETE_INTENT = 'asset-delete-v1';
 const CATALOG_REBUILD_INTENT = 'catalog-rebuild-v1';
-const REQUIRED_MANAGE_CAPABILITIES = new Set(['track-create', 'assets', 'catalog-rebuild']);
 
 export type Phase4ManageCapability = 'track-create' | 'assets' | 'catalog-rebuild';
 
@@ -113,9 +112,7 @@ async function requireManage(capability: Phase4ManageCapability): Promise<void> 
   const health = await getAdminBridgeHealth();
   const capabilities = health.capabilities as (typeof health.capabilities & { manage?: string[] }) | undefined;
   const manage = capabilities?.manage ?? [];
-  const unexpected = manage.filter(item => !REQUIRED_MANAGE_CAPABILITIES.has(item));
-  if (unexpected.length) throw new Phase4AdminError(`Track Manager advertises unexpected manage capability: ${unexpected.join(', ')}.`);
-  if (!manage.includes(capability)) throw new Phase4AdminError(`Track Manager does not advertise ${capability}. This operation stays locked until bridge v1.5 is active.`);
+  if (!manage.includes(capability)) throw new Phase4AdminError(`Track Manager does not advertise ${capability}. This operation stays locked until the required bridge capability is active.`);
 }
 
 async function postSimple<T>(path: string, body: unknown, timeoutMs = 15000): Promise<T> {
