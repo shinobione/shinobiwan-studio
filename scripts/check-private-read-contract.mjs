@@ -17,6 +17,7 @@ const sonicPanel = read('src/components/SonicTracePanel.tsx');
 const intelligenceView = read('src/components/CatalogIntelligenceView.tsx');
 const intelligenceMath = read('src/catalog-intelligence.ts');
 const sonicCss = read('src/sonictrace.css');
+const c3bCss = read('src/c3-b-v2e-parity.css');
 const readability = read('src/readability.css');
 const app = read('src/App.tsx');
 const release = read('src/release.ts');
@@ -128,10 +129,12 @@ for (const required of [
 ]) assert.ok(intelligenceMath.includes(required), `Catalog Intelligence C3-B engine missing ${required}.`);
 assert.ok(!intelligenceMath.includes('indexedDB'), 'Studio C3-B intelligence math must not depend on standalone SonicTrace IndexedDB.');
 
-const tinyPhase5Fonts = [...sonicCss.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)]
-  .map(match => Number(match[1]))
-  .filter(size => size < 11);
-assert.deepEqual(tinyPhase5Fonts, [], `Phase 5 UI must not reintroduce microcopy below 11px; found ${tinyPhase5Fonts.join(', ')}.`);
+for (const [label, css] of [['Phase 5', sonicCss], ['C3-B', c3bCss]]) {
+  const tinyFonts = [...css.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)]
+    .map(match => Number(match[1]))
+    .filter(size => size < 11);
+  assert.deepEqual(tinyFonts, [], `${label} UI must not reintroduce microcopy below 11px; found ${tinyFonts.join(', ')}.`);
+}
 for (const selector of [
   '.sonic-status-grid span', '.sonic-alert', '.sonic-layers span', '.sonic-warnings',
   '.sonic-history span', '.intelligence-track-list small', '.similarity-list span', '.cluster-grid small',
@@ -161,7 +164,7 @@ assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'Prod
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase5'), 'Production build must run the Phase 5 algorithm guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase6'), 'Production build must run the embedded Phase 6 regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:c3'), 'Production build must run the C3 semantics/parity guards.');
-assert.ok(String(pkg.scripts?.check\:c3 || pkg.scripts?.['check:c3'] || '').includes('test-phase-ux-c3-b-v2e-parity.mjs'), 'C3 build guard must include the V2-E parity regression test.');
+assert.ok(String(pkg.scripts?.['check:c3'] || '').includes('test-phase-ux-c3-b-v2e-parity.mjs'), 'C3 build guard must include the V2-E parity regression test.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:ux'), 'Production build must run the PHASE UX regression guard.');
 
 console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves Phase 0-6/C2.5 contracts while C3 advances under PHASE UX and Phase 7 remains stopped.`);
