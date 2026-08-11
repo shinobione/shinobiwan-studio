@@ -3,6 +3,8 @@ import fs from 'node:fs';
 import ts from 'typescript';
 
 const source = fs.readFileSync('src/catalog-intelligence.ts', 'utf8');
+const ui = fs.readFileSync('src/components/CatalogIntelligenceView.tsx', 'utf8');
+const clarityCss = fs.readFileSync('src/c3-b-map-clarity.css', 'utf8');
 const compiled = ts.transpileModule(source, {
   compilerOptions: { module: ts.ModuleKind.ES2022, target: ts.ScriptTarget.ES2022 },
 }).outputText;
@@ -94,4 +96,18 @@ assert.equal(project.proposedSequence.length, canonicalTrackIds.length);
 assert.deepEqual(new Set(project.proposedSequence.map(item => item.trackId)), new Set(canonicalTrackIds));
 assert.ok(project.proposedSequence.every(item => item.originalIndex === canonicalTrackIds.indexOf(item.trackId)));
 
-console.log('C3-B V2-E parity passed deterministic projection, acoustic zones, Neural families, catalog insights and read-only project sequencing checks.');
+for (const required of [
+  'HIDDEN FROM MAP',
+  'Not shown on map',
+  'Missing or invalid 512D embedding',
+  'Show only map-ready tracks',
+  '512D missing',
+  '512D embedding unavailable',
+  'not plotted and cannot be compared by proximity',
+  'mapped · {unmappedEntries.length} hidden',
+]) assert.ok(ui.includes(required), `C3-B map clarity UI missing ${required}.`);
+assert.ok(ui.includes('const unmappedEntries = useMemo'), 'C3-B must derive unmapped analyses from validEmbedding truthfully.');
+assert.ok(ui.includes('showMapReadyOnly && !validEmbedding(entry.embedding)'), 'Map-ready filter must use the same canonical embedding validator.');
+assert.ok(clarityCss.includes('.c3b-unmapped') && clarityCss.includes('.c3b-map-ready-toggle'), 'C3-B map clarity styles must remain loaded.');
+
+console.log('C3-B V2-E parity passed deterministic projection, acoustic zones, Neural families, catalog insights, read-only project sequencing, and explicit map coverage truthfulness checks.');
