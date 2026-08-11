@@ -18,6 +18,7 @@ import './c2-5-d-navigation.css';
 import './c2-5-d2-intake.css';
 import './c2-5-e-migration.css';
 import './c2-5-e2-review.css';
+import './c3-albums-ux.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
