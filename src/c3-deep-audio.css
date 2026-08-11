@@ -1,0 +1,6 @@
+.sonic-profile-label.unavailable { color: #9ba8ad; }
+.sonic-profile-badge.unavailable {
+  border-color: rgba(155, 168, 173, .22);
+  color: #aeb9bd;
+  background: rgba(155, 168, 173, .045);
+}

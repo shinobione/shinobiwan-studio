@@ -6,11 +6,19 @@ import {
   getSonicTraceAnalysisState,
   runSonicTraceAnalysis,
   saveSonicTraceAnalysis,
+  SonicTraceError,
 } from '../services/sonictrace-api';
-import { sonicTraceMissingLayers, sonicTraceProfileLabel, sonicTraceProfileState } from '../sonictrace-profile';
+import {
+  sonicTraceEmbeddingReady,
+  sonicTraceMasteringReady,
+  sonicTraceMissingLayers,
+  sonicTraceProfileLabel,
+  sonicTraceProfileState,
+} from '../sonictrace-profile';
 import type { SonicTraceAnalysis, SonicTraceAnalysisState, StudioTrackDetail } from '../types/studio';
 
 function numeric(value: unknown): number | null {
+  if (value == null || value === '') return null;
   const number = Number(value);
   return Number.isFinite(number) ? number : null;
 }
@@ -35,7 +43,14 @@ function engineLabel(analysis: SonicTraceAnalysis | null): string {
 }
 
 function layerState(analysis: SonicTraceAnalysis, field: keyof SonicTraceAnalysis): string {
+  if (field === 'mastering') return sonicTraceMasteringReady(analysis) ? 'ready' : 'missing';
+  if (field === 'embedding') return sonicTraceEmbeddingReady(analysis) ? 'ready' : 'missing';
   return analysis[field] ? 'ready' : 'missing';
+}
+
+function deepFailureIsTransport(error: unknown): boolean {
+  if (!(error instanceof SonicTraceError) || error.status != null) return false;
+  return /offline|blocked by the browser|timed out/i.test(error.message);
 }
 
 export function SonicTracePanel({ track, onSaved }: { track: StudioTrackDetail; onSaved: () => Promise<void> | void }) {
@@ -96,12 +111,21 @@ export function SonicTracePanel({ track, onSaved }: { track: StudioTrackDetail; 
         const result = await runSonicTraceAnalysis(file, track.id, current.currentSourceVersion, dsp, setProgress);
         if (dspError) result.warnings = [...result.warnings, `Browser DSP unavailable: ${dspError}`];
         setDraft(result);
-        setNotice('Deep Audio analysis complete. Review the retained layers before saving to R2.');
+        const resultState = sonicTraceProfileState(result, false);
+        setNotice(
+          resultState === 'full'
+            ? 'Deep Audio analysis complete. Review the FULL profile before saving to R2.'
+            : 'SonicTrace coordinator responded and completed the scan with PARTIAL layers. Review the warnings and retained deep layers before saving.',
+        );
       } catch (deepError) {
         const message = deepError instanceof Error ? deepError.message : String(deepError);
         if (!dsp) throw new Error(`${message} Browser DSP is also unavailable: ${dspError || 'unknown browser decoding error'}`);
         setDraft(browserOnlyAnalysis(track.id, current.currentSourceVersion, dsp, message));
-        setNotice('SonicTrace Deep Audio is offline. Browser DSP completed and can be saved as a partial, versioned analysis.');
+        setNotice(
+          deepFailureIsTransport(deepError)
+            ? 'SonicTrace coordinator is unreachable. Browser DSP completed and can be saved as an UNAVAILABLE-deep fallback profile.'
+            : 'SonicTrace coordinator responded but Deep Audio processing failed before it could return retained layers. Browser DSP completed as a fallback; review the processing error before saving.',
+        );
       }
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : String(reason));
@@ -112,7 +136,7 @@ export function SonicTracePanel({ track, onSaved }: { track: StudioTrackDetail; 
 
   async function save() {
     if (!draft) return;
-    const layers = ['DSP', draft.mastering && 'mastering', draft.neural && 'neural', draft.embedding && 'embedding 512D', draft.structure && 'structure'].filter(Boolean).join(', ');
+    const layers = ['DSP', sonicTraceMasteringReady(draft) && 'mastering', draft.neural && 'neural', sonicTraceEmbeddingReady(draft) && 'embedding 512D', draft.structure && 'structure'].filter(Boolean).join(', ');
     if (!globalThis.confirm(`Save SonicTrace analysis for ${track.title}?\n\nanalysisId: ${draft.analysisId}\nLayers: ${layers}\n\nThe Worker writes latest.json plus append-only history. It never stores the audio.`)) return;
     setBusy(true);
     setError(null);
@@ -137,7 +161,7 @@ export function SonicTracePanel({ track, onSaved }: { track: StudioTrackDetail; 
     <div className="sonic-stack">
       <article className="panel sonic-panel">
         <div className="sonic-head">
-          <div className="sonic-intro"><span className="eyebrow">SONICTRACE</span><h3>{latest ? 'Analysis ready' : 'Understand this track'}</h3><p>{latest ? 'Review the latest profile or re-scan after an audio change.' : 'Analyze loudness, structure and similarity signals without storing source audio.'}</p></div>
+          <div className="sonic-intro"><span className="eyebrow">SONICTRACE</span><h3>{latest ? `${profileLabel} profile ready` : 'Understand this track'}</h3><p>{latest ? 'Review the latest profile or re-scan after an audio change.' : 'Analyze loudness, structure and similarity signals without storing source audio.'}</p></div>
           <div className="sonic-actions">
             <button className="primary-btn" type="button" disabled={busy || loading || !track.assets.audio} onClick={() => void analyze()}>{busy ? `Working ${progress}%` : latest ? 'Re-scan with SonicTrace' : 'Analyze with SonicTrace'}</button>
           </div>
@@ -152,9 +176,10 @@ export function SonicTracePanel({ track, onSaved }: { track: StudioTrackDetail; 
             <div><span>History</span><strong>{history.length} scan{history.length === 1 ? '' : 's'}</strong></div>
           </div>
         )}
-        {state && <details className="sonic-diagnostics"><summary>Engine diagnostics</summary><dl><div><dt>Analysis ID</dt><dd>{latest?.analysisId || '—'}</dd></div><div><dt>Engine</dt><dd>{engineLabel(latest)}</dd></div><div><dt>Embedding</dt><dd>{latest?.embedding ? `${latest.embedding.dimension}D` : 'Missing'}</dd></div><div><dt>Source version</dt><dd>{latest?.sourceVersion.value || '—'}</dd></div></dl></details>}
+        {state && <details className="sonic-diagnostics"><summary>Engine diagnostics</summary><dl><div><dt>Analysis ID</dt><dd>{latest?.analysisId || '—'}</dd></div><div><dt>Engine</dt><dd>{engineLabel(latest)}</dd></div><div><dt>Embedding</dt><dd>{sonicTraceEmbeddingReady(latest) ? '512D' : 'Missing'}</dd></div><div><dt>Source version</dt><dd>{latest?.sourceVersion.value || '—'}</dd></div></dl></details>}
         {state?.outdated && <div className="sonic-alert warn">The canonical audio revision changed after the latest scan. Re-scan before trusting comparisons.</div>}
-        {latest && profileState === 'partial' && <div className="sonic-alert warn">This saved profile is usable but incomplete. Missing deep layers: {missingLayers.join(', ')}. Re-scan while the local SonicTrace coordinator is available to produce a FULL profile.</div>}
+        {latest && profileState === 'partial' && <div className="sonic-alert warn">This saved profile is usable but incomplete. Missing or unavailable deep layers: {missingLayers.join(', ')}. Re-scan while the local SonicTrace coordinator is healthy to produce a FULL profile.</div>}
+        {latest && profileState === 'unavailable' && <div className="sonic-alert warn">Deep Audio was unavailable for this saved scan. Browser DSP is retained, but mastering, Neural, embedding and structure must not be presented as completed layers.</div>}
         {error && <div className="sonic-alert error">{error}</div>}
         {notice && <div className="sonic-alert">{notice}</div>}
       </article>

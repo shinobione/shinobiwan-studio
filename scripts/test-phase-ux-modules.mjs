@@ -39,7 +39,7 @@ assert.ok(workspace.indexOf('<EmbeddedLyricsStudio') < workspace.indexOf('<Lyric
 for (const contract of ['lyrics.txt</strong> is the only canonical source', 'Timestamps inside it define synchronization', 'LRC export remains optional']) assert.ok(workspace.includes(contract));
 for (const marker of ['.workspace-lyrics-status', '.workspace-lyrics-plain', '@media(max-width:590px)']) assert.ok(workspaceCss.includes(marker));
 
-for (const marker of ['Understand this track', 'Analysis ready', 'Analyze with SonicTrace', 'Re-scan with SonicTrace', 'sonic-progress', '<details className="sonic-diagnostics">', 'Save analysis']) {
+for (const marker of ['Understand this track', 'profile ready', 'Analyze with SonicTrace', 'Re-scan with SonicTrace', 'sonic-progress', '<details className="sonic-diagnostics">', 'Save analysis']) {
   assert.ok(sonic.includes(marker), `SonicTrace action hierarchy is missing ${marker}.`);
 }
 for (const protectedBehavior of ['fetchCanonicalAudio', 'analyzeBrowserDsp', 'runSonicTraceAnalysis', 'browserOnlyAnalysis', 'saveSonicTraceAnalysis']) assert.ok(sonic.includes(protectedBehavior));
@@ -47,4 +47,4 @@ for (const marker of ['.sonic-progress', '.sonic-diagnostics', '.sonic-intro p']
 
 for (const source of [workspace, metadata, assets, sonic]) for (const forbidden of ['phase7', 'phase-7']) assert.ok(!source.toLowerCase().includes(forbidden));
 
-console.log('PHASE UX UX-4 guard passed: grouped metadata, single media manager, embedded-first Lyrics, action-led SonicTrace and guarded engines remain intact. Current build identity is owned by the active milestone guard.');
+console.log('PHASE UX UX-4 guard passed: grouped metadata, single media manager, embedded-first Lyrics, profile-aware SonicTrace and guarded engines remain intact. Current build identity is owned by the active milestone guard.');
