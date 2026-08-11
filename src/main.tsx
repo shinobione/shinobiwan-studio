@@ -11,6 +11,7 @@ import './phase4-operations.css';
 import './sonictrace.css';
 import './c3-deep-audio.css';
 import './c3-b-v2e-parity.css';
+import './c3-b-map-clarity.css';
 import './ux-foundation.css';
 import './readability.css';
 import './c2-5-a-polish.css';
