@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { resolveAdminMode } from './admin-mode';
 import { AlbumManager } from './components/AlbumManager';
+import { AlbumMigrationPanel } from './components/AlbumMigrationPanel';
 import { CatalogRebuildPanel } from './components/CatalogRebuildPanel';
 import { CatalogView } from './components/CatalogView';
 import { CatalogIntelligenceView } from './components/CatalogIntelligenceView';
@@ -99,7 +100,7 @@ export default function App() {
   const navTitle = trackId ? 'Track Workspace' : [...NAV, ...UTILITY_NAV].find(item => item.route === route)?.label || 'Studio';
   const privateRead = readSource === 'private';
   const readLayerLabel = privateRead ? 'Private' : readSource === 'public' ? 'Fallback' : '…';
-  const readLayerDetail = privateRead ? 'Track Manager v5.17 · bridge v1.9' : readSource === 'public' ? 'LaunchPAD public read-only' : 'Checking Access session';
+  const readLayerDetail = privateRead ? 'Track Manager v5.18 · bridge v1.10' : readSource === 'public' ? 'LaunchPAD public read-only' : 'Checking Access session';
 
   return (
     <div className="studio-shell">
@@ -125,7 +126,7 @@ export default function App() {
         )}
 
         {route === 'catalog' && (trackId ? <TrackWorkspace trackId={trackId} section={trackSection} /> : <CatalogView />)}
-        {route === 'albums' && <AlbumManager />}
+        {route === 'albums' && <><AlbumManager /><AlbumMigrationPanel /></>}
         {route === 'intelligence' && <CatalogIntelligenceView />}
 
         {route !== 'dashboard' && route !== 'catalog' && route !== 'albums' && route !== 'intelligence' && (
