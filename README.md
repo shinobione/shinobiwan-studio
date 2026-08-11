@@ -2,29 +2,28 @@
 
 Artist Content & Intelligence Manager — private orchestration cockpit for the SHINOBIWAN toolchain.
 
-## Current production state
+## Current PHASE UX release line
 
 ```text
-Studio          v0.12.2 · Build 37
-Codename        phase-ux-c2-5-e3-migration-diagnostics
-Runtime SHA     e449c19968c7faff548c8bf32332b4f0848c41a9
+Studio          v0.13.0 · Build 38
+Codename        phase-ux-c3-deep-audio-resilience
 
 LaunchPAD       2026.08.11.89
-LaunchPAD main  c128113638dde45e845393eff9bf931d92567adb
 Public Worker   v2.7
 Worker Version  ddd90621-35d4-44b0-9c22-4e5a72291d9b
 
 Track Manager   v5.19
 Studio bridge   v1.11
 
-SonicTrace      V2-E Build 05
-SonicTrace main 513ccf28caf46b34a316f818bb3a52ef2546d499
+SonicTrace      V2-E Build 06
+Deep Audio      2.0.1-alpha
 
 LRC Maker       6.3.8
-LRC Maker main  46c724779cefe20519e1191da4a398210c2c7242
 ```
 
-This README reflects the current runtime truth. Historical implementation details remain in milestone-specific docs/changelogs and Git history.
+C2.5 remains the last fully real-user-validated milestone. Build 38 / SonicTrace Build 06 is the C3-A candidate and must still pass the local-GPU real-user smoke before C3-A is accepted.
+
+Historical implementation details remain in milestone-specific docs/changelogs and Git history.
 
 ## Current milestone
 
@@ -32,19 +31,25 @@ This README reflects the current runtime truth. Historical implementation detail
 
 The final C2.5-F smoke passed on desktop and mobile on 2026-08-11. LaunchPAD Build 89 displays the three canonical R2 Albums plus virtual Singles through public Worker v2.7.
 
+**C3 — SonicTrace Deep Audio / V2-E parity is now STARTED.**
+
+C3-A focuses on the real-user `FFmpeg loudnorm did not return a measurement block` failure and truthful `FULL / PARTIAL / UNAVAILABLE / OUTDATED` Studio semantics. C3-B remains the V2-E parity layer after C3-A real-user validation.
+
 See:
 
 - [`docs/PHASE-UX-C2-5-CLOSEOUT.md`](docs/PHASE-UX-C2-5-CLOSEOUT.md)
+- [`docs/PHASE-UX-C3-DEEP-AUDIO-RESILIENCE.md`](docs/PHASE-UX-C3-DEEP-AUDIO-RESILIENCE.md)
 - [`docs/ROADMAP-CURRENT.md`](docs/ROADMAP-CURRENT.md)
 - [`CHANGELOG-C2-5-CLOSEOUT.md`](CHANGELOG-C2-5-CLOSEOUT.md)
+- [`CHANGELOG-C3-BUILD38.md`](CHANGELOG-C3-BUILD38.md)
 
 ## Important roadmap status
 
 PHASE UX is **not finished yet**.
 
-Next permitted milestone:
+Current permitted milestone:
 
-**C3 — SonicTrace Deep Audio / V2-E parity** — **NOT STARTED** at the C2.5 closeout.
+**C3 — SonicTrace Deep Audio / V2-E parity.**
 
 Phase 7 remains **LOCKED / NOT AUTHORIZED**. Do not implement, scaffold, branch, merge or deploy Phase 7 without a new explicit user authorization after the final PHASE UX closeout.
 
@@ -102,6 +107,29 @@ The embedded and standalone LRC Maker modes use the same synchronization engine.
 
 Canonical save remains guarded by stale revisions/ETags, strict timestamp/UTF-8 validation, Track Manager write authority, canonical reread and compensating rollback where required.
 
+## SonicTrace C3-A contract
+
+The old `/api/studio/analyze` path could abort before Neural / embedding / structure when the V2-A loudnorm parser did not find a JSON measurement block.
+
+C3-A changes the failure boundary without changing schema or persistence:
+
+- loudnorm JSON parsing is robust to FFmpeg output spacing/order;
+- a real FFmpeg EBU R128 measurement is used as fallback;
+- if mastering measurement is still unavailable, it is returned as an explicit unavailable sub-layer instead of terminating the endpoint;
+- Neural, 512D embedding, structure and optional stems/fusion can continue;
+- Studio distinguishes a responding coordinator with PARTIAL layers from an unreachable coordinator;
+- Browser-DSP-only fallbacks are labeled Deep Audio `UNAVAILABLE`;
+- missing mastering metrics display `—`, never fabricated zeroes.
+
+Persistence remains:
+
+```text
+tracks/<slug>/analysis/sonictrace/latest.json
+tracks/<slug>/analysis/sonictrace/history/<analysisId>.json
+```
+
+Track Manager remains the only protected write authority. The C3 release itself performs no R2 write.
+
 ## Completed architecture phases
 
 - Phase 0 — Architecture freeze / data contracts ✅
@@ -112,6 +140,7 @@ Canonical save remains guarded by stale revisions/ETags, strict timestamp/UTF-8 
 - Phase 5 — SonicTrace / Catalog Intelligence ✅
 - Phase 6 — Lyrics / LRC integration ✅ real-user validated
 - PHASE UX C2.5-A → F ✅ real-user validated
+- PHASE UX C3 ⏳ in progress
 
 See [`docs/ROADMAP-CURRENT.md`](docs/ROADMAP-CURRENT.md) for the current roadmap and later Phase 8–10 plan.
 
@@ -168,15 +197,21 @@ See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md).
 
 ## Safety / rollback
 
-Latest C2.5 closeout checkpoint:
+C3 pre-work checkpoint:
+
+```text
+safety/pre-c3-deep-audio-20260811-1426
+```
+
+created on Studio and SonicTrace before C3 source changes.
+
+C2.5 closeout checkpoint remains:
 
 ```text
 safety/phase-ux-c2-5-complete-20260811-1356
 ```
 
-created on both Studio and LaunchPAD before documentation closeout work.
-
-Older validated Phase 6 checkpoints remain historical rollback anchors and are not replaced by this documentation checkpoint.
+Older validated Phase 6 checkpoints remain historical rollback anchors.
 
 ## Verification policy
 
@@ -184,7 +219,7 @@ Real-user smoke remains authoritative for user-facing milestone acceptance. CI i
 
 Do not mutate production WAV/cover/lyrics/Album objects merely to manufacture a frontend smoke test.
 
-Source merge, web deployment, Worker deployment and R2/catalog mutation are separate facts and must remain separately auditable.
+Source merge, web deployment, local Deep Audio runtime, Worker deployment and R2/catalog mutation are separate facts and must remain separately auditable.
 
 ## Development
 
@@ -194,6 +229,7 @@ npm run dev
 npm run check:private-read
 npm run check:phase5
 npm run check:phase6
+npm run check:c3
 npm run check:ux
 npm run typecheck
 npm run build
