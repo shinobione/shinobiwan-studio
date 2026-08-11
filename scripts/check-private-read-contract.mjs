@@ -41,7 +41,6 @@ for (const required of [
   "const ASSET_UPLOAD_INTENT = 'asset-upload-v1'",
   "const ASSET_DELETE_INTENT = 'asset-delete-v1'",
   "const CATALOG_REBUILD_INTENT = 'catalog-rebuild-v1'",
-  "const REQUIRED_MANAGE_CAPABILITIES = new Set(['track-create', 'assets', 'catalog-rebuild'])",
   "manage.includes(capability)",
   "'/api/studio/tracks/create'",
   '/assets/${kind}/upload',
@@ -63,6 +62,8 @@ for (const required of [
   'phase5Enabled: false',
 ]) assert.ok(phase4Api.includes(required), `Phase 4 operations client is missing ${required}.`);
 
+assert.ok(!phase4Api.includes('REQUIRED_MANAGE_CAPABILITIES'), 'Phase 4 must not pin Track Manager to an exact manage capability set.');
+assert.ok(!phase4Api.includes('unexpected manage capability'), 'Phase 4 must accept additive manage capabilities from newer compatible Track Manager bridges.');
 assert.ok(!phase4Api.includes('setRequestHeader('), 'Multipart asset upload must not add custom request headers/preflight.');
 assert.ok(!phase4Api.includes("'Content-Type': 'application/json'"), 'Phase 4 JSON controls must keep the proven text/plain simple-request transport.');
 for (const forbiddenMethod of ['PUT', 'PATCH', 'DELETE']) {
