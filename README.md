@@ -5,8 +5,8 @@ Artist Content & Intelligence Manager — private orchestration cockpit for the 
 ## Current PHASE UX release line
 
 ```text
-Studio          v0.13.2 · Build 40
-Codename        phase-ux-c3-album-palette-controls
+Studio          v0.13.3 · Build 41
+Codename        phase-ux-c3-track-create-capability-hotfix
 
 LaunchPAD       2026.08.11.90
 Public Worker   v2.7
@@ -21,7 +21,7 @@ Deep Audio      2.0.1-alpha
 LRC Maker       6.3.8
 ```
 
-C2.5 remains the last fully real-user-validated milestone. Build 40 contains the C3-A Build 38 Deep Audio candidate, the Build 39 focused Album workspace corrective, and the isolated Album palette authoring slice paired with LaunchPAD Build 90. The palette UX still needs a real-user UI check, then C3-A resumes its local-GPU smoke before it can be accepted.
+C2.5 remains the last fully real-user-validated milestone. Build 41 contains the C3-A Build 38 Deep Audio candidate, the Build 39 focused Album workspace corrective, the Build 40 Album palette authoring slice paired with LaunchPAD Build 90, and a narrow Studio-only New Track compatibility hotfix for the current additive Track Manager capability set. C3-A still requires its local-GPU real-user smoke before acceptance.
 
 Historical implementation details remain in milestone-specific docs/changelogs and Git history.
 
@@ -43,7 +43,8 @@ Before running the C3-A local-GPU smoke, the focused Album UX corrective now spa
 - the current canonical cover is visible in the editor;
 - completed C2.5-E migration tooling lives under `System` as a collapsed maintenance/archive surface;
 - Build 40: raw `Accent` / `Accent 2` text inputs are replaced by an **Album palette** block with **Primary color** / **Secondary color**, native color pickers, validated HEX editing and existing eyedropper support;
-- LaunchPAD Build 90 consumes canonical `album.accent` / `album.accent2` as a scoped public Album-detail theme, with safe fallback when values are absent or invalid.
+- LaunchPAD Build 90 consumes canonical `album.accent` / `album.accent2` as a scoped public Album-detail theme, with safe fallback when values are absent or invalid;
+- Build 41: New Track no longer rejects a healthy newer Track Manager merely because it advertises the legitimate C2.5 `album-*` manage capabilities in addition to the Phase 4 capabilities needed by the requested Track operation.
 
 C3-B remains the V2-E parity layer after C3-A real-user validation.
 
@@ -52,11 +53,13 @@ See:
 - [`docs/PHASE-UX-C2-5-CLOSEOUT.md`](docs/PHASE-UX-C2-5-CLOSEOUT.md)
 - [`docs/PHASE-UX-C3-DEEP-AUDIO-RESILIENCE.md`](docs/PHASE-UX-C3-DEEP-AUDIO-RESILIENCE.md)
 - [`docs/PHASE-UX-C3-ALBUMS-FOCUSED-WORKSPACE.md`](docs/PHASE-UX-C3-ALBUMS-FOCUSED-WORKSPACE.md)
+- [`docs/PHASE-UX-C3-TRACK-CREATE-CAPABILITY-HOTFIX.md`](docs/PHASE-UX-C3-TRACK-CREATE-CAPABILITY-HOTFIX.md)
 - [`docs/ROADMAP-CURRENT.md`](docs/ROADMAP-CURRENT.md)
 - [`CHANGELOG-C2-5-CLOSEOUT.md`](CHANGELOG-C2-5-CLOSEOUT.md)
 - [`CHANGELOG-C3-BUILD38.md`](CHANGELOG-C3-BUILD38.md)
 - [`CHANGELOG-C3-BUILD39.md`](CHANGELOG-C3-BUILD39.md)
 - [`CHANGELOG-C3-BUILD40.md`](CHANGELOG-C3-BUILD40.md)
+- [`CHANGELOG-C3-BUILD41.md`](CHANGELOG-C3-BUILD41.md)
 
 ## Important roadmap status
 
@@ -169,6 +172,19 @@ System
 
 Ordered `album.trackIds` remains the only canonical membership/artistic-order authority. Metadata, membership, move and asset mutations use the same guarded Track Manager APIs as C2.5-D. Whole-Album deletion remains unavailable.
 
+## C3 Track Create capability hotfix
+
+Build 41 corrects a real-user New Track failure without changing the write transaction itself. The old Phase 4 client required Track Manager's `manage` capability list to contain *only* `track-create`, `assets` and `catalog-rebuild`. Track Manager v5.19 / bridge v1.11 correctly advertises those plus the later C2.5 Album capabilities, so the exact-list guard rejected a healthy backend before `POST /api/studio/tracks/create` was sent.
+
+Build 41 now uses operation-specific capability checks:
+
+- Track creation still requires `track-create`;
+- asset writes still require `assets`;
+- catalog rebuild still requires `catalog-rebuild`;
+- additional current/future capabilities do not invalidate compatibility;
+- missing required capability still blocks the write;
+- no Track Manager, Worker, R2 or schema change is part of the hotfix.
+
 ## Completed architecture phases
 
 - Phase 0 — Architecture freeze / data contracts ✅
@@ -236,6 +252,12 @@ See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md).
 
 ## Safety / rollback
 
+Build 41 New Track capability checkpoint:
+
+```text
+safety/pre-build41-track-create-capability-20260811-1801
+```
+
 C3 Album UX checkpoint:
 
 ```text
@@ -261,5 +283,7 @@ Older validated Phase 6 checkpoints remain historical rollback anchors.
 ## Verification policy
 
 Real-user smoke remains authoritative for user-facing milestone acceptance. CI is necessary but not sufficient.
+
+Build 41 adds a dedicated regression guard proving that the exact current Track Manager manage-capability set — including all six `album-*` capabilities — remains compatible with Track Create, while a missing required capability still blocks the write.
 
 Do not mutate production WAV/cover/lyrics/Album objects merely to manufacture a frontend smoke test.
