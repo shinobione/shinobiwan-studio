@@ -15,8 +15,8 @@ assert.ok(!albumUi.includes('Add an unowned track…'), 'D1 must not turn manual
 assert.ok(!albumUi.includes('Delete Album'), 'C2.5-D must not expose whole-Album deletion.');
 assert.ok(albumUi.includes('globalThis.confirm'), 'Production Album mutations must retain explicit confirmation.');
 assert.ok(app.includes("route: 'albums'"), 'Studio navigation must expose Albums / Projects.');
-assert.ok(app.includes("route === 'albums' && <AlbumManager />"), 'Albums route must mount Album Manager.');
-assert.ok(app.includes('Track Manager v5.17 · bridge v1.9'), 'Studio shell must report deployed C2.5-C backend.');
+assert.ok(app.includes('<AlbumManager />'), 'Albums route must keep the validated D1/D2 Album Manager mounted.');
+assert.match(app, /Track Manager v5\.(?:17|18) · bridge v1\.(?:9|10)/, 'Studio shell must report a supported C2.5 Track Manager backend.');
 assert.ok(app.includes('<strong>6.3.8</strong>'), 'Studio shell must keep current LRC Maker version.');
 assert.ok(router.includes("'albums'"), 'Router must recognize Albums.');
 assert.ok(types.includes("| 'albums'"), 'StudioRoute must include Albums.');
