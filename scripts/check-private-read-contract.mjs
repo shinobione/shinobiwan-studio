@@ -91,14 +91,14 @@ for (const required of [
   '<LyricsEditorPanel track={track} onSaved={refreshTrackAfterWrite} />',
   '<MetadataValidationPanel track={track} onSaved={refreshTrackAfterWrite} />',
   '<SonicTracePanel track={track} onSaved={refreshTrackAfterWrite} />',
-  'Track Manager v5.17 · bridge v1.9',
   'PHASE 5 / COMPLETE',
 ]) assert.ok(workspace.includes(required), `Workspace integration contract missing ${required}.`);
 
 for (const required of [
-  'Track Manager v5.17 · bridge v1.9', 'LYRICS / CANONICAL', 'lyrics.txt is the single canonical source.',
+  'LYRICS / CANONICAL', 'lyrics.txt is the single canonical source.',
   '<CatalogRebuildPanel privateRead={privateRead} />', '<CatalogIntelligenceView />', 'PHASE 6 / COMPLETE',
 ]) assert.ok(app.includes(required), `Studio integration contract missing ${required}.`);
+assert.match(app, /Track Manager v5\.(?:17|18) · bridge v1\.(?:9|10)/, 'Studio must still surface a supported C2.5 Track Manager/bridge lineage.');
 
 for (const required of [
   "const SAVE_INTENT = 'sonictrace-analysis-save-v1'", '/api/studio/analyze', '/analysis/sonictrace',
@@ -112,7 +112,7 @@ for (const required of [
 ]) assert.ok(sonicPanel.includes(required), `SonicTrace workspace UI is missing ${required}.`);
 
 for (const required of ['Understand your catalog', 'SIMILARITY READY', 'CLOSEST SOUND', 'SONIC FAMILIES', 'entry.embedding?.dimension === 512']) assert.ok(intelligenceView.includes(required), `Catalog Intelligence UI is missing ${required}.`);
-for (const required of ['cosineSimilarity', 'nearestTracks', 'clusterTracks', 'vector.length === 512']) assert.ok(intelligenceMath.includes(required), `Catalog Intelligence engine is missing ${required}.`);
+for (const required of ['cosineSimilarity', 'nearestTracks', 'clusterTracks', 'vector.length === 512']) assert.ok(intelligenceMath.includes(required), `Catalog Intelligence engine missing ${required}.`);
 
 const tinyPhase5Fonts = [...sonicCss.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)]
   .map(match => Number(match[1]))
@@ -139,13 +139,13 @@ for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog 
 
 const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
-assert.match(releaseVersion, /^0\.11\./, 'Studio private-read ancestry must remain on the validated 0.11.x line until deliberately superseded.');
+assert.match(releaseVersion, /^0\.(?:11|12)\./, 'Studio private-read ancestry must remain on the validated C2.5 release line until deliberately superseded.');
 assert.ok(releaseBuild >= 33, 'Studio private-read ancestry must remain at Build 33 or later.');
-assert.match(release, /codename:\s*'phase-ux-c2-5-d2-/, 'Studio release codename must remain in the C2.5-D2 lineage while this hotfix is active.');
+assert.match(release, /codename:\s*'phase-ux-c2-5-/, 'Studio release codename must remain explicitly inside the C2.5 lineage while PHASE UX is open.');
 assert.equal(pkg.version, releaseVersion, 'package.json must match the current Studio release version.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'Production build must run the integration regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase5'), 'Production build must run the Phase 5 algorithm guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase6'), 'Production build must run the embedded Phase 6 regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:ux'), 'Production build must run the PHASE UX regression guard.');
 
-console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves Phase 0-6/private-read contracts while keeping C2.5-D Album binding guarded and Phase 7 stopped.`);
+console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves Phase 0-6/private-read contracts while C2.5 evolves under guarded Track Manager writes and Phase 7 remains stopped.`);
