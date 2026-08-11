@@ -5,10 +5,10 @@ Artist Content & Intelligence Manager — private orchestration cockpit for the 
 ## Current PHASE UX release line
 
 ```text
-Studio          v0.13.1 · Build 39
-Codename        phase-ux-c3-albums-focused-workspace
+Studio          v0.13.2 · Build 40
+Codename        phase-ux-c3-album-palette-controls
 
-LaunchPAD       2026.08.11.89
+LaunchPAD       2026.08.11.90
 Public Worker   v2.7
 Worker Version  ddd90621-35d4-44b0-9c22-4e5a72291d9b
 
@@ -21,7 +21,7 @@ Deep Audio      2.0.1-alpha
 LRC Maker       6.3.8
 ```
 
-C2.5 remains the last fully real-user-validated milestone. Build 39 contains the C3-A Build 38 Deep Audio candidate plus the isolated C3 Album UX corrective. The Album UX still needs a real-user UI check, then C3-A resumes its local-GPU smoke before it can be accepted.
+C2.5 remains the last fully real-user-validated milestone. Build 40 contains the C3-A Build 38 Deep Audio candidate, the Build 39 focused Album workspace corrective, and the isolated Album palette authoring slice paired with LaunchPAD Build 90. The palette UX still needs a real-user UI check, then C3-A resumes its local-GPU smoke before it can be accepted.
 
 Historical implementation details remain in milestone-specific docs/changelogs and Git history.
 
@@ -29,19 +29,21 @@ Historical implementation details remain in milestone-specific docs/changelogs a
 
 **PHASE UX C2.5-A → C2.5-F is COMPLETE and real-user validated.**
 
-The final C2.5-F smoke passed on desktop and mobile on 2026-08-11. LaunchPAD Build 89 displays the three canonical R2 Albums plus virtual Singles through public Worker v2.7.
+The final C2.5-F smoke passed on desktop and mobile on 2026-08-11. LaunchPAD Build 89 established the validated canonical Album baseline with three canonical R2 Albums plus virtual Singles through public Worker v2.7.
 
 **C3 — SonicTrace Deep Audio / V2-E parity is IN PROGRESS.**
 
 C3-A addresses the real-user `FFmpeg loudnorm did not return a measurement block` failure and truthful `FULL / PARTIAL / UNAVAILABLE / OUTDATED` Studio semantics.
 
-Before running the C3-A local-GPU smoke, Build 39 corrects a post-C2.5 Album UX debt found during real-user review:
+Before running the C3-A local-GPU smoke, the focused Album UX corrective now spans:
 
-- Albums / Projects is now a cover-first canonical release library;
+- Build 39: cover-first canonical release library;
 - opening one Album shows only that Album;
 - Album editing is focused into `Overview / Tracklist / Assets` tabs;
 - the current canonical cover is visible in the editor;
-- completed C2.5-E migration tooling moves to `System` as a collapsed maintenance/archive surface.
+- completed C2.5-E migration tooling lives under `System` as a collapsed maintenance/archive surface;
+- Build 40: raw `Accent` / `Accent 2` text inputs are replaced by an **Album palette** block with **Primary color** / **Secondary color**, native color pickers, validated HEX editing and existing eyedropper support;
+- LaunchPAD Build 90 consumes canonical `album.accent` / `album.accent2` as a scoped public Album-detail theme, with safe fallback when values are absent or invalid.
 
 C3-B remains the V2-E parity layer after C3-A real-user validation.
 
@@ -54,6 +56,7 @@ See:
 - [`CHANGELOG-C2-5-CLOSEOUT.md`](CHANGELOG-C2-5-CLOSEOUT.md)
 - [`CHANGELOG-C3-BUILD38.md`](CHANGELOG-C3-BUILD38.md)
 - [`CHANGELOG-C3-BUILD39.md`](CHANGELOG-C3-BUILD39.md)
+- [`CHANGELOG-C3-BUILD40.md`](CHANGELOG-C3-BUILD40.md)
 
 ## Important roadmap status
 
@@ -103,7 +106,7 @@ Current canonical Album set:
 
 LaunchPAD currently exposes 30 public tracks and three canonical Albums; Singles is virtual.
 
-Build 39 Studio Album management reads private canonical manifests through Track Manager and reads artwork previews from the already validated public Worker v2.7 `/albums` canonical projection. Public artwork failure never authorizes a direct Studio R2 write path.
+Build 40 Studio Album management reads private canonical manifests through Track Manager and artwork previews from the already validated public Worker v2.7 `/albums` projection. `accent` and `accent2` remain canonical Album manifest fields; Studio now presents them as Primary / Secondary colors, and LaunchPAD Build 90 uses them only as a scoped Album-detail theme. Public artwork or palette failure never authorizes a direct Studio R2 write path.
 
 ## Canonical Lyrics contract
 
@@ -146,13 +149,16 @@ Track Manager remains the only protected write authority. The C3 release itself 
 
 ## C3 Album UX corrective
 
-Build 39 removes completed migration scaffolding from the daily Albums workflow without deleting the tooling:
+Builds 39–40 remove completed migration clutter and make Album identity/palette understandable without changing the canonical contract:
 
 ```text
 Albums / Projects
   -> cover-first canonical library
   -> one selected Album at a time
       -> Overview
+         -> Album palette
+            -> Primary color
+            -> Secondary color
       -> Tracklist
       -> Assets
 
