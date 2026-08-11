@@ -38,13 +38,16 @@ for (const required of [
 assert.ok(!panel.toLowerCase().includes('migrate all'), 'C2.5-E Studio must not expose a migrate-all operation.');
 assert.ok(app.includes("import { AlbumMigrationPanel } from './components/AlbumMigrationPanel';"), 'Albums route must mount the migration cockpit.');
 assert.ok(app.includes("<><AlbumManager /><AlbumMigrationPanel /></>"), 'AlbumManager D1/D2 must remain mounted next to, not replaced by, C2.5-E.');
-assert.ok(app.includes('Track Manager v5.18 · bridge v1.10'), 'Studio Build 35 must identify the E1 backend contract.');
-assert.ok(main.includes("import './c2-5-e-migration.css';"), 'C2.5-E styles must be loaded after prior Album/D2 styles.');
+assert.ok(app.includes('Track Manager v5.18 · bridge v1.10'), 'Studio must identify the deployed E backend contract.');
+assert.ok(main.includes("import './c2-5-e-migration.css';"), 'C2.5-E styles must remain loaded after prior Album/D2 styles.');
 assert.ok(css.includes('.album-migration-stack') && css.includes('@media(max-width:560px)'), 'Migration cockpit must retain desktop and mobile styling.');
-assert.ok(release.includes("version: '0.12.0'"));
-assert.ok(release.includes('build: 35'));
-assert.ok(release.includes("codename: 'phase-ux-c2-5-e-album-migration-cockpit'"));
-assert.equal(pkg.version, '0.12.0');
+
+const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+assert.match(releaseVersion, /^0\.12\./, 'C2.5-E ancestry must remain on Studio 0.12.x until deliberately superseded.');
+assert.ok(releaseBuild >= 35, 'C2.5-E ancestry must remain at Build 35 or later.');
+assert.match(release, /codename:\s*'phase-ux-c2-5-e/, 'Current release must remain explicitly inside C2.5-E while the migration contract is inherited.');
+assert.equal(pkg.version, releaseVersion, 'package.json must match the active Studio C2.5-E release.');
 assert.ok(String(pkg.scripts?.['check:ux'] || '').includes('test-phase-ux-c2-5-e-migration.mjs'));
 
-console.log('Studio v0.12.0 Build 35 exposes a guarded one-Album-at-a-time C2.5-E dry-run/apply cockpit without starting C2.5-F, C3 or Phase 7.');
+console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves the guarded one-Album-at-a-time C2.5-E dry-run/apply cockpit without starting C2.5-F, C3 or Phase 7.`);
