@@ -9,6 +9,7 @@ import './lyrics-editor.css';
 import './lyrics-embed.css';
 import './phase4-operations.css';
 import './sonictrace.css';
+import './c3-deep-audio.css';
 import './ux-foundation.css';
 import './readability.css';
 import './c2-5-a-polish.css';
