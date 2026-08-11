@@ -156,7 +156,7 @@ for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog 
 
 const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
-assert.match(releaseVersion, /^0\.(?:11|12|13|14)\./, 'Studio private-read ancestry must remain on the validated/successor PHASE UX release lines while C3 advances deliberately.');
+assert.match(releaseVersion, /^0\.(?:11|12|13|14|15)\./, 'Studio private-read ancestry must remain on the validated/successor PHASE UX release lines while C3 advances deliberately.');
 assert.ok(releaseBuild >= 33, 'Studio private-read ancestry must remain at Build 33 or later.');
 assert.match(release, /codename:\s*'phase-ux-(?:c2-5|c3)-/, 'Studio release codename must remain explicitly inside the validated PHASE UX C2.5/C3 lineage while Phase 7 is locked.');
 assert.equal(pkg.version, releaseVersion, 'package.json must match the current Studio release version.');
@@ -165,6 +165,7 @@ assert.ok(String(pkg.scripts?.build || '').includes('check:phase5'), 'Production
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase6'), 'Production build must run the embedded Phase 6 regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:c3'), 'Production build must run the C3 semantics/parity guards.');
 assert.ok(String(pkg.scripts?.['check:c3'] || '').includes('test-phase-ux-c3-b-v2e-parity.mjs'), 'C3 build guard must include the V2-E parity regression test.');
+assert.ok(String(pkg.scripts?.['check:c3'] || '').includes('test-phase-ux-c3-c-premium-feel.mjs'), 'C3 build guard must include the premium-feel regression test.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:ux'), 'Production build must run the PHASE UX regression guard.');
 
 console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves Phase 0-6/C2.5 contracts while C3 advances under PHASE UX and Phase 7 remains stopped.`);
