@@ -33,7 +33,7 @@ assert.ok(!panel.toLowerCase().includes('migrate all'), 'Inherited E3 contract m
 
 const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
-assert.match(releaseVersion, /^0\.(?:12|13|14)\./, 'C2.5-E3 ancestry must remain on a validated/successor PHASE UX C2.5/C3 Studio release line until deliberately superseded.');
+assert.match(releaseVersion, /^0\.(?:12|13|14|15)\./, 'C2.5-E3 ancestry must remain on a validated/successor PHASE UX C2.5/C3 Studio release line until deliberately superseded.');
 assert.ok(releaseBuild >= 37, 'C2.5-E3 ancestry must remain at Build 37 or later.');
 assert.match(release, /codename:\s*'phase-ux-(?:c2-5-e|c3)-/, 'Current release must remain explicitly inside validated PHASE UX C2.5-E/C3 while E3 is inherited.');
 assert.equal(pkg.version, releaseVersion);
