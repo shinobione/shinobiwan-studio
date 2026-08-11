@@ -37,8 +37,14 @@ type Form = {
 };
 
 const EMPTY: Form = { title: '', type: 'album', status: 'draft', year: '', releaseDate: '', description: '', heading: '', accent: '', accent2: '' };
+const DEFAULT_ALBUM_PALETTE: CoverPalette = { accent: '#4de1e2', accent2: '#8f58ff' };
 const slugify = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 120);
 const badge = (album: AdminAlbumManifest) => `${album.type.toUpperCase()} · ${album.status.toUpperCase()}`;
+const validHex = (value: string) => /^#[0-9a-f]{6}$/i.test(value.trim());
+const paletteFromForm = (form: Form): CoverPalette => ({
+  accent: validHex(form.accent) ? form.accent.trim().toLowerCase() : DEFAULT_ALBUM_PALETTE.accent,
+  accent2: validHex(form.accent2) ? form.accent2.trim().toLowerCase() : DEFAULT_ALBUM_PALETTE.accent2,
+});
 const formFrom = (album: AdminAlbumManifest): Form => ({
   title: album.title || '',
   type: album.type,
@@ -63,6 +69,8 @@ function metadataPatch(form: Form): AdminAlbumMetadataPatch {
   if (form.year.trim() && (!Number.isInteger(year) || year! < 1000 || year! > 9999)) {
     throw new AlbumAdminError('Album year must be a four-digit year.');
   }
+  if (form.accent.trim() && !validHex(form.accent)) throw new AlbumAdminError('Primary color must use six-digit HEX format, for example #21d4fd.');
+  if (form.accent2.trim() && !validHex(form.accent2)) throw new AlbumAdminError('Secondary color must use six-digit HEX format, for example #8c52ff.');
   return {
     title: form.title.trim(),
     type: form.type,
@@ -71,8 +79,8 @@ function metadataPatch(form: Form): AdminAlbumMetadataPatch {
     releaseDate: form.releaseDate || null,
     description: form.description.trim() || null,
     heading: form.heading.trim() || null,
-    accent: form.accent.trim() || null,
-    accent2: form.accent2.trim() || null,
+    accent: form.accent.trim().toLowerCase() || null,
+    accent2: form.accent2.trim().toLowerCase() || null,
   };
 }
 
@@ -180,6 +188,7 @@ function AlbumEditor({ albumId, albums, tracks, visual, onChanged, onClose }: {
 
   const byId = useMemo(() => new Map(tracks.map(track => [track.id, track])), [tracks]);
   const changed = album ? JSON.stringify(ids) !== JSON.stringify(album.trackIds) : false;
+  const overviewPalette = paletteFromForm(form);
 
   async function mutate(task: () => Promise<void>) {
     if (busy) return;
@@ -290,8 +299,17 @@ function AlbumEditor({ albumId, albums, tracks, visual, onChanged, onClose }: {
         <label><span>Release date</span><input type="date" value={form.releaseDate} onChange={event => setForm({ ...form, releaseDate: event.target.value })} /></label>
         <label><span>Editorial heading</span><input value={form.heading} onChange={event => setForm({ ...form, heading: event.target.value })} /></label>
         <label className="album-wide"><span>Description</span><textarea rows={4} value={form.description} onChange={event => setForm({ ...form, description: event.target.value })} /></label>
-        <label><span>Accent</span><input value={form.accent} onChange={event => setForm({ ...form, accent: event.target.value })} /></label>
-        <label><span>Accent 2</span><input value={form.accent2} onChange={event => setForm({ ...form, accent2: event.target.value })} /></label>
+        <div className="album-wide c3-album-palette-block">
+          <CoverPalettePreview
+            palette={overviewPalette}
+            editable
+            fieldLabels={{ accent: 'Primary color', accent2: 'Secondary color' }}
+            title="Album palette"
+            note="Saved in the canonical Album manifest and used to theme the public LaunchPAD Album page."
+            onChange={next => setForm(current => ({ ...current, accent: next.accent, accent2: next.accent2 }))}
+          />
+          <p className="c3-album-palette-note">If the canonical palette is still empty, Studio shows the LaunchPAD fallback colors until you pick or extract a palette and save metadata.</p>
+        </div>
       </div>
       <div className="album-actions"><span>Revision: <code>{album.updatedAt || 'missing'}</code></span><button className="primary-btn" disabled={busy || !form.title.trim()} onClick={() => void saveMetadata()}>Save metadata</button></div>
     </article>}
@@ -305,7 +323,7 @@ function AlbumEditor({ albumId, albums, tracks, visual, onChanged, onClose }: {
     {tab === 'assets' && <article className="panel album-assets-panel c3-album-tab-panel">
       <div className="album-section-head"><div><span className="eyebrow">ASSETS</span><h3>Cover + thumbnail</h3><p>The current canonical artwork is shown first. Replacement remains a sequential guarded write.</p></div></div>
       <div className="c3-album-current-art"><AlbumCover album={album} visual={visual} large /><div><strong>Current canonical artwork</strong><span className={assets.cover?.present ? 'present' : 'missing'}>Cover {assets.cover?.present ? 'present' : 'missing'}</span><span className={assets.thumbnail?.present ? 'present' : 'missing'}>Thumbnail {assets.thumbnail?.present ? 'present' : 'missing'}</span></div></div>
-      <div className="album-cover-workbench"><label className="album-file-input"><span>Choose replacement cover</span><input type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" onChange={event => setCover(event.target.files?.[0] || null)} /></label>{cover && <><CoverImagePreview file={cover} alt="New Album cover preview" /><CoverPalettePreview palette={palette} editable onChange={setPalette} title="Extracted palette suggestion" note="Nothing is applied automatically." /><button className="ghost-btn compact" disabled={!palette} onClick={() => palette && setForm({ ...form, accent: palette.accent, accent2: palette.accent2 })}>Apply palette to Overview form</button></>}</div>
+      <div className="album-cover-workbench"><label className="album-file-input"><span>Choose replacement cover</span><input type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" onChange={event => setCover(event.target.files?.[0] || null)} /></label>{cover && <><CoverImagePreview file={cover} alt="New Album cover preview" /><CoverPalettePreview palette={palette} editable onChange={setPalette} fieldLabels={{ accent: 'Primary color', accent2: 'Secondary color' }} title="Extracted palette suggestion" note="Nothing is applied automatically." /><button className="ghost-btn compact" disabled={!palette} onClick={() => palette && setForm({ ...form, accent: palette.accent, accent2: palette.accent2 })}>Apply palette to Overview form</button></>}</div>
       <div className="album-actions album-asset-actions"><div><button className="ghost-btn" disabled={busy || !assets.cover?.present} onClick={() => void removeAsset('cover')}>Delete cover</button><button className="ghost-btn" disabled={busy || !assets.thumbnail?.present} onClick={() => void removeAsset('thumbnail')}>Delete thumbnail</button></div><button className="primary-btn" disabled={busy || !cover} onClick={() => void uploadCover()}>Upload cover + thumbnail</button></div>
     </article>}
 
