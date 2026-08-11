@@ -81,10 +81,10 @@ assert.ok(main.includes("import './c2-5-d2-intake.css';"), 'D2 intake styles mus
 
 const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
-assert.match(releaseVersion, /^0\.11\./, 'C2.5-D2 ancestry must remain on Studio 0.11.x or later until deliberately superseded.');
+assert.match(releaseVersion, /^0\.(?:11|12)\./, 'C2.5-D2 ancestry must remain on the current C2.5 Studio release line until deliberately superseded.');
 assert.ok(releaseBuild >= 33, 'C2.5-D2 ancestry must remain at Build 33 or later.');
-assert.match(release, /codename:\s*'phase-ux-c2-5-d2-/, 'Current D2 lineage must stay explicitly named.');
-assert.match(pkg.version, /^0\.11\./);
+assert.match(release, /codename:\s*'phase-ux-c2-5-/, 'Current release must remain explicitly inside C2.5 while the D2 contract is inherited.');
+assert.equal(pkg.version, releaseVersion, 'package.json must match the active Studio release.');
 assert.ok(String(pkg.scripts?.['check:ux'] || '').includes('test-phase-ux-c2-5-d2-intake.mjs'));
 
-console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves D2 canonical Album binding and now lets an explicit non-Singles Album request override the safe transitional Singles default.`);
+console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves D2 canonical Album binding: explicit non-Singles requests override the safe Singles default, missing Albums block Review and final creation never invents a phantom Album.`);

@@ -1,6 +1,6 @@
 export const studioRelease = {
-  version: '0.11.2',
-  build: 34,
-  codename: 'phase-ux-c2-5-d2-album-request-hotfix',
+  version: '0.12.0',
+  build: 35,
+  codename: 'phase-ux-c2-5-e-album-migration-cockpit',
   releasedAt: '2026-08-11',
 } as const;
