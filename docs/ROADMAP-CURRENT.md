@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — CURRENT ROADMAP
 
-Updated: 2026-08-11 after C2.5 closeout, C3-A implementation and the C3 Album UX corrective.
+Updated: 2026-08-11 after C2.5 closeout, C3-A implementation, the focused Album UX corrective and the Album palette slice.
 
 This file is the concise current roadmap. Historical release details remain in the milestone-specific documents and Git history.
 
@@ -80,7 +80,7 @@ Three legacy Albums migrated to canonical R2; Singles transitioned to virtual co
 ### C2.5-F — LaunchPAD canonical Album cutover
 Status: **COMPLETE — REAL USER PASS DESKTOP + MOBILE**
 
-LaunchPAD Build 89 + public Worker v2.7 consume canonical R2 Albums. Public authority currently exposes three canonical Albums and virtual Singles.
+LaunchPAD Build 89 + public Worker v2.7 established the validated canonical R2 Album baseline. Public authority exposes three canonical Albums and virtual Singles.
 
 See `docs/PHASE-UX-C2-5-CLOSEOUT.md`.
 
@@ -107,22 +107,32 @@ Scope:
 
 Acceptance still requires a real canonical Studio scan after the local SonicTrace coordinator is updated/restarted. Prefer a track that previously triggered the loudnorm measurement-block failure.
 
-#### C3-UX corrective — Focused Album workspace
+#### C3-UX corrective — Focused Album workspace + canonical palette
 Status: **IMPLEMENTED CANDIDATE — REAL USER UI CHECK PENDING**
 
-Studio `v0.13.1 · Build 39` fixes the post-C2.5 Album-management composition before resuming the C3-A smoke:
+Studio `v0.13.1 · Build 39` fixed the post-C2.5 Album-management composition:
 
-- Albums / Projects becomes a canonical cover-first library;
+- Albums / Projects is a canonical cover-first library;
 - selecting one Album renders only that Album;
 - focused `Overview / Tracklist / Assets` tabs replace the previous endless stacked editor flow;
 - current canonical artwork is visible in the editor;
-- completed C2.5-E migration tooling moves to `System` as a collapsed maintenance/archive disclosure;
-- Track Manager write authority and all Album guards stay unchanged;
-- no LaunchPAD, Worker, R2 or SonicTrace backend mutation.
+- completed C2.5-E migration tooling lives in `System` as a collapsed maintenance/archive disclosure.
 
-See `docs/PHASE-UX-C3-ALBUMS-FOCUSED-WORKSPACE.md`.
+Studio `v0.13.2 · Build 40` + LaunchPAD `2026.08.11.90` add the small palette slice requested before C3-A smoke:
 
-After the Build 39 UI check, resume the existing C3-A local-GPU smoke immediately. C3-A remains unaccepted until that scan passes.
+- raw `Accent` / `Accent 2` inputs are replaced with **Primary color** / **Secondary color** controls;
+- native color picker + validated HEX editing + optional eyedropper;
+- existing cover-derived palette extraction remains available in Assets;
+- canonical field names remain `album.accent` and `album.accent2`;
+- LaunchPAD public Album detail pages consume those values as scoped theme variables for hero/artwork/actions/track states;
+- missing or malformed colors use the existing LaunchPAD visual fallback;
+- no Worker version, R2 data, Album membership/order, player, queue or Lyrics path changes.
+
+Track Manager remains the sole protected Album write authority.
+
+See `docs/PHASE-UX-C3-ALBUMS-FOCUSED-WORKSPACE.md`, `CHANGELOG-C3-BUILD40.md` and LaunchPAD `CHANGELOG-C3-ALBUM-PALETTE-BUILD90.md`.
+
+After the Build 40 / Build 90 UI check, resume the existing C3-A local-GPU smoke immediately. C3-A remains unaccepted until that scan passes.
 
 #### C3-B — Studio V2-E parity
 Status: **NOT STARTED**
@@ -204,9 +214,10 @@ SonicTrace      V2-E Build 05
 LRC Maker       6.3.8
 
 Current C3 candidate:
-Studio          0.13.1 / Build 39
+Studio          0.13.2 / Build 40
+LaunchPAD       2026.08.11.90
 SonicTrace      V2-E Build 06
 Deep Audio      2.0.1-alpha
 ```
 
-Build 39 contains the C3-A Build 38 semantics plus the isolated Albums UX corrective. C3-A is not accepted until real-user local-GPU validation passes. Documentation-only or UI-only checks do not fabricate Deep Audio acceptance.
+Build 40 contains the C3-A Build 38 semantics plus the focused Album UX corrective and Album palette controls. LaunchPAD Build 90 is frontend-only and consumes canonical Album palette metadata without changing Worker v2.7 or R2 authority. C3-A is not accepted until real-user local-GPU validation passes. UI-only checks do not fabricate Deep Audio acceptance.
