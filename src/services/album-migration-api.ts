@@ -61,12 +61,18 @@ export interface AlbumMigrationApplyResponse {
   singlesUntouched?: boolean;
   code?: string;
   error?: string;
+  details?: string;
   currentStateToken?: string;
   rollback?: Record<string, unknown> | null;
 }
 
 function baseUrl() { return studioConfig.trackManagerUrl.replace(/\/$/, ''); }
 function isJson(response: Response) { return (response.headers.get('content-type') || '').toLowerCase().includes('application/json'); }
+function failureMessage(payload: AlbumMigrationApplyResponse, status: number) {
+  const primary = payload.error || `Track Manager Album migration returned HTTP ${status}.`;
+  const details = typeof payload.details === 'string' ? payload.details.trim() : '';
+  return details ? `${primary} Details: ${details}` : primary;
+}
 async function requireMigrationCapability() {
   const health = await getAdminBridgeHealth();
   if (!(health.capabilities?.manage || []).includes('album-migration')) {
@@ -118,7 +124,7 @@ export async function applyAdminAlbumMigration(input: {
   let payload: AlbumMigrationApplyResponse;
   try { payload = await response.json() as AlbumMigrationApplyResponse; }
   catch { throw new AlbumAdminError('Track Manager Album migration returned invalid JSON. Reload canonical state before retrying.', response.status || null, 'ALBUM_MIGRATION_INVALID_RESPONSE'); }
-  if (!response.ok) throw new AlbumAdminError(payload.error || `Track Manager Album migration returned HTTP ${response.status}.`, response.status, payload.code || null, null, payload.rollback || null);
+  if (!response.ok) throw new AlbumAdminError(failureMessage(payload, response.status), response.status, payload.code || null, null, payload.rollback || null);
   if (!payload.migrated || payload.albumId !== input.albumId || payload.singlesUntouched !== true) throw new AlbumAdminError('Track Manager returned an invalid Album migration success response. Reload canonical state.', response.status, 'ALBUM_MIGRATION_UNVERIFIED');
   return payload;
 }
