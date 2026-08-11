@@ -3,6 +3,7 @@
 Studio release: `v0.13.3 · Build 41`
 Date: 2026-08-11
 Safety checkpoint: `safety/pre-build41-track-create-capability-20260811-1801`
+Post-pass checkpoint: `safety/post-build41-real-user-pass-20260811-1833`
 
 ## Context
 
@@ -47,8 +48,12 @@ It also checks a synthetic future additive capability and confirms that removing
 
 No Track Manager/Worker/R2/schema/Album membership/player/Lyrics/SonicTrace behavior changes are part of Build 41. New Track still uses the established recoverable Singles-first transaction and canonical reread rules.
 
-## Real-user retry rule
+## Real-user acceptance
 
-After Build 41 is deployed, do not blind-retry an ambiguous `trackId`. First reload canonical Studio state and confirm whether the intended track already exists. Only if it is absent should the New Track creation be repeated.
+**PASSED — 2026-08-11.**
 
-C3-A Deep Audio smoke remains pending after this corrective. C3-B and C3-C remain later PHASE UX work. Phase 7 stays locked.
+After deployment, canonical state was checked before the retry. The real New Track flow for **Stick to You** then completed successfully under Studio `v0.13.3 · Build 41` with Track Manager v5.19 / bridge v1.11 advertising the full additive Album capability set.
+
+This closes the Build 41 operational hotfix. The successful retry validates the compatibility correction only; it does not by itself accept C3-A Deep Audio semantics.
+
+C3-A Deep Audio smoke is now the next active validation step. C3-B and C3-C remain later PHASE UX work. Phase 7 stays locked.

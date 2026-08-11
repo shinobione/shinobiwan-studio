@@ -36,4 +36,12 @@ Build 41 changes only the Studio-side capability gate:
 
 ## Acceptance
 
-CI/build success proves the regression guard and source contracts. Real-user acceptance still requires refreshing deployed Studio Build 41 and retrying New Track after first confirming no ambiguous existing canonical draft for the intended `trackId`.
+**REAL USER PASS — 2026-08-11.**
+
+After Studio `v0.13.3 · Build 41` was deployed, the intended `stick-to-you` state was rechecked before retry. The real New Track flow then completed successfully for **Stick to You**, confirming that the additive Track Manager capability set no longer blocks canonical draft creation while operation-specific required capability checks remain active.
+
+Post-pass rollback anchor:
+
+` safety/post-build41-real-user-pass-20260811-1833 `
+
+C3-A Deep Audio real-user smoke remains the next active validation step.
