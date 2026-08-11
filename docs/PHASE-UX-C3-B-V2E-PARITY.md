@@ -1,10 +1,12 @@
 # PHASE UX / C3-B — Studio V2-E parity
 
 Date: 2026-08-11
-Studio candidate: `v0.14.0 · Build 42`
+Validated Studio line: `v0.14.1 · Build 43`
+Base C3-B implementation: `v0.14.0 · Build 42`
 Codename: `phase-ux-c3-b-v2e-parity`
-Safety checkpoint: `safety/pre-c3-b-v2e-parity-20260811-1910`
-Status: **IMPLEMENTED CANDIDATE — REAL USER SMOKE PENDING**
+Pre-implementation checkpoint: `safety/pre-c3-b-v2e-parity-20260811-1910`
+Post-pass checkpoint: `safety/post-c3-b-real-user-pass-20260811-1958`
+Status: **COMPLETE — REAL USER PASS**
 
 ## Purpose
 
@@ -116,6 +118,51 @@ C3-B does not fabricate missing data:
 - canonical Album read unavailable -> Album/Project intelligence is unavailable, but catalog intelligence can still render;
 - SonicTrace sidecar read unavailable -> Intelligence shows a hard read error rather than manufacturing a local catalog.
 
+## Real-user finding — Build 42
+
+The first real-user smoke correctly returned:
+
+```text
+ANALYZED      5
+512D READY    4
+MAP POINTS    4
+```
+
+The math was correct: one analyzed sidecar did not contain a valid finite 512D embedding and therefore could not participate in the deterministic map. The UX was not explicit enough about that eligibility boundary.
+
+Build 43 (`v0.14.1`) corrected presentation only:
+
+- `HIDDEN FROM MAP` KPI;
+- `mapped · hidden` count on the map;
+- explicit list of analyzed tracks excluded from the map;
+- `512D ready` / `512D missing` / `Update needed` badges;
+- a truthful `512D embedding unavailable` closest-sound state;
+- `Show only map-ready tracks` filtering;
+- one shared `validEmbedding()` truth used by all of those surfaces.
+
+No projection, clustering, similarity, Album authority or write behavior changed.
+
+## Real-user acceptance — PASS
+
+Accepted on 2026-08-11 using Studio `v0.14.1 · Build 43`.
+
+Observed production state:
+
+```text
+ANALYZED          5
+512D READY        4
+HIDDEN FROM MAP   1
+ACOUSTIC ZONES    2
+SONIC FAMILIES    2
+NEEDS UPDATE      0
+```
+
+The UI explicitly identified `SINGULARITY :: OBLITERANT` as the analyzed track excluded from the map because a valid finite 512D embedding was unavailable. The four eligible tracks rendered on the deterministic projection; selecting mapped tracks changed nearest-neighbor results and similarity percentages correctly. Catalog signals, Neural sonic families and canonical Album / Project Intelligence rendered without exposing any apply/save-order action.
+
+Album coverage truth was also preserved: Albums whose current members had no usable canonical embeddings reported `0%` coverage, no fabricated coherence and no fabricated bridge candidate.
+
+This closes both the C3-B engine slice and the Build 43 clarity corrective.
+
 ## Write boundary
 
 C3-B is read-only.
@@ -133,9 +180,9 @@ Canonical edits remain in their existing dedicated Studio/Track Manager workflow
 
 ## Regression protection
 
-The Build 42 production build runs `scripts/test-phase-ux-c3-b-v2e-parity.mjs` in addition to the existing Phase 0–6, C2.5 and C3 guards.
+The production build runs `scripts/test-phase-ux-c3-b-v2e-parity.mjs` plus the Build 43 clarity guard through the integration tests.
 
-The C3-B guard verifies:
+The C3-B guards verify:
 
 - 512D finite-vector validation;
 - deterministic projection independent of API ordering;
@@ -145,28 +192,11 @@ The C3-B guard verifies:
 - redundant-pair behavior;
 - read-only project analysis;
 - preservation of canonical `trackIds` input order;
-- advisory sequence completeness.
+- advisory sequence completeness;
+- analyzed-vs-mapped truth remains explicit.
 
-The integration/UX guards also reject C3-B dependencies on standalone IndexedDB and Album write functions.
+## Downstream boundary
 
-## Real-user smoke plan
-
-After Build 42 is deployed:
-
-1. hard-refresh Studio and confirm `v0.14.0 · Build 42`;
-2. open **Intelligence**;
-3. verify the 2D map renders real analyzed tracks without errors;
-4. select several points/tracks and verify nearest-neighbor changes are coherent;
-5. verify zone labels and sonic-family labels are both visible and clearly distinct concepts;
-6. inspect redundant/outlier/bridge surfaces, accepting truthful zero-states where the real catalog does not cross a threshold;
-7. choose a canonical Album and verify coverage/coherence/bridge/advisory sequence render;
-8. confirm there is no save/apply-order action and the canonical Album order remains unchanged;
-9. check desktop layout first, then a narrow/mobile viewport if the desktop smoke is clean.
-
-Only after that real-user check may C3-B be marked **COMPLETE — REAL USER PASS** and C3-C become the active implementation slice.
-
-## Frozen downstream boundary
-
-C3-C remains the planned premium interaction/motion polish layer after C3-B acceptance.
+C3-C Premium Feel is now the active PHASE UX slice.
 
 Phase 7 remains **LOCKED / NOT AUTHORIZED**.
