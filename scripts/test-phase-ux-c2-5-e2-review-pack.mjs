@@ -37,7 +37,7 @@ assert.ok(css.includes('.album-migration-review') && css.includes('@media(max-wi
 
 const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
-assert.match(releaseVersion, /^0\.(?:12|13)\./, 'C2.5-E2 ancestry must remain on a validated PHASE UX C2.5/C3 Studio release line until deliberately superseded.');
+assert.match(releaseVersion, /^0\.(?:12|13|14)\./, 'C2.5-E2 ancestry must remain on a validated/successor PHASE UX C2.5/C3 Studio release line until deliberately superseded.');
 assert.ok(releaseBuild >= 36, 'C2.5-E2 review-pack ancestry must remain at Build 36 or later.');
 assert.match(release, /codename:\s*'phase-ux-(?:c2-5-e|c3)-/, 'Current release must remain explicitly inside validated PHASE UX C2.5-E/C3 while E2 is inherited.');
 assert.equal(pkg.version, releaseVersion);
