@@ -21,7 +21,7 @@ Deep Audio      2.0.1-alpha
 LRC Maker       6.3.8
 ```
 
-C2.5 remains the last fully real-user-validated milestone. Build 41 contains the C3-A Build 38 Deep Audio candidate, the Build 39 focused Album workspace corrective, the Build 40 Album palette authoring slice paired with LaunchPAD Build 90, and a narrow Studio-only New Track compatibility hotfix for the current additive Track Manager capability set. C3-A still requires its local-GPU real-user smoke before acceptance.
+The current runtime line is real-user validated through C3-A: focused Album UX/palette, Build 41 New Track compatibility and the local-GPU Deep Audio integration smoke have all passed. C3-B Studio V2-E parity is the next active slice; C3-C premium interaction polish remains after it.
 
 Historical implementation details remain in milestone-specific docs/changelogs and Git history.
 
@@ -31,22 +31,11 @@ Historical implementation details remain in milestone-specific docs/changelogs a
 
 The final C2.5-F smoke passed on desktop and mobile on 2026-08-11. LaunchPAD Build 89 established the validated canonical Album baseline with three canonical R2 Albums plus virtual Singles through public Worker v2.7.
 
-**C3 — SonicTrace Deep Audio / V2-E parity is IN PROGRESS.**
+**C3-A — SonicTrace Deep Audio resilience is COMPLETE — REAL USER PASS.**
 
-C3-A addresses the real-user `FFmpeg loudnorm did not return a measurement block` failure and truthful `FULL / PARTIAL / UNAVAILABLE / OUTDATED` Studio semantics.
+After updating/restarting SonicTrace `V2-E · BUILD 06`, Studio ran a canonical-audio scan for **Stick to You** and produced an unsaved truthful **FULL** profile with DSP, mastering, Neural, finite 512D embedding, structure and semantic summary ready. The smoke did not write the new draft to R2.
 
-Before running the C3-A local-GPU smoke, the focused Album UX corrective now spans:
-
-- Build 39: cover-first canonical release library;
-- opening one Album shows only that Album;
-- Album editing is focused into `Overview / Tracklist / Assets` tabs;
-- the current canonical cover is visible in the editor;
-- completed C2.5-E migration tooling lives under `System` as a collapsed maintenance/archive surface;
-- Build 40: raw `Accent` / `Accent 2` text inputs are replaced by an **Album palette** block with **Primary color** / **Secondary color**, native color pickers, validated HEX editing and existing eyedropper support;
-- LaunchPAD Build 90 consumes canonical `album.accent` / `album.accent2` as a scoped public Album-detail theme, with safe fallback when values are absent or invalid;
-- Build 41: New Track no longer rejects a healthy newer Track Manager merely because it advertises the legitimate C2.5 `album-*` manage capabilities in addition to the Phase 4 capabilities needed by the requested Track operation.
-
-C3-B remains the V2-E parity layer after C3-A real-user validation.
+The focused Album UX/palette corrective and Build 41 New Track capability hotfix are also real-user validated. The next active milestone is **C3-B — Studio V2-E parity**.
 
 See:
 
@@ -67,7 +56,7 @@ PHASE UX is **not finished yet**.
 
 Current permitted milestone:
 
-**C3 — SonicTrace Deep Audio / V2-E parity.**
+**C3-B — Studio V2-E parity.**
 
 Phase 7 remains **LOCKED / NOT AUTHORIZED**. Do not implement, scaffold, branch, merge or deploy Phase 7 without a new explicit user authorization after the final PHASE UX closeout.
 
@@ -109,7 +98,7 @@ Current canonical Album set:
 
 LaunchPAD currently exposes 30 public tracks and three canonical Albums; Singles is virtual.
 
-Build 40 Studio Album management reads private canonical manifests through Track Manager and artwork previews from the already validated public Worker v2.7 `/albums` projection. `accent` and `accent2` remain canonical Album manifest fields; Studio now presents them as Primary / Secondary colors, and LaunchPAD Build 90 uses them only as a scoped Album-detail theme. Public artwork or palette failure never authorizes a direct Studio R2 write path.
+Build 40 Studio Album management reads private canonical manifests through Track Manager and artwork previews from the already validated public Worker v2.7 `/albums` projection. `accent` and `accent2` remain canonical Album manifest fields; Studio presents them as Primary / Secondary colors, and LaunchPAD Build 90 uses them only as a scoped Album-detail theme. Public artwork or palette failure never authorizes a direct Studio R2 write path.
 
 ## Canonical Lyrics contract
 
@@ -148,7 +137,35 @@ tracks/<slug>/analysis/sonictrace/latest.json
 tracks/<slug>/analysis/sonictrace/history/<analysisId>.json
 ```
 
-Track Manager remains the only protected write authority. The C3 release itself performs no R2 write.
+Track Manager remains the only protected write authority.
+
+### C3-A acceptance
+
+Real-user acceptance passed on 2026-08-11 using **Stick to You** after updating/restarting the local Build 06 coordinator. The unsaved review reported:
+
+```text
+Profile          FULL
+DSP              ready
+MASTERING        ready
+NEURAL           ready
+EMBEDDING        ready
+STRUCTURE        ready
+SEMANTICSUMMARY  ready
+LUFS             -13.7
+True peak        -0.8 dBTP
+Browser RMS      -15.8 dBFS
+Sections         9
+```
+
+The exact historical file that originally produced the loudnorm measurement-block error could not be reliably reidentified. The degraded path is independently protected by SonicTrace regression coverage for loudnorm parsing/fallback/unavailable shape and for retaining Neural + 512D embedding + structure when mastering loudness is unavailable.
+
+The Studio `Engine diagnostics` card shows the already-saved durable `latest` profile, not the current unsaved review draft. An older engine string there during `REVIEW / NOT SAVED` is therefore not the current draft's engine identity.
+
+Post-pass checkpoint on Studio and SonicTrace:
+
+```text
+safety/c3-a-real-user-pass-20260811-1900
+```
 
 ## C3 Album UX corrective
 
@@ -195,7 +212,8 @@ Build 41 now uses operation-specific capability checks:
 - Phase 5 — SonicTrace / Catalog Intelligence ✅
 - Phase 6 — Lyrics / LRC integration ✅ real-user validated
 - PHASE UX C2.5-A → F ✅ real-user validated
-- PHASE UX C3 ⏳ in progress
+- PHASE UX C3-A ✅ real-user validated
+- PHASE UX C3-B ⏭ next
 
 See [`docs/ROADMAP-CURRENT.md`](docs/ROADMAP-CURRENT.md) for the current roadmap and later Phase 8–10 plan.
 
@@ -252,10 +270,17 @@ See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md).
 
 ## Safety / rollback
 
-Build 41 New Track capability checkpoint:
+C3-A real-user pass checkpoint (Studio + SonicTrace):
+
+```text
+safety/c3-a-real-user-pass-20260811-1900
+```
+
+Build 41 New Track capability checkpoints:
 
 ```text
 safety/pre-build41-track-create-capability-20260811-1801
+safety/post-build41-real-user-pass-20260811-1833
 ```
 
 C3 Album UX checkpoint:
