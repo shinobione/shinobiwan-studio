@@ -5,8 +5,9 @@ Artist Content & Intelligence Manager — private orchestration cockpit for the 
 ## Current PHASE UX release line
 
 ```text
-Studio          v0.13.3 · Build 41
-Codename        phase-ux-c3-track-create-capability-hotfix
+Studio          v0.14.0 · Build 42
+Codename        phase-ux-c3-b-v2e-parity
+Status          C3-B IMPLEMENTED CANDIDATE · REAL USER SMOKE PENDING
 
 LaunchPAD       2026.08.11.90
 Public Worker   v2.7
@@ -21,7 +22,7 @@ Deep Audio      2.0.1-alpha
 LRC Maker       6.3.8
 ```
 
-The current runtime line is real-user validated through C3-A: focused Album UX/palette, Build 41 New Track compatibility and the local-GPU Deep Audio integration smoke have all passed. C3-B Studio V2-E parity is the next active slice; C3-C premium interaction polish remains after it.
+The validated runtime line is complete through C3-A plus the focused Album UX/palette and Build 41 New Track hotfix. Build 42 is the new C3-B candidate and still requires a real-user Intelligence smoke before acceptance.
 
 Historical implementation details remain in milestone-specific docs/changelogs and Git history.
 
@@ -35,7 +36,27 @@ The final C2.5-F smoke passed on desktop and mobile on 2026-08-11. LaunchPAD Bui
 
 After updating/restarting SonicTrace `V2-E · BUILD 06`, Studio ran a canonical-audio scan for **Stick to You** and produced an unsaved truthful **FULL** profile with DSP, mastering, Neural, finite 512D embedding, structure and semantic summary ready. The smoke did not write the new draft to R2.
 
-The focused Album UX/palette corrective and Build 41 New Track capability hotfix are also real-user validated. The next active milestone is **C3-B — Studio V2-E parity**.
+**C3-B — Studio V2-E parity is IMPLEMENTED CANDIDATE — REAL USER SMOKE PENDING.**
+
+Studio Build 42 now interprets the canonical persisted SonicTrace catalog directly inside Studio:
+
+- deterministic 2D projection from finite 512D CLAP embeddings;
+- acoustic K-means zones;
+- separate Neural genre-derived sonic families;
+- redundant-pair, outlier and bridge signals;
+- canonical Album/Project coherence and bridge analysis;
+- advisory project sequencing with original canonical position provenance;
+- no automatic Album order/membership mutation.
+
+The map semantics are explicitly:
+
+```text
+position = embedding proximity
+color    = sonic family
+zone     = acoustic neighborhood
+```
+
+C3-C premium interaction polish remains blocked until Build 42 passes its real-user Intelligence smoke.
 
 See:
 
@@ -43,12 +64,14 @@ See:
 - [`docs/PHASE-UX-C3-DEEP-AUDIO-RESILIENCE.md`](docs/PHASE-UX-C3-DEEP-AUDIO-RESILIENCE.md)
 - [`docs/PHASE-UX-C3-ALBUMS-FOCUSED-WORKSPACE.md`](docs/PHASE-UX-C3-ALBUMS-FOCUSED-WORKSPACE.md)
 - [`docs/PHASE-UX-C3-TRACK-CREATE-CAPABILITY-HOTFIX.md`](docs/PHASE-UX-C3-TRACK-CREATE-CAPABILITY-HOTFIX.md)
+- [`docs/PHASE-UX-C3-B-V2E-PARITY.md`](docs/PHASE-UX-C3-B-V2E-PARITY.md)
 - [`docs/ROADMAP-CURRENT.md`](docs/ROADMAP-CURRENT.md)
 - [`CHANGELOG-C2-5-CLOSEOUT.md`](CHANGELOG-C2-5-CLOSEOUT.md)
 - [`CHANGELOG-C3-BUILD38.md`](CHANGELOG-C3-BUILD38.md)
 - [`CHANGELOG-C3-BUILD39.md`](CHANGELOG-C3-BUILD39.md)
 - [`CHANGELOG-C3-BUILD40.md`](CHANGELOG-C3-BUILD40.md)
 - [`CHANGELOG-C3-BUILD41.md`](CHANGELOG-C3-BUILD41.md)
+- [`CHANGELOG-C3-BUILD42.md`](CHANGELOG-C3-BUILD42.md)
 
 ## Important roadmap status
 
@@ -56,7 +79,9 @@ PHASE UX is **not finished yet**.
 
 Current permitted milestone:
 
-**C3-B — Studio V2-E parity.**
+**C3-B — Studio V2-E parity candidate validation.**
+
+C3-C may begin only after C3-B real-user acceptance.
 
 Phase 7 remains **LOCKED / NOT AUTHORIZED**. Do not implement, scaffold, branch, merge or deploy Phase 7 without a new explicit user authorization after the final PHASE UX closeout.
 
@@ -96,9 +121,13 @@ Current canonical Album set:
 - Coal to Diamond;
 - Love Letters from Saigon.
 
-LaunchPAD currently exposes 30 public tracks and three canonical Albums; Singles is virtual.
+Build 40 Studio Album management reads private canonical manifests through Track Manager and artwork previews from the public Worker v2.7 Album projection. `accent` and `accent2` remain canonical Album manifest fields; Studio presents them as Primary / Secondary colors, and LaunchPAD Build 90 uses them only as a scoped Album-detail theme.
 
-Build 40 Studio Album management reads private canonical manifests through Track Manager and artwork previews from the already validated public Worker v2.7 `/albums` projection. `accent` and `accent2` remain canonical Album manifest fields; Studio presents them as Primary / Secondary colors, and LaunchPAD Build 90 uses them only as a scoped Album-detail theme. Public artwork or palette failure never authorizes a direct Studio R2 write path.
+### C3-B Album/Project rule
+
+Build 42 reads those same protected canonical Album manifests for intelligence. Ordered `album.trackIds` remains authoritative and is never rewritten by the Intelligence view.
+
+A C3-B proposed sequence is advisory only. It carries each track's original canonical index and exposes no automatic apply/save-order operation.
 
 ## Canonical Lyrics contract
 
@@ -157,15 +186,48 @@ Browser RMS      -15.8 dBFS
 Sections         9
 ```
 
-The exact historical file that originally produced the loudnorm measurement-block error could not be reliably reidentified. The degraded path is independently protected by SonicTrace regression coverage for loudnorm parsing/fallback/unavailable shape and for retaining Neural + 512D embedding + structure when mastering loudness is unavailable.
-
-The Studio `Engine diagnostics` card shows the already-saved durable `latest` profile, not the current unsaved review draft. An older engine string there during `REVIEW / NOT SAVED` is therefore not the current draft's engine identity.
-
 Post-pass checkpoint on Studio and SonicTrace:
 
 ```text
 safety/c3-a-real-user-pass-20260811-1900
 ```
+
+## C3-B canonical intelligence contract
+
+Build 42 uses three protected read sources:
+
+1. canonical persisted SonicTrace sidecars through Track Manager;
+2. canonical Track metadata for optional BPM/key/energy enrichment;
+3. canonical Album manifests through Track Manager.
+
+Only finite 512D embeddings participate in map/similarity calculations.
+
+The 2D map is deterministic for the same canonical embedding set and is recalculated in Studio. The standalone SonicTrace IndexedDB catalog is not a production authority and is not read by the C3-B engine.
+
+C3-B surfaces:
+
+- nearest-neighbor cosine proximity;
+- deterministic 2D map;
+- acoustic zones;
+- separate Neural sonic families;
+- redundant/very-close pairs;
+- catalog outliers;
+- cross-zone bridge candidates;
+- Album embedding coverage;
+- mean Album/project coherence;
+- project outliers;
+- project bridge candidate;
+- advisory continuity sequence.
+
+Missing data degrades honestly:
+
+- no valid embedding -> no map/similarity claim for that track;
+- partial Album coverage -> explicit coverage warning;
+- Track metadata unavailable -> sequencing falls back to embedding/Neural evidence;
+- Album read unavailable -> project intelligence unavailable without inventing an Album;
+- SonicTrace sidecar read unavailable -> Intelligence reports the protected-read error.
+
+Build 42 adds no R2 write and no Track Manager mutation call to the Intelligence surface.
 
 ## C3 Album UX corrective
 
@@ -191,16 +253,9 @@ Ordered `album.trackIds` remains the only canonical membership/artistic-order au
 
 ## C3 Track Create capability hotfix
 
-Build 41 corrects a real-user New Track failure without changing the write transaction itself. The old Phase 4 client required Track Manager's `manage` capability list to contain *only* `track-create`, `assets` and `catalog-rebuild`. Track Manager v5.19 / bridge v1.11 correctly advertises those plus the later C2.5 Album capabilities, so the exact-list guard rejected a healthy backend before `POST /api/studio/tracks/create` was sent.
+Build 41 corrects a real-user New Track failure without changing the write transaction itself. Track Manager's capability contract is additive: Track creation still requires `track-create`, asset writes require `assets`, catalog rebuild requires `catalog-rebuild`, while unrelated current/future capabilities no longer invalidate a healthy backend.
 
-Build 41 now uses operation-specific capability checks:
-
-- Track creation still requires `track-create`;
-- asset writes still require `assets`;
-- catalog rebuild still requires `catalog-rebuild`;
-- additional current/future capabilities do not invalidate compatibility;
-- missing required capability still blocks the write;
-- no Track Manager, Worker, R2 or schema change is part of the hotfix.
+No Track Manager, Worker, R2 or schema change was part of that hotfix.
 
 ## Completed architecture phases
 
@@ -213,29 +268,10 @@ Build 41 now uses operation-specific capability checks:
 - Phase 6 — Lyrics / LRC integration ✅ real-user validated
 - PHASE UX C2.5-A → F ✅ real-user validated
 - PHASE UX C3-A ✅ real-user validated
-- PHASE UX C3-B ⏭ next
+- PHASE UX C3-B 🧪 Build 42 candidate / smoke pending
+- PHASE UX C3-C 🔒 waits for C3-B acceptance
 
 See [`docs/ROADMAP-CURRENT.md`](docs/ROADMAP-CURRENT.md) for the current roadmap and later Phase 8–10 plan.
-
-## C2.5 summary
-
-### C2.5-A
-LaunchPAD Albums scalability, mobile/player/Android/PWA hardening and Build 87 touch baseline.
-
-### C2.5-B
-Canonical R2 Album read model and projection contract.
-
-### C2.5-C
-Protected Track Manager Album create/edit/membership/order/assets with stale protection and transactional rollback.
-
-### C2.5-D
-Studio Album Management + New Track canonical Album binding. Unknown Albums block Review; draft creation remains explicit; Singles is safe fallback.
-
-### C2.5-E
-Controlled migration of the three legacy Albums to canonical R2 with dry-run, state fingerprints, one-Album apply and rollback. Singles transitioned to virtual semantics.
-
-### C2.5-F
-LaunchPAD Build 89 canonical public cutover through Worker v2.7, followed by desktop + mobile real-user validation.
 
 ## Public Worker / C2.5-F deployment note
 
@@ -245,15 +281,15 @@ The public v2.7 deploy succeeded during workflow `31485890830`, producing Worker
 ddd90621-35d4-44b0-9c22-4e5a72291d9b
 ```
 
-That workflow initially displayed failure because the post-deploy verifier observed an older Cloudflare edge response during a roughly 20-second convergence window. A later read-only live probe confirmed:
+A later read-only live probe confirmed:
 
 ```text
 /health  -> v2.7 / canonical-r2 / 3 Albums
-/tracks  -> 30 tracks / 3 Albums / canonical-r2
+/tracks  -> canonical-r2
 /albums  -> 3 Albums / canonical-r2
 ```
 
-LaunchPAD PR #207 hardened only the deployment verifier; it did not change Worker runtime behavior or R2 data. No second Worker deploy was required.
+LaunchPAD Build 90 is frontend-only relative to that Worker and consumes canonical Album palette metadata without changing Worker authority.
 
 ## Security rules
 
@@ -264,11 +300,18 @@ LaunchPAD PR #207 hardened only the deployment verifier; it did not change Worke
 - file uploads use native multipart `FormData` without custom headers;
 - no generic arbitrary cross-origin track-write route is introduced;
 - standalone Track Manager remains fallback;
-- Shadow DOM isolation is presentation isolation, not a security boundary.
+- Shadow DOM isolation is presentation isolation, not a security boundary;
+- C3-B Intelligence imports no Album mutation API and uses no standalone IndexedDB authority.
 
 See [`docs/INTEGRATION_SAFETY.md`](docs/INTEGRATION_SAFETY.md).
 
 ## Safety / rollback
+
+C3-B pre-work checkpoint:
+
+```text
+safety/pre-c3-b-v2e-parity-20260811-1910
+```
 
 C3-A real-user pass checkpoint (Studio + SonicTrace):
 
@@ -295,8 +338,6 @@ C3 pre-work checkpoint:
 safety/pre-c3-deep-audio-20260811-1426
 ```
 
-created on Studio and SonicTrace before C3 source changes.
-
 C2.5 closeout checkpoint remains:
 
 ```text
@@ -309,6 +350,6 @@ Older validated Phase 6 checkpoints remain historical rollback anchors.
 
 Real-user smoke remains authoritative for user-facing milestone acceptance. CI is necessary but not sufficient.
 
-Build 41 adds a dedicated regression guard proving that the exact current Track Manager manage-capability set — including all six `album-*` capabilities — remains compatible with Track Create, while a missing required capability still blocks the write.
+Build 42 adds a dedicated C3-B regression guard proving deterministic projection/zone identity, Neural-family separation, catalog insight behavior and preservation of canonical Album `trackIds` during project sequencing.
 
 Do not mutate production WAV/cover/lyrics/Album objects merely to manufacture a frontend smoke test.
