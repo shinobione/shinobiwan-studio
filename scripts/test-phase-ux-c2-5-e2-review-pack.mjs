@@ -34,10 +34,13 @@ assert.ok(service.includes("const MIGRATION_INTENT = 'album-migration-apply-v1'"
 assert.ok(service.includes('expectedStateToken'), 'E2 must preserve backend stale-state enforcement.');
 assert.ok(main.includes("import './c2-5-e2-review.css';"), 'E2 review styles must be loaded after the E1 cockpit styles.');
 assert.ok(css.includes('.album-migration-review') && css.includes('@media(max-width:560px)'), 'E2 review pack must retain desktop and mobile-responsive styling.');
-assert.ok(release.includes("version: '0.12.1'"));
-assert.ok(release.includes('build: 36'));
-assert.ok(release.includes("codename: 'phase-ux-c2-5-e2-migration-review-pack'"));
-assert.equal(pkg.version, '0.12.1');
+
+const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+assert.match(releaseVersion, /^0\.12\./, 'C2.5-E2 ancestry must remain on Studio 0.12.x until deliberately superseded.');
+assert.ok(releaseBuild >= 36, 'C2.5-E2 review-pack ancestry must remain at Build 36 or later.');
+assert.match(release, /codename:\s*'phase-ux-c2-5-e/, 'Current release must remain explicitly inside C2.5-E while E2 is inherited.');
+assert.equal(pkg.version, releaseVersion);
 assert.ok(String(pkg.scripts?.['check:ux'] || '').includes('test-phase-ux-c2-5-e2-review-pack.mjs'));
 
-console.log('Studio v0.12.1 Build 36 adds a read-only C2.5-E2 migration review/export pack while preserving one-Album-at-a-time guarded writes and the C2.5-F/C3/Phase 7 stop line.');
+console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves the C2.5-E2 read-only migration review/export pack.`);
