@@ -10,10 +10,13 @@ const main = read('src/main.tsx');
 const release = read('src/release.ts');
 const pkg = JSON.parse(read('package.json'));
 
-assert.match(release, /version:\s*'0\.16\.2'/);
-assert.match(release, /build:\s*48/);
-assert.match(release, /phase7-native-release-campaign/);
-assert.equal(pkg.version, '0.16.2');
+const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
+assert.match(version, /^0\.16\.\d+$/, 'Native Release Campaign successors must stay on Studio 0.16.x.');
+assert.ok(build >= 48, `Native Release Campaign successor must preserve Build 48 or later, got Build ${build}.`);
+assert.ok(codename.startsWith('phase7-native-release-campaign'), `Native Release Campaign codename must remain explicit, got ${codename}.`);
+assert.equal(pkg.version, version, 'package.json must match Studio release version.');
 assert.equal(pkg.dependencies.jszip, '3.10.1');
 assert.ok(pkg.scripts['check:phase7']?.includes('test-phase7-native-release-campaign-build48.mjs'));
 assert.ok(main.includes("import './release-campaign.css';"));
@@ -38,7 +41,7 @@ assert.ok(engine.includes('campaignReady'));
 assert.ok(engine.includes("inspectAspect(draft.square, '1:1')"));
 assert.ok(engine.includes("inspectAspect(draft.vertical, '9:16')"));
 
-assert.ok(storage.includes("indexedDB.open(DB_NAME, DB_VERSION)"), 'Build 48 must preserve refreshes through browser-local IndexedDB drafts.');
+assert.ok(storage.includes("indexedDB.open(DB_NAME, DB_VERSION)"), 'Native campaign must preserve refreshes through browser-local IndexedDB drafts.');
 assert.ok(styles.includes('.rc-review-grid'), 'Three-format review grid must be styled.');
 assert.ok(styles.includes('@media(prefers-reduced-motion:reduce)'), 'Native campaign UI must retain reduced-motion handling.');
 
@@ -57,4 +60,4 @@ for (const forbidden of [
   assert.ok(!panel.includes(forbidden), `Native Release Campaign must not depend on standalone bridge or canonical write surface: ${forbidden}`);
 }
 
-console.log('Build 48 native Release Campaign guard passed MASTER→anchored 1:1/9:16, browser-local persistence, ZIP export and no-write/no-standalone-bridge boundaries.');
+console.log(`Build 48 native Release Campaign contract preserved through Studio ${version} Build ${build}: MASTER→anchored 1:1/9:16, browser-local persistence, ZIP export and no-write/no-standalone-bridge boundaries.`);
