@@ -20,7 +20,7 @@ import type { ServiceStatus, StudioReadSource, StudioRoute, WorkspaceSection } f
 const NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
   { route: 'dashboard', label: 'Dashboard', glyph: '⌂' },
   { route: 'workflow', label: 'Workflow', glyph: '↳' },
-  { route: 'catalog', label: 'Catalog', glyph: '♫' },
+  { route: 'catalog', label: 'Tracks', glyph: '♫' },
   { route: 'albums', label: 'Albums / Projects', glyph: '▣' },
   { route: 'intelligence', label: 'Intelligence', glyph: '◇' },
 ];

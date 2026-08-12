@@ -7,10 +7,13 @@ const embedded = read('src/components/EmbeddedLyricsStudio.tsx');
 const verifier = read('src/components/ContinuationReceiptBanner.tsx');
 const pkg = JSON.parse(read('package.json'));
 
-assert.match(release, /version:\s*'0\.17\.1'/);
-assert.match(release, /build:\s*51/);
-assert.match(release, /phase7-b-lyrics-receipt-window-listener-corrective/);
-assert.equal(pkg.version, '0.17.1');
+const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
+const build51 = releaseVersion === '0.17.1' && releaseBuild === 51 && codename === 'phase7-b-lyrics-receipt-window-listener-corrective';
+const acceptedSuccessor = /^0\.17\.\d+$/.test(releaseVersion) && releaseBuild > 51 && codename.startsWith('phase7-b-');
+assert.ok(build51 || acceptedSuccessor, `Build 51 Lyrics receipt contract must remain inherited by accepted post-pass successors, got ${releaseVersion} Build ${releaseBuild} / ${codename}.`);
+assert.equal(pkg.version, releaseVersion);
 assert.ok(pkg.scripts['check:phase7']?.includes('test-phase7-b-contextual-receipts-build50.mjs'), 'Build 50 receipt contract must remain active.');
 assert.ok(pkg.scripts['check:phase7']?.includes('test-phase7-b-lyrics-receipt-build51.mjs'), 'Build 51 Lyrics receipt corrective guard must run in the Phase 7 chain.');
 
@@ -33,4 +36,4 @@ for (const forbidden of ['uploadTrackAsset', 'replaceTrackAsset', 'saveTrackMeta
   assert.ok(!embedded.includes(forbidden), `Build 51 Lyrics receipt listener must not acquire write authority: ${forbidden}`);
 }
 
-console.log('Phase 7-B Build 51 guard passed: embedded LRC Maker save receipts are captured at window scope, exact-track filtered, and still require the inherited private canonical reread before VERIFIED.');
+console.log(`Phase 7-B Build 51 guard passed under ${releaseVersion} Build ${releaseBuild}: embedded LRC Maker save receipts remain window-scoped, exact-track filtered, and privately reread before VERIFIED.`);

@@ -18,7 +18,7 @@ for (const required of [
   "route: 'intelligence'",
   "label: 'Dashboard'",
   "label: 'Workflow'",
-  "label: 'Catalog'",
+  "label: 'Tracks'",
   "label: 'Albums / Projects'",
   "label: 'Intelligence'",
 ]) assert.ok(primaryNav.includes(required), `Primary Studio navigation is missing ${required}.`);
