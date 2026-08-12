@@ -24,6 +24,7 @@ import {
 } from '../release-campaign-storage';
 
 const PROVIDERS = ['Google Flow', 'Gemini', 'ChatGPT Images', 'Other premium provider'];
+const GOOGLE_FLOW_URL = 'https://labs.google/fx/fr/tools/flow/';
 
 type ImageSlot = 'logo' | 'master' | 'square' | 'vertical';
 
@@ -349,11 +350,12 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
             <label><span>MASTER handoff · editable · concept {masterConceptIndex + 1}</span><textarea value={masterPrompt} onChange={event => setMasterPrompt(event.target.value)} /></label>
             <div className="rc-button-row">
               <button className="primary-btn" type="button" onClick={() => { void copyText(masterPrompt, 'master'); }}>{copied === 'master' ? 'Copied ✓' : `Copy MASTER handoff for ${provider}`}</button>
+              <a className="secondary-btn" href={GOOGLE_FLOW_URL} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>Open Google Flow ↗</a>
               <button className="secondary-btn" type="button" onClick={newMasterConcept}>New MASTER concept</button>
               <button className="secondary-btn" type="button" onClick={() => logoInput.current?.click()}>{logo ? 'Replace logo reference' : 'Load SHINOBIWAN logo'}</button>
               {logo && <button className="secondary-btn" type="button" onClick={() => downloadDataUrl(logo, `SHINOBIWAN_Logo_Reference.${extensionForMime(logo.mimeType)}`)}>Download logo reference</button>}
             </div>
-            <p className="rc-helper">{logo ? 'Logo ready: attach this exact file with the MASTER prompt in the provider.' : 'Optional but recommended: load the authoritative SHINOBIWAN logo, then attach it as a provider reference image.'} New MASTER concept starts a different creative direction from scratch without deleting your imported campaign.</p>
+            <p className="rc-helper">{logo ? 'Logo ready: attach this exact file with the MASTER prompt in the provider.' : 'Optional but recommended: load the authoritative SHINOBIWAN logo, then attach it as a provider reference image.'} Open Flow directly from here, and use New MASTER concept whenever you want a genuinely different visual direction without deleting the currently imported campaign.</p>
           </div>
           <div className="rc-import-panel">
             <ImagePreview asset={master} format="16:9" title={track.title} />
