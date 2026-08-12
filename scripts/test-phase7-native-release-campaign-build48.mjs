@@ -27,10 +27,12 @@ assert.ok(panel.includes('Export complete Release Campaign ZIP'));
 assert.ok(panel.includes('browser-local'), 'Browser-local/non-canonical truthfulness must remain visible.');
 assert.ok(panel.includes('canonicalWrite: false'), 'Export manifest must explicitly remain non-canonical.');
 assert.ok(panel.includes('indexedDB') === false, 'Persistence implementation should stay isolated from the UI component.');
+assert.ok(panel.includes("buildVariantPrompt(track, '1:1')"));
+assert.ok(panel.includes("buildVariantPrompt(track, '9:16')"));
 
 assert.ok(engine.includes('REFERENCE IMAGE REQUIRED: attach the accepted MASTER 16:9 artwork as the primary image reference'), 'Anchored derivative prompts must explicitly require the MASTER reference.');
 assert.ok(engine.includes("format === '1:1'"));
-assert.ok(engine.includes("format === '9:16'"));
+assert.ok(engine.includes('vertical 9:16'));
 assert.ok(engine.includes('not a new cover inspired by it'), 'Variant prompt must forbid campaign redesign/drift.');
 assert.ok(engine.includes('campaignReady'));
 assert.ok(engine.includes("inspectAspect(draft.square, '1:1')"));
