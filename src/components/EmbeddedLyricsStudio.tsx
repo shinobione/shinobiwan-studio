@@ -1,4 +1,4 @@
-import { createElement, useEffect, useRef, useState } from 'react';
+import { createElement, useEffect, useState } from 'react';
 import { emitContinuationReceipt, makeContinuationReceipt } from '../phase7-receipts';
 import { contextualLrcMakerUrl } from '../services/lrc-maker';
 import { studioConfig } from '../services/config';
@@ -50,7 +50,6 @@ function loadEmbedBundle(): Promise<void> {
 interface LyricsSavedEvent extends CustomEvent<{ trackId: string; updatedAt: string }> {}
 
 export function EmbeddedLyricsStudio({ trackId, onSaved }: { trackId: string; onSaved: () => Promise<void> | void }) {
-  const hostRef = useRef<HTMLElement | null>(null);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [error, setError] = useState<string | null>(null);
 
@@ -69,8 +68,6 @@ export function EmbeddedLyricsStudio({ trackId, onSaved }: { trackId: string; on
   }, []);
 
   useEffect(() => {
-    const host = hostRef.current;
-    if (!host) return;
     const listener = (event: Event) => {
       const detail = (event as LyricsSavedEvent).detail;
       if (detail?.trackId !== trackId) return;
@@ -85,8 +82,12 @@ export function EmbeddedLyricsStudio({ trackId, onSaved }: { trackId: string; on
       }));
       void onSaved();
     };
-    host.addEventListener('lyrics-saved', listener);
-    return () => host.removeEventListener('lyrics-saved', listener);
+
+    // LRC Maker dispatches a composed+bubbling `lyrics-saved` CustomEvent from the
+    // Web Component host. Listen at window scope so receipt delivery does not depend
+    // on React obtaining/stabilizing a ref to an upgraded custom element instance.
+    globalThis.addEventListener('lyrics-saved', listener);
+    return () => globalThis.removeEventListener('lyrics-saved', listener);
   }, [onSaved, trackId]);
 
   return (
@@ -109,7 +110,6 @@ export function EmbeddedLyricsStudio({ trackId, onSaved }: { trackId: string; on
       )}
 
       {createElement(EMBED_TAG, {
-        ref: (node: HTMLElement | null) => { hostRef.current = node; },
         'track-id': trackId,
         class: `workspace-lyrics-embed ${state === 'ready' ? 'ready' : ''}`,
       })}
