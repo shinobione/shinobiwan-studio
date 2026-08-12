@@ -10,6 +10,7 @@ import { EmbeddedLyricsStudio } from './EmbeddedLyricsStudio';
 import { LyricsEditorPanel } from './LyricsEditorPanel';
 import { MetadataValidationPanel } from './MetadataValidationPanel';
 import { SonicTracePanel } from './SonicTracePanel';
+import { TrackToMarketPanel } from './TrackToMarketPanel';
 
 const TABS: Array<{ id: WorkspaceSection; label: string }> = [
   { id: 'overview', label: 'Overview' },
@@ -17,6 +18,7 @@ const TABS: Array<{ id: WorkspaceSection; label: string }> = [
   { id: 'assets', label: 'Assets' },
   { id: 'lyrics', label: 'Lyrics' },
   { id: 'intelligence', label: 'SonicTrace' },
+  { id: 'market', label: 'Release Pack' },
 ];
 
 function displayDate(value: string | null, year: number | null): string {
@@ -185,9 +187,9 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
         </div>
       )}
 
-      {section === 'intelligence' && (
-        <SonicTracePanel track={track} onSaved={refreshTrackAfterWrite} />
-      )}
+      {section === 'intelligence' && <SonicTracePanel track={track} onSaved={refreshTrackAfterWrite} />}
+
+      {section === 'market' && <TrackToMarketPanel track={track} />}
 
       {section === 'lyrics' && (
         <div className="workspace-lyrics-shell">
@@ -207,13 +209,11 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
         </div>
       )}
 
-      {section === 'assets' && (
-        <AssetsManager track={track} onChanged={refreshTrackAfterWrite} />
-      )}
+      {section === 'assets' && <AssetsManager track={track} onChanged={refreshTrackAfterWrite} />}
 
       {section === 'versions' && (
         <div className="workspace-two-col">
-          <WorkspacePanel eyebrow="VERSIONS / CANONICAL" title="Current catalog source"><dl className="workspace-metadata-list"><div><dt>trackId</dt><dd>{track.id}</dd></div><div><dt>Audio filename</dt><dd>{track.assets.audio?.filename || 'Missing'}</dd></div><div><dt>{privateRead ? 'Canonical revision' : 'Public revision'}</dt><dd>{track.updatedAt || 'Not exposed'}</dd></div><div><dt>Read layer</dt><dd>{privateRead ? 'Track Manager v5.17 · bridge v1.9' : 'LaunchPAD public fallback'}</dd></div><div><dt>Master ID</dt><dd>Tracked by SonicTrace sourceVersion/history</dd></div></dl></WorkspacePanel>
+          <WorkspacePanel eyebrow="VERSIONS / CANONICAL" title="Current catalog source"><dl className="workspace-metadata-list"><div><dt>trackId</dt><dd>{track.id}</dd></div><div><dt>Audio filename</dt><dd>{track.assets.audio?.filename || 'Missing'}</dd></div><div><dt>{privateRead ? 'Canonical revision' : 'Public revision'}</dt><dd>{track.updatedAt || 'Not exposed'}</dd></div><div><dt>Read layer</dt><dd>{privateRead ? 'Track Manager private catalog' : 'LaunchPAD public fallback'}</dd></div><div><dt>Master ID</dt><dd>Tracked by SonicTrace sourceVersion/history</dd></div></dl></WorkspacePanel>
           <WorkspacePanel eyebrow="VERSIONS / ROADMAP" title="Version model reserved"><div className="workspace-note"><strong>No fake version history.</strong><p>Dedicated masters/version identifiers remain reserved for later data modeling and stay subordinate to canonical trackId.</p></div></WorkspacePanel>
         </div>
       )}

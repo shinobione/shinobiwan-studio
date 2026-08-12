@@ -11,6 +11,7 @@ export type StudioRoute =
 export type WorkspaceSection =
   | 'overview'
   | 'intelligence'
+  | 'market'
   | 'lyrics'
   | 'assets'
   | 'versions'

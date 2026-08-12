@@ -6,9 +6,8 @@ const main = fs.readFileSync('src/main.tsx', 'utf8');
 const release = fs.readFileSync('src/release.ts', 'utf8');
 
 assert.match(main, /import '\.\/c3-c-premium-feel\.css';/);
-assert.match(release, /version: '0\.15\.0'/);
-assert.match(release, /build: 44/);
-assert.match(release, /phase-ux-c3-c-premium-feel/);
+assert.match(release, /version: '0\.15\.[0-9]+'/);
+assert.match(release, /build: (?:4[4-9]|[5-9][0-9])/);
 
 for (const token of [
   '--studio-motion-instant',
@@ -27,4 +26,4 @@ assert.match(css, /animation: none !important/, 'Reduced motion must suppress en
 assert.doesNotMatch(css, /animation-iteration-count:\s*infinite/i, 'C3-C must not add perpetual attention-seeking motion.');
 assert.doesNotMatch(css, /transition-delay:/i, 'C3-C must not delay real interactions.');
 
-console.log('C3-C premium feel passed motion-token, press, glow, focus, map-safety and reduced-motion guards.');
+console.log('C3-C premium feel passed inherited motion-token, press, glow, focus, map-safety and reduced-motion guards.');
