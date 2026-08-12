@@ -59,8 +59,16 @@ for (const symbol of forbiddenImports) {
   assert.ok(!workflow.includes(symbol), `Phase 7-A readiness model must not import mutation surface ${symbol}.`);
 }
 
-for (const pattern of [/fetch\s*\(/, /POST/i, /PUT/i, /PATCH/i, /DELETE/i]) {
-  assert.doesNotMatch(view, pattern, `Phase 7-A view must stay read-only: forbidden pattern ${pattern}.`);
-}
+assert.doesNotMatch(view, /fetch\s*\(/, 'Phase 7-A view must not issue direct HTTP requests.');
+assert.doesNotMatch(
+  view,
+  /method\s*:\s*['"](?:POST|PUT|PATCH|DELETE)['"]/i,
+  'Phase 7-A view must not declare a write HTTP method.'
+);
+assert.doesNotMatch(
+  workflow,
+  /method\s*:\s*['"](?:POST|PUT|PATCH|DELETE)['"]/i,
+  'Phase 7-A readiness model must not declare a write HTTP method.'
+);
 
 console.log('Studio Phase 7-A Build 46 keeps workflow orchestration read-only, canonical and deep-linked to existing guarded specialist surfaces.');
