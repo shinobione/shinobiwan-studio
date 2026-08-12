@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — CURRENT ROADMAP
 
-Updated: 2026-08-12 after the Build 47 real-user product review and explicit decision to absorb Track-To-Market into Studio.
+Updated: 2026-08-12 after Studio Build 48 native Release Campaign merge/deployment; real-user smoke remains pending.
 
 Historical release detail remains in milestone docs and Git history.
 
@@ -103,9 +103,9 @@ This mirrors the proven manual Flow workflow:
 
 ### Build 48 — Native Release Campaign workspace
 
-Status: **AUTHORIZED / IMPLEMENTATION IN PROGRESS**
+Status: **DEPLOYED CANDIDATE — REAL USER SMOKE PENDING**
 
-Target release: **Studio v0.16.2 · Build 48**.
+Release: **Studio v0.16.2 · Build 48**.
 
 Build 48 absorbs the useful TTM path directly into the existing `Release Pack` Track Workspace section:
 
@@ -159,7 +159,7 @@ Until then, TTM remains available as rollback/reference.
 
 ## Phase 7 — End-to-end workflow
 
-Status: **7-A COMPLETE / BUILD 48 NATIVE RELEASE CAMPAIGN PRIORITIZED / 7-B DEFERRED ONE SLOT**
+Status: **7-A COMPLETE / BUILD 48 NATIVE RELEASE CAMPAIGN DEPLOYED CANDIDATE / 7-B DEFERRED ONE SLOT**
 
 ### Phase 7-A — Workflow Overview / production queue
 
@@ -243,7 +243,7 @@ LRC Maker       6.3.8
 Current corrective / migration line:
 Track-To-Market 0.2.0                 standalone reference/rollback during migration
 Studio          0.16.1 / Build 47     staged-preview corrective
-Studio          0.16.2 / Build 48     native Release Campaign candidate
+Studio          0.16.2 / Build 48     DEPLOYED CANDIDATE · real-user smoke pending
 ```
 
 Rollback anchor for Build 48:
