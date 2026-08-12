@@ -82,15 +82,17 @@ const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const phaseUxLine = /^0\.(?:11|12|13|14|15)\./.test(version) && codename.startsWith('phase-ux-');
 const authorizedPhase7 = /^0\.(?:16|17)\./.test(version) && codename.startsWith('phase7-');
-assert.ok(phaseUxLine || authorizedPhase7, `UX closeout guard must run on validated PHASE UX lineage or an explicitly authorized Phase 7 successor, got ${version} / ${codename}.`);
+const authorizedStudioFocus = /^0\.17\./.test(version) && codename.startsWith('studio-focus-');
+assert.ok(phaseUxLine || authorizedPhase7 || authorizedStudioFocus, `UX closeout guard must run on validated PHASE UX lineage or an explicitly authorized Phase 7 / Studio Focus successor, got ${version} / ${codename}.`);
 if (phaseUxLine) {
   for (const source of [app, workspace]) for (const forbidden of ['phase7', 'phase-7']) assert.ok(!source.toLowerCase().includes(forbidden), `Unauthorized Phase 7 runtime marker found during PHASE UX: ${forbidden}.`);
 } else {
-  assert.ok(app.includes('PHASE 7 / ORCHESTRATION'), 'Authorized Phase 7 successor must keep orchestration explicit in the shell.');
+  assert.ok(app.includes("route === 'workflow' && <WorkflowView />"), 'Authorized successor must keep the validated Phase 7 workflow route available even when Studio Focus hides it under Advanced.');
+  assert.ok(app.includes('PHASE 7-B'), 'Authorized Studio Focus successor must preserve the accepted Phase 7-B ancestry in the shell.');
   assert.ok(workspace.includes('<ContinuationReceiptBanner trackId={track.id}'), 'Authorized Phase 7-B successor must keep receipt verification scoped to the Track Workspace.');
 }
 for (const forbidden of ['indexedDB', 'saveAdminAlbumMetadata', 'saveAdminAlbumMembership', 'moveAdminAlbumTrack']) {
   assert.ok(!intelligence.includes(forbidden), `C3-B must remain canonical-read/read-only; found ${forbidden}.`);
 }
 
-console.log('PHASE UX UX-5/C3-B guard passed: canonical V2-E map/project intelligence, responsive reflow, accessible selection/status semantics and read-only Album authority survive the explicitly authorized Phase 7 successor.');
+console.log('PHASE UX UX-5/C3-B guard passed: canonical V2-E map/project intelligence, responsive reflow, accessible selection/status semantics and read-only Album authority survive the explicitly authorized Studio Focus successor.');
