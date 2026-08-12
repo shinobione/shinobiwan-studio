@@ -12,7 +12,7 @@ const main = read('src/main.tsx');
 const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
-assert.match(version, /^0\.17\.\d+$/);
+assert.match(version, /^0\.(?:17|18)\.\d+$/);
 assert.ok(build >= 53, `Studio Focus shell successor must remain Build 53 or later, got ${build}.`);
 assert.ok(codename.startsWith('studio-focus-'), `Studio Focus successor codename must remain explicit, got ${codename}.`);
 assert.equal(pkg.version, version);
