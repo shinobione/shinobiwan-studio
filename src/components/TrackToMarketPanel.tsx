@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { makeContinuationReceipt, type ContinuationReceipt } from '../phase7-receipts';
 import { studioConfig } from '../services/config';
 import type { StudioTrackDetail } from '../types/studio';
 
@@ -55,7 +56,7 @@ function validatedPreview(value: unknown): string | undefined {
   return value;
 }
 
-export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
+export function TrackToMarketPanel({ track, onReceipt }: { track: StudioTrackDetail; onReceipt?: (receipt: ContinuationReceipt) => Promise<void> | void }) {
   const childRef = useRef<Window | null>(null);
   const [bridgeState, setBridgeState] = useState<BridgeState>('idle');
   const [bridgeDetail, setBridgeDetail] = useState('Not opened yet.');
@@ -106,7 +107,7 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
 
         const artworkStrategy = data.artworkStrategy === 'integrated' || data.artworkStrategy === 'clean' ? data.artworkStrategy : undefined;
         const brandingMode = data.brandingMode === 'preserve' || data.brandingMode === 'logo-only' || data.brandingMode === 'editorial' ? data.brandingMode : undefined;
-        setLastFinal({
+        const returned: ReturnedFinalPack = {
           version: typeof data.version === 'string' ? data.version : undefined,
           trackId: track.id,
           releaseStatus: 'final',
@@ -117,15 +118,25 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
           brandingMode,
           previewDataUrl: validatedPreview(data.previewDataUrl),
           pack: data.pack && typeof data.pack === 'object' ? data.pack as ReturnedFinalPack['pack'] : undefined,
-        });
+        };
+        setLastFinal(returned);
         setBridgeState('final-received');
-        setBridgeDetail('FINAL artwork + release pack returned for review. Build 47 still performs no R2 or Track Manager write.');
+        setBridgeDetail('FINAL artwork + release pack returned for review. Build 48 still performs no R2 or Track Manager write.');
+        void onReceipt?.(makeContinuationReceipt({
+          trackId: track.id,
+          source: 'track-to-market',
+          operation: 'final-pack-received',
+          effect: 'review-only',
+          summary: 'FINAL artwork + release pack returned for review.',
+          detail: 'Review-only receipt: no canonical write is expected or authorized from Track-To-Market.',
+          sourceRevision: returned.version,
+        }));
       }
     };
 
     globalThis.addEventListener('message', onMessage);
     return () => globalThis.removeEventListener('message', onMessage);
-  }, [input, track.id]);
+  }, [input, onReceipt, track.id]);
 
   const openTrackToMarket = () => {
     const child = globalThis.open(launchUrl, 'shinobiwan-track-to-market');
@@ -141,67 +152,22 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
 
   return <section className="ttm-workspace">
     <article className="panel ttm-hero">
-      <div>
-        <span className="eyebrow">RELEASE PACK / V0.2 ORCHESTRATOR</span>
-        <h3>Track-To-Market</h3>
-        <p>Open the standalone orchestrator with this canonical track context. TTM prepares the premium provider handoff, references, faithful FINAL import and release assets, then stages the actual selected artwork back here for review.</p>
-      </div>
+      <div><span className="eyebrow">RELEASE PACK / V0.2 ORCHESTRATOR</span><h3>Track-To-Market</h3><p>Open the standalone orchestrator with this canonical track context. TTM prepares the premium provider handoff, references, faithful FINAL import and release assets, then stages the actual selected artwork back here for review.</p></div>
       <button className="primary-btn" type="button" onClick={openTrackToMarket}>Open Track-To-Market <span>↗</span></button>
     </article>
 
     <div className="ttm-grid">
-      <article className="panel ttm-status-card">
-        <span className="eyebrow">BRIDGE / STATUS</span>
-        <div className={`ttm-state ttm-state-${bridgeState}`}><i /><strong>{bridgeState.replace('-', ' ')}</strong></div>
-        <p>{bridgeDetail}</p>
-        <dl>
-          <div><dt>trackId</dt><dd>{track.id}</dd></div>
-          <div><dt>Lyrics payload</dt><dd>{track.lyricsRaw ? `${track.lyricsRaw.length.toLocaleString()} chars via postMessage` : 'No canonical lyrics'}</dd></div>
-          <div><dt>Target</dt><dd>Track-To-Market v0.2.0+</dd></div>
-        </dl>
-      </article>
-
-      <article className="panel ttm-safety-card">
-        <span className="eyebrow">BUILD 47 / SAFETY</span>
-        <h3>Stage + review only</h3>
-        <ul>
-          <li>No R2 write from this panel.</li>
-          <li>No Track Manager mutation API imported.</li>
-          <li>DRAFT returns are rejected.</li>
-          <li>Only matching FINAL trackId returns are accepted.</li>
-          <li>Artwork preview is transient browser memory only.</li>
-        </ul>
-      </article>
+      <article className="panel ttm-status-card"><span className="eyebrow">BRIDGE / STATUS</span><div className={`ttm-state ttm-state-${bridgeState}`}><i /><strong>{bridgeState.replace('-', ' ')}</strong></div><p>{bridgeDetail}</p><dl><div><dt>trackId</dt><dd>{track.id}</dd></div><div><dt>Lyrics payload</dt><dd>{track.lyricsRaw ? `${track.lyricsRaw.length.toLocaleString()} chars via postMessage` : 'No canonical lyrics'}</dd></div><div><dt>Target</dt><dd>Track-To-Market v0.2.0+</dd></div></dl></article>
+      <article className="panel ttm-safety-card"><span className="eyebrow">BUILD 48 / SAFETY</span><h3>Stage + review only</h3><ul><li>No R2 write from this panel.</li><li>No Track Manager mutation API imported.</li><li>DRAFT returns are rejected.</li><li>Only matching FINAL trackId returns are accepted.</li><li>Artwork preview is transient browser memory only.</li><li>FINAL emits a review-only continuation receipt, never a canonical completion claim.</li></ul></article>
     </div>
 
-    <article className="panel ttm-context-card">
-      <span className="eyebrow">CONTEXT / SENT TO ENGINE</span>
-      <div className="ttm-context-grid">
-        <div><span>Title</span><strong>{track.title}</strong></div>
-        <div><span>Genres</span><strong>{track.genres.join(', ') || 'Unclassified'}</strong></div>
-        <div><span>Mood</span><strong>{track.moods.join(', ') || '—'}</strong></div>
-        <div><span>Theme</span><strong>{track.themes.join(', ') || '—'}</strong></div>
-      </div>
-    </article>
+    <article className="panel ttm-context-card"><span className="eyebrow">CONTEXT / SENT TO ENGINE</span><div className="ttm-context-grid"><div><span>Title</span><strong>{track.title}</strong></div><div><span>Genres</span><strong>{track.genres.join(', ') || 'Unclassified'}</strong></div><div><span>Mood</span><strong>{track.moods.join(', ') || '—'}</strong></div><div><span>Theme</span><strong>{track.themes.join(', ') || '—'}</strong></div></div></article>
 
     {lastFinal && <article className="panel ttm-final-card">
       <div className="ttm-final-head"><div><span className="eyebrow">FINAL / STAGED FROM TTM</span><h3>Release pack received</h3></div><span className="ttm-final-badge">FINAL</span></div>
       <div className={`ttm-final-stage ${lastFinal.previewDataUrl ? 'has-preview' : ''}`}>
         {lastFinal.previewDataUrl && <div className="ttm-final-preview"><img src={lastFinal.previewDataUrl} alt={`${track.title} FINAL artwork staged from Track-To-Market`} /></div>}
-        <div className="ttm-final-details">
-          <div className="ttm-context-grid">
-            <div><span>Provider</span><strong>{lastFinal.artworkProvider || 'external-ai'}</strong></div>
-            <div><span>Source/model</span><strong>{lastFinal.artworkModel || 'Premium external import'}</strong></div>
-            <div><span>Artwork</span><strong>{lastFinal.artworkStrategy || 'integrated'}</strong></div>
-            <div><span>Brand treatment</span><strong>{lastFinal.brandingMode || 'preserve'}</strong></div>
-          </div>
-          <div className="ttm-context-grid ttm-context-grid-compact">
-            <div><span>Mode</span><strong>{lastFinal.mode || 'quality-import'}</strong></div>
-            <div><span>Bridge</span><strong>{lastFinal.version || '0.2.0'}</strong></div>
-          </div>
-          {lastFinal.pack?.soundcloudDescription && <div className="ttm-return-copy"><span>SoundCloud</span><p>{lastFinal.pack.soundcloudDescription}</p></div>}
-          {lastFinal.pack?.caption && <div className="ttm-return-copy"><span>Social</span><p>{lastFinal.pack.caption}</p></div>}
-        </div>
+        <div className="ttm-final-details"><div className="ttm-context-grid"><div><span>Provider</span><strong>{lastFinal.artworkProvider || 'external-ai'}</strong></div><div><span>Source/model</span><strong>{lastFinal.artworkModel || 'Premium external import'}</strong></div><div><span>Artwork</span><strong>{lastFinal.artworkStrategy || 'integrated'}</strong></div><div><span>Brand treatment</span><strong>{lastFinal.brandingMode || 'preserve'}</strong></div></div><div className="ttm-context-grid ttm-context-grid-compact"><div><span>Mode</span><strong>{lastFinal.mode || 'quality-import'}</strong></div><div><span>Bridge</span><strong>{lastFinal.version || '0.2.0'}</strong></div></div>{lastFinal.pack?.soundcloudDescription && <div className="ttm-return-copy"><span>SoundCloud</span><p>{lastFinal.pack.soundcloudDescription}</p></div>}{lastFinal.pack?.caption && <div className="ttm-return-copy"><span>Social</span><p>{lastFinal.pack.caption}</p></div>}</div>
       </div>
       <p className="ttm-review-note">Staged preview only. The canonical cover, R2 objects and Track Manager manifest remain untouched until a later explicit guarded persistence action is designed and authorized.</p>
     </article>}
