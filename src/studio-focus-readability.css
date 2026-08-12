@@ -1,0 +1,47 @@
+/* Studio v0.17.5 · Build 55 — Tracks readability corrective.
+   Layered after studio-focus.css so the accepted Build 54 production-library
+   structure remains untouched while desktop density and text legibility improve. */
+
+.catalog-surface .catalog-card-body{padding:16px 16px 17px}
+.catalog-surface .catalog-card-title strong{font-size:1.08rem;line-height:1.25}
+.catalog-surface .catalog-card-title span{font-size:.84rem;line-height:1.35}
+.catalog-surface .catalog-card-title small{font-size:.76rem;line-height:1.35}
+.catalog-surface .catalog-status{padding:6px 9px;font-size:.68rem;letter-spacing:.075em}
+
+.catalog-surface .catalog-toolbar label>span{font-size:.7rem;letter-spacing:.11em}
+.catalog-surface .catalog-toolbar input,
+.catalog-surface .catalog-toolbar select{height:42px;font-size:.82rem}
+.catalog-surface .catalog-resultline{font-size:.75rem}
+
+.catalog-production-filters button{min-height:44px}
+.catalog-production-filters strong{font-size:1.05rem}
+.catalog-production-filters span{font-size:.79rem}
+
+.catalog-production-state{margin-top:15px}
+.catalog-production-state span{padding:8px 4px 8px 13px;font-size:.68rem;line-height:1.1}
+
+.catalog-next-action{margin-top:15px;padding-top:14px}
+.catalog-next-action>div>span{font-size:.66rem}
+.catalog-next-action>div>strong{margin-top:4px;font-size:.94rem;line-height:1.3}
+.catalog-next-action>div>small{margin-top:4px;font-size:.75rem;line-height:1.4}
+.catalog-continue-btn{min-height:40px;padding-inline:14px;font-size:.78rem}
+
+/* On the real desktop smoke width this moves the library from four oversized
+   covers to five calmer cards when space genuinely allows it. */
+@media(min-width:1280px){
+  .catalog-surface .catalog-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+}
+
+/* Preserve comfortable reading as the cards get narrower on laptop widths. */
+@media(min-width:721px) and (max-width:1279px){
+  .catalog-surface .catalog-grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+}
+
+@media(max-width:720px){
+  .catalog-surface .catalog-card-title strong{font-size:1.12rem}
+  .catalog-surface .catalog-card-title span{font-size:.86rem}
+  .catalog-production-state span{font-size:.72rem}
+  .catalog-next-action>div>strong{font-size:.98rem}
+  .catalog-next-action>div>small{font-size:.78rem}
+  .catalog-continue-btn{font-size:.82rem}
+}
