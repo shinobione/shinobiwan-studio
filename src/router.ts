@@ -14,6 +14,7 @@ const ROUTES = new Set<StudioRoute>([
 const WORKSPACE_SECTIONS = new Set<WorkspaceSection>([
   'overview',
   'intelligence',
+  'market',
   'lyrics',
   'assets',
   'versions',
