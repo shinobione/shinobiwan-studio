@@ -17,7 +17,7 @@ for (const marker of [
   "version: '0.2.0'",
   "artworkStrategy: 'integrated'",
   'previewDataUrl',
-  'releaseStatus === final',
+  "releaseStatus === 'final'",
   'exact child Window',
   'no R2 write',
   'no Track Manager mutation API import',
