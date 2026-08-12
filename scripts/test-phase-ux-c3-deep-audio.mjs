@@ -34,7 +34,7 @@ const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const c3Line = /^0\.(?:13|14|15)\.\d+$/.test(version) && codename.startsWith('phase-ux-c3-');
-const authorizedPhase7Successor = /^0\.16\.\d+$/.test(version) && codename.startsWith('phase7-');
+const authorizedPhase7Successor = /^0\.(?:16|17)\.\d+$/.test(version) && codename.startsWith('phase7-');
 assert.ok(c3Line || authorizedPhase7Successor, `C3 Deep Audio behavior must remain inherited by the accepted C3 line or its explicitly authorized Phase 7 successor, got ${version} / ${codename}.`);
 assert.ok(build >= 38, `C3 Studio build must be >= 38, got ${build}.`);
 
