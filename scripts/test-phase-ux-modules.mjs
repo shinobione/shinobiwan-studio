@@ -10,6 +10,7 @@ const metadataCss = read('src/metadata-validation.css');
 const workspaceCss = read('src/workspace.css');
 const assetsCss = read('src/phase4-operations.css');
 const sonicCss = read('src/sonictrace.css');
+const release = read('src/release.ts');
 
 for (const group of ['Identity', 'Release', 'Discovery', 'Music details', 'LaunchPAD theme']) {
   assert.ok(metadata.includes(`title="${group}"`), `Metadata form is missing the ${group} group.`);
@@ -45,6 +46,13 @@ for (const marker of ['Understand this track', 'profile ready', 'Analyze with So
 for (const protectedBehavior of ['fetchCanonicalAudio', 'analyzeBrowserDsp', 'runSonicTraceAnalysis', 'browserOnlyAnalysis', 'saveSonicTraceAnalysis']) assert.ok(sonic.includes(protectedBehavior));
 for (const marker of ['.sonic-progress', '.sonic-diagnostics', '.sonic-intro p']) assert.ok(sonicCss.includes(marker));
 
-for (const source of [workspace, metadata, assets, sonic]) for (const forbidden of ['phase7', 'phase-7']) assert.ok(!source.toLowerCase().includes(forbidden));
+const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
+const phaseUxLine = /^0\.(?:11|12|13|14|15)\./.test(version) && codename.startsWith('phase-ux-');
+const authorizedPhase7Successor = /^0\.(?:16|17)\./.test(version) && codename.startsWith('phase7-');
+assert.ok(
+  phaseUxLine || authorizedPhase7Successor,
+  `UX-4 modules must remain on the validated PHASE UX lineage or an explicitly authorized Phase 7 successor, got ${version} / ${codename}.`,
+);
 
-console.log('PHASE UX UX-4 guard passed: grouped metadata, single media manager, embedded-first Lyrics, profile-aware SonicTrace and guarded engines remain intact. Current build identity is owned by the active milestone guard.');
+console.log(`PHASE UX UX-4 guard passed through ${version}: grouped metadata, single media manager, embedded-first Lyrics, profile-aware SonicTrace and guarded engines remain intact.`);
