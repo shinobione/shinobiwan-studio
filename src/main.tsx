@@ -24,6 +24,7 @@ import './c3-albums-ux.css';
 import './c3-c-premium-feel.css';
 import './track-to-market.css';
 import './phase7-workflow.css';
+import './phase7-receipts.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
