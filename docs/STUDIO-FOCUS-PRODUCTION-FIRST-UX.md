@@ -1,9 +1,9 @@
 # SHINOBIWAN STUDIO — STUDIO FOCUS / PRODUCTION-FIRST UX
 
-Status: **ROADMAP APPROVED · IMPLEMENTATION IN PROGRESS · BUILD 54 SLICE 2 CANDIDATE**
+Status: **ROADMAP APPROVED · IMPLEMENTATION IN PROGRESS · BUILD 56 SLICE 2 READABILITY CANDIDATE**
 
 Approved by real-user review on 2026-08-12 after Studio v0.17.2 · Build 52.
-Implementation opened with Studio v0.17.3 · Build 53 and continues with v0.17.4 · Build 54.
+Implementation opened with Studio v0.17.3 · Build 53. Slice 2 now spans Build 54 production-library logic plus deployed readability correctives Build 55/56.
 
 This roadmap item does **not** replace any validated canonical authority or remove specialist capabilities. It changes the daily information architecture so Studio behaves like an artist production tool rather than exposing implementation detail by default.
 
@@ -19,7 +19,9 @@ The validated Track Manager / R2 / SonicTrace / LRC Maker / receipt / private-re
 |---|---|---|
 | Build 52 | visible `Catalog` → `Tracks` polish | **COMPLETE** |
 | Build 53 / Slice 1 | production-first shell + actionable Home | **COMPLETE — REAL USER PASS** |
-| Build 54 / Slice 2 | Tracks production-library simplification | **CANDIDATE — CI + real-user smoke required** |
+| Build 54 / Slice 2A | Tracks production-library simplification | **FUNCTIONAL BASE DEPLOYED — readability smoke continued** |
+| Build 55 / Slice 2B | smaller covers + larger card copy | **SUPERSEDED AT SMOKE — status labels truncated** |
+| Build 56 / Slice 2C | full readable Audio/Cover/Lyrics/Canvas/Release chips | **CANDIDATE — CI + deployed smoke required** |
 | Slice 3 | Track Workspace regrouping to `Track · Visuals · Lyrics · Release` | **PLANNED / NOT STARTED** |
 | Slice 4 | compact SonicTrace artist summary + Advanced detail | **PLANNED / NOT STARTED** |
 | Closeout | cross-flow real-user smoke + Workflow absorption decision | **PLANNED / NOT STARTED** |
@@ -68,9 +70,9 @@ Approved direction:
 - one clear continuation action per track;
 - do not require the user to interpret backend/canonical terminology in normal use.
 
-### Build 54 — candidate implementation
+### Build 54 — production-library base
 
-Build 54 implements Slice 2 while reusing the accepted Phase 7-A readiness model:
+Build 54 implemented Slice 2 while reusing the accepted Phase 7-A readiness model:
 
 - default filter is **To finish**;
 - production filters are **To finish / Ready / Released / All**;
@@ -83,7 +85,32 @@ Build 54 implements Slice 2 while reusing the accepted Phase 7-A readiness model
 - healthy result copy no longer says `private canonical` / `public fallback`; read-only mode is surfaced only when relevant;
 - `+ New Track` still uses `TrackCreatePanel` and Track Manager remains the write owner.
 
-Build 54 changes presentation and continuation only. It does **not** change the Workflow algorithm or define a second readiness authority.
+Build 54 changed presentation and continuation only. It did **not** change the Workflow algorithm or define a second readiness authority.
+
+### Build 55 — desktop density / general readability corrective
+
+Deployed real-user review found Build 54 visually unbalanced on the normal desktop viewport: covers dominated the page while useful card copy was too small.
+
+Build 55 therefore:
+
+- kept square canonical artwork uncropped;
+- moved wide desktop to a denser five-card layout when space allows;
+- increased title, album/date, toolbar, filter, NEXT and button text sizes;
+- preserved Build 54 logic and all canonical boundaries.
+
+The deployed smoke then exposed a second issue: the five fixed production-state columns became too narrow and rendered truncated labels such as `Au… / Co… / Lyr…`. Build 55 therefore did **not** receive REAL USER PASS.
+
+### Build 56 — full production-state labels candidate
+
+Build 56 preserves Build 55 card density but changes only the five production-state chips:
+
+- the fixed five-column status strip becomes wrapping auto-width chips;
+- full **Audio / Cover / Lyrics / Canvas / Release** labels are mandatory;
+- no ellipsis or hidden overflow is allowed for those labels;
+- chips may wrap naturally to two lines on narrower desktop cards;
+- `CatalogView.tsx`, workflow semantics, routes and authorities remain unchanged.
+
+Build 56 is a deployed-smoke candidate. Slice 3 stays NOT STARTED until this presentation is accepted.
 
 ## 3 — Track Workspace becomes an artist workshop
 
@@ -139,7 +166,7 @@ Unify the final production checklist and campaign output:
 - release copy / tags / provenance where useful;
 - retain `canonicalWrite: false` and existing review-only authority for campaign export until a separately authorized guarded persistence phase exists.
 
-Build 54 deliberately leaves the current Track Workspace internals untouched. This regrouping remains reserved for **Slice 3** after Build 54 acceptance.
+Slice 2 deliberately leaves the current Track Workspace internals untouched. This regrouping remains reserved for **Slice 3** after the Tracks library presentation receives REAL USER PASS.
 
 ## 4 — SonicTrace becomes primarily an invisible assistant
 
@@ -234,17 +261,22 @@ The prerequisite SonicTrace mastering/PARTIAL fault was resolved before Studio F
 Studio Focus proceeds in small reversible slices:
 
 1. **Build 53 — shell + Home — COMPLETE · REAL USER PASS**;
-2. **Build 54 — Tracks production library — CANDIDATE · CI + real-user smoke required**;
-3. Track Workspace regrouping (`Track · Visuals · Lyrics · Release`);
-4. SonicTrace compact summary + Advanced detail;
-5. real-user smoke across existing Track, Lyrics, SonicTrace and Release workflows;
-6. only after pass, decide whether the separate Workflow destination can be fully absorbed into Home.
+2. **Build 54 — Tracks production-library base — deployed**;
+3. **Build 55 — desktop density/readability — superseded at smoke by truncated state labels**;
+4. **Build 56 — full readable production-state chips — CANDIDATE · CI + deployed smoke required**;
+5. Track Workspace regrouping (`Track · Visuals · Lyrics · Release`);
+6. SonicTrace compact summary + Advanced detail;
+7. real-user smoke across existing Track, Lyrics, SonicTrace and Release workflows;
+8. only after pass, decide whether the separate Workflow destination can be fully absorbed into Home.
 
 Rollback / acceptance anchors:
 
 ```text
 safety/pre-studio-focus-build53-20260812
 safety/post-studio-focus-build53-real-user-pass-20260813-0032
+safety/pre-build55-tracks-readability-20260813-0047
+safety/studio-focus-build55-candidate-20260813-0054
+safety/pre-build56-status-labels-20260813-0112
 ```
 
 No later slice is considered started merely because it is listed here.
