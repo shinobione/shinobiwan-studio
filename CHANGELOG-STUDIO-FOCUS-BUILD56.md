@@ -2,13 +2,13 @@
 
 Date: 2026-08-13
 
-Status: **CANDIDATE — CI + deployed real-user smoke required**
+Status: **COMPLETE — REAL USER PASS**
 
 ## Reason
 
 Build 55 improved desktop density and general text size, but deployed real-user smoke showed that its five equal production-state columns were too narrow at five cards per row. The artist-facing states became truncated (`Au… / Co… / Lyr…`).
 
-Build 56 fixes only this readability fault while preserving the denser card layout.
+Build 56 fixed only this readability fault while preserving the denser card layout.
 
 ## Runtime change
 
@@ -21,6 +21,20 @@ Build 56 fixes only this readability fault while preserving the denser card layo
 - keep square canonical artwork untouched;
 - preserve mobile readability with slightly larger status chips.
 
+## Real-user acceptance
+
+Deployed browser review on 2026-08-13 confirmed the intended Slice 2 balance on the normal desktop viewport:
+
+- five-card wide-desktop density accepted;
+- covers no longer dominate the library;
+- Track title / album / next-action copy remains comfortably readable;
+- **Audio / Cover / Lyrics / Canvas / Release** render in full, wrapping naturally to two rows instead of ellipsis;
+- `To finish / Ready / Released / All` and continuation behavior remained correct.
+
+Acceptance checkpoint:
+
+`safety/post-studio-focus-build56-real-user-pass-20260813-0143`
+
 ## Explicitly unchanged
 
 - `CatalogView.tsx` structure and behavior;
@@ -30,7 +44,7 @@ Build 56 fixes only this readability fault while preserving the denser card layo
 - continuation deep links;
 - TrackCreatePanel/private-read gating;
 - Track Manager / R2 authority;
-- Track Workspace internals;
+- Track Workspace internals at Build 56;
 - Albums;
 - SonicTrace;
 - LRC Maker;
@@ -43,6 +57,10 @@ Pre-corrective checkpoint:
 
 `safety/pre-build56-status-labels-20260813-0112`
 
+Candidate checkpoint:
+
+`safety/studio-focus-build56-candidate-20260813-0119`
+
 Dedicated Build 56 guard proves:
 
 - the status-label stylesheet loads after Build 54 + Build 55 layers;
@@ -51,4 +69,4 @@ Dedicated Build 56 guard proves:
 - all five full labels remain present in the Tracks component;
 - the Build 55 card-density guard still runs as ancestry.
 
-Acceptance requires deployed browser review. CI alone does not grant REAL USER PASS or close Studio Focus Slice 2.
+Build 56 is the accepted Studio Focus Slice 2 baseline. Slice 3 starts only from this accepted main/checkpoint.
