@@ -6,8 +6,13 @@ const main = fs.readFileSync('src/main.tsx', 'utf8');
 const release = fs.readFileSync('src/release.ts', 'utf8');
 
 assert.match(main, /import '\.\/c3-c-premium-feel\.css';/);
-assert.match(release, /version: '0\.15\.[0-9]+'/);
-assert.match(release, /build: (?:4[4-9]|[5-9][0-9])/);
+const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
+const c3Candidate = /^0\.15\.\d+$/.test(version) && codename.startsWith('phase-ux-c3-');
+const phase7Successor = /^0\.16\.\d+$/.test(version) && codename.startsWith('phase7-');
+assert.ok(c3Candidate || phase7Successor, `C3-C premium interaction layer must remain inherited by the C3 candidate or authorized Phase 7 successor, got ${version} / ${codename}.`);
+assert.ok(build >= 44, `C3-C inherited build must remain >= 44, got ${build}.`);
 
 for (const token of [
   '--studio-motion-instant',
@@ -26,4 +31,4 @@ assert.match(css, /animation: none !important/, 'Reduced motion must suppress en
 assert.doesNotMatch(css, /animation-iteration-count:\s*infinite/i, 'C3-C must not add perpetual attention-seeking motion.');
 assert.doesNotMatch(css, /transition-delay:/i, 'C3-C must not delay real interactions.');
 
-console.log('C3-C premium feel passed inherited motion-token, press, glow, focus, map-safety and reduced-motion guards.');
+console.log('C3-C premium feel passed inherited motion-token, press, glow, focus, map-safety and reduced-motion guards through the authorized Phase 7 successor.');
