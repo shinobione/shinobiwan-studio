@@ -46,10 +46,12 @@ assert.ok(css.includes('.album-migration-stack') && css.includes('@media(max-wid
 
 const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
-assert.match(releaseVersion, /^0\.(?:12|13|14|15)\./, 'C2.5-E ancestry must remain on a validated/successor PHASE UX C2.5/C3 Studio release line until deliberately superseded.');
+const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
+const phaseUxLine = /^0\.(?:12|13|14|15)\./.test(releaseVersion) && /^phase-ux-(?:c2-5-e|c3)-/.test(codename);
+const phase7Line = /^0\.16\./.test(releaseVersion) && codename.startsWith('phase7-');
+assert.ok(phaseUxLine || phase7Line, 'C2.5-E ancestry must remain on the validated PHASE UX line or explicitly authorized Phase 7 successor.');
 assert.ok(releaseBuild >= 35, 'C2.5-E ancestry must remain at Build 35 or later.');
-assert.match(release, /codename:\s*'phase-ux-(?:c2-5-e|c3)-/, 'Current release must remain explicitly inside validated PHASE UX C2.5-E/C3 while the migration contract is inherited.');
-assert.equal(pkg.version, releaseVersion, 'package.json must match the active Studio PHASE UX release.');
+assert.equal(pkg.version, releaseVersion, 'package.json must match the active Studio release.');
 assert.ok(String(pkg.scripts?.['check:ux'] || '').includes('test-phase-ux-c2-5-e-migration.mjs'));
 
-console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves the guarded one-Album-at-a-time C2.5-E cockpit as collapsed maintenance while daily Album management remains focused and Phase 7 stays locked.`);
+console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves the guarded one-Album-at-a-time C2.5-E cockpit as collapsed maintenance while the authorized Phase 7 successor remains orchestrator-only.`);
