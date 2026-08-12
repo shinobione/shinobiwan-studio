@@ -81,10 +81,12 @@ assert.ok(main.includes("import './c2-5-d2-intake.css';"), 'D2 intake styles mus
 
 const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
-assert.match(releaseVersion, /^0\.(?:11|12|13|14|15)\./, 'D2 ancestry must remain on a validated/successor PHASE UX C2.5/C3 Studio release line until deliberately superseded.');
+const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
+const phaseUxLine = /^0\.(?:11|12|13|14|15)\./.test(releaseVersion) && /^phase-ux-(?:c2-5|c3)-/.test(codename);
+const phase7Line = /^0\.16\./.test(releaseVersion) && codename.startsWith('phase7-');
+assert.ok(phaseUxLine || phase7Line, 'D2 ancestry must remain on the validated PHASE UX C2.5/C3 line or its explicitly authorized Phase 7 successor.');
 assert.ok(releaseBuild >= 33, 'C2.5-D2 ancestry must remain at Build 33 or later.');
-assert.match(release, /codename:\s*'phase-ux-(?:c2-5|c3)-/, 'Current release must remain explicitly inside validated PHASE UX C2.5/C3 while the D2 contract is inherited.');
 assert.equal(pkg.version, releaseVersion, 'package.json must match the active Studio release.');
 assert.ok(String(pkg.scripts?.['check:ux'] || '').includes('test-phase-ux-c2-5-d2-intake.mjs'));
 
-console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves D2 canonical Album binding: explicit non-Singles requests override the safe Singles default, missing Albums block Review and final creation never invents a phantom Album.`);
+console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves D2 canonical Album binding through the authorized successor: explicit non-Singles requests override the safe Singles default, missing Albums block Review and final creation never invents a phantom Album.`);
