@@ -38,7 +38,21 @@ function assetFor(track: StudioTrackDetail, kind: AdminAssetKind): StudioAsset |
   return track.assets[kind] || null;
 }
 
-export function AssetsManager({ track, onChanged }: { track: StudioTrackDetail; onChanged: () => Promise<void> | void }) {
+export function AssetsManager({
+  track,
+  onChanged,
+  kinds,
+  eyebrow = 'ASSETS',
+  title = 'Manage production media',
+  description = 'Upload, replace or remove one media item at a time. Every operation is verified before the workspace refreshes.',
+}: {
+  track: StudioTrackDetail;
+  onChanged: () => Promise<void> | void;
+  kinds?: AdminAssetKind[];
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+}) {
   const [selected, setSelected] = useState<Partial<Record<AdminAssetKind, File>>>({});
   const [progress, setProgress] = useState<Partial<Record<AdminAssetKind, number>>>({});
   const [busyKind, setBusyKind] = useState<AdminAssetKind | null>(null);
@@ -51,6 +65,7 @@ export function AssetsManager({ track, onChanged }: { track: StudioTrackDetail; 
 
   const revision = track.updatedAt || '';
   const locked = track.readSource !== 'private' || !revision;
+  const visibleAssets = useMemo(() => ASSETS.filter(def => !kinds || kinds.includes(def.kind)), [kinds]);
   const currentAssets = useMemo(() => Object.fromEntries(ASSETS.map(def => [def.kind, assetFor(track, def.kind)])) as Record<AdminAssetKind, StudioAsset | null>, [track]);
   const savedPalette = /^#[0-9a-f]{6}$/i.test(track.accent || '') && /^#[0-9a-f]{6}$/i.test(track.accent2 || '')
     ? { accent: track.accent as string, accent2: track.accent2 as string }
@@ -159,14 +174,14 @@ export function AssetsManager({ track, onChanged }: { track: StudioTrackDetail; 
   return (
     <article className="panel phase4-assets-manager">
       <div className="phase4-panel-head">
-        <div><span className="eyebrow">ASSETS</span><h3>Manage production media</h3><p>Upload, replace or remove one media item at a time. Every operation is verified before the workspace refreshes.</p></div>
+        <div><span className="eyebrow">{eyebrow}</span><h3>{title}</h3><p>{description}</p></div>
         <b>{locked ? 'READ ONLY' : 'EDITING ENABLED'}</b>
       </div>
 
       {locked && <p className="workspace-muted">Asset mutations require PRIVATE READ and a canonical manifest revision. The existing Track Manager fallback remains available.</p>}
 
       <div className="phase4-assets-list">
-        {ASSETS.map(def => {
+        {visibleAssets.map(def => {
           const current = currentAssets[def.kind];
           const file = selected[def.kind];
           const currentProgress = progress[def.kind];
