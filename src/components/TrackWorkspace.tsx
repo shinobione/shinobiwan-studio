@@ -14,13 +14,11 @@ import { MetadataValidationPanel } from './MetadataValidationPanel';
 import { SonicTracePanel } from './SonicTracePanel';
 import { TrackToMarketPanel } from './TrackToMarketPanel';
 
-const TABS: Array<{ id: WorkspaceSection; label: string }> = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'metadata', label: 'Metadata' },
-  { id: 'assets', label: 'Assets' },
-  { id: 'lyrics', label: 'Lyrics' },
-  { id: 'intelligence', label: 'SonicTrace' },
-  { id: 'market', label: 'Release Pack' },
+const ARTIST_TABS: Array<{ label: string; href: WorkspaceSection; active: WorkspaceSection[] }> = [
+  { label: 'Track', href: 'overview', active: ['overview', 'metadata', 'intelligence', 'versions'] },
+  { label: 'Visuals', href: 'assets', active: ['assets'] },
+  { label: 'Lyrics', href: 'lyrics', active: ['lyrics'] },
+  { label: 'Release', href: 'market', active: ['market', 'publishing'] },
 ];
 
 function displayDate(value: string | null, year: number | null): string {
@@ -47,14 +45,12 @@ function WorkspacePanel({ eyebrow, title, children, className = '' }: { eyebrow:
 }
 
 function healthDestination(id: string): WorkspaceSection {
-  if (id === 'metadata' || id === 'publication') return 'metadata';
+  if (id === 'metadata') return 'metadata';
+  if (id === 'publication') return 'market';
   if (id === 'lyricsTxt' || id === 'syncedLyrics') return 'lyrics';
   if (id === 'sonicTrace') return 'intelligence';
-  return 'assets';
-}
-
-function mediaState(label: string, ready: boolean, detail: string, href: string) {
-  return { label, ready, detail, href };
+  if (id === 'cover' || id === 'video') return 'assets';
+  return 'overview';
 }
 
 export function TrackWorkspace({ trackId, section }: { trackId: string; section: WorkspaceSection }) {
@@ -89,7 +85,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
 
   if (loading) return <div className="catalog-message panel">Loading Track Workspace…</div>;
   if (error || !track || !health) {
-    return <section className="track-read-error panel"><span className="eyebrow">WORKSPACE / READ ERROR</span><h2>Track unavailable.</h2><p>{error || 'The canonical read layer did not return this track.'}</p><a className="ghost-btn" href={routeHref('catalog')}>← Back to catalog</a></section>;
+    return <section className="track-read-error panel"><span className="eyebrow">WORKSPACE / READ ERROR</span><h2>Track unavailable.</h2><p>{error || 'The canonical read layer did not return this track.'}</p><a className="ghost-btn" href={routeHref('catalog')}>← Back to Tracks</a></section>;
   }
 
   const artwork = fullArtwork(track);
@@ -97,33 +93,34 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
   const privateRead = track.readSource === 'private';
   const canEmbedLyrics = privateRead && Boolean(track.assets.audio && track.assets.lyricsTxt);
   const qualityCounts = track.quality?.counts;
-  const healthStyle = { '--health-angle': `${health.total * 3.6}deg` } as CSSProperties;
   const trackStyle = {
     '--track-accent': /^#[0-9a-f]{6}$/i.test(track.accent || '') ? track.accent : '#54e8e0',
     '--track-accent2': /^#[0-9a-f]{6}$/i.test(track.accent2 || '') ? track.accent2 : '#6478ff',
   } as CSSProperties;
   const attention = health.items.filter(item => item.state !== 'complete');
-  const media = [
-    mediaState('Audio', Boolean(track.assets.audio), track.assets.audio?.filename || 'Add master audio', trackHref(track.id, 'assets')),
-    mediaState('Cover', Boolean(track.assets.cover), track.assets.cover?.filename || 'Add artwork', trackHref(track.id, 'assets')),
-    mediaState('Lyrics', Boolean(track.assets.lyricsTxt), syncedLyrics ? 'Timestamped and synced' : track.assets.lyricsTxt ? 'TXT ready for timing' : 'Add lyrics.txt', trackHref(track.id, 'lyrics')),
-    mediaState('Canvas', Boolean(track.assets.video), track.assets.video?.filename || 'Optional video', trackHref(track.id, 'assets')),
-  ];
+  const metadataReady = health.items.find(item => item.id === 'metadata')?.state === 'complete';
   const displayedDuration = observedAudioDuration ?? track.duration;
   const durationSource = observedAudioDuration != null
     ? track.duration != null && Math.abs(track.duration - observedAudioDuration) > 1
       ? `Audio measured ${formatDuration(observedAudioDuration)} · manifest ${formatDuration(track.duration)}`
       : 'Measured from canonical audio'
     : track.duration != null ? 'Canonical manifest value' : 'Waiting for audio metadata';
+  const artistStages = [
+    { label: 'Audio', ready: Boolean(track.assets.audio), detail: track.assets.audio ? 'Master ready' : 'Master missing', href: trackHref(track.id, 'overview') },
+    { label: 'Visuals', ready: Boolean(track.assets.cover), detail: track.assets.video ? 'Cover + Canvas ready' : track.assets.cover ? 'Cover ready · Canvas optional' : 'Cover missing', href: trackHref(track.id, 'assets') },
+    { label: 'Lyrics', ready: Boolean(track.assets.lyricsTxt), detail: syncedLyrics ? 'Synchronized' : track.assets.lyricsTxt ? 'Timing needed' : 'Missing', href: trackHref(track.id, 'lyrics') },
+    { label: 'Sound', ready: track.audioIntelligence.available && !track.audioIntelligence.outdated, detail: track.audioIntelligence.available ? track.audioIntelligence.outdated ? 'Update analysis' : 'Analysis ready' : 'Not analyzed', href: trackHref(track.id, 'intelligence') },
+    { label: 'Release', ready: track.publishing.catalogVisible, detail: track.publishing.catalogVisible ? 'Released' : metadataReady ? 'Review release' : 'Metadata needs attention', href: trackHref(track.id, 'market') },
+  ];
 
   return (
-    <section className="track-workspace">
-      <div className="workspace-breadcrumbs"><a href={routeHref('catalog')}>← Back to Catalog</a><span>/</span><strong>{track.title}</strong></div>
+    <section className="track-workspace track-workshop">
+      <div className="workspace-breadcrumbs"><a href={routeHref('catalog')}>← Back to Tracks</a><span>/</span><strong>{track.title}</strong></div>
 
       <header className="workspace-header panel" style={trackStyle}>
         <div className="workspace-cover">{artwork ? <img src={artwork} alt={`${track.title} cover`} /> : <span>{track.title.slice(0, 2).toUpperCase()}</span>}</div>
         <div className="workspace-title">
-          <span className="eyebrow">TRACK WORKSPACE</span><h2>{track.title}</h2><p>{track.album.title} · {displayDate(track.releaseDate, track.year)}</p>
+          <span className="eyebrow">TRACK WORKSHOP</span><h2>{track.title}</h2><p>{track.album.title} · {displayDate(track.releaseDate, track.year)}</p>
           <div className="workspace-header-tags"><span className="workspace-status">{track.status}</span>{(track.genres.length ? track.genres : ['Unclassified']).slice(0, 3).map(value => <span key={value}>{value}</span>)}</div>
         </div>
         <div className="workspace-summary">
@@ -132,67 +129,84 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
         </div>
       </header>
 
-      <nav className="workspace-tabs" aria-label="Track Workspace sections">
+      <nav className="workspace-tabs workspace-artist-tabs" aria-label="Track Workshop sections">
         <div className="workspace-sticky-context">
           <span className="workspace-sticky-cover">{artwork ? <img src={artwork} alt="" /> : track.title.slice(0, 2).toUpperCase()}</span>
           <span><strong>{track.title}</strong><small>{track.status} · {health.total}% ready</small></span>
         </div>
-        <div className="workspace-tab-links">{TABS.map(tab => <a key={tab.id} className={section === tab.id ? 'active' : ''} aria-current={section === tab.id ? 'page' : undefined} href={trackHref(track.id, tab.id)}>{tab.label}</a>)}</div>
+        <div className="workspace-tab-links">{ARTIST_TABS.map(tab => {
+          const active = tab.active.includes(section);
+          return <a key={tab.label} className={active ? 'active' : ''} aria-current={active ? 'page' : undefined} href={trackHref(track.id, tab.href)}>{tab.label}</a>;
+        })}</div>
       </nav>
 
       <ContinuationReceiptBanner trackId={track.id} onCanonicalVerified={canonical => { setTrack(canonical); setError(null); }} />
 
       {section === 'overview' && (
-        <div className="workspace-overview-grid">
-          <WorkspacePanel eyebrow="OVERVIEW / READINESS" title={attention.length ? 'Finish what matters next' : 'Ready for production'} className="workspace-readiness-panel">
-            <div className="workspace-readiness-layout">
-              <div className="health-ring health-ring-compact" style={healthStyle}><div><strong>{health.total}</strong><span>complete</span></div></div>
-              <div className="workspace-readiness-copy">
-                <strong>{attention.length ? `${attention.length} checklist item${attention.length === 1 ? '' : 's'} remain` : 'Every tracked requirement is complete'}</strong>
-                <p>Content Health measures operational completeness only. It never judges the music.</p>
-                <div className="workspace-health-pills">{health.items.map(item => <span className={item.state} key={item.id}>{item.label}<b>{item.state === 'complete' ? 'Ready' : `${item.score}/${item.max}`}</b></span>)}</div>
-              </div>
-              {attention[0]
-                ? <a className="primary-btn workspace-next-action" href={trackHref(track.id, healthDestination(attention[0].id))}>Continue with {attention[0].label}</a>
-                : <a className="ghost-btn workspace-next-action" href={trackHref(track.id, 'metadata')}>Review metadata</a>}
+        <div className="workspace-focus-track">
+          <section className="panel workspace-focus-summary">
+            <div className="workspace-focus-summary-head"><div><span className="eyebrow">TRACK</span><h3>Your track, at a glance</h3></div><a className="ghost-btn" href={trackHref(track.id, 'metadata')}>Edit track details →</a></div>
+            <div className="workspace-focus-facts">
+              <div><span>Album / project</span><strong>{track.album.title || 'Singles'}</strong></div>
+              <div><span>Release</span><strong>{displayDate(track.releaseDate, track.year)}</strong></div>
+              <div><span>Type</span><strong>{track.type || '—'}</strong></div>
+              <div><span>Genres</span><strong>{track.genres.slice(0, 4).join(', ') || '—'}</strong></div>
             </div>
-          </WorkspacePanel>
+            {track.assets.audio
+              ? <audio className="workspace-audio" controls preload="metadata" crossOrigin={privateRead ? 'use-credentials' : undefined} src={track.assets.audio.url} onLoadedMetadata={event => { const duration = event.currentTarget.duration; setObservedAudioDuration(Number.isFinite(duration) && duration > 0 ? duration : null); }} />
+              : <div className="workspace-focus-missing"><strong>No master audio yet.</strong><span>Add the canonical master below.</span></div>}
+          </section>
 
-          <WorkspacePanel eyebrow="NEXT / ACTIONS" title="Needs attention" className="workspace-attention-panel">
-            <div className="workspace-action-list">
-              {attention.slice(0, 4).map(item => <a href={trackHref(track.id, healthDestination(item.id))} key={item.id}><span className={item.state}>{item.state === 'missing' ? 'Missing' : 'Partial'}</span><div><strong>{item.label}</strong><small>{item.detail}</small></div><b>Open →</b></a>)}
-              {!attention.length && <div className="workspace-complete-state"><strong>Nothing blocking the checklist.</strong><p>You can still refine metadata, media, lyrics or analysis whenever needed.</p></div>}
-            </div>
-          </WorkspacePanel>
+          <section className="panel workspace-focus-stages">
+            <div className="workspace-focus-section-head"><div><span className="eyebrow">PRODUCTION</span><h3>What matters next</h3></div>{attention[0] && <a href={trackHref(track.id, healthDestination(attention[0].id))}>Continue →</a>}</div>
+            <div className="workspace-focus-stage-grid">{artistStages.map(stage => <a href={stage.href} key={stage.label} className={stage.ready ? 'ready' : 'attention'}><span>{stage.ready ? '✓' : '•'}</span><div><strong>{stage.label}</strong><small>{stage.detail}</small></div></a>)}</div>
+          </section>
 
-          <WorkspacePanel eyebrow="MEDIA / AT A GLANCE" title="Production media" className="workspace-media-panel">
-            <div className="workspace-media-grid">{media.map(item => <a href={item.href} key={item.label}><span className={item.ready ? 'ready' : 'missing'}>{item.ready ? '✓' : '+'}</span><div><strong>{item.label}</strong><small>{item.detail}</small></div></a>)}</div>
-          </WorkspacePanel>
+          <AssetsManager
+            track={track}
+            onChanged={refreshTrackAfterWrite}
+            kinds={['audio']}
+            eyebrow="TRACK / AUDIO"
+            title="Master audio"
+            description="Keep the canonical master here. Cover, Canvas and campaign visuals now live under Visuals / Release."
+          />
 
-          <WorkspacePanel eyebrow="TRACK / SNAPSHOT" title="Music details" className="workspace-snapshot-panel">
+          <details className="panel workspace-focus-details">
+            <summary>More track details</summary>
             <div className="workspace-facts"><div><span>BPM</span><strong>{track.bpm ?? '—'}</strong></div><div><span>Key</span><strong>{track.key || '—'}</strong></div><div><span>Duration</span><strong>{formatDuration(displayedDuration)}</strong><small>{durationSource}</small></div><div><span>Language</span><strong>{track.languages.join(', ') || '—'}</strong></div></div>
-            {track.assets.audio && <audio className="workspace-audio" controls preload="metadata" crossOrigin={privateRead ? 'use-credentials' : undefined} src={track.assets.audio.url} onLoadedMetadata={event => { const duration = event.currentTarget.duration; setObservedAudioDuration(Number.isFinite(duration) && duration > 0 ? duration : null); }} />}
-          </WorkspacePanel>
-
-          <WorkspacePanel eyebrow="RELEASE / INTELLIGENCE" title="Release and analysis" className="workspace-release-panel">
-            <div className="workspace-release-states"><div><span>Release</span><strong>{track.publishing.catalogVisible ? 'Live in catalog' : track.status === 'draft' ? 'Draft' : track.status}</strong><a href={trackHref(track.id, 'metadata')}>Manage release →</a></div><div><span>SonicTrace</span><strong>{track.audioIntelligence.available ? track.audioIntelligence.outdated ? 'Update needed' : 'Analysis ready' : 'Not analyzed'}</strong><a href={trackHref(track.id, 'intelligence')}>{track.audioIntelligence.available ? 'Open analysis' : 'Analyze track'} →</a></div></div>
-            <details className="workspace-diagnostics"><summary>Source diagnostics</summary><dl><div><dt>Read source</dt><dd>{privateRead ? 'Track Manager private catalog' : 'LaunchPAD public catalog'}</dd></div><div><dt>Last update</dt><dd>{track.updatedAt ? new Date(track.updatedAt).toLocaleString() : 'Not available'}</dd></div><div><dt>trackId</dt><dd>{track.id}</dd></div></dl></details>
-          </WorkspacePanel>
+            <div className="workspace-focus-detail-actions"><a className="ghost-btn" href={trackHref(track.id, 'metadata')}>Full metadata editor</a><a className="ghost-btn" href={trackHref(track.id, 'intelligence')}>View full SonicTrace analysis</a></div>
+            <dl className="workspace-metadata-list"><div><dt>Read source</dt><dd>{privateRead ? 'Track Manager private catalog' : 'LaunchPAD public catalog'}</dd></div><div><dt>Last update</dt><dd>{track.updatedAt ? new Date(track.updatedAt).toLocaleString() : 'Not available'}</dd></div><div><dt>trackId</dt><dd>{track.id}</dd></div></dl>
+          </details>
         </div>
       )}
 
-      {section === 'intelligence' && <SonicTracePanel track={track} onSaved={() => {
-        emitContinuationReceipt(makeContinuationReceipt({
-          trackId: track.id,
-          source: 'sonictrace',
-          operation: 'analysis-saved',
-          effect: 'canonical-write',
-          summary: 'SonicTrace analysis save completed.',
-          detail: 'Studio will verify the saved analysis through the private canonical Track read layer.',
-        }));
-      }} />}
+      {section === 'metadata' && (
+        <div className="workspace-focus-subpage">
+          <section className="panel workspace-focus-subpage-head"><div><span className="eyebrow">TRACK / DETAILS</span><h3>Edit identity and release metadata</h3><p>This is still the protected Track Manager metadata editor; it simply lives under Track now.</p></div><a className="ghost-btn" href={trackHref(track.id, 'overview')}>← Back to Track</a></section>
+          <MetadataValidationPanel track={track} onSaved={refreshTrackAfterWrite} />
+        </div>
+      )}
 
-      {section === 'market' && <TrackToMarketPanel track={track} />}
+      {section === 'assets' && (
+        <div className="workspace-focus-visuals">
+          <section className="panel workspace-focus-visual-preview">
+            <div><span className="eyebrow">VISUALS</span><h3>Cover and Canvas</h3><p>One place for the canonical visual identity used by Studio and LaunchPAD.</p></div>
+            <div className="workspace-focus-visual-grid">
+              <div className="workspace-focus-cover-preview">{artwork ? <img src={artwork} alt={`${track.title} cover`} /> : <span>No cover</span>}<small>{track.assets.cover ? 'Cover ready' : 'Cover missing'}</small></div>
+              <div className="workspace-focus-video-preview">{track.assets.video ? <video src={track.assets.video.url} controls preload="metadata" /> : <span>No Canvas yet</span>}<small>{track.assets.video ? 'Canvas ready' : 'Canvas optional / missing'}</small></div>
+            </div>
+          </section>
+          <AssetsManager
+            track={track}
+            onChanged={refreshTrackAfterWrite}
+            kinds={['cover', 'thumbnail', 'video']}
+            eyebrow="VISUALS / CANONICAL"
+            title="Visual assets"
+            description="Manage cover, thumbnail and Canvas here. Audio stays under Track; lyrics stay under Lyrics."
+          />
+          <section className="panel workspace-focus-handoff"><div><span className="eyebrow">CAMPAIGN VISUALS</span><h3>Ready for 16:9 · 1:1 · 9:16?</h3><p>The native Release Campaign remains browser-local and review-only. Build the final format pack under Release.</p></div><a className="primary-btn" href={trackHref(track.id, 'market')}>Open Release →</a></section>
+        </div>
+      )}
 
       {section === 'lyrics' && (
         <div className="workspace-lyrics-shell">
@@ -206,13 +220,43 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
               ? <EmbeddedLyricsStudio trackId={track.id} onSaved={() => undefined} />
               : lyricLines.length
                 ? <div className="workspace-lyrics-lines">{lyricLines.map((line, index) => <p key={`${index}-${line}`}>{line}</p>)}</div>
-                : <p className="workspace-muted">No lyric text is available yet. Add canonical lyrics.txt from Assets to begin.</p>}
+                : <p className="workspace-muted">No lyric text is available yet. Add canonical lyrics.txt to begin.</p>}
           </WorkspacePanel>
           <details className="workspace-lyrics-plain"><summary>Open plain-text lyrics editor</summary><p>Use this secondary editor for text cleanup or direct timestamp inspection.</p><LyricsEditorPanel track={track} onSaved={refreshTrackAfterWrite} /></details>
         </div>
       )}
 
-      {section === 'assets' && <AssetsManager track={track} onChanged={refreshTrackAfterWrite} />}
+      {section === 'market' && (
+        <div className="workspace-focus-release">
+          <section className="panel workspace-focus-release-checklist">
+            <div className="workspace-focus-section-head"><div><span className="eyebrow">RELEASE</span><h3>Final production check</h3><p>Only the useful release state, before packaging the campaign.</p></div><span className="workspace-focus-release-state">{track.publishing.catalogVisible ? 'RELEASED' : 'IN PROGRESS'}</span></div>
+            <div className="workspace-focus-release-grid">
+              <div className={track.assets.audio ? 'ready' : 'attention'}><span>Audio</span><strong>{track.assets.audio ? 'Ready' : 'Missing'}</strong></div>
+              <div className={track.assets.cover ? 'ready' : 'attention'}><span>Cover</span><strong>{track.assets.cover ? 'Ready' : 'Missing'}</strong></div>
+              <div className={track.assets.lyricsTxt ? 'ready' : 'attention'}><span>Lyrics</span><strong>{syncedLyrics ? 'Synced' : track.assets.lyricsTxt ? 'TXT ready' : 'Missing'}</strong></div>
+              <div className={track.assets.video ? 'ready' : 'optional'}><span>Canvas</span><strong>{track.assets.video ? 'Ready' : 'Optional'}</strong></div>
+              <div className={metadataReady ? 'ready' : 'attention'}><span>Metadata</span><strong>{metadataReady ? 'Ready' : 'Review'}</strong></div>
+            </div>
+          </section>
+          <TrackToMarketPanel track={track} />
+        </div>
+      )}
+
+      {section === 'intelligence' && (
+        <div className="workspace-focus-subpage">
+          <section className="panel workspace-focus-subpage-head"><div><span className="eyebrow">TRACK / SOUND</span><h3>Full SonicTrace analysis</h3><p>Advanced audio intelligence stays available without occupying the daily workspace navigation.</p></div><a className="ghost-btn" href={trackHref(track.id, 'overview')}>← Back to Track</a></section>
+          <SonicTracePanel track={track} onSaved={() => {
+            emitContinuationReceipt(makeContinuationReceipt({
+              trackId: track.id,
+              source: 'sonictrace',
+              operation: 'analysis-saved',
+              effect: 'canonical-write',
+              summary: 'SonicTrace analysis save completed.',
+              detail: 'Studio will verify the saved analysis through the private canonical Track read layer.',
+            }));
+          }} />
+        </div>
+      )}
 
       {section === 'versions' && (
         <div className="workspace-two-col">
@@ -220,8 +264,6 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
           <WorkspacePanel eyebrow="VERSIONS / ROADMAP" title="Version model reserved"><div className="workspace-note"><strong>No fake version history.</strong><p>Dedicated masters/version identifiers remain reserved for later data modeling and stay subordinate to canonical trackId.</p></div></WorkspacePanel>
         </div>
       )}
-
-      {section === 'metadata' && <MetadataValidationPanel track={track} onSaved={refreshTrackAfterWrite} />}
 
       {section === 'publishing' && (
         <div className="workspace-two-col">
