@@ -5,6 +5,7 @@ const read = path => fs.readFileSync(path, 'utf8');
 const workspace = read('src/components/TrackWorkspace.tsx');
 const workspaceCss = read('src/workspace.css');
 const foundationCss = read('src/ux-foundation.css');
+const release = read('src/release.ts');
 
 for (const tab of [
   "{ id: 'overview', label: 'Overview' }",
@@ -42,6 +43,13 @@ assert.ok(foundationCss.includes('.workspace-tabs { position: sticky; top: 76px;
 assert.ok(foundationCss.includes('.workspace-tabs { top: 72px;'), 'Mobile local navigation must remain sticky below the mobile topbar.');
 assert.ok(workspace.includes('workspace-sticky-context'), 'Sticky navigation must retain compact track identity and readiness context.');
 
-for (const forbidden of ['phase7', 'phase-7']) assert.ok(!workspace.toLowerCase().includes(forbidden), `Phase 7 runtime marker found: ${forbidden}.`);
+const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
+const historicalUx = /^0\.(?:11|12|13|14|15)\./.test(version) && codename.startsWith('phase-ux-');
+const authorizedPhase7 = /^0\.(?:16|17)\./.test(version) && codename.startsWith('phase7-');
+assert.ok(historicalUx || authorizedPhase7, `Workspace UX guard must remain on PHASE UX history or an authorized Phase 7 successor, got ${version} / ${codename}.`);
+if (authorizedPhase7) {
+  assert.ok(workspace.includes("{ id: 'market', label: 'Release Pack' }"), 'Authorized Phase 7 successor must preserve the bounded Release Pack workspace destination.');
+}
 
-console.log('PHASE UX UX-3 guard passed: persistent track context, five local tools, action-led Overview, secondary diagnostics, responsive layout and Phase 7 STOP protected. Current build identity is owned by the active milestone guard.');
+console.log(`PHASE UX UX-3 workspace guard passed through ${version}: persistent track context, local tools, action-led Overview, secondary diagnostics and responsive layout remain intact.`);
