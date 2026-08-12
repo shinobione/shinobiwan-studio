@@ -33,7 +33,7 @@ const shellCopy: Record<Exclude<StudioRoute, 'catalog' | 'albums' | 'workflow'>,
   dashboard: {
     eyebrow: 'PHASE 7 / ORCHESTRATION',
     title: 'The specialist tools now share one production route.',
-    body: 'Studio keeps canonical Track, Album, Lyrics and SonicTrace state visible while Phase 7 turns those existing sources into explicit next actions without replacing their authorities.',
+    body: 'Studio keeps canonical Track, Album, Lyrics and SonicTrace state visible while Phase 7 turns those existing sources into explicit next actions and verified contextual returns without replacing their authorities.',
   },
   intelligence: {
     eyebrow: 'SONICTRACE / C3',
@@ -111,7 +111,7 @@ export default function App() {
         <div className="nav-section-label">Studio</div>
         <nav className="nav-list" aria-label="Studio navigation">{NAV.map(item => <a key={item.route} className={route === item.route ? 'active' : ''} href={routeHref(item.route)} aria-current={route === item.route ? 'page' : undefined}><span className="nav-glyph" aria-hidden="true">{item.glyph}</span><span>{item.label}</span></a>)}</nav>
         <nav className="nav-list nav-list-utility" aria-label="Studio utilities">{UTILITY_NAV.map(item => <a key={item.route} className={route === item.route ? 'active' : ''} href={routeHref(item.route)} aria-current={route === item.route ? 'page' : undefined}><span className="nav-glyph" aria-hidden="true">{item.glyph}</span><span>{item.label}</span></a>)}</nav>
-        <div className="sidebar-foot"><span className="phase-tag">PHASE 7-A</span><p>v{studioRelease.version} · Build {studioRelease.build}<br />Private production workspace</p></div>
+        <div className="sidebar-foot"><span className="phase-tag">PHASE 7-B</span><p>v{studioRelease.version} · Build {studioRelease.build}<br />Private production workspace</p></div>
       </aside>
 
       <main className="main-area">
@@ -120,10 +120,10 @@ export default function App() {
         {route === 'dashboard' && (
           <>
             <section className="hero-grid">
-              <article className="hero-copy panel"><span className="eyebrow">YOUR MUSIC PRODUCTION COCKPIT</span><h2>Every track.<br /><em>Ready to move.</em></h2><p>Phase 7 turns the existing specialist tools into one visible end-to-end production route while canonical ownership stays unchanged.</p><div className="hero-actions"><a className="primary-btn" href={routeHref('workflow')}>Open workflow <span>→</span></a><a className="ghost-btn" href={routeHref('catalog')}>Browse catalog</a></div></article>
-              <article className="workflow-card panel"><div className="workflow-head"><span>TODAY'S WORKFLOW</span><b>PHASE 7-A</b></div><ol><li><span>01</span><div><strong>See what needs work</strong><small>Workflow reads the canonical production state.</small></div></li><li><span>02</span><div><strong>Continue in context</strong><small>Next Action opens the validated Track Workspace section.</small></div></li><li><span>03</span><div><strong>Keep authority explicit</strong><small>Specialist tools remain the only owners of their mutations.</small></div></li></ol></article>
+              <article className="hero-copy panel"><span className="eyebrow">YOUR MUSIC PRODUCTION COCKPIT</span><h2>Every track.<br /><em>Ready to move.</em></h2><p>Phase 7 keeps the production route visible. Build 50 adds contextual completion receipts while private canonical rereads remain the only way a write can become VERIFIED.</p><div className="hero-actions"><a className="primary-btn" href={routeHref('workflow')}>Open workflow <span>→</span></a><a className="ghost-btn" href={routeHref('catalog')}>Browse catalog</a></div></article>
+              <article className="workflow-card panel"><div className="workflow-head"><span>TODAY'S WORKFLOW</span><b>PHASE 7-B</b></div><ol><li><span>01</span><div><strong>See what needs work</strong><small>Workflow reads the canonical production state.</small></div></li><li><span>02</span><div><strong>Continue in context</strong><small>Next Action opens the validated Track Workspace section.</small></div></li><li><span>03</span><div><strong>Verify the return</strong><small>Write receipts require a private canonical reread before VERIFIED.</small></div></li></ol></article>
             </section>
-            <section className="status-grid"><article className="metric panel"><span>CATALOG ACCESS</span><strong>{readLayerLabel}</strong><small>{readLayerDetail}</small></article><article className="metric panel"><span>END-TO-END WORKFLOW</span><strong>Phase 7-A</strong><small>Read-only orchestration candidate</small></article><article className="metric panel"><span>LYRICS ENGINE</span><strong>6.3.8</strong><small>Canonical TXT + embedded sync</small></article></section>
+            <section className="status-grid"><article className="metric panel"><span>CATALOG ACCESS</span><strong>{readLayerLabel}</strong><small>{readLayerDetail}</small></article><article className="metric panel"><span>END-TO-END WORKFLOW</span><strong>Phase 7-B</strong><small>Contextual receipts candidate</small></article><article className="metric panel"><span>LYRICS ENGINE</span><strong>6.3.8</strong><small>Canonical TXT + embedded sync</small></article></section>
           </>
         )}
 
