@@ -137,6 +137,8 @@ Build 49 adds a first-class `New MASTER concept` action with the following contr
 - preserves the currently imported MASTER, 1:1 and 9:16 while the new idea is explored;
 - only replacing/importing a new MASTER invalidates derivative outputs, as before;
 - persists the concept index in the browser-local draft so refresh does not silently revert the exploration state;
+- includes a direct `Open Google Flow ↗` shortcut to `https://labs.google/fx/fr/tools/flow/` beside the MASTER handoff controls;
+- opens Flow in a separate tab so Studio, the local draft and imported campaign assets remain in place;
 - remains non-canonical: no R2/Track Manager write path is added.
 
 Rollback anchor:
@@ -150,6 +152,7 @@ Rollback anchor:
 - imported premium art is always preserved by default;
 - no generic title/logo overlay added automatically;
 - provider handoffs explicitly tell the user which image(s) to attach as references;
+- direct provider shortcuts may open production tools such as Google Flow, but must not mutate Studio state;
 - variant buttons stay disabled until a valid 16:9 MASTER exists;
 - dimension/aspect checks are visible and truthful;
 - browser-local draft persistence may be used but must never masquerade as canonical R2 state;
@@ -172,6 +175,7 @@ TTM standalone may be marked deprecated only after a real-user smoke proves all 
 
 - MASTER prompt/handoff usable directly from Studio;
 - **from-scratch MASTER concept reroll works and is non-destructive**;
+- direct Flow shortcut works without losing Studio draft state;
 - logo reference workflow works;
 - 16:9 MASTER import is faithful;
 - anchored 1:1 generation/import works;
@@ -269,7 +273,7 @@ Current corrective / migration line:
 Track-To-Market 0.2.0                 standalone reference/rollback during migration
 Studio          0.16.1 / Build 47     staged-preview corrective
 Studio          0.16.2 / Build 48     native Release Campaign · partial smoke pass
-Studio          0.16.3 / Build 49     MASTER concept reroll candidate
+Studio          0.16.3 / Build 49     MASTER concept reroll + direct Flow shortcut candidate
 ```
 
 Rollback anchors:
@@ -281,4 +285,4 @@ safety/pre-build48-native-release-campaign-20260812-1707
 
 ## Verification policy
 
-CI never upgrades real-user acceptance labels by itself. Native Release Campaign only becomes accepted after real-user proof of the complete MASTER exploration → selected 16:9 → anchored 1:1 + anchored 9:16 → review/export path, including non-destructive from-scratch MASTER concept rerolls.
+CI never upgrades real-user acceptance labels by itself. Native Release Campaign only becomes accepted after real-user proof of the complete MASTER exploration → selected 16:9 → anchored 1:1 + anchored 9:16 → review/export path, including non-destructive from-scratch MASTER concept rerolls and the direct Flow handoff shortcut.
