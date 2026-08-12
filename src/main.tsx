@@ -26,6 +26,7 @@ import './track-to-market.css';
 import './track-to-market-v3.css';
 import './release-campaign.css';
 import './phase7-workflow.css';
+import './phase7-receipts.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
