@@ -8,10 +8,12 @@ const workflow = read('src/phase7-workflow.ts');
 const release = read('src/release.ts');
 const pkg = JSON.parse(read('package.json'));
 
-assert.match(release, /version:\s*'0\.17\.4'/);
-assert.match(release, /build:\s*54/);
-assert.match(release, /studio-focus-tracks-production-library/);
-assert.equal(pkg.version, '0.17.4');
+const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+assert.match(releaseVersion, /^0\.17\.(?:4|5)$/);
+assert.ok(releaseBuild >= 54, 'Build 54 production-library ancestry must remain active in successor corrective builds.');
+assert.match(release, /studio-focus-(?:tracks-production-library|tracks-readability)/);
+assert.equal(pkg.version, releaseVersion);
 assert.ok(pkg.scripts['check:focus']?.includes('test-studio-focus-build54.mjs'), 'Build 54 guard must run in the Studio Focus chain.');
 
 for (const marker of [
@@ -60,4 +62,4 @@ for (const protectedWorkflow of [
   'track.publishing.publishable',
 ]) assert.ok(workflow.includes(protectedWorkflow), `Build 54 must reuse the accepted Phase 7-A readiness model: ${protectedWorkflow}.`);
 
-console.log('Studio Focus Build 54 guard passed: Tracks is a production-first library with simple filters, artist-facing readiness and one workflow-derived continuation action per card.');
+console.log(`Studio Focus Build 54 ancestry passed under ${releaseVersion} Build ${releaseBuild}: the production-first Tracks library and workflow-derived continuation remain intact.`);
