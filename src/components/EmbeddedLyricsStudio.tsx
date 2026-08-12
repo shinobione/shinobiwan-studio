@@ -1,4 +1,5 @@
 import { createElement, useEffect, useRef, useState } from 'react';
+import { makeContinuationReceipt, type ContinuationReceipt } from '../phase7-receipts';
 import { contextualLrcMakerUrl } from '../services/lrc-maker';
 import { studioConfig } from '../services/config';
 
@@ -16,7 +17,6 @@ function embedScriptUrl(): string {
 function loadEmbedBundle(): Promise<void> {
   if (customElements.get(EMBED_TAG)) return Promise.resolve();
   if (embedLoader) return embedLoader;
-
   embedLoader = new Promise<void>((resolve, reject) => {
     const existing = document.querySelector<HTMLScriptElement>('script[data-shinobiwan-lyrics-embed]');
     if (existing) {
@@ -24,7 +24,6 @@ function loadEmbedBundle(): Promise<void> {
       existing.addEventListener('error', () => reject(new Error('Embedded LRC Maker bundle failed to load.')), { once: true });
       return;
     }
-
     const script = document.createElement('script');
     script.src = embedScriptUrl();
     script.async = true;
@@ -38,17 +37,13 @@ function loadEmbedBundle(): Promise<void> {
     }, { once: true });
     script.addEventListener('error', () => reject(new Error('Embedded LRC Maker bundle failed to load.')), { once: true });
     document.head.append(script);
-  }).catch(error => {
-    embedLoader = null;
-    throw error;
-  });
-
+  }).catch(error => { embedLoader = null; throw error; });
   return embedLoader;
 }
 
 interface LyricsSavedEvent extends CustomEvent<{ trackId: string; updatedAt: string }> {}
 
-export function EmbeddedLyricsStudio({ trackId, onSaved }: { trackId: string; onSaved: () => Promise<void> | void }) {
+export function EmbeddedLyricsStudio({ trackId, onReceipt }: { trackId: string; onReceipt: (receipt: ContinuationReceipt) => Promise<void> | void }) {
   const hostRef = useRef<HTMLElement | null>(null);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [error, setError] = useState<string | null>(null);
@@ -73,11 +68,19 @@ export function EmbeddedLyricsStudio({ trackId, onSaved }: { trackId: string; on
     const listener = (event: Event) => {
       const detail = (event as LyricsSavedEvent).detail;
       if (detail?.trackId !== trackId) return;
-      void onSaved();
+      void onReceipt(makeContinuationReceipt({
+        trackId,
+        source: 'lrc-maker',
+        operation: 'lyrics-saved',
+        effect: 'canonical-write',
+        summary: 'Lyrics synchronization saved.',
+        detail: 'Embedded LRC Maker reported a completed save. Studio will verify the canonical Track state before continuing.',
+        sourceRevision: detail.updatedAt,
+      }));
     };
     host.addEventListener('lyrics-saved', listener);
     return () => host.removeEventListener('lyrics-saved', listener);
-  }, [onSaved, trackId]);
+  }, [onReceipt, trackId]);
 
   return (
     <div className="workspace-lyrics-portal-card">
@@ -89,15 +92,8 @@ export function EmbeddedLyricsStudio({ trackId, onSaved }: { trackId: string; on
         </div>
         <a className="ghost-btn" href={contextualLrcMakerUrl(trackId)} target="_blank" rel="noreferrer">Open standalone fallback ↗</a>
       </div>
-
       {state === 'loading' && <div className="workspace-lyrics-embed-message">Loading LRC Maker engine…</div>}
-      {state === 'error' && (
-        <div className="lyrics-editor-error">
-          <strong>EMBED LOAD ERROR</strong>
-          <span>{error || 'LRC Maker embed is unavailable.'}</span>
-        </div>
-      )}
-
+      {state === 'error' && <div className="lyrics-editor-error"><strong>EMBED LOAD ERROR</strong><span>{error || 'LRC Maker embed is unavailable.'}</span></div>}
       {createElement(EMBED_TAG, {
         ref: (node: HTMLElement | null) => { hostRef.current = node; },
         'track-id': trackId,
