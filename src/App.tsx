@@ -33,7 +33,7 @@ const shellCopy: Record<Exclude<StudioRoute, 'catalog' | 'albums' | 'workflow'>,
   dashboard: {
     eyebrow: 'PHASE 7 / ORCHESTRATION',
     title: 'The specialist tools now share one production route.',
-    body: 'Studio keeps canonical Track, Album, Lyrics and SonicTrace state visible while Phase 7 turns those existing sources into explicit next actions without replacing their authorities.',
+    body: 'Studio keeps canonical Track, Album, Lyrics and SonicTrace state visible while Phase 7 turns those sources into explicit next actions and verified continuation receipts without replacing their authorities.',
   },
   intelligence: {
     eyebrow: 'SONICTRACE / C3',
@@ -92,7 +92,6 @@ export default function App() {
           : { state: 'degraded', label: 'public fallback', detail: `${payload.service || 'LaunchPAD media'}${payload.version != null ? ` v${payload.version}` : ''}${count}` });
       })
       .catch(error => active && setCatalog({ state: 'offline', label: 'offline', detail: String(error) }));
-
     getSonicTraceHealth()
       .then(payload => active && setSonic({ state: payload.status === 'ok' ? 'online' : 'degraded', label: payload.gpu_ready ? 'GPU ready' : (payload.status || 'online'), detail: `${payload.node_name || payload.service || 'SonicTrace'}${payload.version ? ` · ${payload.version}` : ''}` }))
       .catch(error => active && setSonic({ state: 'offline', label: 'local offline', detail: String(error) }));
@@ -111,47 +110,20 @@ export default function App() {
         <div className="nav-section-label">Studio</div>
         <nav className="nav-list" aria-label="Studio navigation">{NAV.map(item => <a key={item.route} className={route === item.route ? 'active' : ''} href={routeHref(item.route)} aria-current={route === item.route ? 'page' : undefined}><span className="nav-glyph" aria-hidden="true">{item.glyph}</span><span>{item.label}</span></a>)}</nav>
         <nav className="nav-list nav-list-utility" aria-label="Studio utilities">{UTILITY_NAV.map(item => <a key={item.route} className={route === item.route ? 'active' : ''} href={routeHref(item.route)} aria-current={route === item.route ? 'page' : undefined}><span className="nav-glyph" aria-hidden="true">{item.glyph}</span><span>{item.label}</span></a>)}</nav>
-        <div className="sidebar-foot"><span className="phase-tag">PHASE 7-A</span><p>v{studioRelease.version} · Build {studioRelease.build}<br />Private production workspace</p></div>
+        <div className="sidebar-foot"><span className="phase-tag">PHASE 7-B</span><p>v{studioRelease.version} · Build {studioRelease.build}<br />Private production workspace</p></div>
       </aside>
 
       <main className="main-area">
         <header className="topbar"><div><span className="top-kicker">SHINOBIWAN / PRODUCTION STUDIO</span><h1>{navTitle}</h1></div><div className="top-actions">{adminMode && <span className="admin-badge">ADMIN UI</span>}<details className="system-status"><summary><span className={`system-status-dot ${catalog.state === 'offline' || sonic.state === 'offline' ? 'has-issue' : ''}`} />System status</summary><div className="system-status-popover"><ServicePill name="Catalog" status={catalog} /><ServicePill name="SonicTrace" status={sonic} /></div></details></div></header>
 
-        {route === 'dashboard' && (
-          <>
-            <section className="hero-grid">
-              <article className="hero-copy panel"><span className="eyebrow">YOUR MUSIC PRODUCTION COCKPIT</span><h2>Every track.<br /><em>Ready to move.</em></h2><p>Phase 7 turns the existing specialist tools into one visible end-to-end production route while canonical ownership stays unchanged.</p><div className="hero-actions"><a className="primary-btn" href={routeHref('workflow')}>Open workflow <span>→</span></a><a className="ghost-btn" href={routeHref('catalog')}>Browse catalog</a></div></article>
-              <article className="workflow-card panel"><div className="workflow-head"><span>TODAY'S WORKFLOW</span><b>PHASE 7-A</b></div><ol><li><span>01</span><div><strong>See what needs work</strong><small>Workflow reads the canonical production state.</small></div></li><li><span>02</span><div><strong>Continue in context</strong><small>Next Action opens the validated Track Workspace section.</small></div></li><li><span>03</span><div><strong>Keep authority explicit</strong><small>Specialist tools remain the only owners of their mutations.</small></div></li></ol></article>
-            </section>
-            <section className="status-grid"><article className="metric panel"><span>CATALOG ACCESS</span><strong>{readLayerLabel}</strong><small>{readLayerDetail}</small></article><article className="metric panel"><span>END-TO-END WORKFLOW</span><strong>Phase 7-A</strong><small>Read-only orchestration candidate</small></article><article className="metric panel"><span>LYRICS ENGINE</span><strong>6.3.8</strong><small>Canonical TXT + embedded sync</small></article></section>
-          </>
-        )}
+        {route === 'dashboard' && <><section className="hero-grid"><article className="hero-copy panel"><span className="eyebrow">YOUR MUSIC PRODUCTION COCKPIT</span><h2>Every track.<br /><em>Ready to move.</em></h2><p>Phase 7 combines the accepted workflow with canonical continuation receipts: specialist completion is visible, but writes are trusted only after Studio re-reads the authoritative Track state.</p><div className="hero-actions"><a className="primary-btn" href={routeHref('workflow')}>Open workflow <span>→</span></a><a className="ghost-btn" href={routeHref('catalog')}>Browse catalog</a></div></article><article className="workflow-card panel"><div className="workflow-head"><span>TODAY'S WORKFLOW</span><b>PHASE 7-B</b></div><ol><li><span>01</span><div><strong>See what needs work</strong><small>Workflow reads the canonical production state.</small></div></li><li><span>02</span><div><strong>Continue in context</strong><small>Next Action opens the validated specialist surface.</small></div></li><li><span>03</span><div><strong>Verify the result</strong><small>Canonical specialist writes are re-read before Studio claims completion.</small></div></li></ol></article></section><section className="status-grid"><article className="metric panel"><span>CATALOG ACCESS</span><strong>{readLayerLabel}</strong><small>{readLayerDetail}</small></article><article className="metric panel"><span>END-TO-END WORKFLOW</span><strong>Phase 7-B</strong><small>Contextual receipts candidate</small></article><article className="metric panel"><span>LYRICS ENGINE</span><strong>6.3.8</strong><small>Canonical TXT + embedded sync</small></article></section></>}
 
         {route === 'workflow' && <WorkflowView />}
         {route === 'catalog' && (trackId ? <TrackWorkspace trackId={trackId} section={trackSection} /> : <CatalogView />)}
         {route === 'albums' && <AlbumsWorkspace />}
         {route === 'intelligence' && <CatalogIntelligenceView />}
 
-        {route !== 'dashboard' && route !== 'workflow' && route !== 'catalog' && route !== 'albums' && route !== 'intelligence' && (
-          <>
-            <EmptyState eyebrow={shellCopy[route].eyebrow} title={shellCopy[route].title} body={shellCopy[route].body} />
-            {route === 'administration' && (
-              <>
-                <CatalogRebuildPanel privateRead={privateRead} />
-                <section className="tool-grid">
-                  <a className="tool-card panel" href={adminService.fallbackUrl} target="_blank" rel="noreferrer"><b>LP</b><span>Track Manager</span><small>Protected fallback / legacy full surface ↗</small></a>
-                  <a className="tool-card panel" href={studioConfig.sonicTraceUrl} target="_blank" rel="noreferrer"><b>ST</b><span>SonicTrace</span><small>Standalone engine fallback ↗</small></a>
-                  <a className="tool-card panel" href={studioConfig.lrcMakerUrl} target="_blank" rel="noreferrer"><b>LM</b><span>LRC Maker</span><small>Advanced lyrics synchronization ↗</small></a>
-                </section>
-                <details className="panel c3-album-maintenance">
-                  <summary>Album migration archive · C2.5 complete</summary>
-                  <p className="c3-album-maintenance-copy">Historical one-Album-at-a-time migration tooling is preserved for diagnostics and audit, but removed from the daily Albums workspace. It stays closed by default.</p>
-                  <AlbumMigrationPanel />
-                </details>
-              </>
-            )}
-          </>
-        )}
+        {route !== 'dashboard' && route !== 'workflow' && route !== 'catalog' && route !== 'albums' && route !== 'intelligence' && <><EmptyState eyebrow={shellCopy[route].eyebrow} title={shellCopy[route].title} body={shellCopy[route].body} />{route === 'administration' && <><CatalogRebuildPanel privateRead={privateRead} /><section className="tool-grid"><a className="tool-card panel" href={adminService.fallbackUrl} target="_blank" rel="noreferrer"><b>LP</b><span>Track Manager</span><small>Protected fallback / legacy full surface ↗</small></a><a className="tool-card panel" href={studioConfig.sonicTraceUrl} target="_blank" rel="noreferrer"><b>ST</b><span>SonicTrace</span><small>Standalone engine fallback ↗</small></a><a className="tool-card panel" href={studioConfig.lrcMakerUrl} target="_blank" rel="noreferrer"><b>LM</b><span>LRC Maker</span><small>Advanced lyrics synchronization ↗</small></a></section><details className="panel c3-album-maintenance"><summary>Album migration archive · C2.5 complete</summary><p className="c3-album-maintenance-copy">Historical one-Album-at-a-time migration tooling is preserved for diagnostics and audit, but removed from the daily Albums workspace. It stays closed by default.</p><AlbumMigrationPanel /></details></> }</>}
       </main>
     </div>
   );
