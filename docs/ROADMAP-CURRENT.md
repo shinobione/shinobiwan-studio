@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — CURRENT ROADMAP
 
-Updated: 2026-08-12 after C3-B real-user acceptance, C3-C premium-feel candidate and bounded Track-To-Market Bridge V2 candidate.
+Updated: 2026-08-12 after explicit Phase 7 authorization, LaunchPAD Build 102 Visual Card candidate and Studio Phase 7-A Build 46 implementation candidate.
 
 This file is the concise current roadmap. Historical release details remain in milestone-specific documents and Git history.
 
@@ -36,7 +36,7 @@ recognized timestamps     = synchronized lyrics
 
 ## PHASE UX
 
-PHASE UX is post-Phase-6 product quality/integration work and is **not Phase 7**.
+PHASE UX is post-Phase-6 product quality/integration work. The user explicitly authorized Phase 7 to begin on 2026-08-12 before the final subjective C3-C/Build 102 smoke, so the two acceptance lines are tracked separately instead of fabricating a retroactive PHASE UX pass.
 
 ### C2.5-A → F
 Status: **COMPLETE — REAL USER VALIDATED**
@@ -51,150 +51,161 @@ Delivered and preserved:
 - LaunchPAD canonical Album public cutover through Worker v2.7;
 - virtual Singles semantics.
 
-LaunchPAD Build 87 remains the sanctuarized touch/player behavior baseline inherited by later builds.
-
 See `docs/PHASE-UX-C2-5-CLOSEOUT.md`.
 
-### C3 — SonicTrace Deep Audio / V2-E parity / premium interaction quality
-Status: **IN PROGRESS — C3-C SMOKE + BOUNDED BRIDGE CANDIDATE**
-
-#### C3-A — Deep Audio resilience + truthful profile semantics
+### C3-A — Deep Audio resilience
 Status: **COMPLETE — REAL USER PASS**
 
-Validated line:
+SonicTrace `V2-E · BUILD 06` / Deep Audio `2.0.1-alpha` + Studio semantics are validated. A real canonical **Stick to You** scan returned a truthful FULL unsaved profile with mastering, Neural, finite 512D embedding, structure and semantic summary ready.
 
-- SonicTrace `V2-E · BUILD 06` / Deep Audio `2.0.1-alpha`;
-- Studio semantics introduced in `v0.13.0 · Build 38` and carried forward.
+Checkpoint: `safety/c3-a-real-user-pass-20260811-1900`.
 
-Delivered:
-
-- robust FFmpeg loudnorm parsing;
-- real EBU R128 fallback;
-- mastering degradation does not abort Neural / embedding / structure;
-- truthful `FULL / PARTIAL / UNAVAILABLE / OUTDATED` semantics;
-- transport failures separated from coordinator processing failures;
-- null mastering metrics remain missing instead of becoming numeric zero.
-
-Real-user acceptance used **Stick to You** and returned an unsaved FULL profile with mastering, Neural, finite 512D embedding, structure and semantic summary ready.
-
-Checkpoint: `safety/c3-a-real-user-pass-20260811-1900` on Studio and SonicTrace.
-
-See `docs/PHASE-UX-C3-DEEP-AUDIO-RESILIENCE.md`.
-
-#### C3-UX corrective — Focused Albums + palette
+### C3-UX — Focused Albums + palette
 Status: **COMPLETE — REAL USER PASS**
 
-Studio Builds 39–40 + LaunchPAD Build 90 delivered:
+Studio Builds 39–40 + LaunchPAD Build 90 delivered the cover-first Album workspace, `Overview / Tracklist / Assets`, migration archive isolation, canonical Primary/Secondary palette controls and public Album palette consumption.
 
-- cover-first Album library;
-- one selected Album at a time;
-- `Overview / Tracklist / Assets` workspace;
-- migration archive moved to System;
-- Primary / Secondary color controls backed by canonical `accent` / `accent2`;
-- LaunchPAD Album-detail theming from canonical palette metadata.
-
-No Worker/R2/Album-authority/player semantics changed.
-
-#### C3 operational hotfix — New Track additive capability compatibility
+### C3 operational hotfix — New Track capability compatibility
 Status: **COMPLETE — REAL USER PASS**
 
-Studio Build 41 accepts additive Track Manager manage-capabilities while preserving operation-specific requirements (`track-create`, `assets`, `catalog-rebuild`). Real-user retry passed with **Stick to You**.
+Build 41 preserved operation-specific capabilities while accepting additive Track Manager capabilities. Real-user retry passed with **Stick to You**.
 
 Checkpoint: `safety/post-build41-real-user-pass-20260811-1833`.
 
-#### C3-B — Studio V2-E parity
+### C3-B — Studio V2-E parity
 Status: **COMPLETE — REAL USER PASS**
 
-Base implementation: Studio `v0.14.0 · Build 42`.
-Real-user clarity corrective: Studio `v0.14.1 · Build 43`.
+Studio Builds 42–43 delivered canonical read-only Catalog Intelligence:
 
-Delivered:
-
-- deterministic 2D projection from canonical finite 512D CLAP embeddings;
-- acoustic K-means zones;
-- separate Neural genre-derived sonic families;
-- explicit semantics: **position = embedding proximity, color = family, zone = neighborhood**;
+- deterministic 2D projection from finite 512D CLAP embeddings;
+- acoustic zones separate from Neural genre-derived families;
 - nearest-neighbor similarity;
-- redundant/very-close pairs;
-- catalog outliers;
-- cross-zone bridges;
-- canonical Album/Project embedding coverage, coherence, outliers and bridge candidate;
-- read-only advisory continuity sequence preserving original canonical position provenance;
-- no automatic Album order/membership mutation;
-- no standalone SonicTrace IndexedDB authority.
+- redundant pairs, outliers and cross-zone bridges;
+- canonical Album/Project embedding coverage/coherence;
+- read-only advisory sequence;
+- explicit unmapped-track truthfulness.
 
-The final real-user smoke passed with four finite 512D map points from five analyzed tracks, truthfully identifying `SINGULARITY :: OBLITERANT` as missing a usable embedding.
+Final smoke mapped four finite embeddings from five analyzed tracks and correctly identified `SINGULARITY :: OBLITERANT` as missing a usable 512D embedding.
 
-Post-pass checkpoint: `safety/post-c3-b-real-user-pass-20260811-1958`.
+Checkpoint: `safety/post-c3-b-real-user-pass-20260811-1958`.
 
-See `docs/PHASE-UX-C3-B-V2E-PARITY.md` and `CHANGELOG-C3-BUILD42.md`.
+### C3-C — Premium interaction / LaunchPAD corrective line
+Status: **FINAL REAL-USER VISUAL CARD SMOKE PENDING**
 
-#### C3-C — Premium interaction polish / motion feel
+Studio Build 44 established the premium interaction tokens. LaunchPAD then went through a real-user corrective line from Build 91 through Build 102 rather than accepting the first implementation by CI alone.
+
+Validated/observed milestones include:
+
+- glow tuning accepted after Builds 92–93;
+- route transition/layout corrective through Build 95;
+- Lyrics auto-scroll accepted in Build 96;
+- mobile Albums/Home/Lyrics picker cleanup through Build 97;
+- responsiveness/player state fixes through Builds 98–99;
+- stable single-owner mobile menu, locked pinch zoom and clean player chrome through Builds 100–101;
+- Build 101 sidebar player chrome explicitly accepted by the user;
+- LaunchPAD Build 102 adds deterministic Visual Card Share/Download/Copy feedback.
+
+Build 102 automated gates and Pages deployment are green. **Pending user check:** native Share/fallback, exactly one PNG download and visible Copy acknowledgement.
+
+LaunchPAD rollback anchors:
+
+```text
+safety/pre-build102-visual-card-feedback-20260812-0220
+safety/pre-phase7-authorized-20260812-0230
+```
+
+### C3 bounded integration — Track-To-Market Bridge V2
 Status: **IMPLEMENTED CANDIDATE — REAL USER SMOKE PENDING**
 
-Cross-app candidate line:
+Studio `v0.15.1 · Build 45` adds `Release Pack` to Track Workspace:
 
-- Studio `v0.15.0 · Build 44`;
-- LaunchPAD `2026.08.11.91`.
-
-Studio candidate adds shared motion/easing tokens, tactile press/release response, restrained CTA glow/lift, coherent nav/tab/selection transitions, local form-control focus lighting, safe map interaction response, touch-hover containment and explicit `prefers-reduced-motion` support.
-
-Frozen C3-C rules:
-
-- no fake progress;
-- no infinite attention animation;
-- no transition delay that postpones a real action;
-- no canonical data changes merely for polish;
-- no Worker/R2/Track Manager/SonicTrace/player-semantics changes.
-
-See `docs/PHASE-UX-C3-C-PREMIUM-FEEL.md` and `CHANGELOG-C3-BUILD44.md`.
-
-#### C3 bounded integration — Track-To-Market Bridge V2
-Status: **IMPLEMENTED CANDIDATE — REAL USER SMOKE PENDING**
-
-Studio `v0.15.1 · Build 45` adds a `Release Pack` Track Workspace section while preserving the Phase 7 STOP.
-
-Delivered candidate behavior:
-
-- opens Track-To-Market v0.1.5 standalone from a canonical track;
-- short URL bootstrap contains only trackId/title/genres;
-- full canonical lyrics + richer track context travel by allowlisted `postMessage` after the ready handshake;
-- Track-To-Market FINAL return must match the current canonical trackId;
-- non-FINAL/DRAFT returns are rejected;
-- accepted FINAL pack is stored only in transient Studio component state;
-- no R2 write or Track Manager mutation API is imported by the panel.
+- short canonical bootstrap to Track-To-Market v0.1.5;
+- richer context and canonical lyrics via allowlisted `postMessage` after Bridge V2 ready;
+- returned `trackId` must match current track;
+- only `releaseStatus === final` is accepted;
+- returned FINAL pack remains transient review state;
+- no R2 write / Track Manager mutation.
 
 Rollback anchor: `safety/pre-track-to-market-build45-20260812`.
 
-See `docs/TRACK-TO-MARKET-BUILD45.md` and `CHANGELOG-C3-BUILD45.md`.
+### PHASE UX acceptance still to reconcile
 
-### Pending PHASE UX acceptance
+When the user returns:
 
-1. C3-C premium-interaction real-user smoke remains pending;
-2. Build 45 Track-To-Market Bridge V2 real-user smoke remains pending;
-3. final PHASE UX cross-app smoke;
-4. documentation reconciliation;
-5. final PHASE UX safety checkpoint;
-6. explicit user decision on whether to authorize Phase 7.
+1. Build 102 Visual Card real-user smoke;
+2. Build 45 Track-To-Market Bridge V2 real-user smoke;
+3. cross-app sanity pass only if either smoke exposes a regression;
+4. mark C3-C/TTME acceptance truthfully in README/docs;
+5. create a final PHASE UX historical checkpoint without changing the already-authorized Phase 7 boundary.
 
 ## Phase 7 — End-to-end workflow
-Status: **LOCKED / NOT AUTHORIZED**
+Status: **AUTHORIZED — PHASE 7-A IMPLEMENTED CANDIDATE**
 
-Do not implement, scaffold, branch, merge or deploy Phase 7 without explicit user authorization after PHASE UX closeout.
+Authorization: explicit user instruction on 2026-08-12 to begin Phase 7 while they were away, with full README/.MD/rollback documentation.
 
-Build 45 is explicitly scoped as a PHASE UX C3 bounded bridge/review integration and does not create the Phase 7 end-to-end write workflow.
+Pre-Phase-7 safety anchor after Build 45:
 
-## Later original roadmap
+` safety/pre-phase7-authorized-post-build45-20260812-0232 `
+
+### Phase 7-A — Workflow Overview / production queue
+Status: **Studio v0.16.0 · Build 46 IMPLEMENTED CANDIDATE**
+
+Goal: expose one truthful end-to-end production queue without creating a second data authority.
+
+Pipeline presented by Studio:
+
+```text
+Identity → Core media → Lyrics → SonicTrace → Release
+```
+
+Build 46 rules:
+
+- reads existing canonical `StudioTrack` state through the established catalog service;
+- derives per-stage `ready / attention / blocked` state;
+- exposes catalog KPIs and filtered Needs Attention / Blocked / Draft / Ready queues;
+- gives exactly one prioritized Next Action per track;
+- every Next Action deep-links to the existing guarded Track Workspace section;
+- no mutation API is imported by the Phase 7 view/model;
+- no automatic publishing, Album reorder, SonicTrace save, Lyrics save or R2 write;
+- public fallback remains read-only and visibly labeled;
+- Track-To-Market Build 45 is inherited untouched.
+
+Real-user acceptance still required after deployment.
+
+See `docs/PHASE-7-A-WORKFLOW-BUILD46.md` and `CHANGELOG-PHASE7-BUILD46.md`.
+
+### Phase 7-B — Contextual continuation receipts
+Status: **PLANNED AFTER 7-A SMOKE**
+
+Planned boundary:
+
+- specialist tools may return explicit completion/result receipts to Studio;
+- Studio re-reads canonical state after a specialist action instead of trusting a local optimistic copy;
+- Track-To-Market FINAL remains review-only until a separately authorized canonical persistence contract exists;
+- no new generic write endpoint.
+
+### Phase 7-C — Guided end-to-end actions
+Status: **PLANNED / NOT STARTED**
+
+Only after 7-A/7-B validation:
+
+- guided New Track → media → metadata → lyrics → analysis → release readiness flow;
+- resume/recovery after interrupted steps;
+- operation-specific confirmation before protected writes;
+- canonical reread after every write;
+- no silent Album/order/publish mutation.
+
+The Phase 7 goal is orchestration, not centralization: Studio coordinates existing authorities instead of replacing them.
+
+## Later roadmap
 
 ### Phase 8 — Dashboard Intelligence & Content Health
 
-Goal: Studio opens directly onto actionable catalog health.
-
-Planned themes include global catalog summary, Needs Attention, incomplete tracks, stale SonicTrace, missing cover/lyrics/Canvas, drafts/unpublished, recent activity, GPU/Worker/R2/catalog status and global search.
+Goal: Studio opens directly onto actionable catalog health. Phase 7-A intentionally builds the reusable production-state model that Phase 8 can later summarize, but it does not pre-implement Phase 8 activity/history/status features.
 
 ### Phase 9 — Security / reliability / PWA
 
-Planned themes include Access/CORS hardening, timeouts/retries, anti-loss saves, degraded/offline behavior, PWA cache/update robustness and graceful local/Worker outages.
+Planned themes: Access/CORS hardening, timeouts/retries, anti-loss saves, degraded/offline behavior, PWA cache/update robustness and graceful local/Worker outages.
 
 ### Phase 10 — Progressive extraction of shared engines
 
@@ -210,9 +221,8 @@ There is currently **no official Phase 11**.
 ## Current runtime / candidate baseline
 
 ```text
-Real-user validated functional line before current candidates:
-Studio          0.14.1 / Build 43
-LaunchPAD       2026.08.11.90
+Validated functional core:
+Studio          0.14.1 / Build 43     C3-B real-user pass
 Track Manager   v5.19
 Studio bridge   v1.11
 Public Worker   v2.7
@@ -220,16 +230,11 @@ SonicTrace      V2-E Build 06
 Deep Audio      2.0.1-alpha
 LRC Maker       6.3.8
 
-Current PHASE UX candidates:
-Studio          0.15.1 / Build 45   C3-C inherited + TTME bridge candidate
-LaunchPAD       2026.08.11.91      C3-C candidate
-Track-To-Market 0.1.5              Bridge V2 / FINAL gate
-Track Manager   v5.19               unchanged
-Studio bridge   v1.11               unchanged
-Public Worker   v2.7                unchanged
-SonicTrace      V2-E Build 06       unchanged
-Deep Audio      2.0.1-alpha         unchanged
-LRC Maker       6.3.8                unchanged
+Current candidates:
+LaunchPAD       2026.08.12.102        C3-C Visual Card final smoke pending
+Studio          0.15.1 / Build 45     Track-To-Market bridge smoke pending
+Studio          0.16.0 / Build 46     Phase 7-A workflow candidate
+Track-To-Market 0.1.5                 Bridge V2 / FINAL gate
 ```
 
-C3-A, C3-B, focused Album UX/palette and Build 41 New Track compatibility are real-user validated. C3-C and the bounded Track-To-Market Bridge V2 are implementation candidates pending real-user smoke. Phase 7 remains locked.
+Automation/CI never upgrades a real-user acceptance label by itself.
