@@ -47,11 +47,12 @@ const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const phaseUxLine = /^0\.(?:11|12|13|14|15)\./.test(version) && codename.startsWith('phase-ux-');
 const authorizedPhase7 = /^0\.(?:16|17)\./.test(version) && codename.startsWith('phase7-');
-assert.ok(phaseUxLine || authorizedPhase7, `Workspace guard must run on validated PHASE UX lineage or an explicitly authorized Phase 7 successor, got ${version} / ${codename}.`);
+const authorizedStudioFocus = /^0\.17\./.test(version) && codename.startsWith('studio-focus-');
+assert.ok(phaseUxLine || authorizedPhase7 || authorizedStudioFocus, `Workspace guard must run on validated PHASE UX lineage or an explicitly authorized Phase 7 / Studio Focus successor, got ${version} / ${codename}.`);
 if (phaseUxLine) {
   for (const forbidden of ['phase7', 'phase-7']) assert.ok(!workspace.toLowerCase().includes(forbidden), `Unauthorized Phase 7 runtime marker found during PHASE UX: ${forbidden}.`);
 } else {
-  assert.ok(workspace.includes('<ContinuationReceiptBanner trackId={track.id}'), 'Authorized Phase 7-B successor must preserve the contextual receipt surface without disturbing the validated Workspace layout.');
+  assert.ok(workspace.includes('<ContinuationReceiptBanner trackId={track.id}'), 'Authorized Phase 7-B / Studio Focus successor must preserve the contextual receipt surface without disturbing the validated Workspace layout.');
 }
 
-console.log('PHASE UX UX-3 guard passed: persistent track context, five local tools, action-led Overview, secondary diagnostics and responsive layout survive the explicitly authorized Phase 7 successor.');
+console.log('PHASE UX UX-3 guard passed: persistent track context, five local tools, action-led Overview, secondary diagnostics and responsive layout survive the explicitly authorized Studio Focus successor.');

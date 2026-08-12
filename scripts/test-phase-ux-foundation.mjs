@@ -6,24 +6,25 @@ const app = read('src/App.tsx');
 const workspace = read('src/components/TrackWorkspace.tsx');
 const router = read('src/router.ts');
 const css = read('src/ux-foundation.css');
+const focusCss = read('src/studio-focus.css');
 const albumCss = read('src/c2-5-d-navigation.css');
 const release = read('src/release.ts');
 
-const primaryNav = app.slice(app.indexOf('const NAV:'), app.indexOf('const UTILITY_NAV:'));
+const dailyNav = app.slice(app.indexOf('const DAILY_NAV:'), app.indexOf('const ADVANCED_NAV:'));
+const advancedNav = app.slice(app.indexOf('const ADVANCED_NAV:'), app.indexOf('const shellCopy:'));
 for (const required of [
   "route: 'dashboard'",
-  "route: 'workflow'",
   "route: 'catalog'",
   "route: 'albums'",
-  "route: 'intelligence'",
-  "label: 'Dashboard'",
-  "label: 'Workflow'",
+  "label: 'Home'",
   "label: 'Tracks'",
-  "label: 'Albums / Projects'",
-  "label: 'Intelligence'",
-]) assert.ok(primaryNav.includes(required), `Primary Studio navigation is missing ${required}.`);
-for (const forbidden of ["route: 'lyrics'", "route: 'assets'", "route: 'publishing'", "route: 'administration'"]) {
-  assert.ok(!primaryNav.includes(forbidden), `Track-local or utility route leaked into primary navigation: ${forbidden}.`);
+  "label: 'Albums'",
+]) assert.ok(dailyNav.includes(required), `Studio Focus daily navigation is missing ${required}.`);
+for (const forbidden of ["route: 'workflow'", "route: 'intelligence'", "route: 'lyrics'", "route: 'assets'", "route: 'publishing'", "route: 'administration'"]) {
+  assert.ok(!dailyNav.includes(forbidden), `Technical/track-local route leaked into the Studio Focus daily navigation: ${forbidden}.`);
+}
+for (const required of ["route: 'workflow'", "route: 'intelligence'", "route: 'administration'", "label: 'Workflow'", "label: 'Intelligence'", "label: 'System'"]) {
+  assert.ok(advancedNav.includes(required), `Studio Focus Advanced navigation is missing ${required}.`);
 }
 
 for (const required of [
@@ -33,10 +34,10 @@ for (const required of [
   "{ id: 'lyrics', label: 'Lyrics' }",
   "{ id: 'intelligence', label: 'SonicTrace' }",
   '← Back to Catalog',
-]) assert.ok(workspace.includes(required), `Track-local navigation is missing ${required}.`);
+]) assert.ok(workspace.includes(required), `Build 53 must preserve the validated Track Workspace ancestry before its dedicated regrouping slice: ${required}.`);
 
-for (const legacyRoute of ["'versions'", "'publishing'"]) {
-  assert.ok(router.includes(legacyRoute), `Phase 7 must preserve existing deep-link compatibility for ${legacyRoute}.`);
+for (const legacyRoute of ["'workflow'", "'intelligence'", "'versions'", "'publishing'"]) {
+  assert.ok(router.includes(legacyRoute), `Studio Focus must preserve existing deep-link compatibility for ${legacyRoute}.`);
 }
 
 for (const token of [
@@ -46,19 +47,20 @@ for (const token of [
   '--studio-transition:', '@media (prefers-reduced-motion: reduce)', ':focus-visible',
 ]) assert.ok(css.includes(token), `Studio design system is missing ${token}.`);
 
-assert.ok(albumCss.includes('grid-template-columns: repeat(5, minmax(0, 1fr))'), 'Authorized Phase 7 mobile navigation must fit five primary Studio destinations in one row.');
-assert.ok(css.includes('.nav-list-utility { display: none; }'), 'Mobile must keep utility navigation secondary.');
+assert.ok(albumCss.includes('grid-template-columns: repeat(5, minmax(0, 1fr))'), 'Legacy mobile navigation CSS remains available for backward-compatible routes.');
+assert.ok(css.includes('.nav-list-utility { display: none; }'), 'Legacy utility navigation rule must remain available.');
+assert.ok(focusCss.includes('.focus-advanced-nav'), 'Studio Focus must implement progressive disclosure for Advanced routes.');
 
 const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const phaseUxLine = /^0\.(?:11|12|13|14|15)\./.test(version) && codename.startsWith('phase-ux-');
 const phase7Line = /^0\.(?:16|17)\./.test(version) && codename.startsWith('phase7-');
-assert.ok(phaseUxLine || phase7Line, `Studio UX foundation must stay on the validated PHASE UX lineage or explicitly authorized Phase 7 successor, got ${version} / ${codename}.`);
+const studioFocusLine = /^0\.17\./.test(version) && codename.startsWith('studio-focus-');
+assert.ok(phaseUxLine || phase7Line || studioFocusLine, `Studio UX foundation must stay on the validated PHASE UX / Phase 7 lineage or the explicitly authorized Studio Focus successor, got ${version} / ${codename}.`);
 
-if (phase7Line) {
-  assert.ok(primaryNav.includes("route: 'workflow'"), 'Authorized Phase 7 successor must expose Workflow as a focused primary destination.');
-  assert.ok(router.includes("'workflow'"), 'Authorized Phase 7 successor router must recognize Workflow.');
-  assert.ok(app.includes('PHASE 7-A') || app.includes('PHASE 7-B'), 'Authorized Phase 7 successor must identify its current candidate milestone in the shell.');
+if (phase7Line || studioFocusLine) {
+  assert.ok(router.includes("'workflow'"), 'Authorized successor router must preserve Workflow.');
+  assert.ok(app.includes('PHASE 7-A') || app.includes('PHASE 7-B'), 'Authorized successor must preserve its validated Phase 7 ancestry in the shell.');
 }
 
-console.log('Studio UX foundation guard passed: focused primary destinations, shared tokens, readable responsive controls and legacy deep links survive the explicitly authorized Phase 7 successor.');
+console.log('Studio UX foundation guard passed: Studio Focus daily navigation is artist-first, Advanced keeps specialist routes, shared tokens and legacy deep links remain intact.');

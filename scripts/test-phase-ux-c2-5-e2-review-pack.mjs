@@ -40,9 +40,10 @@ const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const phaseUxLine = /^0\.(?:12|13|14|15)\./.test(releaseVersion) && /^phase-ux-(?:c2-5-e|c3)-/.test(codename);
 const phase7Line = /^0\.(?:16|17)\./.test(releaseVersion) && codename.startsWith('phase7-');
-assert.ok(phaseUxLine || phase7Line, 'C2.5-E2 ancestry must remain on the validated PHASE UX line or explicitly authorized Phase 7 successor.');
+const studioFocusLine = /^0\.17\./.test(releaseVersion) && codename.startsWith('studio-focus-');
+assert.ok(phaseUxLine || phase7Line || studioFocusLine, 'C2.5-E2 ancestry must remain on the validated PHASE UX line or explicitly authorized Phase 7 / Studio Focus successor.');
 assert.ok(releaseBuild >= 36, 'C2.5-E2 review-pack ancestry must remain at Build 36 or later.');
 assert.equal(pkg.version, releaseVersion);
 assert.ok(String(pkg.scripts?.['check:ux'] || '').includes('test-phase-ux-c2-5-e2-review-pack.mjs'));
 
-console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves the C2.5-E2 read-only migration review/export pack through the authorized Phase 7 successor.`);
+console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves the C2.5-E2 read-only migration review/export pack through Studio Focus.`);

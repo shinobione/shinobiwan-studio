@@ -4,6 +4,7 @@ import fs from 'node:fs';
 const albumApi = fs.readFileSync('src/services/album-admin-api.ts', 'utf8');
 const legacyAlbumUi = fs.readFileSync('src/components/AlbumManager.tsx', 'utf8');
 const focusedAlbumUi = fs.readFileSync('src/components/AlbumsWorkspace.tsx', 'utf8');
+const embeddedLyrics = fs.readFileSync('src/components/EmbeddedLyricsStudio.tsx', 'utf8');
 const app = fs.readFileSync('src/App.tsx', 'utf8');
 const router = fs.readFileSync('src/router.ts', 'utf8');
 const types = fs.readFileSync('src/types/studio.ts', 'utf8');
@@ -19,15 +20,15 @@ for (const required of ['+ New Album / EP','Create canonical draft','album.track
 assert.ok(!focusedAlbumUi.includes('Add an unowned track…'), 'Focused Album UX must not create an unguarded ownership-assignment path.');
 assert.ok(!focusedAlbumUi.includes('Delete Album'), 'Focused Album UX must not expose whole-Album deletion.');
 assert.ok(focusedAlbumUi.includes('globalThis.confirm'), 'Production Album mutations must retain explicit confirmation.');
-assert.ok(app.includes("route: 'albums'"), 'Studio navigation must expose Albums / Projects.');
+assert.ok(app.includes("route: 'albums'"), 'Studio navigation must expose Albums.');
 assert.ok(app.includes("{route === 'albums' && <AlbumsWorkspace />}"), 'Albums route must mount the focused workspace while preserving canonical APIs.');
-assert.ok(app.includes('Track Manager v5.19 · bridge v1.11'), 'Studio shell must report the validated Track Manager v5.19 / bridge v1.11 backend.');
-assert.ok(app.includes('<strong>6.3.8</strong>'), 'Studio shell must keep current LRC Maker version.');
+assert.ok(app.includes('Track Manager v5.19 · bridge v1.11'), 'Studio must retain the validated Track Manager v5.19 / bridge v1.11 diagnostic fallback.');
+assert.ok(embeddedLyrics.includes("const EMBED_VERSION = '6.3.8'"), 'Embedded Lyrics Studio must keep the accepted LRC Maker 6.3.8 integration even when Studio Focus hides infrastructure versions from Home.');
 assert.ok(router.includes("'albums'"), 'Router must recognize Albums.');
 assert.ok(types.includes("| 'albums'"), 'StudioRoute must include Albums.');
 assert.ok(main.includes("import './album-management.css';"), 'Historical Album styles must remain loaded during C3 UX correction.');
 assert.ok(main.includes("import './c3-albums-ux.css';"), 'Focused C3 Album UX styles must be loaded.');
-assert.ok(main.includes("import './c2-5-d-navigation.css';"), 'Four-destination mobile navigation override must remain loaded.');
+assert.ok(main.includes("import './c2-5-d-navigation.css';"), 'Legacy mobile navigation override must remain loaded for route compatibility.');
 assert.ok(String(pkg.scripts?.['check:ux'] || '').includes('test-phase-ux-c2-5-d-albums.mjs'));
 
-console.log('C2.5-D historical guard passed through the C3 focused Album workspace: Track Manager remains the sole write authority with guarded membership/assets and no whole-Album deletion.');
+console.log('C2.5-D historical guard passed through Studio Focus: Track Manager remains the sole Album write authority and LRC Maker 6.3.8 remains pinned at the actual embedded integration seam.');

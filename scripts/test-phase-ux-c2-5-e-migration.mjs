@@ -40,7 +40,7 @@ assert.ok(app.includes("import { AlbumMigrationPanel } from './components/AlbumM
 assert.ok(app.includes("{route === 'albums' && <AlbumsWorkspace />}"), 'Daily Albums route must keep canonical management separate from the completed migration cockpit.');
 assert.ok(app.includes('Album migration archive · C2.5 complete'), 'C2.5-E cockpit must live under the collapsed System maintenance archive after migration completion.');
 assert.ok(app.includes('className="panel c3-album-maintenance"'), 'Migration archive must be collapsed maintenance UI, not daily Album content.');
-assert.ok(app.includes('Track Manager v5.19 · bridge v1.11'), 'Studio must identify the current validated migration/backend contract.');
+assert.ok(app.includes('Track Manager v5.19 · bridge v1.11'), 'Studio must retain the current validated migration/backend diagnostic fallback.');
 assert.ok(main.includes("import './c2-5-e-migration.css';"), 'C2.5-E styles must remain loaded for the preserved maintenance cockpit.');
 assert.ok(css.includes('.album-migration-stack') && css.includes('@media(max-width:560px)'), 'Migration cockpit must retain desktop and mobile styling when maintenance is opened.');
 
@@ -49,9 +49,10 @@ const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const phaseUxLine = /^0\.(?:12|13|14|15)\./.test(releaseVersion) && /^phase-ux-(?:c2-5-e|c3)-/.test(codename);
 const phase7Line = /^0\.(?:16|17)\./.test(releaseVersion) && codename.startsWith('phase7-');
-assert.ok(phaseUxLine || phase7Line, 'C2.5-E ancestry must remain on the validated PHASE UX line or explicitly authorized Phase 7 successor.');
+const studioFocusLine = /^0\.17\./.test(releaseVersion) && codename.startsWith('studio-focus-');
+assert.ok(phaseUxLine || phase7Line || studioFocusLine, 'C2.5-E ancestry must remain on the validated PHASE UX line or explicitly authorized Phase 7 / Studio Focus successor.');
 assert.ok(releaseBuild >= 35, 'C2.5-E ancestry must remain at Build 35 or later.');
 assert.equal(pkg.version, releaseVersion, 'package.json must match the active Studio release.');
 assert.ok(String(pkg.scripts?.['check:ux'] || '').includes('test-phase-ux-c2-5-e-migration.mjs'));
 
-console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves the guarded one-Album-at-a-time C2.5-E cockpit as collapsed maintenance while the authorized Phase 7 successor remains orchestrator-only.`);
+console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves the guarded one-Album-at-a-time C2.5-E cockpit as collapsed maintenance while Studio Focus remains presentation-only.`);

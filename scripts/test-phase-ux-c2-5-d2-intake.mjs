@@ -84,9 +84,10 @@ const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const phaseUxLine = /^0\.(?:11|12|13|14|15)\./.test(releaseVersion) && /^phase-ux-(?:c2-5|c3)-/.test(codename);
 const phase7Line = /^0\.(?:16|17)\./.test(releaseVersion) && codename.startsWith('phase7-');
-assert.ok(phaseUxLine || phase7Line, 'D2 ancestry must remain on the validated PHASE UX C2.5/C3 line or its explicitly authorized Phase 7 successor.');
+const studioFocusLine = /^0\.17\./.test(releaseVersion) && codename.startsWith('studio-focus-');
+assert.ok(phaseUxLine || phase7Line || studioFocusLine, 'D2 ancestry must remain on the validated PHASE UX C2.5/C3 line or its explicitly authorized Phase 7 / Studio Focus successor.');
 assert.ok(releaseBuild >= 33, 'C2.5-D2 ancestry must remain at Build 33 or later.');
 assert.equal(pkg.version, releaseVersion, 'package.json must match the active Studio release.');
 assert.ok(String(pkg.scripts?.['check:ux'] || '').includes('test-phase-ux-c2-5-d2-intake.mjs'));
 
-console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves D2 canonical Album binding through the authorized successor: explicit non-Singles requests override the safe Singles default, missing Albums block Review and final creation never invents a phantom Album.`);
+console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves D2 canonical Album binding through Studio Focus: explicit non-Singles requests override the safe Singles default, missing Albums block Review and final creation never invents a phantom Album.`);

@@ -16,7 +16,8 @@ const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const build50 = releaseVersion === '0.17.0' && releaseBuild === 50 && codename === 'phase7-b-contextual-continuation-receipts';
 const phase7BSuccessor = /^0\.17\.\d+$/.test(releaseVersion) && releaseBuild > 50 && codename.startsWith('phase7-b-');
-assert.ok(build50 || phase7BSuccessor, `Build 50 receipt contract must remain inherited by Phase 7-B successors, got ${releaseVersion} Build ${releaseBuild} / ${codename}.`);
+const studioFocusSuccessor = /^0\.17\.\d+$/.test(releaseVersion) && releaseBuild >= 53 && codename.startsWith('studio-focus-');
+assert.ok(build50 || phase7BSuccessor || studioFocusSuccessor, `Build 50 receipt contract must remain inherited by Phase 7-B / Studio Focus successors, got ${releaseVersion} Build ${releaseBuild} / ${codename}.`);
 assert.equal(pkg.version, releaseVersion);
 assert.ok(pkg.scripts['check:phase7']?.includes('test-phase7-native-release-campaign-build49.mjs'), 'Build 49 native Release Campaign guard must remain active.');
 assert.ok(pkg.scripts['check:phase7']?.includes('test-phase7-b-contextual-receipts-build50.mjs'), 'Build 50 receipt guard must run in the Phase 7 chain.');
@@ -60,4 +61,4 @@ for (const forbidden of ['uploadTrackAsset', 'replaceTrackAsset', 'saveTrackMeta
   assert.ok(!verifier.includes(forbidden), `Receipt verifier must remain read-only: ${forbidden}`);
 }
 
-console.log(`Phase 7-B Build 50 contract survives ${releaseVersion} Build ${releaseBuild}: typed allowlisted receipts, exact trackId, private canonical reread, stale protection and review-only native Release Campaign.`);
+console.log(`Phase 7-B Build 50 contract survives ${releaseVersion} Build ${releaseBuild}: typed allowlisted receipts, exact trackId, private canonical reread, stale protection and review-only native Release Campaign remain intact through Studio Focus.`);

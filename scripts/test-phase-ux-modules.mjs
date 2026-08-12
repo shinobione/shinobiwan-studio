@@ -50,15 +50,16 @@ const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const phaseUxLine = /^0\.(?:11|12|13|14|15)\./.test(version) && codename.startsWith('phase-ux-');
 const authorizedPhase7 = /^0\.(?:16|17)\./.test(version) && codename.startsWith('phase7-');
-assert.ok(phaseUxLine || authorizedPhase7, `UX module guard must run on validated PHASE UX lineage or an explicitly authorized Phase 7 successor, got ${version} / ${codename}.`);
+const authorizedStudioFocus = /^0\.17\./.test(version) && codename.startsWith('studio-focus-');
+assert.ok(phaseUxLine || authorizedPhase7 || authorizedStudioFocus, `UX module guard must run on validated PHASE UX lineage or an explicitly authorized Phase 7 / Studio Focus successor, got ${version} / ${codename}.`);
 for (const source of [metadata, assets, sonic]) {
   for (const forbidden of ['phase7', 'phase-7']) assert.ok(!source.toLowerCase().includes(forbidden), `Specialist module acquired unauthorized Phase 7 coupling: ${forbidden}.`);
 }
 if (phaseUxLine) {
   for (const forbidden of ['phase7', 'phase-7']) assert.ok(!workspace.toLowerCase().includes(forbidden), `Unauthorized Phase 7 workspace marker found during PHASE UX: ${forbidden}.`);
 } else {
-  assert.ok(workspace.includes("from '../phase7-receipts'"), 'Authorized Phase 7-B successor may add only the typed receipt orchestration seam to the validated Workspace.');
-  assert.ok(workspace.includes('<ContinuationReceiptBanner trackId={track.id}'), 'Authorized Phase 7-B successor must render the receipt verification surface.');
+  assert.ok(workspace.includes("from '../phase7-receipts'"), 'Authorized Phase 7-B / Studio Focus successor may preserve only the typed receipt orchestration seam in the validated Workspace.');
+  assert.ok(workspace.includes('<ContinuationReceiptBanner trackId={track.id}'), 'Authorized successor must preserve the receipt verification surface.');
 }
 
-console.log('PHASE UX UX-4 guard passed: grouped metadata, single media manager, embedded-first Lyrics, profile-aware SonicTrace and guarded engines remain intact through the authorized Phase 7 successor.');
+console.log('PHASE UX UX-4 guard passed: grouped metadata, single media manager, embedded-first Lyrics, profile-aware SonicTrace and guarded engines remain intact through the authorized Studio Focus successor.');
