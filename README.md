@@ -9,13 +9,14 @@ Accepted baselines:
 LaunchPAD       2026.08.12.102        C3-C REAL USER PASS
 Studio          v0.15.1 · Build 45    TTM Bridge V2 REAL USER PASS
 Studio          v0.16.0 · Build 46    Phase 7-A REAL USER PASS
+Studio          v0.17.1 · Build 51    Phase 7-B REAL USER PASS
 
 Current Phase 7 line:
 Studio          v0.16.1 · Build 47    staged-preview corrective / historical proof
 Studio          v0.16.2 · Build 48    native Release Campaign · partial real-user smoke
 Studio          v0.16.3 · Build 49    MASTER concept reroll + direct Flow shortcut baseline
 Studio          v0.17.0 · Build 50    Phase 7-B receipts · partial smoke (Lyrics parent receipt failed)
-Studio          v0.17.1 · Build 51    Lyrics receipt listener corrective candidate
+Studio          v0.17.1 · Build 51    accepted Phase 7-B corrective · REAL USER PASS
 Track-To-Market v0.2.0               standalone rollback/reference during native migration
 
 Track Manager   v5.19
@@ -26,9 +27,9 @@ Deep Audio      2.0.1-alpha
 LRC Maker       6.3.8
 ```
 
-**PHASE UX remains COMPLETE — REAL USER VALIDATED. Phase 7-A Build 46 remains COMPLETE — REAL USER PASS. Phase 7-B is not closed yet. Build 51 is the corrective candidate for the one failed browser leg found in Build 50.**
+**PHASE UX remains COMPLETE — REAL USER VALIDATED. Phase 7-A Build 46 remains COMPLETE — REAL USER PASS. Phase 7-B Build 51 is COMPLETE — REAL USER PASS.**
 
-Builds 48/49 moved the useful Track-To-Market release workflow directly into the Track Workspace and added non-destructive MASTER concept rerolls plus a direct Google Flow shortcut. Build 50 added typed contextual completion receipts. Its first real-user smoke proved the review-only Release Campaign receipt and preserved Workflow, but the embedded LRC Maker save did not surface the expected parent receipt banner despite the Lyrics engine completing its own protected save and reread. Build 51 fixes only that delivery seam.
+Builds 48/49 moved the useful Track-To-Market release workflow directly into the Track Workspace and added non-destructive MASTER concept rerolls plus a direct Google Flow shortcut. Build 50 added typed contextual completion receipts and proved the review-only Release Campaign path, but its first browser smoke exposed a missing parent receipt after an otherwise successful embedded LRC Maker save/reread. Build 51 corrected only that delivery seam. The deployed browser now shows `LRC Maker / lyrics saved → Canonical reread verified` after Track Manager private reread, completing Phase 7-B.
 
 See:
 
@@ -39,6 +40,7 @@ See:
 - [`CHANGELOG-PHASE7-BUILD50.md`](CHANGELOG-PHASE7-BUILD50.md)
 - [`CHANGELOG-PHASE7-BUILD51.md`](CHANGELOG-PHASE7-BUILD51.md)
 - [`docs/PHASE-7-B-BUILD50-CONTEXTUAL-RECEIPTS.md`](docs/PHASE-7-B-BUILD50-CONTEXTUAL-RECEIPTS.md)
+- [`docs/PHASE-7-B-BUILD51-REAL-USER-PASS.md`](docs/PHASE-7-B-BUILD51-REAL-USER-PASS.md)
 - [`docs/ROADMAP-CURRENT.md`](docs/ROADMAP-CURRENT.md)
 
 ## Architecture roles — frozen
@@ -147,9 +149,9 @@ The first deployed smoke produced a partial result:
 - embedded LRC Maker protected save + its own canonical reread: **PASS** (`lyrics.txt synchronisé et relu.` visible);
 - parent Phase 7-B Lyrics receipt banner: **FAIL** — no `Verifying canonical state…` / `Canonical reread verified` appeared.
 
-Therefore Build 50 is not Phase 7-B REAL USER PASS.
+Therefore Build 50 remains historical partial-smoke evidence and is not the accepted Phase 7-B release.
 
-### Build 51 Lyrics receipt corrective
+### Build 51 Lyrics receipt corrective — accepted
 
 LRC Maker 6.3.8 already emits a composed, bubbling `lyrics-saved` CustomEvent from `<shinobiwan-lyrics-studio>` after its existing guarded save + reread.
 
@@ -163,7 +165,9 @@ Build 51 removes the ref dependency and listens for the same bubbling/composed `
 - canonical `lyrics.txt` evidence before VERIFIED;
 - stale/mismatched receipt protection inherited from Build 50.
 
-No LRC Maker code/version, Track Manager endpoint, Worker, R2 object or write authority changes in Build 51.
+The deployed Build 51 browser retest showed `LRC MAKER / LYRICS SAVED` followed by **`Canonical reread verified`**, with explicit confirmation that Track Manager private reread succeeded and Studio is displaying canonical state rather than optimistic child state.
+
+No LRC Maker code/version, Track Manager endpoint, Worker, R2 object or write authority changed in Build 51.
 
 ## Premium provider strategy
 
@@ -193,7 +197,7 @@ The Workflow remains read-only and deep-links to existing guarded specialist sur
 - Build 49 — concept-reroll + direct Flow shortcut baseline inherited by Builds 50/51.
 
 ### 7-B — Contextual continuation receipts
-**IMPLEMENTED IN BUILD 50 / BUILD 51 CORRECTIVE CANDIDATE — REAL USER LYRICS RECEIPT RETEST REQUIRED**
+**COMPLETE — REAL USER PASS · Studio v0.17.1 · Build 51**
 
 Contract:
 
@@ -207,10 +211,12 @@ Contract:
 - no generic write endpoint;
 - existing operation owners unchanged.
 
+Accepted closeout: `docs/PHASE-7-B-BUILD51-REAL-USER-PASS.md`.
+
 ### 7-C — Guided end-to-end actions
 **PLANNED / NOT STARTED / EXPLICITLY CLOSED**
 
-Only after 7-B validation and an explicit new authorization.
+Phase 7-B completion does not automatically authorize 7-C. Start only after a fresh explicit authorization.
 
 ## Canonical Album contract
 
@@ -261,12 +267,14 @@ C3-A/C3-B contracts remain unchanged.
 - external provider links are navigation only, not API/key integrations;
 - canonical-write receipts require private canonical rereads;
 - public fallback can never verify a write;
-- no Worker deployment is required for Build 51;
+- no Worker deployment was required for Build 51;
 - Phase 7-C is not started.
 
 ## Rollback anchors
 
 ```text
+safety/post-phase7-b-build51-real-user-pass-20260812-2120
+safety/phase7-b-build51-candidate-20260812-2112
 safety/pre-build51-lyrics-receipt-corrective-20260812-2102
 safety/pre-phase7-b-build50-20260812-1826
 safety/pre-build49-master-concept-reroll-20260812
@@ -284,18 +292,14 @@ safety/c3-a-real-user-pass-20260811-1900
 
 CI is necessary but not sufficient.
 
-The Build 50 screenshots already provide real-user proof that:
+Phase 7-B acceptance is now backed by deployed browser proof across Builds 50/51:
 
 - Release Campaign export produces a **review-only** receipt and never canonical VERIFIED;
 - Workflow 7-A remains operational/read-only;
-- embedded LRC Maker still performs its protected save and internal canonical reread.
+- embedded LRC Maker performs its protected save and canonical reread;
+- Build 51 parent receipt identifies `LRC Maker / lyrics saved`;
+- `Canonical reread verified` appears only after the private Track Manager reread/evidence path succeeds;
+- Studio explicitly displays canonical state rather than optimistic child state;
+- no new canonical write authority appears.
 
-Build 51 must now prove the missing parent receipt leg:
-
-1. save through embedded LRC Maker on deployed Build 51;
-2. Studio displays `Verifying canonical state…`;
-3. `Canonical reread verified` appears only after private reread/evidence succeeds;
-4. the banner identifies `LRC Maker / lyrics saved` and remains scoped to the current canonical trackId;
-5. no new canonical write authority appears.
-
-Do not mutate production WAV/cover/Album objects merely to manufacture a frontend smoke test. Phase 7-C remains closed until 7-B is validated.
+Phase 7-B is therefore **COMPLETE — REAL USER PASS**. Do not start Phase 7-C without fresh explicit authorization.
