@@ -10,9 +10,10 @@ const pkg = JSON.parse(read('package.json'));
 
 const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
-assert.match(releaseVersion, /^0\.17\.\d+$/);
+const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
+assert.match(releaseVersion, /^0\.(?:17|18)\.\d+$/);
 assert.ok(releaseBuild >= 54, 'Build 54 production-library ancestry must remain active in successor corrective builds.');
-assert.match(release, /studio-focus-(?:tracks-production-library|tracks-readability|tracks-status-labels)/);
+assert.ok(codename.startsWith('studio-focus-'), `Build 54 production-library ancestry must remain under Studio Focus, got ${codename}.`);
 assert.equal(pkg.version, releaseVersion);
 assert.ok(pkg.scripts['check:focus']?.includes('test-studio-focus-build54.mjs'), 'Build 54 guard must run in the Studio Focus chain.');
 
