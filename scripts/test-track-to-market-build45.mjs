@@ -29,9 +29,10 @@ assert.match(panel, /shinobiwan:track-to-market:input/);
 assert.match(panel, /shinobiwan:track-to-market:pack/);
 assert.match(panel, /data\.releaseStatus !== 'final'/, 'Non-FINAL returns must be rejected.');
 assert.match(panel, /data\.trackId !== track\.id/, 'Returned pack trackId must match the current track.');
-assert.match(panel, /lyrics: track\.lyricsRaw \|\| ''/, 'Canonical lyrics must travel in the Bridge V2 payload, not the URL.');
+assert.match(panel, /lyrics: track\.lyricsRaw \|\| ''/, 'Canonical lyrics must travel in the bridge payload, not the URL.');
 assert.doesNotMatch(panel, /searchParams\.set\('lyrics'/, 'Long lyrics must not be copied into the query string.');
-assert.match(panel, /Build 45 does not write it to R2 or Track Manager/, 'UI must state the review-only boundary.');
+assert.match(panel, /No R2 write from this panel\./, 'UI must keep the no-R2-write boundary explicit.');
+assert.match(panel, /No Track Manager mutation API imported\./, 'UI must keep the no-Track-Manager-mutation boundary explicit.');
 
 for (const forbidden of [
   'admin-api',
@@ -43,4 +44,4 @@ for (const forbidden of [
   'fetch(',
 ]) assert.ok(!panel.includes(forbidden), `Review-only TTME panel must not import/call write surface: ${forbidden}`);
 
-console.log('Track-To-Market Bridge V2 passed route, origin, FINAL gate, trackId, lyrics transport and no-write guards through the authorized Phase 7 successor.');
+console.log('Track-To-Market bridge passed route, origin, FINAL gate, trackId, lyrics transport and explicit no-write guards through the authorized Phase 7 successor.');
