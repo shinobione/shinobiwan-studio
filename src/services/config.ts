@@ -5,4 +5,5 @@ export const studioConfig = Object.freeze({
   lrcMakerUrl: import.meta.env.VITE_LRC_MAKER_URL || 'https://shinobione.github.io/lrc-maker/',
   sonicTraceUrl: import.meta.env.VITE_SONICTRACE_URL || 'https://shinobione.github.io/LM-IA-Analayse/',
   launchpadUrl: import.meta.env.VITE_LAUNCHPAD_URL || 'https://shinobione.github.io/LaunchPAD-APP/',
+  trackToMarketUrl: import.meta.env.VITE_TRACK_TO_MARKET_URL || 'https://shinobione.github.io/Track-To-Market-Engine/',
 });
