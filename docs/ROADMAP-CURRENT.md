@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — CURRENT ROADMAP
 
-Updated: 2026-08-12 after Build 48 real-user smoke exposed the missing from-scratch MASTER concept reroll; Build 49 corrective is now the active candidate.
+Updated: 2026-08-12 for **Studio v0.17.0 · Build 50 — Phase 7-B contextual continuation receipts candidate**. Build 50 is implemented and must remain labeled **REAL USER SMOKE PENDING** until browser validation.
 
 Historical release detail remains in milestone docs and Git history.
 
@@ -65,16 +65,14 @@ The V0.2 corrective solved two real issues:
 
 Build 47 also proved that Studio can receive the actual selected FINAL artwork and provenance safely.
 
-Real-user review then established a deeper conclusion:
+Real-user review established the deeper conclusion that the useful orchestration belongs naturally inside Track Workspace rather than in another permanent standalone handoff layer.
 
-> the standalone tool still behaves mostly as a prompt handoff + import + ZIP intermediary, while the useful orchestration belongs naturally inside the Track Workspace.
+Therefore:
 
-Therefore the product direction changes:
-
-- **do not delete TTM standalone yet**;
-- keep it as a rollback/reference implementation until native Studio validation;
-- stop expanding standalone UX as the primary path;
-- absorb the useful release-campaign behavior into Studio.
+- do not delete TTM standalone yet;
+- keep it as rollback/reference during native validation;
+- stop expanding it as the primary path;
+- keep the useful release-campaign behavior native to Studio.
 
 ## Native Release Campaign — user-authorized priority pivot
 
@@ -107,9 +105,9 @@ Status: **DEPLOYED CANDIDATE — REAL USER SMOKE PARTIAL PASS / CORRECTIVE FOUND
 
 Release: **Studio v0.16.2 · Build 48**.
 
-Build 48 successfully proved the native Studio path for:
+Build 48 established:
 
-1. canonical track context inside Release Pack;
+1. canonical Track context inside Release Pack;
 2. editable premium MASTER 16:9 provider handoff;
 3. SHINOBIWAN logo reference workflow;
 4. faithful 16:9 MASTER import;
@@ -120,26 +118,25 @@ Build 48 successfully proved the native Studio path for:
 9. release copy / tags / provenance;
 10. non-canonical ZIP export.
 
-Real-user smoke then exposed one missing exploration control: once a MASTER prompt exists, editing it is possible, but there is no explicit way to **throw away the current creative idea and generate a genuinely different MASTER concept from scratch** while preserving accepted artwork until the user chooses to replace it.
+Its real-user smoke exposed the missing first-class ability to abandon the current creative idea and generate a genuinely different MASTER concept from scratch while preserving accepted visual outputs.
 
 ### Build 49 — MASTER concept reroll corrective
 
-Status: **ACTIVE CANDIDATE — REAL USER SMOKE REQUIRED**
+Release: **Studio v0.16.3 · Build 49**.
 
-Release target: **Studio v0.16.3 · Build 49**.
+Build 49 is the native Release Campaign baseline inherited by Build 50. It adds:
 
-Build 49 adds a first-class `New MASTER concept` action with the following contract:
-
-- starts from canonical track context, current provider and current logo state;
-- explicitly ignores the previous MASTER prompt/composition/scene/visual metaphor;
-- rotates across deliberately distinct concept families rather than merely rewording the same brief;
-- keeps exact title/branding requirements;
-- preserves the currently imported MASTER, 1:1 and 9:16 while the new idea is explored;
-- only replacing/importing a new MASTER invalidates derivative outputs, as before;
-- persists the concept index in the browser-local draft so refresh does not silently revert the exploration state;
-- includes a direct `Open Google Flow ↗` shortcut to `https://labs.google/fx/fr/tools/flow/` beside the MASTER handoff controls;
-- opens Flow in a separate tab so Studio, the local draft and imported campaign assets remain in place;
-- remains non-canonical: no R2/Track Manager write path is added.
+- first-class `New MASTER concept` action;
+- canonical Track context + current provider/logo state retained during reroll;
+- explicit reset of the previous MASTER prompt/composition/scene/visual metaphor;
+- deliberately distinct concept families;
+- exact title/branding requirements preserved;
+- currently imported MASTER/1:1/9:16 preserved during exploration;
+- only an explicit new MASTER import invalidates derivative slots;
+- persisted browser-local `masterConceptIndex`;
+- direct `Open Google Flow ↗` shortcut;
+- Flow opens in a separate safe tab without losing Studio draft/imported campaign state;
+- no R2/Track Manager write path.
 
 Rollback anchor:
 
@@ -149,46 +146,46 @@ Rollback anchor:
 
 - no external TTM popup in the primary path;
 - no bridge required for normal Release Campaign work;
-- imported premium art is always preserved by default;
-- no generic title/logo overlay added automatically;
-- provider handoffs explicitly tell the user which image(s) to attach as references;
-- direct provider shortcuts may open production tools such as Google Flow, but must not mutate Studio state;
-- variant buttons stay disabled until a valid 16:9 MASTER exists;
-- dimension/aspect checks are visible and truthful;
-- browser-local draft persistence may be used but must never masquerade as canonical R2 state;
-- current canonical cover remains untouched;
-- prompt exploration must be non-destructive until the user explicitly imports/replaces a MASTER.
+- imported premium art is preserved by default;
+- no automatic generic title/logo overlay;
+- provider handoffs explicitly identify required reference images;
+- direct provider shortcuts do not mutate Studio state;
+- variant actions remain locked until a valid 16:9 MASTER exists;
+- aspect/dimension checks remain truthful;
+- browser-local drafts never masquerade as canonical R2 state;
+- canonical cover remains untouched;
+- prompt exploration remains non-destructive until explicit MASTER replacement.
 
 ### Provider strategy
 
-Premium FINAL quality remains external-provider-first for now:
+Premium FINAL quality remains external-provider-first:
 
-1. Google Flow / Gemini / ChatGPT Images — FINAL quality handoff;
-2. local ComfyUI / SD3.5 — DRAFT exploration only unless quality materially improves;
-3. Cloudflare FLUX — DRAFT/fallback only.
+1. Google Flow / Gemini / ChatGPT Images — FINAL-quality handoff;
+2. local ComfyUI / SD3.5 — DRAFT exploration unless quality materially improves;
+3. Cloudflare FLUX — DRAFT/fallback.
 
-The purpose of Studio is orchestration and campaign coherence, not pretending the weaker providers are release-ready.
+Studio orchestrates campaign context/coherence; it does not pretend weaker generators are release-ready.
 
 ### Standalone TTM deprecation gate
 
-TTM standalone may be marked deprecated only after a real-user smoke proves all of:
+TTM standalone may be marked deprecated only after real-user proof of the full native path, including:
 
-- MASTER prompt/handoff usable directly from Studio;
-- **from-scratch MASTER concept reroll works and is non-destructive**;
-- direct Flow shortcut works without losing Studio draft state;
-- logo reference workflow works;
-- 16:9 MASTER import is faithful;
-- anchored 1:1 generation/import works;
-- anchored 9:16 generation/import works;
-- campaign review clearly shows all three coherent assets;
-- export works;
-- no canonical writes/regressions occur.
+- MASTER prompt/handoff;
+- non-destructive from-scratch concept reroll;
+- direct Flow shortcut without draft loss;
+- logo reference;
+- faithful 16:9 MASTER import;
+- anchored 1:1 generation/import;
+- anchored 9:16 generation/import;
+- coherent three-format review;
+- export;
+- no canonical writes/regressions.
 
-Until then, TTM remains available as rollback/reference.
+Until then, TTM remains rollback/reference.
 
 ## Phase 7 — End-to-end workflow
 
-Status: **7-A COMPLETE / BUILD 49 RELEASE CAMPAIGN CORRECTIVE ACTIVE / 7-B DEFERRED TO BUILD 50+**
+Status: **7-A COMPLETE / NATIVE RELEASE CAMPAIGN INHERITED / 7-B BUILD 50 CANDIDATE / 7-C CLOSED**
 
 ### Phase 7-A — Workflow Overview / production queue
 
@@ -214,33 +211,69 @@ Rollback: `safety/pre-build47-ttm-v3-preview-20260812`.
 
 ### Phase 7-B — Contextual continuation receipts
 
-Status: **AUTHORIZED / DEFERRED UNTIL NATIVE RELEASE CAMPAIGN REAL-USER ACCEPTANCE**
+Status: **IMPLEMENTED IN Studio v0.17.0 · Build 50 / CI CANDIDATE — REAL USER SMOKE REQUIRED**
 
-Build 48 was reserved for native Release Campaign integration; Build 49 is now reserved for the concept-reroll corrective found during its smoke. Phase 7-B therefore moves to **Build 50 or later** without losing its contract:
+Build 50 contract:
 
-- specialist receipts scoped by canonical `trackId` + source/operation;
-- canonical reread after canonical writes;
-- optimistic child/local state never authoritative;
-- stale/mismatched receipts ignored;
+```text
+lrc-maker        + lyrics-saved      → canonical-write
+sonictrace       + analysis-saved    → canonical-write
+release-campaign + campaign-exported → review-only
+```
+
+Rules:
+
+- receipt must match the exact canonical Track Workspace `trackId`;
+- source/operation/effect combination must be allowlisted;
+- mismatched receipts are ignored;
+- canonical-write receipts enter verification instead of optimistic success;
+- Studio rereads through the existing Track catalog read layer;
+- returned trackId must match;
+- reread must be private; public fallback can never verify a canonical write;
+- Lyrics verification requires canonical `lyrics.txt` evidence;
+- SonicTrace verification requires persisted Audio Intelligence evidence;
+- only after private evidence may Studio display `Canonical reread verified`;
+- stale async rereads cannot overwrite newer receipts/Track contexts;
+- Release Campaign remains review-only and keeps `canonicalWrite: false`;
 - no generic write endpoint;
-- existing operation owners unchanged.
+- no new R2 authority;
+- existing operation owners remain unchanged;
+- Workflow 7-A and Builds 48/49 native Release Campaign are preserved.
+
+Build 50 pre-change checkpoint:
+
+`safety/pre-phase7-b-build50-20260812-1826`
+
+Detailed contract:
+
+`docs/PHASE-7-B-BUILD50-CONTEXTUAL-RECEIPTS.md`
+
+Changelog:
+
+`CHANGELOG-PHASE7-BUILD50.md`
+
+Acceptance boundary:
+
+**CI GREEN ≠ DEPLOYED CANDIDATE ≠ REAL USER PASS.**
+
+The candidate becomes REAL USER PASS only after the user confirms the browser receipt flow on the deployed build.
 
 ### Phase 7-C — Guided end-to-end actions
 
-Status: **PLANNED / NOT STARTED**
+Status: **PLANNED / NOT STARTED / EXPLICITLY CLOSED**
 
-Only after 7-B validation.
+Only after Phase 7-B real-user validation and an explicit new authorization.
 
 ## Release Campaign follow-ups after Build 49
 
-These remain recorded so they are not lost:
+These remain recorded:
 
-- **Motion variant:** optional provider handoff for an 8s loop anchored to the selected MASTER artwork; title/logo stability and loop seam are explicit requirements.
-- **Provider provenance:** record user-selected provider/model instead of guessing from import.
-- **Variant replacement:** each format can be replaced independently without invalidating the MASTER.
-- **Campaign completeness:** 16:9 is required; 1:1 and 9:16 are required for a complete visual campaign; motion is optional unless the release workflow later marks it required.
+- **Motion variant:** optional provider handoff for an 8s loop anchored to selected MASTER artwork; fixed title/logo and clean loop seam required.
+- **Provider provenance:** record the user-selected provider/model rather than guessing from import.
+- **Variant replacement:** each format can be replaced independently without invalidating MASTER.
+- **Campaign completeness:** 16:9 + 1:1 + 9:16 required for a complete visual campaign; motion optional unless later marked required.
 - **Future guarded persistence:** only Studio → existing Track Manager operation-specific authority may eventually persist accepted campaign assets; Studio must reread canonical state afterward.
-- **Local AI lab:** retained only as experimentation; no pressure to make it the premium path.
+- **Local AI lab:** experimentation only; no pressure to make it the premium path.
 
 ## Later roadmap
 
@@ -269,20 +302,34 @@ SonicTrace      V2-E Build 06
 Deep Audio      2.0.1-alpha
 LRC Maker       6.3.8
 
-Current corrective / migration line:
-Track-To-Market 0.2.0                 standalone reference/rollback during migration
-Studio          0.16.1 / Build 47     staged-preview corrective
+Current Phase 7 line:
+Track-To-Market 0.2.0                 standalone reference/rollback
+Studio          0.16.1 / Build 47     staged-preview historical proof
 Studio          0.16.2 / Build 48     native Release Campaign · partial smoke pass
-Studio          0.16.3 / Build 49     MASTER concept reroll + direct Flow shortcut candidate
+Studio          0.16.3 / Build 49     native campaign reroll + Flow baseline
+Studio          0.17.0 / Build 50     contextual receipts candidate · smoke pending
 ```
 
 Rollback anchors:
 
 ```text
+safety/pre-phase7-b-build50-20260812-1826
 safety/pre-build49-master-concept-reroll-20260812
 safety/pre-build48-native-release-campaign-20260812-1707
 ```
 
 ## Verification policy
 
-CI never upgrades real-user acceptance labels by itself. Native Release Campaign only becomes accepted after real-user proof of the complete MASTER exploration → selected 16:9 → anchored 1:1 + anchored 9:16 → review/export path, including non-destructive from-scratch MASTER concept rerolls and the direct Flow handoff shortcut.
+CI never upgrades real-user acceptance labels by itself.
+
+Build 50 must first pass exact-head CI and normal Pages publication. Then user smoke must prove:
+
+1. Release Campaign export returns a **review-only** receipt and never canonical VERIFIED;
+2. an existing protected Lyrics or SonicTrace write returns a canonical-write receipt;
+3. Studio shows verifying while performing the private canonical reread;
+4. `Canonical reread verified` appears only after the reread/evidence succeeds;
+5. receipt remains scoped to the correct canonical trackId;
+6. Workflow 7-A and the native Release Campaign remain operational;
+7. no new canonical write authority appears.
+
+Do not mutate production media/Albums merely to manufacture a smoke. Do not start Phase 7-C before explicit post-7-B authorization.

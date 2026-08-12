@@ -8,7 +8,7 @@ const historical = fs.readFileSync('docs/PHASE-7-A-TTM-V3-BUILD47.md', 'utf8');
 const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
-assert.match(version, /^0\.16\.\d+$/, 'Build 47 successor lineage must remain Studio 0.16.x.');
+assert.match(version, /^0\.(?:16|17)\.\d+$/, 'Build 47 successor lineage must remain on an explicitly authorized Studio Phase 7 release line.');
 assert.ok(build >= 47, `Build 47 successor must remain Build 47 or later, got ${build}.`);
 assert.ok(codename.startsWith('phase7-'), `Build 47 successor codename must remain explicit, got ${codename}.`);
 

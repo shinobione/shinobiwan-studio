@@ -39,7 +39,7 @@ const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const phaseUxLine = /^0\.(?:12|13|14|15)\./.test(releaseVersion) && /^phase-ux-(?:c2-5-e|c3)-/.test(codename);
-const phase7Line = /^0\.16\./.test(releaseVersion) && codename.startsWith('phase7-');
+const phase7Line = /^0\.(?:16|17)\./.test(releaseVersion) && codename.startsWith('phase7-');
 assert.ok(phaseUxLine || phase7Line, 'C2.5-E2 ancestry must remain on the validated PHASE UX line or explicitly authorized Phase 7 successor.');
 assert.ok(releaseBuild >= 36, 'C2.5-E2 review-pack ancestry must remain at Build 36 or later.');
 assert.equal(pkg.version, releaseVersion);

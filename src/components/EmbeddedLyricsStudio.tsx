@@ -1,4 +1,5 @@
 import { createElement, useEffect, useRef, useState } from 'react';
+import { emitContinuationReceipt, makeContinuationReceipt } from '../phase7-receipts';
 import { contextualLrcMakerUrl } from '../services/lrc-maker';
 import { studioConfig } from '../services/config';
 
@@ -73,6 +74,15 @@ export function EmbeddedLyricsStudio({ trackId, onSaved }: { trackId: string; on
     const listener = (event: Event) => {
       const detail = (event as LyricsSavedEvent).detail;
       if (detail?.trackId !== trackId) return;
+      emitContinuationReceipt(makeContinuationReceipt({
+        trackId,
+        source: 'lrc-maker',
+        operation: 'lyrics-saved',
+        effect: 'canonical-write',
+        summary: 'Lyrics save completed.',
+        detail: 'Embedded LRC Maker reported a successful save. Studio will verify it through the private canonical Track read layer.',
+        sourceRevision: detail.updatedAt,
+      }));
       void onSaved();
     };
     host.addEventListener('lyrics-saved', listener);

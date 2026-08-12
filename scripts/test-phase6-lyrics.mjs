@@ -4,6 +4,8 @@ import fs from 'node:fs';
 const read = path => fs.readFileSync(path, 'utf8');
 const integration = read('src/services/lrc-maker.ts');
 const workspace = read('src/components/TrackWorkspace.tsx');
+const receipts = read('src/phase7-receipts.ts');
+const receiptVerifier = read('src/components/ContinuationReceiptBanner.tsx');
 const health = read('src/content-health.ts');
 const admin = read('src/services/admin-api.ts');
 const readability = read('src/readability.css');
@@ -27,12 +29,10 @@ for (const forbidden of ['lyrics=', 'audio=', 'blob:', 'lyrics.lrc']) {
 
 for (const required of [
   'openContextualLrcMaker(track.id)',
-  'shinobiwan:lyrics-saved:v1',
-  'event.origin !== globalThis.location.origin',
-  'void refreshTrackAfterWrite()',
   'const syncedLyrics = track.timestampsAvailable;',
   'const canEmbedLyrics = privateRead && Boolean(track.assets.audio && track.assets.lyricsTxt);',
-  '<EmbeddedLyricsStudio trackId={track.id} onSaved={refreshTrackAfterWrite} />',
+  '<EmbeddedLyricsStudio trackId={track.id} onSaved={() => undefined} />',
+  '<ContinuationReceiptBanner trackId={track.id}',
   "workspace-lyrics-panel--embedded",
   'Open standalone fallback ↗',
   '<strong>lyrics.txt</strong> is the only canonical source.',
@@ -40,10 +40,27 @@ for (const required of [
 ]) assert.ok(workspace.includes(required), `Studio Lyrics workspace contract missing ${required}.`);
 
 for (const required of [
+  "data.type !== 'shinobiwan:lyrics-saved:v1'",
+  "source: 'lrc-maker'",
+  "operation: 'lyrics-saved'",
+  "effect: 'canonical-write'",
+]) assert.ok(receipts.includes(required), `Phase 7-B Lyrics receipt contract missing ${required}.`);
+
+for (const required of [
+  "new URL(studioConfig.lrcMakerUrl).origin",
+  'event.origin !== lrcOrigin',
+  'const canonical = await getCatalogTrack(next.trackId)',
+  "canonical.readSource !== 'private'",
+  "receipt.operation === 'lyrics-saved' && !canonical.assets.lyricsTxt",
+]) assert.ok(receiptVerifier.includes(required), `Phase 7-B Lyrics canonical reread contract missing ${required}.`);
+
+for (const required of [
   "const EMBED_TAG = 'shinobiwan-lyrics-studio'",
   "const EMBED_VERSION = '6.3.8'",
   "embed/lyrics-studio.js",
   "base.searchParams.set('v', EMBED_VERSION)",
+  "source: 'lrc-maker'",
+  "operation: 'lyrics-saved'",
   'void onSaved()',
   'contextualLrcMakerUrl(trackId)',
   'Open standalone fallback ↗',
@@ -63,4 +80,4 @@ const tinyFonts = [...`${lyricsCss}\n${embedCss}\n${readability}`.matchAll(/font
   .filter(size => size < 11);
 assert.deepEqual(tinyFonts, [], `Phase 6 must preserve the 11px readability floor; found ${tinyFonts.join(', ')}.`);
 
-console.log('Phase 6 Lyrics contract passed: direct embedded LRC Maker 6.3.8 engine, native click/double-click/Space sync flow, behavioral reducer hardening, canonical reread normalization, standalone fallback, canonical timestamps, guarded refresh and 11px readability floor.');
+console.log('Phase 6 Lyrics contract passed: direct embedded LRC Maker 6.3.8 engine, canonical lyrics.txt/timestamps, standalone fallback, and Phase 7-B receipt verification through the private Track read layer.');

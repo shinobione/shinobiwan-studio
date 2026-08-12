@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
 import { computeContentHealth } from '../content-health';
+import { emitContinuationReceipt, makeContinuationReceipt } from '../phase7-receipts';
 import { routeHref, trackHref } from '../router';
 import { getCatalogTrack } from '../services/catalog-api';
 import { studioConfig } from '../services/config';
 import { openContextualLrcMaker } from '../services/lrc-maker';
 import type { StudioTrackDetail, WorkspaceSection } from '../types/studio';
 import { AssetsManager } from './AssetsManager';
+import { ContinuationReceiptBanner } from './ContinuationReceiptBanner';
 import { EmbeddedLyricsStudio } from './EmbeddedLyricsStudio';
 import { LyricsEditorPanel } from './LyricsEditorPanel';
 import { MetadataValidationPanel } from './MetadataValidationPanel';
@@ -79,16 +81,6 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
     setError(null);
   }
 
-  useEffect(() => {
-    const onLyricsSaved = (event: MessageEvent) => {
-      if (event.origin !== globalThis.location.origin) return;
-      const data = event.data as { type?: string; trackId?: string } | null;
-      if (data?.type === 'shinobiwan:lyrics-saved:v1' && data.trackId === trackId) void refreshTrackAfterWrite();
-    };
-    globalThis.addEventListener('message', onLyricsSaved);
-    return () => globalThis.removeEventListener('message', onLyricsSaved);
-  }, [trackId]);
-
   const health = useMemo(() => track ? computeContentHealth(track) : null, [track]);
   const lyricLines = useMemo(() => {
     if (!track?.lyricsRaw) return [];
@@ -148,6 +140,8 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
         <div className="workspace-tab-links">{TABS.map(tab => <a key={tab.id} className={section === tab.id ? 'active' : ''} aria-current={section === tab.id ? 'page' : undefined} href={trackHref(track.id, tab.id)}>{tab.label}</a>)}</div>
       </nav>
 
+      <ContinuationReceiptBanner trackId={track.id} onCanonicalVerified={canonical => { setTrack(canonical); setError(null); }} />
+
       {section === 'overview' && (
         <div className="workspace-overview-grid">
           <WorkspacePanel eyebrow="OVERVIEW / READINESS" title={attention.length ? 'Finish what matters next' : 'Ready for production'} className="workspace-readiness-panel">
@@ -187,7 +181,16 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
         </div>
       )}
 
-      {section === 'intelligence' && <SonicTracePanel track={track} onSaved={refreshTrackAfterWrite} />}
+      {section === 'intelligence' && <SonicTracePanel track={track} onSaved={() => {
+        emitContinuationReceipt(makeContinuationReceipt({
+          trackId: track.id,
+          source: 'sonictrace',
+          operation: 'analysis-saved',
+          effect: 'canonical-write',
+          summary: 'SonicTrace analysis save completed.',
+          detail: 'Studio will verify the saved analysis through the private canonical Track read layer.',
+        }));
+      }} />}
 
       {section === 'market' && <TrackToMarketPanel track={track} />}
 
@@ -200,7 +203,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
           </section>
           <WorkspacePanel eyebrow="LYRICS / STUDIO" title={track.assets.lyricsTxt ? 'Synchronize lyrics' : 'No lyrics'} className={`workspace-lyrics-panel${canEmbedLyrics ? ' workspace-lyrics-panel--embedded' : ''}`}>
             {canEmbedLyrics
-              ? <EmbeddedLyricsStudio trackId={track.id} onSaved={refreshTrackAfterWrite} />
+              ? <EmbeddedLyricsStudio trackId={track.id} onSaved={() => undefined} />
               : lyricLines.length
                 ? <div className="workspace-lyrics-lines">{lyricLines.map((line, index) => <p key={`${index}-${line}`}>{line}</p>)}</div>
                 : <p className="workspace-muted">No lyric text is available yet. Add canonical lyrics.txt from Assets to begin.</p>}
