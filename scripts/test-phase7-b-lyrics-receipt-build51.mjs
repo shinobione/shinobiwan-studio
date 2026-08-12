@@ -11,8 +11,9 @@ const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const build51 = releaseVersion === '0.17.1' && releaseBuild === 51 && codename === 'phase7-b-lyrics-receipt-window-listener-corrective';
-const acceptedSuccessor = /^0\.17\.\d+$/.test(releaseVersion) && releaseBuild > 51 && codename.startsWith('phase7-b-');
-assert.ok(build51 || acceptedSuccessor, `Build 51 Lyrics receipt contract must remain inherited by accepted post-pass successors, got ${releaseVersion} Build ${releaseBuild} / ${codename}.`);
+const acceptedPhase7Successor = /^0\.17\.\d+$/.test(releaseVersion) && releaseBuild > 51 && codename.startsWith('phase7-b-');
+const acceptedStudioFocusSuccessor = /^0\.17\.\d+$/.test(releaseVersion) && releaseBuild >= 53 && codename.startsWith('studio-focus-');
+assert.ok(build51 || acceptedPhase7Successor || acceptedStudioFocusSuccessor, `Build 51 Lyrics receipt contract must remain inherited by accepted post-pass / Studio Focus successors, got ${releaseVersion} Build ${releaseBuild} / ${codename}.`);
 assert.equal(pkg.version, releaseVersion);
 assert.ok(pkg.scripts['check:phase7']?.includes('test-phase7-b-contextual-receipts-build50.mjs'), 'Build 50 receipt contract must remain active.');
 assert.ok(pkg.scripts['check:phase7']?.includes('test-phase7-b-lyrics-receipt-build51.mjs'), 'Build 51 Lyrics receipt corrective guard must run in the Phase 7 chain.');
@@ -36,4 +37,4 @@ for (const forbidden of ['uploadTrackAsset', 'replaceTrackAsset', 'saveTrackMeta
   assert.ok(!embedded.includes(forbidden), `Build 51 Lyrics receipt listener must not acquire write authority: ${forbidden}`);
 }
 
-console.log(`Phase 7-B Build 51 guard passed under ${releaseVersion} Build ${releaseBuild}: embedded LRC Maker save receipts remain window-scoped, exact-track filtered, and privately reread before VERIFIED.`);
+console.log(`Phase 7-B Build 51 guard passed under ${releaseVersion} Build ${releaseBuild}: embedded LRC Maker save receipts remain window-scoped, exact-track filtered, and privately reread before VERIFIED through Studio Focus.`);
