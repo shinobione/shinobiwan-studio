@@ -2,6 +2,7 @@ import type { StudioRoute, WorkspaceSection } from './types/studio';
 
 const ROUTES = new Set<StudioRoute>([
   'dashboard',
+  'workflow',
   'catalog',
   'albums',
   'intelligence',
