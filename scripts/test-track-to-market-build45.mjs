@@ -13,7 +13,8 @@ const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const originalBuild45 = version === '0.15.1' && build === 45 && codename.includes('track-to-market-bridge-v2');
 const authorizedPhase7Successor = /^0\.(?:16|17)\.\d+$/.test(version) && build >= 46 && codename.startsWith('phase7-');
-assert.ok(originalBuild45 || authorizedPhase7Successor, `Build 45 lineage guard must run on Build 45 or an explicitly authorized Phase 7 successor, got ${version} Build ${build} / ${codename}.`);
+const authorizedStudioFocusSuccessor = /^0\.17\.\d+$/.test(version) && build >= 53 && codename.startsWith('studio-focus-');
+assert.ok(originalBuild45 || authorizedPhase7Successor || authorizedStudioFocusSuccessor, `Build 45 lineage guard must run on Build 45 or an explicitly authorized Phase 7 / Studio Focus successor, got ${version} Build ${build} / ${codename}.`);
 
 assert.match(types, /\| 'market'/, 'WorkspaceSection must expose the Release Pack route.');
 assert.match(router, /'market'/, 'Router must accept the Release Pack workspace section.');
@@ -40,4 +41,4 @@ for (const forbidden of [
   'fetch(',
 ]) assert.ok(!panel.includes(forbidden), `Release Pack successor must preserve the no-canonical-write boundary: ${forbidden}`);
 
-console.log(`Build 45 accepted bridge history remains documented while Studio ${version} Build ${build} preserves the Release Pack route and no-write authority boundary.`);
+console.log(`Build 45 accepted bridge history remains documented while Studio ${version} Build ${build} preserves the Release Pack route and no-write authority boundary through Studio Focus.`);
