@@ -22,6 +22,7 @@ export interface ReleaseCampaignDraft {
   trackId: string;
   provider: string;
   masterPrompt: string;
+  masterConceptIndex?: number;
   squarePrompt: string;
   verticalPrompt: string;
   logo: CampaignImageAsset | null;
@@ -33,6 +34,17 @@ export interface ReleaseCampaignDraft {
 }
 
 const SC_SIGNATURE = 'Thx for listening😁👍 — SHINOBIWAN';
+
+const MASTER_CONCEPT_DIRECTIONS = [
+  'CONCEPT DIRECTION — kinetic collision. Build the image around one explosive frozen instant: impossible speed, compressed perspective, directional debris/light and a strong center-of-impact hierarchy. Make motion itself feel physical.',
+  'CONCEPT DIRECTION — surreal time fracture. Build one memorable visual metaphor for altered time: repeated temporal layers, displaced geometry, impossible continuity, echoes of the same instant or objects caught between moments. Keep it elegant rather than psychedelic clutter.',
+  'CONCEPT DIRECTION — premium typographic object. Treat the exact track title as a designed physical hero object inside the world: sculpted, fabricated, engraved, illuminated or materially integrated. The scene supports the title rather than competing with it.',
+  'CONCEPT DIRECTION — cinematic human-scale tension. Use a single grounded subject or silhouette in a believable environment, with the track concept expressed through framing, light, atmosphere and one impossible detail. Avoid poster-template composition.',
+  'CONCEPT DIRECTION — abstract material system. Avoid literal people and genre clichés. Translate the track into a distinctive system of materials, pressure, velocity, refraction, fragmentation or fluid geometry with a precise editorial composition.',
+  'CONCEPT DIRECTION — brutal graphic minimalism. Use fewer elements, more negative space, a hard focal hierarchy and one iconic visual device. Make the result recognizable at thumbnail size while retaining premium detail up close.',
+  'CONCEPT DIRECTION — environmental world-building. Create a specific place that could only belong to this track, with coherent architecture/terrain, atmospheric depth and story clues. No generic cyberpunk city filler; every major element must support the track concept.',
+  'CONCEPT DIRECTION — impossible product-shot precision. Present one symbolic object or constructed artifact as if photographed for a luxury campaign, with obsessive materials, controlled studio/cinematic lighting and subtle narrative details tied to the track.',
+] as const;
 
 const clean = (value: string | null | undefined) => (value || '').replace(/\s+/g, ' ').trim();
 const unique = (values: string[]) => [...new Set(values.map(value => clean(value).toLowerCase()).filter(Boolean))];
@@ -52,22 +64,33 @@ function trackContext(track: StudioTrackDetail) {
   return parts.join('. ');
 }
 
-export function buildMasterPrompt(track: StudioTrackDetail, hasLogo: boolean) {
-  const logoRule = hasLogo
+function masterLogoRule(hasLogo: boolean) {
+  return hasLogo
     ? 'REFERENCE IMAGE REQUIRED: attach the supplied SHINOBIWAN logo file together with this prompt. Preserve the exact lettering, silhouette, proportions and visual identity of that logo. Do not redraw, respell or invent a replacement.'
     : 'No artist-logo reference file is supplied. Do not invent fake SHINOBIWAN lettering or a pseudo-logo.';
+}
+
+export function buildFreshMasterPrompt(track: StudioTrackDetail, hasLogo: boolean, conceptIndex = 0) {
+  const normalizedIndex = Math.abs(Math.trunc(conceptIndex)) % MASTER_CONCEPT_DIRECTIONS.length;
+  const conceptDirection = MASTER_CONCEPT_DIRECTIONS[normalizedIndex];
 
   return [
     'PREMIUM RELEASE CAMPAIGN — MASTER 16:9.',
+    conceptIndex > 0 ? 'CREATIVE RESET: start a genuinely new visual concept from scratch. Ignore any previous MASTER prompt, composition, scene, subject or visual metaphor. Keep only the canonical track identity and branding constraints below.' : '',
     `Create the finished 16:9 MASTER artwork for the music track “${clean(track.title)}”.`,
     trackContext(track),
-    logoRule,
+    conceptDirection,
+    masterLogoRule(hasLogo),
     `The exact track title “${clean(track.title)}” must be intentionally integrated into the artwork, not pasted on as a generic overlay. Keep spelling exact.`,
     'Build one distinctive campaign concept with a clear focal idea, premium editorial composition, believable materials, controlled depth, detailed lighting and coherent color grading.',
     'Avoid generic AI music-cover clichés unless explicitly justified by the track context: random speakers, headphones, microphones, equalizers, vinyl records, glowing music notes, generic cyberpunk city filler or meaningless pseudo-text.',
     'Use any lyrics/themes only as emotional and conceptual inspiration; do not quote random lyric fragments into the image.',
     'Deliver a finished campaign MASTER. It must be strong enough to serve later as the sole visual reference for coherent 1:1 and 9:16 derivatives.',
   ].filter(Boolean).join(' ');
+}
+
+export function buildMasterPrompt(track: StudioTrackDetail, hasLogo: boolean) {
+  return buildFreshMasterPrompt(track, hasLogo, 0);
 }
 
 export function buildVariantPrompt(track: StudioTrackDetail, format: '1:1' | '9:16') {
