@@ -92,17 +92,18 @@ for (const required of [
   '<AssetsManager track={track} onChanged={refreshTrackAfterWrite} />',
   '<LyricsEditorPanel track={track} onSaved={refreshTrackAfterWrite} />',
   '<MetadataValidationPanel track={track} onSaved={refreshTrackAfterWrite} />',
-  '<SonicTracePanel track={track} onSaved={refreshTrackAfterWrite} />',
   'PHASE 5 / COMPLETE',
 ]) assert.ok(workspace.includes(required), `Workspace integration contract missing ${required}.`);
+assert.ok(
+  workspace.includes('<SonicTracePanel track={track} onSaved={refreshTrackAfterWrite} />') ||
+  (workspace.includes('<SonicTracePanel track={track} onSaved={() => handleContinuationReceipt(') && workspace.includes("source: 'sonictrace'") && workspace.includes("operation: 'analysis-saved'") && workspace.includes("effect: 'canonical-write'")),
+  'Workspace must preserve SonicTrace save integration either through the historical direct canonical refresh or the stricter Phase 7-B receipt + canonical reread successor.'
+);
 
 for (const required of [
   'LYRICS / CANONICAL', 'lyrics.txt is the single canonical source.',
   '<CatalogRebuildPanel privateRead={privateRead} />', '<CatalogIntelligenceView />',
 ]) assert.ok(app.includes(required), `Studio integration contract missing ${required}.`);
-// Phase 6 remains a completed inherited contract even after the shell advances to
-// the explicitly-authorized Phase 7-A route. The guard must verify behavior, not
-// force a historical milestone label to remain visible forever.
 assert.ok(
   app.includes('PHASE 6 / COMPLETE') || (app.includes('PHASE 7 / ORCHESTRATION') && app.includes("route === 'workflow'")),
   'Studio must preserve the completed Phase 6 integration while exposing an explicitly authorized Phase 7 successor.'
@@ -163,7 +164,7 @@ for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog 
 
 const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
-assert.match(releaseVersion, /^0\.(?:11|12|13|14|15|16)\./, 'Studio private-read ancestry must remain on the validated PHASE UX or explicitly authorized Phase 7 successor release lines.');
+assert.match(releaseVersion, /^0\.(?:11|12|13|14|15|16|17)\./, 'Studio private-read ancestry must remain on the validated PHASE UX or explicitly authorized Phase 7 successor release lines.');
 assert.ok(releaseBuild >= 33, 'Studio private-read ancestry must remain at Build 33 or later.');
 assert.match(release, /codename:\s*'(?:phase-ux-(?:c2-5|c3)-|phase7-)/, 'Studio release codename must remain inside validated PHASE UX lineage or the explicitly authorized Phase 7 successor lineage.');
 assert.equal(pkg.version, releaseVersion, 'package.json must match the current Studio release version.');
