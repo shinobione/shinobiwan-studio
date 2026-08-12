@@ -7,10 +7,13 @@ const engine = read('src/release-campaign.ts');
 const release = read('src/release.ts');
 const pkg = JSON.parse(read('package.json'));
 
-assert.match(release, /version:\s*'0\.16\.3'/);
-assert.match(release, /build:\s*49/);
-assert.match(release, /phase7-native-release-campaign-concept-reroll/);
-assert.equal(pkg.version, '0.16.3');
+const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+const versionParts = String(pkg.version || '').split('.').map(Number);
+const successorVersion = versionParts.length === 3 && versionParts.every(Number.isFinite)
+  && (versionParts[0] > 0 || versionParts[1] > 16 || (versionParts[1] === 16 && versionParts[2] >= 3));
+
+assert.ok(releaseBuild >= 49, 'Build 49 native Release Campaign guard must remain valid for successor Studio builds.');
+assert.ok(successorVersion, `Studio version ${pkg.version} must remain at or beyond the Build 49 baseline 0.16.3.`);
 assert.ok(pkg.scripts['check:phase7']?.includes('test-phase7-native-release-campaign-build49.mjs'));
 
 assert.ok(engine.includes('MASTER_CONCEPT_DIRECTIONS'), 'Build 49 must expose multiple distinct visual directions.');
@@ -39,4 +42,4 @@ for (const forbidden of ['fetch(', 'uploadTrackAsset', 'replaceTrackAsset', 'sav
   assert.ok(!panel.includes(forbidden), `Build 49 concept exploration must remain browser-local/non-canonical: ${forbidden}`);
 }
 
-console.log('Build 49 MASTER concept reroll guard passed: from-scratch creative reset, multiple directions, direct Flow handoff, persisted index and non-destructive accepted visuals.');
+console.log(`Build 49 native Release Campaign guard passed under successor Studio Build ${releaseBuild}: creative reset, Flow handoff, persisted index and non-destructive visuals remain intact.`);
