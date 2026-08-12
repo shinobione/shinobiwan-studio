@@ -10,11 +10,12 @@ LaunchPAD       2026.08.12.102        C3-C REAL USER PASS
 Studio          v0.15.1 · Build 45    TTM Bridge V2 REAL USER PASS
 Studio          v0.16.0 · Build 46    Phase 7-A REAL USER PASS
 
-Current native Release Campaign line:
+Current Phase 7 line:
 Studio          v0.16.1 · Build 47    staged-preview corrective / historical proof
 Studio          v0.16.2 · Build 48    native Release Campaign · partial real-user smoke
-Studio          v0.16.3 · Build 49    MASTER concept reroll + direct Flow shortcut candidate
-Track-To-Market v0.2.0               standalone rollback/reference during migration
+Studio          v0.16.3 · Build 49    MASTER concept reroll + direct Flow shortcut baseline
+Studio          v0.17.0 · Build 50    Phase 7-B contextual receipts candidate · smoke pending
+Track-To-Market v0.2.0               standalone rollback/reference during native migration
 
 Track Manager   v5.19
 Studio bridge   v1.11
@@ -24,9 +25,9 @@ Deep Audio      2.0.1-alpha
 LRC Maker       6.3.8
 ```
 
-**PHASE UX remains COMPLETE — REAL USER VALIDATED. Phase 7-A Build 46 remains COMPLETE — REAL USER PASS.**
+**PHASE UX remains COMPLETE — REAL USER VALIDATED. Phase 7-A Build 46 remains COMPLETE — REAL USER PASS. Build 50 is a candidate until the user completes the Phase 7-B browser smoke.**
 
-Build 48 moved the useful Track-To-Market release workflow directly into the Track Workspace. Build 49 is a bounded real-user corrective discovered during that native smoke: Studio can now request a genuinely new MASTER concept from scratch without destroying accepted visuals, and can open Google Flow directly from the MASTER handoff row.
+Builds 48/49 moved the useful Track-To-Market release workflow directly into the Track Workspace and added non-destructive MASTER concept rerolls plus a direct Google Flow shortcut. Build 50 preserves that native campaign and adds typed contextual completion receipts: canonical-write receipts require a private canonical Track reread before `VERIFIED`; native Release Campaign export remains review-only.
 
 See:
 
@@ -34,6 +35,8 @@ See:
 - [`docs/TRACK-TO-MARKET-BUILD45-REAL-USER-PASS.md`](docs/TRACK-TO-MARKET-BUILD45-REAL-USER-PASS.md)
 - [`docs/PHASE-7-A-BUILD46-REAL-USER-PASS.md`](docs/PHASE-7-A-BUILD46-REAL-USER-PASS.md)
 - [`CHANGELOG-PHASE7-BUILD49.md`](CHANGELOG-PHASE7-BUILD49.md)
+- [`CHANGELOG-PHASE7-BUILD50.md`](CHANGELOG-PHASE7-BUILD50.md)
+- [`docs/PHASE-7-B-BUILD50-CONTEXTUAL-RECEIPTS.md`](docs/PHASE-7-B-BUILD50-CONTEXTUAL-RECEIPTS.md)
 - [`docs/ROADMAP-CURRENT.md`](docs/ROADMAP-CURRENT.md)
 
 ## Architecture roles — frozen
@@ -51,7 +54,7 @@ Canonical `trackId` is the R2 track slug everywhere.
 
 **Phase 7 means orchestration, not centralization.**
 
-## Native Release Campaign — Build 48 → Build 49
+## Native Release Campaign — Build 48 → Build 49, preserved in Build 50
 
 Studio route: Track Workspace → `Release Pack`.
 
@@ -85,8 +88,6 @@ The 1:1 and 9:16 are sibling derivatives. **9:16 is never derived from 1:1.** Th
 
 ### Build 49 corrective
 
-Real-user smoke showed that an editable MASTER prompt was not enough: creative exploration needs an explicit **from-scratch concept reroll**.
-
 Build 49 adds:
 
 - `New MASTER concept`;
@@ -98,6 +99,39 @@ Build 49 adds:
 - Flow opens in a separate tab with `noopener noreferrer`, preserving the Studio draft and imported campaign state.
 
 Only importing/replacing a new MASTER invalidates the existing derivative slots, because they would no longer belong to the selected source of truth.
+
+### Build 50 Phase 7-B boundary
+
+Native Release Campaign itself still performs no canonical write. Its successful ZIP export now emits only:
+
+```text
+release-campaign / campaign-exported / review-only
+```
+
+The export manifest retains `canonicalWrite: false`. A visual FINAL is never implicitly promoted to R2/Track Manager state.
+
+## Phase 7-B — Contextual continuation receipts
+
+Build 50 adds a typed allowlisted completion contract:
+
+```text
+lrc-maker        + lyrics-saved      → canonical-write
+sonictrace       + analysis-saved    → canonical-write
+release-campaign + campaign-exported → review-only
+```
+
+For canonical-write receipts:
+
+1. receipt must match the exact canonical Track Workspace `trackId`;
+2. mismatches are ignored;
+3. Studio rereads the Track through the existing catalog read layer;
+4. the reread must return the same trackId and `readSource === 'private'`;
+5. operation-specific canonical evidence must exist;
+6. only then may Studio display `Canonical reread verified` and adopt the reread Track state.
+
+A public LaunchPAD fallback can never verify a canonical write. Slow/stale verification is protected by an async epoch so an older reread cannot overwrite a newer receipt/context.
+
+Standalone LRC Maker messages are origin-filtered against the configured LRC Maker origin before conversion to the same typed receipt path.
 
 ## Premium provider strategy
 
@@ -118,21 +152,26 @@ Pipeline:
 Identity → Core media → Lyrics → SonicTrace → Release
 ```
 
+The Workflow remains read-only and deep-links to existing guarded specialist surfaces.
+
 ### Native Release Campaign priority slice
 
 - Build 47 — historical staged-preview proof.
-- Build 48 — native Release Campaign candidate; partial real-user smoke passed and exposed missing concept reroll.
-- Build 49 — concept-reroll + direct Flow shortcut corrective; **real-user smoke required**.
+- Build 48 — native Release Campaign workspace; partial real-user smoke exposed missing concept reroll.
+- Build 49 — concept-reroll + direct Flow shortcut baseline inherited by Build 50.
 
 ### 7-B — Contextual continuation receipts
-**AUTHORIZED / DEFERRED TO BUILD 50+ UNTIL NATIVE RELEASE CAMPAIGN ACCEPTANCE**
+**IMPLEMENTED IN v0.17.0 · BUILD 50 / CI CANDIDATE — REAL USER SMOKE REQUIRED**
 
-Contract remains:
+Contract:
 
-- specialist receipts scoped by canonical `trackId` + source/operation;
+- specialist receipts scoped by exact canonical `trackId` + allowlisted source/operation/effect;
 - canonical reread after canonical writes;
+- private reread required for `VERIFIED`;
+- public fallback cannot verify writes;
 - optimistic child/local state never authoritative;
 - stale/mismatched receipts ignored;
+- native Release Campaign remains review-only;
 - no generic write endpoint;
 - existing operation owners unchanged.
 
@@ -169,7 +208,7 @@ recognized timestamps    = synchronized lyrics
 
 Track Manager remains the protected canonical write authority. Studio uses operation-specific capabilities. Missing capability blocks that operation. Whole-track delete remains unavailable in Studio.
 
-The native Release Campaign in Builds 48/49 imports **none** of these mutation APIs and performs no canonical write.
+Build 50 does not add a generic canonical write endpoint or a second write owner. LRC Maker and SonicTrace continue to use their existing guarded write paths; Studio verifies completion by private canonical reread.
 
 ## SonicTrace persistence
 
@@ -188,11 +227,15 @@ C3-A/C3-B contracts remain unchanged.
 - no generic arbitrary cross-origin Track write route;
 - Release Campaign browser-local state never masquerades as canonical R2 state;
 - external provider links are navigation only, not API/key integrations;
-- future Phase 7-B receipts must trigger canonical rereads rather than create alternate authority.
+- canonical-write receipts require private canonical rereads;
+- public fallback can never verify a write;
+- no Worker deployment is required for Build 50;
+- Phase 7-C is not started.
 
 ## Rollback anchors
 
 ```text
+safety/pre-phase7-b-build50-20260812-1826
 safety/pre-build49-master-concept-reroll-20260812
 safety/pre-build48-native-release-campaign-20260812-1707
 safety/pre-build47-ttm-v3-preview-20260812
@@ -206,16 +249,15 @@ safety/c3-a-real-user-pass-20260811-1900
 
 ## Verification policy
 
-CI is necessary but not sufficient. Accepted Build 102/45/46 history remains accepted. Build 49 is a native Release Campaign corrective candidate and requires real-user proof of:
+CI is necessary but not sufficient. Accepted Build 102/45/46 history remains accepted. Build 50 may be published as a candidate only after exact-head CI and Pages succeed.
 
-- from-scratch MASTER concept reroll;
-- accepted visuals preserved during exploration;
-- direct Google Flow shortcut without Studio draft loss;
-- logo reference handoff;
-- faithful 16:9 MASTER import;
-- coherent anchored 1:1 + 9:16;
-- three-format review;
-- export;
-- no canonical writes/regressions.
+Phase 7-B REAL USER PASS additionally requires proof that:
 
-Do not mutate production WAV/cover/lyrics/Album objects merely to manufacture a frontend smoke test.
+- Release Campaign export produces a **review-only** receipt and never canonical VERIFIED;
+- an existing protected specialist write (Lyrics or SonicTrace) first enters verifying state;
+- private canonical reread succeeds before `Canonical reread verified` appears;
+- the receipt is scoped to the correct canonical trackId;
+- Workflow 7-A and native Release Campaign remain operational;
+- no new canonical write authority/regression appears.
+
+Do not mutate production WAV/cover/Album objects merely to manufacture a frontend smoke test. Phase 7-C remains closed until 7-B is validated.
