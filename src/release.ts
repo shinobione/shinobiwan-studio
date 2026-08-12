@@ -1,6 +1,6 @@
 export const studioRelease = {
-  version: '0.16.1',
-  build: 47,
-  codename: 'phase7-a-ttm-v3-staged-preview',
+  version: '0.16.2',
+  build: 48,
+  codename: 'phase7-native-release-campaign',
   releasedAt: '2026-08-12',
 } as const;
