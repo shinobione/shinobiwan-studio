@@ -1,5 +1,12 @@
-import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { computeContentHealth } from '../content-health';
+import {
+  makeContinuationReceipt,
+  parseStandaloneLyricsReceipt,
+  receiptSourceLabel,
+  type ContinuationReceipt,
+  type ContinuationReceiptView,
+} from '../phase7-receipts';
 import { routeHref, trackHref } from '../router';
 import { getCatalogTrack } from '../services/catalog-api';
 import { studioConfig } from '../services/config';
@@ -55,17 +62,28 @@ function mediaState(label: string, ready: boolean, detail: string, href: string)
   return { label, ready, detail, href };
 }
 
+function receiptTitle(receipt: ContinuationReceiptView): string {
+  if (receipt.status === 'verifying') return 'Verifying canonical state…';
+  if (receipt.status === 'verified') return 'Canonical reread verified';
+  if (receipt.status === 'review-only') return 'Review receipt received';
+  return 'Receipt not canonically verified';
+}
+
 export function TrackWorkspace({ trackId, section }: { trackId: string; section: WorkspaceSection }) {
   const [track, setTrack] = useState<StudioTrackDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [observedAudioDuration, setObservedAudioDuration] = useState<number | null>(null);
+  const [continuationReceipt, setContinuationReceipt] = useState<ContinuationReceiptView | null>(null);
+  const receiptEpoch = useRef(0);
 
   useEffect(() => {
     let active = true;
+    receiptEpoch.current += 1;
     setLoading(true);
     setTrack(null);
     setObservedAudioDuration(null);
+    setContinuationReceipt(null);
     getCatalogTrack(trackId)
       .then(item => { if (!active) return; setTrack(item); setError(null); })
       .catch(reason => active && setError(reason instanceof Error ? reason.message : String(reason)))
@@ -79,15 +97,63 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
     setError(null);
   }
 
+  const handleContinuationReceipt = useCallback(async (receipt: ContinuationReceipt) => {
+    if (receipt.trackId !== trackId) return;
+
+    const epoch = ++receiptEpoch.current;
+    const receivedAt = new Date().toISOString();
+
+    if (receipt.effect === 'review-only') {
+      setContinuationReceipt({
+        ...receipt,
+        status: 'review-only',
+        receivedAt,
+        verificationDetail: 'No canonical write is expected or authorized for this specialist result.',
+      });
+      return;
+    }
+
+    setContinuationReceipt({
+      ...receipt,
+      status: 'verifying',
+      receivedAt,
+      verificationDetail: 'Re-reading the canonical private Track state before continuing.',
+    });
+
+    try {
+      const canonical = await getCatalogTrack(trackId);
+      if (epoch !== receiptEpoch.current) return;
+      if (canonical.id !== trackId) throw new Error('Canonical reread returned a different trackId.');
+      if (canonical.readSource !== 'private') throw new Error('Private canonical Track reread is unavailable; public fallback is not sufficient to verify a write receipt.');
+      setTrack(canonical);
+      setError(null);
+      setContinuationReceipt({
+        ...receipt,
+        status: 'verified',
+        receivedAt,
+        verificationDetail: 'Track Manager private catalog reread completed. Studio is showing canonical state, not optimistic child state.',
+      });
+    } catch (reason) {
+      if (epoch !== receiptEpoch.current) return;
+      setContinuationReceipt({
+        ...receipt,
+        status: 'verification-error',
+        receivedAt,
+        verificationDetail: reason instanceof Error ? reason.message : String(reason),
+      });
+    }
+  }, [trackId]);
+
   useEffect(() => {
+    const lrcOrigin = new URL(studioConfig.lrcMakerUrl).origin;
     const onLyricsSaved = (event: MessageEvent) => {
-      if (event.origin !== globalThis.location.origin) return;
-      const data = event.data as { type?: string; trackId?: string } | null;
-      if (data?.type === 'shinobiwan:lyrics-saved:v1' && data.trackId === trackId) void refreshTrackAfterWrite();
+      if (event.origin !== lrcOrigin) return;
+      const receipt = parseStandaloneLyricsReceipt(event.data);
+      if (receipt?.trackId === trackId) void handleContinuationReceipt(receipt);
     };
     globalThis.addEventListener('message', onLyricsSaved);
     return () => globalThis.removeEventListener('message', onLyricsSaved);
-  }, [trackId]);
+  }, [handleContinuationReceipt, trackId]);
 
   const health = useMemo(() => track ? computeContentHealth(track) : null, [track]);
   const lyricLines = useMemo(() => {
@@ -148,6 +214,18 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
         <div className="workspace-tab-links">{TABS.map(tab => <a key={tab.id} className={section === tab.id ? 'active' : ''} aria-current={section === tab.id ? 'page' : undefined} href={trackHref(track.id, tab.id)}>{tab.label}</a>)}</div>
       </nav>
 
+      {continuationReceipt && (
+        <aside className={`continuation-receipt ${continuationReceipt.status}`} role="status" aria-live="polite">
+          <i className="continuation-receipt-dot" aria-hidden="true" />
+          <div className="continuation-receipt-copy">
+            <span>{receiptSourceLabel(continuationReceipt.source)} / {continuationReceipt.operation.replaceAll('-', ' ')}</span>
+            <strong>{receiptTitle(continuationReceipt)}</strong>
+            <small>{continuationReceipt.summary} {continuationReceipt.verificationDetail}</small>
+          </div>
+          <button className="continuation-receipt-dismiss" type="button" aria-label="Dismiss continuation receipt" onClick={() => setContinuationReceipt(null)}>×</button>
+        </aside>
+      )}
+
       {section === 'overview' && (
         <div className="workspace-overview-grid">
           <WorkspacePanel eyebrow="OVERVIEW / READINESS" title={attention.length ? 'Finish what matters next' : 'Ready for production'} className="workspace-readiness-panel">
@@ -187,9 +265,16 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
         </div>
       )}
 
-      {section === 'intelligence' && <SonicTracePanel track={track} onSaved={refreshTrackAfterWrite} />}
+      {section === 'intelligence' && <SonicTracePanel track={track} onSaved={() => handleContinuationReceipt(makeContinuationReceipt({
+        trackId: track.id,
+        source: 'sonictrace',
+        operation: 'analysis-saved',
+        effect: 'canonical-write',
+        summary: 'SonicTrace analysis saved.',
+        detail: 'The specialist saved its structured sidecar. Studio will verify the canonical Track summary before continuing.',
+      }))} />}
 
-      {section === 'market' && <TrackToMarketPanel track={track} />}
+      {section === 'market' && <TrackToMarketPanel track={track} onReceipt={handleContinuationReceipt} />}
 
       {section === 'lyrics' && (
         <div className="workspace-lyrics-shell">
@@ -200,7 +285,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
           </section>
           <WorkspacePanel eyebrow="LYRICS / STUDIO" title={track.assets.lyricsTxt ? 'Synchronize lyrics' : 'No lyrics'} className={`workspace-lyrics-panel${canEmbedLyrics ? ' workspace-lyrics-panel--embedded' : ''}`}>
             {canEmbedLyrics
-              ? <EmbeddedLyricsStudio trackId={track.id} onSaved={refreshTrackAfterWrite} />
+              ? <EmbeddedLyricsStudio trackId={track.id} onReceipt={handleContinuationReceipt} />
               : lyricLines.length
                 ? <div className="workspace-lyrics-lines">{lyricLines.map((line, index) => <p key={`${index}-${line}`}>{line}</p>)}</div>
                 : <p className="workspace-muted">No lyric text is available yet. Add canonical lyrics.txt from Assets to begin.</p>}
