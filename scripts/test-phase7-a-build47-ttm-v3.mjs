@@ -19,8 +19,9 @@ for (const marker of [
   'previewDataUrl',
   "releaseStatus === 'final'",
   'exact child Window',
-  'no R2 write',
-  'no Track Manager mutation API import',
+  'Nothing in Build 47 persists the staged result',
+  'Track Manager writes',
+  'canonical cover objects',
 ]) assert.ok(historical.includes(marker), `Build 47 historical contract is missing ${marker}.`);
 
 // Successors may absorb the UX natively, but they may not quietly gain canonical write authority.
