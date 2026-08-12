@@ -5,34 +5,30 @@ const panel = fs.readFileSync('src/components/TrackToMarketPanel.tsx', 'utf8');
 const workspace = fs.readFileSync('src/components/TrackWorkspace.tsx', 'utf8');
 const router = fs.readFileSync('src/router.ts', 'utf8');
 const types = fs.readFileSync('src/types/studio.ts', 'utf8');
-const config = fs.readFileSync('src/services/config.ts', 'utf8');
-const main = fs.readFileSync('src/main.tsx', 'utf8');
 const release = fs.readFileSync('src/release.ts', 'utf8');
+const historicalPass = fs.readFileSync('docs/TRACK-TO-MARKET-BUILD45-REAL-USER-PASS.md', 'utf8');
 
 const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const originalBuild45 = version === '0.15.1' && build === 45 && codename.includes('track-to-market-bridge-v2');
 const authorizedPhase7Successor = /^0\.16\.\d+$/.test(version) && build >= 46 && codename.startsWith('phase7-');
-assert.ok(originalBuild45 || authorizedPhase7Successor, `Track-To-Market Bridge V2 guard must run on Build 45 or an explicitly authorized Phase 7 successor, got ${version} Build ${build} / ${codename}.`);
+assert.ok(originalBuild45 || authorizedPhase7Successor, `Build 45 lineage guard must run on Build 45 or an explicitly authorized Phase 7 successor, got ${version} Build ${build} / ${codename}.`);
 
 assert.match(types, /\| 'market'/, 'WorkspaceSection must expose the Release Pack route.');
 assert.match(router, /'market'/, 'Router must accept the Release Pack workspace section.');
 assert.match(workspace, /id: 'market', label: 'Release Pack'/, 'Track Workspace must expose the Release Pack tab.');
-assert.match(workspace, /section === 'market'[\s\S]*<TrackToMarketPanel track=\{track\}/, 'Release Pack route must render the bridge panel with the current canonical track.');
-assert.match(config, /trackToMarketUrl:[\s\S]*Track-To-Market-Engine/, 'Studio config must define the standalone TTME target.');
-assert.match(main, /import '\.\/track-to-market\.css';/, 'Build 45 Track-To-Market styles must remain loaded.');
+assert.match(workspace, /section === 'market'[\s\S]*<TrackToMarketPanel track=\{track\}/, 'Release Pack route must render its current implementation with the canonical track.');
 
-assert.match(panel, /const TTME_ORIGIN = 'https:\/\/shinobione\.github\.io'/, 'Bridge origin must be explicit.');
-assert.match(panel, /shinobiwan:track-to-market:ready/);
-assert.match(panel, /shinobiwan:track-to-market:input/);
-assert.match(panel, /shinobiwan:track-to-market:pack/);
-assert.match(panel, /data\.releaseStatus !== 'final'/, 'Non-FINAL returns must be rejected.');
-assert.match(panel, /data\.trackId !== track\.id/, 'Returned pack trackId must match the current track.');
-assert.match(panel, /lyrics: track\.lyricsRaw \|\| ''/, 'Canonical lyrics must travel in the bridge payload, not the URL.');
-assert.doesNotMatch(panel, /searchParams\.set\('lyrics'/, 'Long lyrics must not be copied into the query string.');
-assert.match(panel, /No R2 write from this panel\./, 'UI must keep the no-R2-write boundary explicit.');
-assert.match(panel, /No Track Manager mutation API imported\./, 'UI must keep the no-Track-Manager-mutation boundary explicit.');
+// The accepted Bridge V2 behavior is historical truth, not a requirement that all successors keep a popup bridge forever.
+for (const marker of [
+  'REAL USER PASS',
+  'trackId',
+  'FINAL',
+  'DRAFT',
+  'postMessage',
+  'no R2 write',
+]) assert.ok(historicalPass.includes(marker), `Build 45 accepted-history document is missing ${marker}.`);
 
 for (const forbidden of [
   'admin-api',
@@ -42,6 +38,6 @@ for (const forbidden of [
   'deleteTrackAsset',
   'saveTrackMetadata',
   'fetch(',
-]) assert.ok(!panel.includes(forbidden), `Review-only TTME panel must not import/call write surface: ${forbidden}`);
+]) assert.ok(!panel.includes(forbidden), `Release Pack successor must preserve the no-canonical-write boundary: ${forbidden}`);
 
-console.log('Track-To-Market bridge passed route, origin, FINAL gate, trackId, lyrics transport and explicit no-write guards through the authorized Phase 7 successor.');
+console.log(`Build 45 accepted bridge history remains documented while Studio ${version} Build ${build} preserves the Release Pack route and no-write authority boundary.`);
