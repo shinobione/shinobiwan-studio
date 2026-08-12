@@ -2,7 +2,7 @@
 
 Codename: `phase7-b-lyrics-receipt-window-listener-corrective`
 
-Status: **PHASE 7-B REAL-USER SMOKE CORRECTIVE CANDIDATE**. This build does not claim REAL USER PASS until the corrected Lyrics receipt is observed in the browser.
+Status: **PHASE 7-B COMPLETE — REAL USER PASS · 2026-08-12**.
 
 ## Why
 
@@ -14,7 +14,7 @@ The first real-user smoke of Studio v0.17.0 · Build 50 produced a useful split 
 - embedded LRC Maker protected save + its own canonical reread: **PASS** — the engine displayed `lyrics.txt synchronisé et relu.`;
 - Phase 7-B parent continuation banner after that Lyrics save: **FAIL** — no `Verifying canonical state…` / `Canonical reread verified` banner appeared in the Track Workspace.
 
-The failure is therefore limited to receipt delivery from the embedded Web Component into Studio, not to the protected Lyrics write itself.
+The failure was limited to receipt delivery from the embedded Web Component into Studio, not to the protected Lyrics write itself.
 
 ## Root cause boundary
 
@@ -48,17 +48,44 @@ The embedded Web Component itself is unchanged. LRC Maker remains 6.3.8.
 - Release Campaign remains review-only;
 - Phase 7-C remains NOT STARTED.
 
-## Acceptance
+## CI / deployment
 
-CI/Pages are necessary but not sufficient.
+- Build 51 corrective PR: **#68**;
+- exact CI-green head: `1188cea8532e95a88676a8fc94a47b71fde69dd0`;
+- merged main commit: `f00ac7043e0b0d451d5df220032e4da21ab69323`;
+- GitHub Pages Build 51 build + deploy: **SUCCESS** before the final browser smoke.
 
-The Build 50 screenshots already provide real-user proof for the review-only Release Campaign receipt and Workflow regression check. Build 51 must now prove the missing canonical-write leg:
+## Real-user acceptance
 
-1. open an existing Track → Lyrics;
-2. save via embedded LRC Maker;
-3. LRC Maker may display `lyrics.txt synchronisé et relu.` or the no-change equivalent;
-4. Studio must display `Verifying canonical state…`;
-5. after the private reread, Studio must display `Canonical reread verified`;
-6. the banner must identify `LRC Maker / lyrics saved` and remain scoped to the current canonical trackId.
+The Build 50 screenshots already provided real-user proof for the review-only Release Campaign receipt, native campaign surface/export and Workflow regression check.
 
-Only then may Phase 7-B be closed as REAL USER PASS.
+The deployed Build 51 browser retest then proved the missing canonical-write leg on `Tachy Psychia`:
+
+```text
+LRC MAKER / LYRICS SAVED
+Canonical reread verified
+Lyrics save completed. Track Manager private reread succeeded.
+Studio is displaying canonical state, not optimistic child state.
+```
+
+The embedded LRC engine simultaneously reported the canonical no-change result (`Aucun changement — lyrics.txt est déjà à jour.`), confirming that a no-op save still produces a truthful continuation receipt without inventing a write result.
+
+The final verified state is only reachable after the Phase 7-B verifier completes the private canonical Track reread and Lyrics evidence gate.
+
+## Acceptance checkpoints
+
+Candidate checkpoint:
+
+`safety/phase7-b-build51-candidate-20260812-2112`
+
+Final REAL USER PASS checkpoint:
+
+`safety/post-phase7-b-build51-real-user-pass-20260812-2120`
+
+## Closeout
+
+**PHASE 7-B — COMPLETE · REAL USER PASS.**
+
+Build 51 is the accepted Phase 7-B release. Build 50 remains historical partial-smoke evidence.
+
+Phase 7-C remains **PLANNED / NOT STARTED / EXPLICITLY CLOSED** pending a fresh explicit authorization.
