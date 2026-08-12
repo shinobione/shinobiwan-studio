@@ -14,7 +14,7 @@ const pkg = JSON.parse(read('package.json'));
 const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
-assert.match(version, /^0\.16\.\d+$/, 'Phase 7-A successors must stay on Studio 0.16.x.');
+assert.match(version, /^0\.(?:16|17)\.\d+$/, 'Phase 7-A successors must remain on an explicitly authorized Studio Phase 7 release line.');
 assert.ok(build >= 46, `Phase 7-A successor must preserve Build 46 or later, got Build ${build}.`);
 assert.ok(codename.startsWith('phase7-'), `Phase 7 successor codename must remain explicit, got ${codename}.`);
 assert.equal(pkg.version, version, 'package.json must match Studio release version.');
@@ -25,7 +25,7 @@ assert.ok(types.includes("| 'workflow'"), 'StudioRoute must include workflow.');
 assert.ok(router.includes("'workflow',"), 'Router must recognize #/workflow.');
 assert.ok(app.includes("{ route: 'workflow', label: 'Workflow'"), 'Workflow must have a first-class Studio navigation entry.');
 assert.ok(app.includes("{route === 'workflow' && <WorkflowView />}"), 'App must render the Phase 7 Workflow view.');
-assert.ok(app.includes('PHASE 7-A'), 'Studio shell must identify the Phase 7-A candidate.');
+assert.ok(app.includes('PHASE 7-A') || app.includes('PHASE 7-B'), 'Studio shell must identify the current authorized Phase 7 candidate.');
 
 for (const marker of [
   "type WorkflowStageId = 'identity' | 'media' | 'lyrics' | 'intelligence' | 'release'",
