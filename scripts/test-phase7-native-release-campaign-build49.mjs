@@ -22,6 +22,10 @@ assert.ok(panel.includes('New MASTER concept'), 'Build 49 must expose an explici
 assert.ok(panel.includes('const newMasterConcept = () =>'), 'Reroll behavior must be isolated and inspectable.');
 assert.ok(panel.includes('setMasterPrompt(buildFreshMasterPrompt(track, Boolean(logo), nextConceptIndex))'), 'Reroll must rebuild from canonical track context and current logo state.');
 assert.ok(panel.includes('Existing imported MASTER and derivatives were preserved'), 'UI must state that reroll is non-destructive.');
+assert.ok(panel.includes("const GOOGLE_FLOW_URL = 'https://labs.google/fx/fr/tools/flow/'"), 'Build 49 must keep the authoritative Google Flow shortcut explicit.');
+assert.ok(panel.includes('Open Google Flow ↗'), 'MASTER workflow must expose the Flow shortcut beside handoff actions.');
+assert.ok(panel.includes('target="_blank"'), 'Flow must open separately so the Studio draft remains intact.');
+assert.ok(panel.includes('rel="noopener noreferrer"'), 'External Flow shortcut must use safe new-tab rel attributes.');
 
 const rerollStart = panel.indexOf('const newMasterConcept = () =>');
 const rerollEnd = panel.indexOf('const resetDraft = async () =>', rerollStart);
@@ -35,4 +39,4 @@ for (const forbidden of ['fetch(', 'uploadTrackAsset', 'replaceTrackAsset', 'sav
   assert.ok(!panel.includes(forbidden), `Build 49 concept exploration must remain browser-local/non-canonical: ${forbidden}`);
 }
 
-console.log('Build 49 MASTER concept reroll guard passed: from-scratch creative reset, multiple directions, persisted index and non-destructive accepted visuals.');
+console.log('Build 49 MASTER concept reroll guard passed: from-scratch creative reset, multiple directions, direct Flow handoff, persisted index and non-destructive accepted visuals.');
