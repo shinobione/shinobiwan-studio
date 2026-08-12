@@ -30,6 +30,7 @@ import './phase7-receipts.css';
 import './studio-focus.css';
 import './studio-focus-readability.css';
 import './studio-focus-status-labels.css';
+import './studio-focus-workshop.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
