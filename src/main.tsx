@@ -24,6 +24,7 @@ import './c3-albums-ux.css';
 import './c3-c-premium-feel.css';
 import './track-to-market.css';
 import './track-to-market-v3.css';
+import './release-campaign.css';
 import './phase7-workflow.css';
 
 createRoot(document.getElementById('root')!).render(
