@@ -13,15 +13,18 @@ const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const originalBuild45 = version === '0.15.1' && build === 45 && codename.includes('track-to-market-bridge-v2');
 const authorizedPhase7Successor = /^0\.(?:16|17)\.\d+$/.test(version) && build >= 46 && codename.startsWith('phase7-');
-const authorizedStudioFocusSuccessor = /^0\.17\.\d+$/.test(version) && build >= 53 && codename.startsWith('studio-focus-');
+const authorizedStudioFocusSuccessor = /^0\.(?:17|18)\.\d+$/.test(version) && build >= 53 && codename.startsWith('studio-focus-');
 assert.ok(originalBuild45 || authorizedPhase7Successor || authorizedStudioFocusSuccessor, `Build 45 lineage guard must run on Build 45 or an explicitly authorized Phase 7 / Studio Focus successor, got ${version} Build ${build} / ${codename}.`);
 
-assert.match(types, /\| 'market'/, 'WorkspaceSection must expose the Release Pack route.');
-assert.match(router, /'market'/, 'Router must accept the Release Pack workspace section.');
-assert.match(workspace, /id: 'market', label: 'Release Pack'/, 'Track Workspace must expose the Release Pack tab.');
-assert.match(workspace, /section === 'market'[\s\S]*<TrackToMarketPanel track=\{track\}/, 'Release Pack route must render its current implementation with the canonical track.');
+assert.match(types, /\| 'market'/, 'WorkspaceSection must preserve the native Release Campaign route token.');
+assert.match(router, /'market'/, 'Router must accept the native Release Campaign workspace section.');
+assert.ok(
+  workspace.includes("{ label: 'Release', href: 'market'") || workspace.includes("id: 'market', label: 'Release Pack'"),
+  'Track Workspace must expose the existing market route through the accepted Release artist surface or historical Release Pack tab.',
+);
+assert.match(workspace, /section === 'market'[\s\S]*<TrackToMarketPanel track=\{track\}/, 'Release route must render its current implementation with the canonical track.');
 
-// The accepted Bridge V2 behavior is historical truth, not a requirement that all successors keep a popup bridge forever.
+// The accepted Bridge V2 behavior is historical truth, not a requirement that all successors keep a popup bridge or the historical tab label forever.
 for (const marker of [
   'REAL USER PASS',
   'trackId',
@@ -39,6 +42,6 @@ for (const forbidden of [
   'deleteTrackAsset',
   'saveTrackMetadata',
   'fetch(',
-]) assert.ok(!panel.includes(forbidden), `Release Pack successor must preserve the no-canonical-write boundary: ${forbidden}`);
+]) assert.ok(!panel.includes(forbidden), `Release Campaign successor must preserve the no-canonical-write boundary: ${forbidden}`);
 
-console.log(`Build 45 accepted bridge history remains documented while Studio ${version} Build ${build} preserves the Release Pack route and no-write authority boundary through Studio Focus.`);
+console.log(`Build 45 accepted bridge history remains documented while Studio ${version} Build ${build} preserves the Release Campaign route and no-write authority boundary through Studio Focus.`);
