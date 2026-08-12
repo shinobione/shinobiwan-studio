@@ -29,6 +29,7 @@ import './phase7-workflow.css';
 import './phase7-receipts.css';
 import './studio-focus.css';
 import './studio-focus-readability.css';
+import './studio-focus-status-labels.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
