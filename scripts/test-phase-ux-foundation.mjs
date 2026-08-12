@@ -52,13 +52,13 @@ assert.ok(css.includes('.nav-list-utility { display: none; }'), 'Mobile must kee
 const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const phaseUxLine = /^0\.(?:11|12|13|14|15)\./.test(version) && codename.startsWith('phase-ux-');
-const phase7Line = /^0\.16\./.test(version) && codename.startsWith('phase7-');
+const phase7Line = /^0\.(?:16|17)\./.test(version) && codename.startsWith('phase7-');
 assert.ok(phaseUxLine || phase7Line, `Studio UX foundation must stay on the validated PHASE UX lineage or explicitly authorized Phase 7 successor, got ${version} / ${codename}.`);
 
 if (phase7Line) {
   assert.ok(primaryNav.includes("route: 'workflow'"), 'Authorized Phase 7 successor must expose Workflow as a focused primary destination.');
   assert.ok(router.includes("'workflow'"), 'Authorized Phase 7 successor router must recognize Workflow.');
-  assert.ok(app.includes('PHASE 7-A'), 'Authorized Phase 7 successor must identify its candidate milestone in the shell.');
+  assert.ok(app.includes('PHASE 7-A') || app.includes('PHASE 7-B'), 'Authorized Phase 7 successor must identify its current candidate milestone in the shell.');
 }
 
 console.log('Studio UX foundation guard passed: focused primary destinations, shared tokens, readable responsive controls and legacy deep links survive the explicitly authorized Phase 7 successor.');
