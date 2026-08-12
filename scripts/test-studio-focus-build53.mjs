@@ -9,10 +9,13 @@ const release = read('src/release.ts');
 const pkg = JSON.parse(read('package.json'));
 const main = read('src/main.tsx');
 
-assert.match(release, /version:\s*'0\.17\.3'/);
-assert.match(release, /build:\s*53/);
-assert.match(release, /studio-focus-shell-home/);
-assert.equal(pkg.version, '0.17.3');
+const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
+assert.match(version, /^0\.17\.\d+$/);
+assert.ok(build >= 53, `Studio Focus shell successor must remain Build 53 or later, got ${build}.`);
+assert.ok(codename.startsWith('studio-focus-'), `Studio Focus successor codename must remain explicit, got ${codename}.`);
+assert.equal(pkg.version, version);
 
 for (const marker of [
   "{ route: 'dashboard', label: 'Home', glyph: '⌂' }",
@@ -26,7 +29,7 @@ for (const marker of [
   'focus-advanced-nav',
 ]) assert.ok(app.includes(marker), `Studio Focus shell is missing ${marker}.`);
 
-assert.ok(!app.includes("{ route: 'dashboard', label: 'Dashboard'"), 'Dashboard must not remain a daily navigation label.');
+assert.ok(!app.includes("{ route: 'dashboard', label: 'Dashboard'"), 'Dashboard must not return as a daily navigation label.');
 assert.ok(app.includes("route === 'workflow' && <WorkflowView />"), 'Detailed Phase 7 workflow must remain available behind Advanced.');
 assert.ok(app.includes("route === 'intelligence' && <CatalogIntelligenceView />"), 'Catalog Intelligence must remain available behind Advanced.');
 assert.ok(app.includes('Track Manager remains the protected write authority'), 'System fallback authority wording must remain intact.');
@@ -44,8 +47,8 @@ for (const marker of [
 
 assert.ok(!home.includes('writeTrack'), 'Focus Home must not gain a direct Track write path.');
 assert.ok(!home.includes('fetch('), 'Focus Home must use validated service adapters instead of ad-hoc network writes.');
-assert.ok(main.includes("import './studio-focus.css';"), 'Studio Focus CSS must be loaded after the validated baseline styles.');
+assert.ok(main.includes("import './studio-focus.css';"), 'Studio Focus CSS must remain loaded after the validated baseline styles.');
 assert.ok(focusCss.includes('.focus-advanced-nav'), 'Advanced progressive disclosure styling is missing.');
 assert.ok(focusCss.includes('.focus-continue'), 'Continue surface styling is missing.');
 
-console.log('Studio Focus Build 53 guard passed: production-first shell/Home added while validated specialist routes and canonical authorities remain available.');
+console.log(`Studio Focus Build 53 ancestry passed under ${version} Build ${build}: production-first shell/Home remain intact while successor slices evolve artist-facing surfaces.`);

@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
+import { buildCatalogWorkflow, type TrackWorkflowState } from '../phase7-workflow';
 import { trackHref } from '../router';
 import { getCatalogTracks } from '../services/catalog-api';
 import type { StudioTrack } from '../types/studio';
 import { TrackCreatePanel } from './TrackCreatePanel';
 
-type ContentFilter = 'all' | 'missing-lyrics' | 'missing-video' | 'timestamped' | 'core-complete';
+type ProductionFilter = 'to-finish' | 'ready' | 'released' | 'all';
 type SortMode = 'newest' | 'title' | 'album';
 
 let catalogCache: StudioTrack[] | null = null;
@@ -23,8 +24,8 @@ function requestCatalog(force = false): Promise<StudioTrack[]> {
   return catalogRequest;
 }
 
-// CatalogView is imported with the Studio shell, so begin the canonical read in the
-// background before the user opens Catalog. Re-visits use the in-memory snapshot.
+// Tracks is imported with the Studio shell, so begin the canonical read in the
+// background before the user opens it. Re-visits use the in-memory snapshot.
 void requestCatalog().catch(() => {});
 
 function safeDate(value: string | null): number {
@@ -46,11 +47,10 @@ function artworkUrl(track: StudioTrack): string | null {
   return track.assets.thumbnail?.url || track.assets.cover?.url || null;
 }
 
-function contentMatches(track: StudioTrack, filter: ContentFilter): boolean {
-  if (filter === 'missing-lyrics') return !track.assets.lyricsTxt;
-  if (filter === 'missing-video') return !track.assets.video;
-  if (filter === 'timestamped') return track.timestampsAvailable;
-  if (filter === 'core-complete') return Boolean(track.assets.audio && track.assets.cover && track.assets.lyricsTxt);
+function productionMatches(track: StudioTrack, workflow: TrackWorkflowState, filter: ProductionFilter): boolean {
+  if (filter === 'released') return track.status === 'published';
+  if (filter === 'ready') return track.status !== 'published' && workflow.ready;
+  if (filter === 'to-finish') return track.status !== 'published' && !workflow.ready;
   return true;
 }
 
@@ -59,7 +59,7 @@ function CatalogLoadingState() {
     <div className="catalog-loading" role="status" aria-live="polite">
       <div className="catalog-loading-status panel">
         <span className="catalog-loading-orb" aria-hidden="true" />
-        <div><strong>Loading canonical catalog</strong><span>Track Manager, public projection and catalog metadata are being resolved…</span></div>
+        <div><strong>Loading tracks</strong><span>Getting your production library ready…</span></div>
       </div>
       <div className="catalog-skeleton-grid" aria-hidden="true">
         {Array.from({ length: 6 }, (_, index) => (
@@ -80,7 +80,7 @@ export function CatalogView() {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [album, setAlbum] = useState('all');
-  const [contentFilter, setContentFilter] = useState<ContentFilter>('all');
+  const [productionFilter, setProductionFilter] = useState<ProductionFilter>('to-finish');
   const [sortMode, setSortMode] = useState<SortMode>('newest');
   const [showCreate, setShowCreate] = useState(false);
 
@@ -108,11 +108,31 @@ export function CatalogView() {
     return [...unique.entries()].sort((a, b) => a[1].localeCompare(b[1], 'en', { sensitivity: 'base' }));
   }, [tracks]);
 
+  const workflows = useMemo(() => buildCatalogWorkflow(tracks), [tracks]);
+  const workflowById = useMemo(() => new Map(workflows.map(item => [item.track.id, item])), [workflows]);
+
+  const counts = useMemo(() => {
+    let toFinish = 0;
+    let ready = 0;
+    let released = 0;
+    for (const track of tracks) {
+      const workflow = workflowById.get(track.id);
+      if (!workflow) continue;
+      if (track.status === 'published') released += 1;
+      else if (workflow.ready) ready += 1;
+      else toFinish += 1;
+    }
+    return { toFinish, ready, released };
+  }, [tracks, workflowById]);
+
   const filtered = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
     return tracks
       .filter(track => album === 'all' || track.album.id === album)
-      .filter(track => contentMatches(track, contentFilter))
+      .filter(track => {
+        const workflow = workflowById.get(track.id);
+        return workflow ? productionMatches(track, workflow, productionFilter) : false;
+      })
       .filter(track => {
         if (!normalizedQuery) return true;
         const haystack = [track.title, track.album.title, ...track.genres, ...track.tags, ...track.moods, ...track.themes, ...track.languages].join(' ').toLowerCase();
@@ -123,72 +143,85 @@ export function CatalogView() {
         if (sortMode === 'album') return a.album.title.localeCompare(b.album.title, 'en', { sensitivity: 'base' }) || a.title.localeCompare(b.title, 'en', { sensitivity: 'base' });
         return safeDate(b.releaseDate) - safeDate(a.releaseDate) || (b.year || 0) - (a.year || 0) || a.title.localeCompare(b.title, 'en', { sensitivity: 'base' });
       });
-  }, [album, contentFilter, query, sortMode, tracks]);
+  }, [album, productionFilter, query, sortMode, tracks, workflowById]);
 
-  const syncedCount = tracks.filter(track => track.timestampsAvailable).length;
   const privateRead = tracks.some(track => track.readSource === 'private');
-  const draftCount = tracks.filter(track => track.status === 'draft').length;
 
   return (
     <section className="catalog-surface">
       <div className="catalog-heading">
         <div>
-          <span className="eyebrow">CATALOG</span>
-          <h2>One catalog. Every track.</h2>
+          <span className="eyebrow">TRACKS / PRODUCTION LIBRARY</span>
+          <h2>Pick up a track. Finish the next thing.</h2>
           <p>{privateRead
-            ? `Search the production catalog, continue an existing track or start a new draft.${draftCount ? ` ${draftCount} draft${draftCount === 1 ? '' : 's'} currently need attention.` : ''}`
-            : 'Studio is safely showing the public catalog. Sign in through Track Manager to create or edit tracks.'}</p>
+            ? 'Your music, reduced to the production state that actually matters.'
+            : 'Tracks are available read-only. Sign in through Track Manager when you need to create or edit.'}</p>
         </div>
-        <div className="catalog-heading-actions">
-          <div className="catalog-kpis" aria-label="Catalog summary">
-            <div><strong>{tracks.length}</strong><span>tracks</span></div>
-            <div><strong>{albums.length}</strong><span>albums</span></div>
-            <div><strong>{syncedCount}</strong><span>timestamped</span></div>
-          </div>
-          <button className="primary-btn catalog-new-track" type="button" disabled={loading} onClick={() => setShowCreate(true)}>+ New Track</button>
-        </div>
+        <button className="primary-btn catalog-new-track" type="button" disabled={loading} onClick={() => setShowCreate(true)}>+ New Track</button>
       </div>
 
       {showCreate && <TrackCreatePanel privateRead={privateRead} onCancel={() => setShowCreate(false)} onCreated={async () => { await loadCatalog(true); setShowCreate(false); }} />}
 
+      <div className="catalog-production-filters panel" aria-label="Production filters">
+        <button type="button" className={productionFilter === 'to-finish' ? 'active' : ''} aria-pressed={productionFilter === 'to-finish'} onClick={() => setProductionFilter('to-finish')}><strong>{counts.toFinish}</strong><span>To finish</span></button>
+        <button type="button" className={productionFilter === 'ready' ? 'active' : ''} aria-pressed={productionFilter === 'ready'} onClick={() => setProductionFilter('ready')}><strong>{counts.ready}</strong><span>Ready</span></button>
+        <button type="button" className={productionFilter === 'released' ? 'active' : ''} aria-pressed={productionFilter === 'released'} onClick={() => setProductionFilter('released')}><strong>{counts.released}</strong><span>Released</span></button>
+        <button type="button" className={productionFilter === 'all' ? 'active' : ''} aria-pressed={productionFilter === 'all'} onClick={() => setProductionFilter('all')}><strong>{tracks.length}</strong><span>All</span></button>
+      </div>
+
       <div className="catalog-toolbar panel">
         <label className="catalog-search"><span>Search</span><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Title, album, genre, mood…" /></label>
         <label><span>Album</span><select value={album} onChange={event => setAlbum(event.target.value)}><option value="all">All albums</option>{albums.map(([id, title]) => <option key={id} value={id}>{title}</option>)}</select></label>
-        <label><span>Content</span><select value={contentFilter} onChange={event => setContentFilter(event.target.value as ContentFilter)}><option value="all">All content</option><option value="core-complete">Core complete</option><option value="timestamped">Timestamped lyrics</option><option value="missing-lyrics">Missing lyrics</option><option value="missing-video">Missing video</option></select></label>
         <label><span>Sort</span><select value={sortMode} onChange={event => setSortMode(event.target.value as SortMode)}><option value="newest">Newest first</option><option value="title">Title A–Z</option><option value="album">Album A–Z</option></select></label>
       </div>
 
       {loading && <CatalogLoadingState />}
-      {!loading && error && <div className="catalog-message catalog-error panel"><strong>Catalog unavailable</strong><span>{error}</span></div>}
+      {!loading && error && <div className="catalog-message catalog-error panel"><strong>Tracks unavailable</strong><span>{error}</span></div>}
 
       {!loading && !error && (
         <>
           <div className="catalog-resultline">
-            <span>{filtered.length} of {tracks.length} tracks · {privateRead ? 'private canonical' : 'public fallback'}{refreshing ? ' · refreshing…' : ''}</span>
-            {(query || album !== 'all' || contentFilter !== 'all') && <button type="button" onClick={() => { setQuery(''); setAlbum('all'); setContentFilter('all'); }}>Clear filters</button>}
+            <span>{filtered.length} shown{refreshing ? ' · refreshing…' : ''}{!privateRead ? ' · read-only' : ''}</span>
+            {(query || album !== 'all') && <button type="button" onClick={() => { setQuery(''); setAlbum('all'); }}>Clear search</button>}
           </div>
 
-          {filtered.length === 0 ? <div className="catalog-message panel">No track matches the current filters.</div> : (
+          {filtered.length === 0 ? <div className="catalog-message panel">Nothing here right now. Try another production filter.</div> : (
             <div className="catalog-grid">
               {filtered.map(track => {
                 const artwork = artworkUrl(track);
+                const workflow = workflowById.get(track.id);
+                if (!workflow) return null;
+                const lyricsState = workflow.stages.find(stage => stage.id === 'lyrics')?.state || 'attention';
+                const releaseState = workflow.stages.find(stage => stage.id === 'release')?.state || 'attention';
+                const nextHref = trackHref(track.id, workflow.nextAction.section);
+                const nextLabel = track.status === 'published' ? 'Open track →' : workflow.ready ? 'Review release →' : 'Continue →';
+                const nextDetail = track.status === 'published'
+                  ? (workflow.stages.find(stage => stage.id === 'release')?.detail || 'Released')
+                  : workflow.nextAction.detail;
+
                 return (
-                  <a className="catalog-card panel" key={track.id} href={trackHref(track.id)}>
+                  <article className="catalog-card panel" key={track.id}>
                     <div className="catalog-artwork">
                       {artwork ? <img src={artwork} alt="" loading="lazy" /> : <span>{track.title.slice(0, 2).toUpperCase()}</span>}
                       <div className="catalog-status">{track.status}</div>
                     </div>
                     <div className="catalog-card-body">
                       <div className="catalog-card-title"><div><strong>{track.title}</strong><span>{track.album.title}</span></div><small>{releaseLabel(track)}</small></div>
-                      <div className="catalog-tags">{(track.genres.length ? track.genres : ['Unclassified']).slice(0, 3).map(tag => <span key={tag}>{tag}</span>)}</div>
-                      <div className="catalog-assets">
-                        <span className={track.assets.audio ? 'present' : 'missing'}>Audio</span>
-                        <span className={track.assets.cover ? 'present' : 'missing'}>Cover</span>
-                        <span className={track.assets.lyricsTxt ? 'present' : 'missing'}>Lyrics</span>
-                        <span className={track.assets.video ? 'present' : 'missing'}>Video</span>
+
+                      <div className="catalog-production-state" aria-label={`Production state for ${track.title}`}>
+                        <span className={track.assets.audio ? 'state-ready' : 'state-attention'}>Audio</span>
+                        <span className={track.assets.cover ? 'state-ready' : 'state-attention'}>Cover</span>
+                        <span className={`state-${lyricsState}`}>Lyrics</span>
+                        <span className={track.assets.video ? 'state-ready' : 'state-optional'}>Canvas</span>
+                        <span className={`state-${releaseState}`}>Release</span>
+                      </div>
+
+                      <div className="catalog-next-action">
+                        <div><span>Next</span><strong>{workflow.ready && track.status !== 'published' ? 'Release ready' : workflow.nextAction.label}</strong><small>{nextDetail}</small></div>
+                        <a className="catalog-continue-btn" href={nextHref}>{nextLabel}</a>
                       </div>
                     </div>
-                  </a>
+                  </article>
                 );
               })}
             </div>

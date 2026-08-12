@@ -88,7 +88,7 @@ for (const required of [
 
 for (const required of ['TRACK MANAGER / CATALOG', 'Explicit catalog rebuild', 'REBUILD the canonical catalog/index.json', 'globalThis.confirm', 'rebuildAdminCatalog']) assert.ok(rebuild.includes(required), `Catalog rebuild UI missing ${required}.`);
 
-for (const required of ['showCreate && <TrackCreatePanel', 'privateRead={privateRead}', 'onCreated={async () =>', '+ New Track', 'public catalog']) assert.ok(catalog.includes(required), `Catalog private-write boundary missing ${required}.`);
+for (const required of ['showCreate && <TrackCreatePanel', 'privateRead={privateRead}', 'onCreated={async () =>', '+ New Track', 'Tracks are available read-only']) assert.ok(catalog.includes(required), `Catalog private-write boundary missing ${required}.`);
 for (const required of [
   '<AssetsManager track={track} onChanged={refreshTrackAfterWrite} />',
   '<LyricsEditorPanel track={track} onSaved={refreshTrackAfterWrite} />',

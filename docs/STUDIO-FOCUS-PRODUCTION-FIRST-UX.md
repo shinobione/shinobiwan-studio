@@ -1,9 +1,9 @@
 # SHINOBIWAN STUDIO — STUDIO FOCUS / PRODUCTION-FIRST UX
 
-Status: **ROADMAP APPROVED · IMPLEMENTATION IN PROGRESS · BUILD 53 SLICE 1 CANDIDATE**
+Status: **ROADMAP APPROVED · IMPLEMENTATION IN PROGRESS · BUILD 54 SLICE 2 CANDIDATE**
 
 Approved by real-user review on 2026-08-12 after Studio v0.17.2 · Build 52.
-Implementation opened on 2026-08-12 as Studio v0.17.3 · Build 53, codename `studio-focus-shell-home`.
+Implementation opened with Studio v0.17.3 · Build 53 and continues with v0.17.4 · Build 54.
 
 This roadmap item does **not** replace any validated canonical authority or remove specialist capabilities. It changes the daily information architecture so Studio behaves like an artist production tool rather than exposing implementation detail by default.
 
@@ -18,8 +18,8 @@ The validated Track Manager / R2 / SonicTrace / LRC Maker / receipt / private-re
 | Slice | Scope | Status |
 |---|---|---|
 | Build 52 | visible `Catalog` → `Tracks` polish | **COMPLETE** |
-| Build 53 / Slice 1 | production-first shell + actionable Home | **CANDIDATE — CI + real-user smoke pending** |
-| Slice 2 | Tracks production-library simplification | **PLANNED / NOT STARTED** |
+| Build 53 / Slice 1 | production-first shell + actionable Home | **COMPLETE — REAL USER PASS** |
+| Build 54 / Slice 2 | Tracks production-library simplification | **CANDIDATE — CI + real-user smoke required** |
 | Slice 3 | Track Workspace regrouping to `Track · Visuals · Lyrics · Release` | **PLANNED / NOT STARTED** |
 | Slice 4 | compact SonicTrace artist summary + Advanced detail | **PLANNED / NOT STARTED** |
 | Closeout | cross-flow real-user smoke + Workflow absorption decision | **PLANNED / NOT STARTED** |
@@ -38,11 +38,11 @@ Approved direction:
 - healthy service/version/canonical-read detail stays silent unless a problem requires attention;
 - existing Phase 7-A workflow logic may be reused behind the simplified Home surface rather than remaining a permanent separate daily destination.
 
-### Build 53 implementation
+### Build 53 — accepted implementation
 
-Build 53 implements this direction without adding new write authority:
+Build 53 implemented this direction without adding new write authority:
 
-- `dashboard` stays as the internal route, but the visible destination becomes **Home**;
+- `dashboard` stays as the internal route, but the visible destination is **Home**;
 - Home reads the existing canonical catalog through `getCatalogTracks()`;
 - next actions reuse the accepted `buildCatalogWorkflow()` Phase 7-A model;
 - the last opened Track is remembered only in local browser storage as a continuation hint;
@@ -51,20 +51,39 @@ Build 53 implements this direction without adding new write authority:
 - `+ New Track` reuses the existing guarded `TrackCreatePanel` and remains private-read gated;
 - detailed Workflow remains available under Advanced during the transition.
 
-Build 53 is not accepted until CI and deployed real-user smoke pass.
+Deployed browser review on 2026-08-13 accepted the shell and Home as the new Studio Focus baseline.
+
+Acceptance checkpoint:
+
+`safety/post-studio-focus-build53-real-user-pass-20260813-0032`
 
 ## 2 — Tracks becomes the main production library
 
 Approved direction:
 
-- `Tracks` is the daily language; the internal route may remain `catalog` unless a future migration has a concrete technical benefit;
+- `Tracks` is the daily language; the internal route remains `catalog` unless a future migration has a concrete technical benefit;
 - favor a visual track library with cover, title, release state and compact completion indicators;
 - principal production indicators: Audio, Cover, Lyrics, Canvas/visuals, Release;
-- simple useful filters such as `À finir`, `Prêts`, `Sortis`;
-- one clear `Continue` action per track;
+- simple useful filters such as `To finish`, `Ready`, `Released`;
+- one clear continuation action per track;
 - do not require the user to interpret backend/canonical terminology in normal use.
 
-Build 52 completed the presentation-only navigation rename `Catalog` → `Tracks`. Build 53 keeps the same `catalog` route and existing Track library implementation. The broader Tracks simplification remains reserved for **Slice 2**.
+### Build 54 — candidate implementation
+
+Build 54 implements Slice 2 while reusing the accepted Phase 7-A readiness model:
+
+- default filter is **To finish**;
+- production filters are **To finish / Ready / Released / All**;
+- the old implementation-oriented `missing-video / timestamped / core-complete` filter language leaves the daily surface;
+- each track card shows only **Audio / Cover / Lyrics / Canvas / Release**;
+- Audio/Cover/Lyrics/Release state comes from canonical Track data and the inherited Workflow model;
+- Canvas is shown as ready when canonical video exists and as neutral/optional when absent because the accepted Phase 7-A contract does not require Canvas for every release;
+- the card's only primary action deep-links to `workflow.nextAction.section` in the already guarded Track Workspace;
+- search, Album filter and sorting stay available;
+- healthy result copy no longer says `private canonical` / `public fallback`; read-only mode is surfaced only when relevant;
+- `+ New Track` still uses `TrackCreatePanel` and Track Manager remains the write owner.
+
+Build 54 changes presentation and continuation only. It does **not** change the Workflow algorithm or define a second readiness authority.
 
 ## 3 — Track Workspace becomes an artist workshop
 
@@ -76,7 +95,7 @@ Track · Visuals · Lyrics · Release
 
 ### Track
 
-Combine the normal production identity and audio tasks:
+Combine normal production identity and audio tasks:
 
 - canonical audio / MASTER presence and replacement;
 - title;
@@ -99,7 +118,7 @@ Unify the visual identity workflow:
 
 ### Lyrics
 
-Keep the validated embedded LRC Maker / canonical `lyrics.txt` engine but simplify the normal feedback:
+Keep the validated embedded LRC Maker / canonical `lyrics.txt` engine but simplify normal feedback:
 
 - direct lyrics editor/synchronizer surface;
 - compact status such as `Lyrics synchronized`;
@@ -120,7 +139,7 @@ Unify the final production checklist and campaign output:
 - release copy / tags / provenance where useful;
 - retain `canonicalWrite: false` and existing review-only authority for campaign export until a separately authorized guarded persistence phase exists.
 
-Build 53 deliberately leaves the current Track Workspace internals untouched. This regrouping is reserved for **Slice 3** after shell/Home acceptance.
+Build 54 deliberately leaves the current Track Workspace internals untouched. This regrouping remains reserved for **Slice 3** after Build 54 acceptance.
 
 ## 4 — SonicTrace becomes primarily an invisible assistant
 
@@ -133,11 +152,9 @@ Approved direction:
 - keep full FULL/PARTIAL/UNAVAILABLE truthfulness and the existing R2 sidecar contract;
 - catalog/project intelligence remains available for deliberate analysis but not as mandatory daily noise.
 
-SonicTrace Build 08 is already REAL USER PASS with a durable FULL R2 profile after canonical reread. Studio Focus does not alter those analysis semantics. Compact presentation is reserved for **Slice 4**.
+SonicTrace Build 08 is REAL USER PASS with a durable FULL R2 profile after canonical reread. Studio Focus does not alter those analysis semantics. Compact presentation remains reserved for **Slice 4**.
 
-## 5 — Progressive disclosure becomes the global UX architecture
-
-Approved three-layer model:
+## 5 — Progressive disclosure is the global UX architecture
 
 ### Level 1 — Artist
 
@@ -176,9 +193,9 @@ Technical/admin/debug surfaces:
 
 Normal operation should not require Level 3 visibility.
 
-### Build 53 shell implementation
+### Build 53 shell baseline
 
-The daily navigation is now implemented as:
+The accepted daily navigation is:
 
 ```text
 Home
@@ -191,7 +208,7 @@ Advanced ▾
   System
 ```
 
-The internal routes are intentionally preserved for deep-link/backward compatibility. Advanced hides subsystem architecture from normal use; it does not delete any specialist surface.
+The internal routes remain preserved for deep-link/backward compatibility. Advanced hides subsystem architecture from normal use; it does not delete any specialist surface.
 
 ## Non-goals / safety boundaries
 
@@ -208,23 +225,26 @@ Studio Focus must not:
 - change LaunchPAD public behavior as a side effect;
 - start Phase 7-C automatically.
 
-These boundaries remain active Build 53 CI guards, including inherited Phase 5/6, C2.5, C3, Phase 7-A, Release Campaign and Phase 7-B receipt tests.
+These boundaries remain active in CI through inherited Phase 5/6, C2.5, C3, Phase 7-A, Release Campaign, Phase 7-B receipt and Studio Focus guards.
 
 ## Implementation sequencing
 
-The prerequisite SonicTrace mastering/PARTIAL fault was resolved before implementation: SonicTrace V2-E Build 08 reached FULL in real use, was saved, and was canonically reread from R2.
+The prerequisite SonicTrace mastering/PARTIAL fault was resolved before Studio Focus: SonicTrace V2-E Build 08 reached FULL in real use, was saved, and was canonically reread from R2.
 
-Studio Focus then proceeds in small reversible slices:
+Studio Focus proceeds in small reversible slices:
 
-1. **Build 53 — navigation / progressive-disclosure shell + Home continuation simplification — CANDIDATE**;
-2. Tracks library simplification;
+1. **Build 53 — shell + Home — COMPLETE · REAL USER PASS**;
+2. **Build 54 — Tracks production library — CANDIDATE · CI + real-user smoke required**;
 3. Track Workspace regrouping (`Track · Visuals · Lyrics · Release`);
 4. SonicTrace compact summary + Advanced detail;
 5. real-user smoke across existing Track, Lyrics, SonicTrace and Release workflows;
 6. only after pass, decide whether the separate Workflow destination can be fully absorbed into Home.
 
-Rollback before Build 53:
+Rollback / acceptance anchors:
 
-`safety/pre-studio-focus-build53-20260812`
+```text
+safety/pre-studio-focus-build53-20260812
+safety/post-studio-focus-build53-real-user-pass-20260813-0032
+```
 
 No later slice is considered started merely because it is listed here.
