@@ -12,7 +12,7 @@ const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const originalBuild45 = version === '0.15.1' && build === 45 && codename.includes('track-to-market-bridge-v2');
-const authorizedPhase7Successor = /^0\.16\.\d+$/.test(version) && build >= 46 && codename.startsWith('phase7-');
+const authorizedPhase7Successor = /^0\.(?:16|17)\.\d+$/.test(version) && build >= 46 && codename.startsWith('phase7-');
 assert.ok(originalBuild45 || authorizedPhase7Successor, `Build 45 lineage guard must run on Build 45 or an explicitly authorized Phase 7 successor, got ${version} Build ${build} / ${codename}.`);
 
 assert.match(types, /\| 'market'/, 'WorkspaceSection must expose the Release Pack route.');
