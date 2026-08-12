@@ -12,6 +12,7 @@ const create = read('src/components/TrackCreatePanel.tsx');
 const rebuild = read('src/components/CatalogRebuildPanel.tsx');
 const catalog = read('src/components/CatalogView.tsx');
 const workspace = read('src/components/TrackWorkspace.tsx');
+const receiptVerifier = read('src/components/ContinuationReceiptBanner.tsx');
 const sonicApi = read('src/services/sonictrace-api.ts');
 const sonicPanel = read('src/components/SonicTracePanel.tsx');
 const intelligenceView = read('src/components/CatalogIntelligenceView.tsx');
@@ -92,17 +93,23 @@ for (const required of [
   '<AssetsManager track={track} onChanged={refreshTrackAfterWrite} />',
   '<LyricsEditorPanel track={track} onSaved={refreshTrackAfterWrite} />',
   '<MetadataValidationPanel track={track} onSaved={refreshTrackAfterWrite} />',
-  '<SonicTracePanel track={track} onSaved={refreshTrackAfterWrite} />',
+  '<SonicTracePanel track={track} onSaved={() => {',
+  '<ContinuationReceiptBanner trackId={track.id}',
   'PHASE 5 / COMPLETE',
 ]) assert.ok(workspace.includes(required), `Workspace integration contract missing ${required}.`);
+for (const required of [
+  'const canonical = await getCatalogTrack(next.trackId)',
+  "canonical.readSource !== 'private'",
+  'Public fallback cannot verify a write receipt',
+]) assert.ok(receiptVerifier.includes(required), `Phase 7-B private reread contract missing ${required}.`);
 
 for (const required of [
   'LYRICS / CANONICAL', 'lyrics.txt is the single canonical source.',
   '<CatalogRebuildPanel privateRead={privateRead} />', '<CatalogIntelligenceView />',
 ]) assert.ok(app.includes(required), `Studio integration contract missing ${required}.`);
 // Phase 6 remains a completed inherited contract even after the shell advances to
-// the explicitly-authorized Phase 7-A route. The guard must verify behavior, not
-// force a historical milestone label to remain visible forever.
+// the explicitly-authorized Phase 7 route. The guard verifies behavior rather than
+// forcing a historical milestone label to remain visible forever.
 assert.ok(
   app.includes('PHASE 6 / COMPLETE') || (app.includes('PHASE 7 / ORCHESTRATION') && app.includes("route === 'workflow'")),
   'Studio must preserve the completed Phase 6 integration while exposing an explicitly authorized Phase 7 successor.'
@@ -163,7 +170,7 @@ for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog 
 
 const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
-assert.match(releaseVersion, /^0\.(?:11|12|13|14|15|16)\./, 'Studio private-read ancestry must remain on the validated PHASE UX or explicitly authorized Phase 7 successor release lines.');
+assert.match(releaseVersion, /^0\.(?:11|12|13|14|15|16|17)\./, 'Studio private-read ancestry must remain on the validated PHASE UX or explicitly authorized Phase 7 successor release lines.');
 assert.ok(releaseBuild >= 33, 'Studio private-read ancestry must remain at Build 33 or later.');
 assert.match(release, /codename:\s*'(?:phase-ux-(?:c2-5|c3)-|phase7-)/, 'Studio release codename must remain inside validated PHASE UX lineage or the explicitly authorized Phase 7 successor lineage.');
 assert.equal(pkg.version, releaseVersion, 'package.json must match the current Studio release version.');
