@@ -37,10 +37,12 @@ assert.ok(css.includes('.album-migration-review') && css.includes('@media(max-wi
 
 const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
-assert.match(releaseVersion, /^0\.(?:12|13|14|15)\./, 'C2.5-E2 ancestry must remain on a validated/successor PHASE UX C2.5/C3 Studio release line until deliberately superseded.');
+const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
+const phaseUxLine = /^0\.(?:12|13|14|15)\./.test(releaseVersion) && /^phase-ux-(?:c2-5-e|c3)-/.test(codename);
+const phase7Line = /^0\.16\./.test(releaseVersion) && codename.startsWith('phase7-');
+assert.ok(phaseUxLine || phase7Line, 'C2.5-E2 ancestry must remain on the validated PHASE UX line or explicitly authorized Phase 7 successor.');
 assert.ok(releaseBuild >= 36, 'C2.5-E2 review-pack ancestry must remain at Build 36 or later.');
-assert.match(release, /codename:\s*'phase-ux-(?:c2-5-e|c3)-/, 'Current release must remain explicitly inside validated PHASE UX C2.5-E/C3 while E2 is inherited.');
 assert.equal(pkg.version, releaseVersion);
 assert.ok(String(pkg.scripts?.['check:ux'] || '').includes('test-phase-ux-c2-5-e2-review-pack.mjs'));
 
-console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves the C2.5-E2 read-only migration review/export pack while C3 advances separately.`);
+console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves the C2.5-E2 read-only migration review/export pack through the authorized Phase 7 successor.`);
