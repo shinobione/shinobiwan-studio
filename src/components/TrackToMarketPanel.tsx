@@ -72,13 +72,13 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
       if (event.origin !== TTME_ORIGIN) return;
-      if (childRef.current && event.source !== childRef.current) return;
+      const child = childRef.current;
+      if (!child || event.source !== child) return;
       const data = event.data as Record<string, unknown> | null;
       if (!data || typeof data.type !== 'string') return;
 
       if (data.type === READY_MESSAGE) {
-        if (!event.source || !('postMessage' in event.source)) return;
-        event.source.postMessage({ type: INPUT_MESSAGE, version: '0.1.5', input }, TTME_ORIGIN);
+        child.postMessage({ type: INPUT_MESSAGE, version: '0.1.5', input }, TTME_ORIGIN);
         setBridgeState('ready');
         setBridgeDetail(`Bridge ${typeof data.version === 'string' ? data.version : 'ready'} · full track context sent.`);
         return;
