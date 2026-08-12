@@ -19,6 +19,7 @@ import { getSonicTraceHealth } from './services/sonictrace-api';
 import type { ServiceStatus, StudioReadSource, StudioRoute, WorkspaceSection } from './types/studio';
 
 const LAST_TRACK_KEY = 'shinobiwan-studio:last-track-id';
+const SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.19 · bridge v1.11';
 
 const DAILY_NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
   { route: 'dashboard', label: 'Home', glyph: '⌂' },
@@ -95,8 +96,11 @@ export default function App() {
         if (!active) return;
         setReadSource(payload.readSource);
         const count = payload.canonicalTracks != null ? ` · ${payload.canonicalTracks} public tracks` : '';
+        const liveLineage = payload.trackManagerVersion || payload.version || payload.bridgeVersion
+          ? `Track Manager v${payload.trackManagerVersion || payload.version || '?'} · bridge v${payload.bridgeVersion || '?'}`
+          : SUPPORTED_PRIVATE_READ_LINEAGE;
         setCatalog(payload.readSource === 'private'
-          ? { state: 'online', label: 'private read', detail: `Track Manager v${payload.trackManagerVersion || payload.version || '?'} · bridge v${payload.bridgeVersion || '?'}${count}` }
+          ? { state: 'online', label: 'private read', detail: `${liveLineage}${count}` }
           : { state: 'degraded', label: 'public fallback', detail: `${payload.service || 'LaunchPAD media'}${payload.version != null ? ` v${payload.version}` : ''}${count}` });
       })
       .catch(error => active && setCatalog({ state: 'offline', label: 'offline', detail: String(error) }));
