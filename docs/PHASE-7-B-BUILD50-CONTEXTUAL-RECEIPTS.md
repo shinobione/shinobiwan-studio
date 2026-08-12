@@ -193,6 +193,48 @@ Minimum smoke:
 
 Only the user can convert this candidate into REAL USER PASS.
 
+## Build 50 real-user smoke result — 2026-08-12
+
+Observed on deployed Studio v0.17.0 · Build 50:
+
+- Release Campaign `campaign-exported / review-only`: **PASS** — browser showed `Review receipt received` and explicitly stated that no canonical write is expected or authorized;
+- native Release Campaign three-format campaign/export surface: **PASS**;
+- Workflow 7-A read-only regression check: **PASS**;
+- embedded LRC Maker protected save + its own canonical reread: **PASS** — browser showed `lyrics.txt synchronisé et relu.`;
+- parent Phase 7-B Lyrics continuation banner: **FAIL** — the Workspace did not show `Verifying canonical state…` or `Canonical reread verified` after that successful embedded save.
+
+Therefore Build 50 remains a partial real-user smoke and is **not** Phase 7-B REAL USER PASS.
+
+## Build 51 corrective
+
+Studio v0.17.1 · Build 51 is the bounded corrective for that single failed browser seam.
+
+LRC Maker 6.3.8 already dispatches a composed, bubbling `lyrics-saved` CustomEvent from the `<shinobiwan-lyrics-studio>` Web Component after its guarded save and canonical reread.
+
+Build 50 captured that event through a React ref attached to the custom-element host. The real browser smoke showed that this receipt-delivery path was not reliable enough.
+
+Build 51 changes only the capture point:
+
+- remove dependency on the React custom-element ref;
+- listen at `window` scope for the existing bubbling/composed `lyrics-saved` event;
+- keep exact `detail.trackId` filtering;
+- keep the same typed `lrc-maker / lyrics-saved / canonical-write` receipt;
+- keep the same private canonical Track reread and Lyrics evidence gate;
+- keep stale/mismatched receipt protection;
+- add a dedicated guard that prevents regression back to ref-bound receipt capture.
+
+No LRC Maker deployment/version change, Worker deploy, R2 mutation, Track Manager endpoint change, generic write authority or Phase 7-C work is part of Build 51.
+
+Build 51 rollback checkpoint:
+
+`safety/pre-build51-lyrics-receipt-corrective-20260812-2102`
+
+Build 51 acceptance requires the previously missing parent browser sequence:
+
+`LRC Maker / lyrics saved → Verifying canonical state… → Canonical reread verified`
+
+Only after that deployed real-user proof may Phase 7-B be closed.
+
 ## Phase 7-C
 
 **NOT STARTED.**
