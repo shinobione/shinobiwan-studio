@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import JSZip from 'jszip';
+import { emitContinuationReceipt, makeContinuationReceipt } from '../phase7-receipts';
 import type { StudioTrackDetail } from '../types/studio';
 import {
   buildFreshMasterPrompt,
@@ -294,6 +295,14 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
       anchor.remove();
       window.setTimeout(() => URL.revokeObjectURL(url), 1500);
       setNotice(ready ? 'Complete 16:9 + 1:1 + 9:16 campaign exported.' : 'Partial campaign exported. Missing/incorrect variants remain clearly marked in the manifest.');
+      emitContinuationReceipt(makeContinuationReceipt({
+        trackId: track.id,
+        source: 'release-campaign',
+        operation: 'campaign-exported',
+        effect: 'review-only',
+        summary: ready ? 'Complete Release Campaign ZIP exported.' : 'Partial Release Campaign ZIP exported.',
+        detail: 'Browser-local release output is ready for review. No R2 or Track Manager write was performed.',
+      }));
     } catch (error) {
       setNotice(`Export failed: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
