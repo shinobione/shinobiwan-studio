@@ -35,7 +35,8 @@ const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const c3Line = /^0\.(?:13|14|15)\.\d+$/.test(version) && codename.startsWith('phase-ux-c3-');
 const authorizedPhase7Successor = /^0\.(?:16|17)\.\d+$/.test(version) && codename.startsWith('phase7-');
-assert.ok(c3Line || authorizedPhase7Successor, `C3 Deep Audio behavior must remain inherited by the accepted C3 line or its explicitly authorized Phase 7 successor, got ${version} / ${codename}.`);
+const authorizedStudioFocusSuccessor = /^0\.17\.\d+$/.test(version) && codename.startsWith('studio-focus-');
+assert.ok(c3Line || authorizedPhase7Successor || authorizedStudioFocusSuccessor, `C3 Deep Audio behavior must remain inherited by the accepted C3 line or its explicitly authorized Phase 7 / Studio Focus successor, got ${version} / ${codename}.`);
 assert.ok(build >= 38, `C3 Studio build must be >= 38, got ${build}.`);
 
-console.log('C3 Deep Audio FULL/PARTIAL/UNAVAILABLE semantics and transport-vs-processing guards passed through the authorized Phase 7 successor.');
+console.log('C3 Deep Audio FULL/PARTIAL/UNAVAILABLE semantics and transport-vs-processing guards passed through the authorized Studio Focus successor.');
