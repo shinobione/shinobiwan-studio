@@ -2,30 +2,32 @@
 
 Artist Content & Intelligence Manager — private orchestration cockpit for the SHINOBIWAN toolchain.
 
-## Current accepted line
+## Current release / accepted lineage
 
 ```text
-Studio          v0.16.0 · Build 46
-Codename        phase7-a-workflow-overview
-Status          PHASE 7-A COMPLETE · REAL USER PASS
+Studio          v0.17.0 · Build 47
+Codename        phase7-b-contextual-receipts
+Status          PHASE 7-B IMPLEMENTED CANDIDATE · REAL USER SMOKE PENDING
 
+Accepted parent Studio v0.16.0 · Build 46 · Phase 7-A REAL USER PASS
 LaunchPAD       2026.08.12.102 · C3-C REAL USER PASS
 Public Worker   v2.7
 Worker Version  ddd90621-35d4-44b0-9c22-4e5a72291d9b
-
 Track Manager   v5.19
 Studio bridge   v1.11
-
 Track-To-Market v0.1.5 · Bridge V2 · REAL USER PASS
 SonicTrace      V2-E Build 06
 Deep Audio      2.0.1-alpha
 LRC Maker       6.3.8
 ```
 
-**PHASE UX is COMPLETE — REAL USER VALIDATED.** Phase 7-A is also complete and accepted. The next Studio roadmap slice is **Phase 7-B — Contextual continuation receipts**.
+**PHASE UX is COMPLETE — REAL USER VALIDATED.** Phase 7-A is complete and accepted. Build 47 is the current Phase 7-B candidate.
 
-See:
+Current docs:
 
+- [`docs/PHASE-7-B-RECEIPTS-BUILD47.md`](docs/PHASE-7-B-RECEIPTS-BUILD47.md)
+- [`docs/PHASE-7-B-SMOKE-CHECKLIST.md`](docs/PHASE-7-B-SMOKE-CHECKLIST.md)
+- [`CHANGELOG-PHASE7-BUILD47.md`](CHANGELOG-PHASE7-BUILD47.md)
 - [`docs/PHASE-UX-FINAL-CLOSEOUT-20260812.md`](docs/PHASE-UX-FINAL-CLOSEOUT-20260812.md)
 - [`docs/TRACK-TO-MARKET-BUILD45-REAL-USER-PASS.md`](docs/TRACK-TO-MARKET-BUILD45-REAL-USER-PASS.md)
 - [`docs/PHASE-7-A-BUILD46-REAL-USER-PASS.md`](docs/PHASE-7-A-BUILD46-REAL-USER-PASS.md)
@@ -33,135 +35,100 @@ See:
 
 ## Phase 7-A — Workflow Overview
 
-Status: **COMPLETE — REAL USER PASS**
+**COMPLETE — REAL USER PASS · Build 46**
 
-Studio route:
-
-`#/workflow`
-
-Pipeline:
+Studio exposes one canonical production route:
 
 ```text
 Identity → Core media → Lyrics → SonicTrace → Release
 ```
 
-For every canonical Track, Studio derives:
+For each Track, the Workflow derives `ready / attention / blocked`, one deterministic Next Action and a deep-link to the existing guarded Track Workspace owner. The Workflow itself remains read-only.
 
-- `ready`, `attention` or `blocked` for each stage;
-- one deterministic Next Action;
-- a deep-link to the existing guarded Track Workspace section that owns that action.
+Accepted checkpoint:
 
-Catalog-level Workflow exposes:
+` safety/post-phase7-a-build46-real-user-pass-20260812-0923 `
 
-- total Tracks;
-- Workflow Ready;
-- Needs Attention;
-- Blocked;
-- SonicTrace Gap;
-- search;
-- Needs Attention / Blocked / Draft / Ready / All filters.
+## Phase 7-B — Contextual continuation receipts
 
-### Phase 7-A safety boundary
+**IMPLEMENTED CANDIDATE · Build 47**
 
-Build 46 is deliberately read-only. It does **not**:
+Phase 7-B closes the return path after a specialist action.
 
-- call Track Manager mutation APIs;
-- write R2;
-- save SonicTrace;
-- save Lyrics;
-- publish/unpublish;
-- move Album membership/order;
-- persist Track-To-Market output;
-- modify LaunchPAD or deploy a Worker.
+The key rule is simple:
 
-Every Next Action simply opens the already-validated specialist surface in Track Workspace.
+> A specialist may report completion, but Studio does not treat that receipt as canonical truth.
 
-Rollback anchors:
+For canonical writes:
 
 ```text
-safety/pre-phase7-authorized-post-build45-20260812-0232
-safety/post-phase7-a-build46-real-user-pass-20260812-0923
+specialist completion
+        ↓
+receipt(trackId + source + operation)
+        ↓
+Studio: VERIFYING
+        ↓
+getCatalogTrack(trackId)
+        ↓
+private Track Manager reread required
+        ↓
+VERIFIED or VERIFICATION ERROR
 ```
 
-## PHASE UX — FINAL STATUS
+For review-only specialist results:
+
+```text
+Track-To-Market matching FINAL
+        ↓
+review-only receipt
+        ↓
+transient Studio review state
+        ↓
+NO R2 WRITE / NO TRACK MANAGER MUTATION
+```
+
+### Build 47 receipt sources
+
+- **LRC Maker embedded** — `lyrics-saved` / canonical-write;
+- **LRC Maker standalone** — allowlisted `shinobiwan:lyrics-saved:v1` / canonical-write;
+- **SonicTrace** — `analysis-saved` / canonical-write;
+- **Track-To-Market** — matching FINAL / review-only.
+
+### Receipt states
+
+- `verifying` — canonical reread in progress;
+- `verified` — private Track Manager reread succeeded;
+- `review-only` — result received, but no canonical write is expected or authorized;
+- `verification-error` — Studio cannot prove the write through the private canonical read layer.
+
+### Safety rules
+
+- receipt `trackId` must match the current Track;
+- mismatched receipts are ignored;
+- stale async verification cannot overwrite a newer receipt;
+- public LaunchPAD fallback is never enough to verify a canonical write;
+- no generic write endpoint is added;
+- no new R2 write route is added;
+- Track-To-Market FINAL remains review-only;
+- specialist/write authorities remain unchanged.
+
+Pre-Build-47 rollback anchor:
+
+` safety/pre-phase7-b-build47-20260812-0948 `
+
+## PHASE UX — CLOSED
 
 **COMPLETE — REAL USER VALIDATED**
 
-### C2.5-A → F
+Final accepted boundaries:
 
-Canonical Album read/write/migration/public cutover and virtual Singles semantics are complete and real-user validated.
+- C2.5-A → F — canonical Album model/write/migration/public cutover + Singles semantics;
+- C3-A — Deep Audio resilience;
+- C3-B — Catalog Intelligence / V2-E parity;
+- C3-C — LaunchPAD Premium Feel accepted at Build 102;
+- Track-To-Market Bridge V2 — Studio Build 45 REAL USER PASS.
 
-Historical closeout: `docs/PHASE-UX-C2-5-CLOSEOUT.md`.
-
-### C3-A — Deep Audio resilience
-
-**COMPLETE — REAL USER PASS**
-
-SonicTrace Build 06 + Studio produced a truthful FULL profile for **Stick to You**, including mastering, Neural, finite 512D embedding, structure and semantic summary.
-
-Checkpoint: `safety/c3-a-real-user-pass-20260811-1900`.
-
-### C3-B — Studio V2-E parity
-
-**COMPLETE — REAL USER PASS**
-
-Builds 42–43 provide canonical read-only Catalog Intelligence:
-
-- deterministic finite-512D projection;
-- acoustic zones separate from Neural sonic families;
-- nearest-neighbor similarity;
-- redundant pairs / outliers / cross-zone bridges;
-- canonical Album/Project intelligence;
-- read-only advisory sequence;
-- explicit analyzed-vs-mappable truthfulness.
-
-Checkpoint: `safety/post-c3-b-real-user-pass-20260811-1958`.
-
-### C3-C — Premium Feel / LaunchPAD corrective line
-
-**COMPLETE — REAL USER PASS**
-
-LaunchPAD Builds 91–102 were iterated against real-user feedback rather than CI-only acceptance. The accepted baseline is LaunchPAD `2026.08.12.102`.
-
-Final accepted points include smooth route motion, Lyrics auto-scroll/layout, mobile Albums/Home/Lyrics cleanup, responsive stable menu ownership, stall-aware player state, locked application pinch zoom, clean player chrome and deterministic Visual Card Share / Download / Copy behavior.
-
-LaunchPAD checkpoints:
-
-```text
-safety/pre-build102-visual-card-feedback-20260812-0220
-safety/post-c3-c-build102-real-user-pass-20260812-0923
-```
-
-### Track-To-Market Bridge V2 — Build 45
-
-**COMPLETE — REAL USER PASS**
-
-Studio v0.15.1 Build 45 added `Release Pack` inside Track Workspace:
-
-```text
-Studio canonical track
-  -> open Track-To-Market v0.1.5
-  -> URL bootstrap: trackId / title / genres
-  -> Bridge V2 ready handshake
-  -> canonical lyrics + richer context by allowlisted postMessage
-  -> DRAFT exploration / FINAL creation
-  -> matching FINAL-only return
-  -> transient Studio review state
-```
-
-Real-user validation confirmed the complete Studio → Track-To-Market → FINAL → Studio path, including correct context/lyrics transfer, matching `trackId`, FINAL-only acceptance and absence of R2/Track Manager writes.
-
-Frozen rules remain:
-
-- explicit Track-To-Market origin;
-- returned `trackId` must match current Track;
-- only `releaseStatus === final` is accepted;
-- DRAFT returns rejected;
-- no R2 write;
-- no Track Manager mutation;
-- returned FINAL remains transient React state.
-
-Rollback anchor: `safety/pre-track-to-market-build45-20260812`.
+Final closeout: [`docs/PHASE-UX-FINAL-CLOSEOUT-20260812.md`](docs/PHASE-UX-FINAL-CLOSEOUT-20260812.md).
 
 ## Architecture roles — frozen
 
@@ -172,11 +139,11 @@ Rollback anchor: `safety/pre-track-to-market-build45-20260812`.
 - **LRC Maker** — lyrics synchronization engine.
 - **Track-To-Market** — release-pack ideation/finalization assistant, not canonical write authority.
 - **Cloudflare R2** — canonical catalog/media/data authority.
-- **GitHub** — application-code authority.
+- **GitHub `main`** — application-code authority.
 
 Canonical `trackId` is the R2 track slug everywhere.
 
-**Phase 7 means orchestration, not centralization.** Studio must not become another catalog, analysis engine, Lyrics authority or generic backend write proxy.
+**Phase 7 means orchestration, not centralization.**
 
 ## Canonical Album contract
 
@@ -192,7 +159,7 @@ Frozen rules:
 - ordered `album.trackIds` is authoritative membership/artistic order;
 - track-manifest `album.id/title` is compatibility cache, not authority;
 - `catalog/index.json` is a rebuildable projection;
-- Singles is a virtual collection derived from Tracks not owned by a canonical Album.
+- Singles is virtual and derived from Tracks not owned by a canonical Album.
 
 Current canonical Albums:
 
@@ -208,22 +175,13 @@ recognized timestamps    = synchronized lyrics
 .lrc                      = optional export/compatibility only
 ```
 
-A missing `.lrc` does not mean lyrics are unsynchronized. `.lrc` never becomes a second source of truth.
+`.lrc` never becomes a second source of truth.
 
 ## Track Manager / protected-write rules
 
-Track Manager remains the only protected canonical write authority. Studio uses operation-specific capabilities such as:
+Track Manager remains the only protected canonical Track write authority. Studio uses operation-specific capabilities only; missing capability blocks that operation. Whole-track delete remains unavailable in Studio.
 
-- `track-create`;
-- `assets`;
-- `catalog-rebuild`;
-- guarded Album capabilities.
-
-Additional advertised capabilities are additive; missing capability for the requested operation still blocks that operation.
-
-Whole-track delete remains unavailable in Studio.
-
-Phase 7-A imports none of these mutation APIs. Phase 7-B must preserve the same authority boundary.
+Build 47 adds no mutation API or generic write proxy.
 
 ## SonicTrace persistence
 
@@ -232,7 +190,7 @@ tracks/<slug>/analysis/sonictrace/latest.json
 tracks/<slug>/analysis/sonictrace/history/<analysisId>.json
 ```
 
-C3-A preserves schema v1 and resilient Deep Audio semantics. C3-B reads the same canonical sidecars and treats only finite 512D embeddings as map/similarity eligible.
+SonicTrace audio bytes remain temporary. Structured analysis sidecars remain canonical only after the existing guarded save path succeeds.
 
 ## Phase 7 roadmap
 
@@ -240,21 +198,15 @@ C3-A preserves schema v1 and resilient Deep Audio semantics. C3-B reads the same
 
 **COMPLETE — REAL USER PASS · Build 46**
 
-Read-only canonical production queue and deep-linked Next Actions.
-
 ### 7-B — Contextual continuation receipts
 
-**NEXT / AUTHORIZED ROADMAP SLICE**
-
-Specialist tools may report completion/result receipts. Studio must re-read canonical state after canonical writes instead of trusting optimistic local copies. Track-To-Market FINAL remains review-only. No generic write endpoint is introduced.
+**CURRENT CANDIDATE · Build 47**
 
 ### 7-C — Guided end-to-end actions
 
 **PLANNED / NOT STARTED**
 
-Guarded resumable New Track → media → metadata → lyrics → analysis → release-readiness flow, using existing operation owners and explicit confirmations.
-
-No generic all-powerful write route is planned.
+Only after 7-B REAL USER PASS: guarded resumable New Track → media → metadata → lyrics → analysis → release readiness, preserving operation-specific confirmations and canonical rereads.
 
 ## Later roadmap
 
@@ -264,33 +216,20 @@ No generic all-powerful write route is planned.
 
 There is no official Phase 11.
 
-## Security / safety
-
-- Cloudflare Access remains mandatory for the private bridge;
-- no Access/R2 secrets ship to GitHub Pages;
-- credentialed CORS never uses wildcard origin;
-- file uploads use native multipart `FormData` without custom headers;
-- no generic arbitrary cross-origin Track write route;
-- Track-To-Market uses explicit origin + FINAL/trackId gates;
-- Phase 7-A is read-only;
-- Phase 7-B receipts must trigger canonical rereads rather than create alternate state authority.
-
 ## Rollback anchors
 
 ```text
-safety/pre-phase7-authorized-post-build45-20260812-0232
+safety/post-phase-ux-final-closeout-20260812-0948
+safety/pre-phase7-b-build47-20260812-0948
 safety/post-phase7-a-build46-real-user-pass-20260812-0923
 safety/pre-track-to-market-build45-20260812
 safety/post-c3-b-real-user-pass-20260811-1958
 safety/c3-a-real-user-pass-20260811-1900
-safety/post-build41-real-user-pass-20260811-1833
 safety/phase-ux-c2-5-complete-20260811-1356
 ```
 
 ## Verification policy
 
-CI is necessary but not sufficient. Real-user smoke remains authoritative for user-facing milestone acceptance.
-
-At this closeout boundary there are **no pending PHASE UX acceptance checks**. Phase 7-B becomes the next candidate line and will require its own CI, deployment and real-user smoke.
+CI/typecheck/build are necessary but not sufficient. Build 47 remains a candidate until real-user receipt smoke passes.
 
 Do not mutate production WAV/cover/lyrics/Album objects merely to manufacture a frontend smoke test.
