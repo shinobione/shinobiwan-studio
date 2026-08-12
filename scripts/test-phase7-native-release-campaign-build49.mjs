@@ -22,9 +22,14 @@ assert.ok(panel.includes('New MASTER concept'), 'Build 49 must expose an explici
 assert.ok(panel.includes('const newMasterConcept = () =>'), 'Reroll behavior must be isolated and inspectable.');
 assert.ok(panel.includes('setMasterPrompt(buildFreshMasterPrompt(track, Boolean(logo), nextConceptIndex))'), 'Reroll must rebuild from canonical track context and current logo state.');
 assert.ok(panel.includes('Existing imported MASTER and derivatives were preserved'), 'UI must state that reroll is non-destructive.');
-assert.ok(!/const newMasterConcept = \(\) => \{[\s\S]*?setMaster\(null\)/.test(panel), 'Reroll must not delete an accepted MASTER.');
-assert.ok(!/const newMasterConcept = \(\) => \{[\s\S]*?setSquare\(null\)/.test(panel), 'Reroll must not delete the existing 1:1.');
-assert.ok(!/const newMasterConcept = \(\) => \{[\s\S]*?setVertical\(null\)/.test(panel), 'Reroll must not delete the existing 9:16.');
+
+const rerollStart = panel.indexOf('const newMasterConcept = () =>');
+const rerollEnd = panel.indexOf('const resetDraft = async () =>', rerollStart);
+assert.ok(rerollStart >= 0 && rerollEnd > rerollStart, 'Reroll function boundaries must remain inspectable.');
+const rerollBody = panel.slice(rerollStart, rerollEnd);
+assert.ok(!rerollBody.includes('setMaster(null)'), 'Reroll must not delete an accepted MASTER.');
+assert.ok(!rerollBody.includes('setSquare(null)'), 'Reroll must not delete the existing 1:1.');
+assert.ok(!rerollBody.includes('setVertical(null)'), 'Reroll must not delete the existing 9:16.');
 
 for (const forbidden of ['fetch(', 'uploadTrackAsset', 'replaceTrackAsset', 'saveTrackMetadata', 'phase4-admin-api', 'admin-api']) {
   assert.ok(!panel.includes(forbidden), `Build 49 concept exploration must remain browser-local/non-canonical: ${forbidden}`);
