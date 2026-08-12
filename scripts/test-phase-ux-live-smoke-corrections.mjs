@@ -88,11 +88,12 @@ const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const phaseUxLine = /^0\.(?:11|12|13|14|15)\./.test(version) && codename.startsWith('phase-ux-');
 const authorizedPhase7 = /^0\.(?:16|17)\./.test(version) && codename.startsWith('phase7-');
-assert.ok(phaseUxLine || authorizedPhase7, `Live-smoke corrective guard must run on validated PHASE UX lineage or an explicitly authorized Phase 7 successor, got ${version} / ${codename}.`);
+const authorizedStudioFocus = /^0\.17\./.test(version) && codename.startsWith('studio-focus-');
+assert.ok(phaseUxLine || authorizedPhase7 || authorizedStudioFocus, `Live-smoke corrective guard must run on validated PHASE UX lineage or an explicitly authorized Phase 7 / Studio Focus successor, got ${version} / ${codename}.`);
 if (phaseUxLine) {
   for (const forbidden of ['phase7', 'phase-7']) assert.ok(!workspace.toLowerCase().includes(forbidden), `Unauthorized Phase 7 workspace marker found during PHASE UX: ${forbidden}.`);
 } else {
-  assert.ok(workspace.includes('<ContinuationReceiptBanner trackId={track.id}'), 'Authorized Phase 7-B may add receipt orchestration only above the previously validated corrective Workspace behavior.');
+  assert.ok(workspace.includes('<ContinuationReceiptBanner trackId={track.id}'), 'Authorized Phase 7-B / Studio Focus successor may preserve receipt orchestration only above the previously validated corrective Workspace behavior.');
 }
 
-console.log('PHASE UX live-smoke corrective guard passed: Track Manager intake parity, canonical Album gating, simple multipart upload, canonical lost-response recovery, editable palette and non-overlapping sticky context survive the authorized Phase 7 successor.');
+console.log('PHASE UX live-smoke corrective guard passed: Track Manager intake parity, canonical Album gating, simple multipart upload, canonical lost-response recovery, editable palette and non-overlapping sticky context survive the authorized Studio Focus successor.');
