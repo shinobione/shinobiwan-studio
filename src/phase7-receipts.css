@@ -1,0 +1,109 @@
+.continuation-receipt {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border: 1px solid rgba(126, 152, 255, .2);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(13, 17, 28, .96), rgba(16, 12, 27, .94));
+  box-shadow: 0 14px 36px rgba(0, 0, 0, .22);
+}
+
+.continuation-receipt-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #7687ff;
+  box-shadow: 0 0 16px rgba(118, 135, 255, .55);
+}
+
+.continuation-receipt.verified {
+  border-color: rgba(74, 225, 159, .25);
+}
+
+.continuation-receipt.verified .continuation-receipt-dot {
+  background: #4ae19f;
+  box-shadow: 0 0 16px rgba(74, 225, 159, .5);
+}
+
+.continuation-receipt.review-only {
+  border-color: rgba(205, 139, 255, .24);
+}
+
+.continuation-receipt.review-only .continuation-receipt-dot {
+  background: #c98bff;
+  box-shadow: 0 0 16px rgba(201, 139, 255, .46);
+}
+
+.continuation-receipt.verification-error {
+  border-color: rgba(255, 116, 116, .28);
+}
+
+.continuation-receipt.verification-error .continuation-receipt-dot {
+  background: #ff7474;
+  box-shadow: 0 0 16px rgba(255, 116, 116, .42);
+}
+
+.continuation-receipt-copy {
+  min-width: 0;
+}
+
+.continuation-receipt-copy span {
+  display: block;
+  margin-bottom: 3px;
+  color: rgba(220, 226, 255, .58);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.continuation-receipt-copy strong {
+  display: block;
+  color: #f7f8ff;
+  font-size: 13px;
+}
+
+.continuation-receipt-copy small {
+  display: block;
+  margin-top: 3px;
+  color: rgba(225, 229, 244, .66);
+  line-height: 1.45;
+}
+
+.continuation-receipt-dismiss {
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(236, 239, 255, .58);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 7px;
+}
+
+.continuation-receipt-dismiss:hover,
+.continuation-receipt-dismiss:focus-visible {
+  color: #fff;
+  background: rgba(255, 255, 255, .06);
+}
+
+@media(max-width:720px) {
+  .continuation-receipt {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 9px;
+    padding: 10px 11px;
+    margin-bottom: 14px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  .continuation-receipt,
+  .continuation-receipt * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
