@@ -2,13 +2,15 @@
 
 Date: 2026-08-13
 
-Status: **CANDIDATE — CI + deployed real-user smoke required**
+Status: **SUPERSEDED AT REAL-USER SMOKE — NOT A REAL USER PASS**
 
 ## Reason
 
 Build 54's Tracks production-library logic passed the first deployed real-user review, but the desktop composition was visually unbalanced: square covers were too dominant while the useful card copy was too small for comfortable daily use.
 
-Build 55 corrects only that presentation issue.
+Build 55 corrected the cover/text balance, but its denser five-card desktop grid exposed a second readability fault during deployed smoke: the fixed five-column production-state row truncated `Audio / Cover / Lyrics / Canvas / Release` into labels such as `Au… / Co… / Lyr…`.
+
+That smoke finding is corrected by **Build 56 — Tracks Status Labels**. Build 55 is therefore preserved as ancestry, not accepted as the final Slice 2 presentation.
 
 ## Runtime changes
 
@@ -47,12 +49,16 @@ Pre-corrective checkpoint:
 
 `safety/pre-build55-tracks-readability-20260813-0047`
 
-Build 55 adds a dedicated CI guard proving:
+Candidate checkpoint after merge/deploy:
 
-- the readability stylesheet is layered after Build 54;
-- desktop density is increased without changing cover aspect/cropping;
-- artist-facing font sizes are raised;
+`safety/studio-focus-build55-candidate-20260813-0054`
+
+Build 55 CI guard continues as successor ancestry proving:
+
+- the readability stylesheet stays layered after Build 54;
+- desktop density remains improved without changing cover aspect/cropping;
+- artist-facing font sizes stay raised;
 - no production information is hidden;
 - Build 54 catalog behavior and Phase 7-A workflow authority remain intact.
 
-Acceptance requires deployed browser review; CI alone does not grant REAL USER PASS.
+Build 55 did **not** receive REAL USER PASS because the deployed production-state labels were truncated. Build 56 must pass deployed browser review before Slice 2 closes.

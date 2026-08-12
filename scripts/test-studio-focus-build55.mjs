@@ -9,10 +9,13 @@ const css = read('src/studio-focus-readability.css');
 const release = read('src/release.ts');
 const pkg = JSON.parse(read('package.json'));
 
-assert.match(release, /version:\s*'0\.17\.5'/);
-assert.match(release, /build:\s*55/);
-assert.match(release, /studio-focus-tracks-readability/);
-assert.equal(pkg.version, '0.17.5');
+const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
+assert.match(version, /^0\.17\.\d+$/);
+assert.ok(build >= 55, `Build 55 readability ancestry requires Build 55 or later, got ${build}.`);
+assert.ok(codename.startsWith('studio-focus-'), `Build 55 readability ancestry must remain under Studio Focus, got ${codename}.`);
+assert.equal(pkg.version, version);
 assert.ok(pkg.scripts['check:focus']?.includes('test-studio-focus-build55.mjs'), 'Build 55 readability guard must run in the Studio Focus chain.');
 assert.ok(main.indexOf("import './studio-focus-readability.css';") > main.indexOf("import './studio-focus.css';"), 'Readability corrective must layer after the accepted Build 54 Studio Focus stylesheet.');
 
@@ -52,4 +55,4 @@ for (const protectedWorkflow of [
   'track.publishing.publishable',
 ]) assert.ok(workflow.includes(protectedWorkflow), `Build 55 must not replace Phase 7-A readiness authority: ${protectedWorkflow}.`);
 
-console.log('Studio Focus Build 55 guard passed: desktop covers are denser, artist-facing Tracks text is larger, square artwork is preserved, and Build 54 workflow behavior is unchanged.');
+console.log(`Studio Focus Build 55 ancestry passed under ${version} Build ${build}: denser covers and larger artist-facing Tracks copy remain intact while successor presentation fixes evolve.`);

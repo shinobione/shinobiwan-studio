@@ -1,0 +1,29 @@
+/* Studio v0.17.6 · Build 56 — Tracks production-state label readability.
+   Layered after Build 55 readability so the denser five-card desktop library stays
+   intact while Audio / Cover / Lyrics / Canvas / Release remain fully readable. */
+
+.catalog-production-state{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:6px;
+}
+
+.catalog-production-state span{
+  flex:0 0 auto;
+  min-width:max-content;
+  max-width:none;
+  padding:8px 10px 8px 18px;
+  overflow:visible;
+  text-overflow:clip;
+  white-space:nowrap;
+  font-size:.7rem;
+  line-height:1.1;
+}
+
+.catalog-production-state span::before{left:8px}
+
+@media(max-width:720px){
+  .catalog-production-state{gap:7px}
+  .catalog-production-state span{font-size:.74rem;padding:8px 11px 8px 19px}
+}
