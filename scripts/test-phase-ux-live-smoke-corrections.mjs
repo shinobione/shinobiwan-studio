@@ -12,6 +12,7 @@ const service = read('src/services/phase4-admin-api.ts');
 const workspace = read('src/components/TrackWorkspace.tsx');
 const workspaceCss = read('src/workspace.css');
 const foundationCss = read('src/ux-foundation.css');
+const release = read('src/release.ts');
 
 const compiledIntake = ts.transpileModule(intakeSource, {
   compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
@@ -80,8 +81,18 @@ assert.ok(!foundationCss.includes('.workspace-tabs { position: sticky; top: 205p
 assert.ok(workspace.includes('workspace-sticky-context'));
 assert.ok(workspaceCss.includes('.workspace-tab-links'));
 
-for (const source of [create, assets, service, workspace]) {
-  for (const forbidden of ['phase7', 'phase-7']) assert.ok(!source.toLowerCase().includes(forbidden), `Unauthorized Phase 7 runtime marker found: ${forbidden}.`);
+for (const source of [create, assets, service]) {
+  for (const forbidden of ['phase7', 'phase-7']) assert.ok(!source.toLowerCase().includes(forbidden), `Canonical intake/write layer acquired unauthorized Phase 7 coupling: ${forbidden}.`);
+}
+const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
+const phaseUxLine = /^0\.(?:11|12|13|14|15)\./.test(version) && codename.startsWith('phase-ux-');
+const authorizedPhase7 = /^0\.(?:16|17)\./.test(version) && codename.startsWith('phase7-');
+assert.ok(phaseUxLine || authorizedPhase7, `Live-smoke corrective guard must run on validated PHASE UX lineage or an explicitly authorized Phase 7 successor, got ${version} / ${codename}.`);
+if (phaseUxLine) {
+  for (const forbidden of ['phase7', 'phase-7']) assert.ok(!workspace.toLowerCase().includes(forbidden), `Unauthorized Phase 7 workspace marker found during PHASE UX: ${forbidden}.`);
+} else {
+  assert.ok(workspace.includes('<ContinuationReceiptBanner trackId={track.id}'), 'Authorized Phase 7-B may add receipt orchestration only above the previously validated corrective Workspace behavior.');
 }
 
-console.log('PHASE UX live-smoke corrective guard passed: Track Manager intake parity, canonical Album gating, simple multipart upload, canonical lost-response recovery, editable palette and non-overlapping sticky context protected.');
+console.log('PHASE UX live-smoke corrective guard passed: Track Manager intake parity, canonical Album gating, simple multipart upload, canonical lost-response recovery, editable palette and non-overlapping sticky context survive the authorized Phase 7 successor.');
