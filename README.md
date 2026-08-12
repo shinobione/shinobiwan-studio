@@ -2,18 +2,19 @@
 
 Artist Content & Intelligence Manager — private orchestration cockpit for the SHINOBIWAN toolchain.
 
-## Current accepted / corrective line
+## Current line
 
 ```text
-Accepted baseline:
-Studio          v0.16.0 · Build 46 · PHASE 7-A REAL USER PASS
-LaunchPAD       2026.08.12.102 · C3-C REAL USER PASS
-Track-To-Market v0.1.5 · Bridge V2 transport/finality REAL USER PASS
+Accepted baselines:
+LaunchPAD       2026.08.12.102        C3-C REAL USER PASS
+Studio          v0.15.1 · Build 45    TTM Bridge V2 REAL USER PASS
+Studio          v0.16.0 · Build 46    Phase 7-A REAL USER PASS
 
-Current corrective candidate:
-Studio          v0.16.1 · Build 47
-Codename        phase7-a-ttm-v3-staged-preview
-Track-To-Market v0.2.0 · Release Orchestrator · Bridge V3 · DEPLOYED
+Current native Release Campaign line:
+Studio          v0.16.1 · Build 47    staged-preview corrective / historical proof
+Studio          v0.16.2 · Build 48    native Release Campaign · partial real-user smoke
+Studio          v0.16.3 · Build 49    MASTER concept reroll + direct Flow shortcut candidate
+Track-To-Market v0.2.0               standalone rollback/reference during migration
 
 Track Manager   v5.19
 Studio bridge   v1.11
@@ -25,27 +26,91 @@ LRC Maker       6.3.8
 
 **PHASE UX remains COMPLETE — REAL USER VALIDATED. Phase 7-A Build 46 remains COMPLETE — REAL USER PASS.**
 
-After that accepted closeout, a deeper Track-To-Market product review exposed two UX/product limitations that did not invalidate the already-proven Bridge V2 transport/finality contract:
-
-1. the manually uploaded SHINOBIWAN logo was not explicitly carried into the external premium-provider handoff as a reference file;
-2. premium imported covers received an unwanted generic title overlay in Track-To-Market.
-
-Track-To-Market v0.2.0 fixes those product issues. Studio Build 47 is the bounded consumer corrective: it stages the **actual selected FINAL artwork preview + provenance** while keeping every canonical write authority frozen.
+Build 48 moved the useful Track-To-Market release workflow directly into the Track Workspace. Build 49 is a bounded real-user corrective discovered during that native smoke: Studio can now request a genuinely new MASTER concept from scratch without destroying accepted visuals, and can open Google Flow directly from the MASTER handoff row.
 
 See:
 
 - [`docs/PHASE-UX-FINAL-CLOSEOUT-20260812.md`](docs/PHASE-UX-FINAL-CLOSEOUT-20260812.md)
 - [`docs/TRACK-TO-MARKET-BUILD45-REAL-USER-PASS.md`](docs/TRACK-TO-MARKET-BUILD45-REAL-USER-PASS.md)
 - [`docs/PHASE-7-A-BUILD46-REAL-USER-PASS.md`](docs/PHASE-7-A-BUILD46-REAL-USER-PASS.md)
-- [`docs/PHASE-7-A-TTM-V3-BUILD47.md`](docs/PHASE-7-A-TTM-V3-BUILD47.md)
-- [`CHANGELOG-PHASE7-BUILD47.md`](CHANGELOG-PHASE7-BUILD47.md)
+- [`CHANGELOG-PHASE7-BUILD49.md`](CHANGELOG-PHASE7-BUILD49.md)
 - [`docs/ROADMAP-CURRENT.md`](docs/ROADMAP-CURRENT.md)
 
-## Phase 7-A — Workflow Overview
+## Architecture roles — frozen
 
-Status: **COMPLETE — REAL USER PASS · Build 46**
+- **Studio** — private artist cockpit / orchestrator and native Release Campaign workspace.
+- **LaunchPAD** — public listener product.
+- **Track Manager** — protected canonical write authority.
+- **SonicTrace** — audio intelligence / Catalog Intelligence engine.
+- **LRC Maker** — lyrics synchronization engine.
+- **Track-To-Market standalone** — rollback/reference during native migration; no longer the intended primary release-campaign UX.
+- **Cloudflare R2** — canonical catalog/media/data authority.
+- **GitHub** — application-code authority.
 
-Studio route: `#/workflow`
+Canonical `trackId` is the R2 track slug everywhere.
+
+**Phase 7 means orchestration, not centralization.**
+
+## Native Release Campaign — Build 48 → Build 49
+
+Studio route: Track Workspace → `Release Pack`.
+
+Visual contract:
+
+```text
+Canonical track context
+        ↓
+Premium MASTER handoff
+        ↓
+MASTER 16:9 selected/imported
+        ├── 1:1 generated from MASTER 16:9 reference
+        └── 9:16 generated independently from the same MASTER 16:9 reference
+```
+
+The 1:1 and 9:16 are sibling derivatives. **9:16 is never derived from 1:1.** This mirrors the proven manual Google Flow workflow and avoids cumulative visual drift.
+
+### Build 48 established
+
+- native provider handoff inside Studio;
+- optional authoritative SHINOBIWAN logo reference;
+- faithful premium 16:9 MASTER import;
+- anchored 1:1 and 9:16 handoffs;
+- actual aspect/dimension validation;
+- three-format campaign review;
+- browser-local IndexedDB draft persistence;
+- SoundCloud/social/tags;
+- non-canonical ZIP export;
+- no external TTM popup in the primary path;
+- no R2 or Track Manager write.
+
+### Build 49 corrective
+
+Real-user smoke showed that an editable MASTER prompt was not enough: creative exploration needs an explicit **from-scratch concept reroll**.
+
+Build 49 adds:
+
+- `New MASTER concept`;
+- multiple deliberately distinct visual concept families;
+- explicit creative reset that ignores the previous prompt/composition/scene/visual metaphor;
+- persisted `masterConceptIndex` across refreshes;
+- non-destructive rerolls: accepted MASTER/1:1/9:16 remain visible until the user explicitly replaces the MASTER;
+- direct **`Open Google Flow ↗`** shortcut to `https://labs.google/fx/fr/tools/flow/`;
+- Flow opens in a separate tab with `noopener noreferrer`, preserving the Studio draft and imported campaign state.
+
+Only importing/replacing a new MASTER invalidates the existing derivative slots, because they would no longer belong to the selected source of truth.
+
+## Premium provider strategy
+
+1. **Google Flow / Gemini / ChatGPT Images** — FINAL-quality external-provider handoff.
+2. **Local ComfyUI / SD3.5** — DRAFT exploration only unless quality materially improves.
+3. **Cloudflare FLUX** — DRAFT/fallback only.
+
+Studio orchestrates campaign context/coherence; it does not pretend a weaker generator is release-ready.
+
+## Phase 7 roadmap
+
+### 7-A — Workflow Overview
+**COMPLETE — REAL USER PASS · Build 46**
 
 Pipeline:
 
@@ -53,144 +118,28 @@ Pipeline:
 Identity → Core media → Lyrics → SonicTrace → Release
 ```
 
-For every canonical Track, Studio derives `ready`, `attention` or `blocked`, one deterministic Next Action and a deep-link to the established guarded Track Workspace surface.
+### Native Release Campaign priority slice
 
-Build 46 remains deliberately read-only. It does not call Track Manager mutation APIs, write R2, save SonicTrace/Lyrics, publish, mutate Album order/membership, persist Track-To-Market output or modify LaunchPAD.
+- Build 47 — historical staged-preview proof.
+- Build 48 — native Release Campaign candidate; partial real-user smoke passed and exposed missing concept reroll.
+- Build 49 — concept-reroll + direct Flow shortcut corrective; **real-user smoke required**.
 
-Rollback anchors:
+### 7-B — Contextual continuation receipts
+**AUTHORIZED / DEFERRED TO BUILD 50+ UNTIL NATIVE RELEASE CAMPAIGN ACCEPTANCE**
 
-```text
-safety/pre-phase7-authorized-post-build45-20260812-0232
-safety/post-phase7-a-build46-real-user-pass-20260812-0923
-```
+Contract remains:
 
-## Phase 7-A post-pass corrective — Track-To-Market V3 / Build 47
+- specialist receipts scoped by canonical `trackId` + source/operation;
+- canonical reread after canonical writes;
+- optimistic child/local state never authoritative;
+- stale/mismatched receipts ignored;
+- no generic write endpoint;
+- existing operation owners unchanged.
 
-Status: **IMPLEMENTED CANDIDATE — REAL USER CORRECTIVE SMOKE PENDING**
+### 7-C — Guided end-to-end actions
+**PLANNED / NOT STARTED**
 
-This is intentionally **not** Phase 7-B. It upgrades the accepted Build 45/46 integration surface before continuation receipts begin.
-
-Flow:
-
-```text
-Canonical Track Workspace
-  → Track-To-Market V0.2 Release Orchestrator
-  → premium provider handoff + explicit logo reference
-  → FINAL import preserved by default
-  → optional release assets / ZIP
-  → Bridge V3 FINAL artwork preview + provenance
-  → Studio staged review
-```
-
-### What Studio receives
-
-- compressed preview of the actual selected FINAL artwork;
-- provider / source model;
-- artwork strategy (`integrated` / `clean`);
-- branding treatment (`preserve` / `logo-only` / `editorial`);
-- mode / bridge version;
-- SoundCloud copy and social caption.
-
-Preview is accepted only as `data:image/*` and capped at 2.5 MB.
-
-### Frozen Bridge gates
-
-- expected GitHub Pages origin only;
-- exact child Window opened by Studio;
-- matching canonical `trackId`;
-- `releaseStatus === final` only;
-- DRAFT returns rejected.
-
-### Build 47 authority boundary
-
-**Stage + review only:**
-
-- no R2 write;
-- no Track Manager mutation API import;
-- no canonical cover replacement;
-- no preview persistence;
-- no automatic publishing.
-
-Rollback anchor:
-
-`safety/pre-build47-ttm-v3-preview-20260812`
-
-## Track-To-Market v0.2 — Release Orchestrator
-
-The accepted V0.1.5 Bridge V2 remains the proof of Studio ↔ TTM context/FINAL transport. V0.2 evolves the **product workflow** around that proven bridge.
-
-Quality hierarchy:
-
-1. **PREMIUM FINAL** — ChatGPT Images / Google Flow / Gemini.
-2. **LOCAL DRAFT** — ComfyUI + RTX, ideation only.
-3. **CLOUD DRAFT** — Workers AI / FLUX, ideation only.
-
-V0.2 changes:
-
-- default premium strategy is `Integrated`: provider composes the exact title and supplied logo as part of the artwork;
-- when a real logo is uploaded, TTM explicitly instructs the provider to **attach that exact logo file as a reference image**;
-- `Clean` artwork-only strategy remains optional;
-- premium imports enter as `Original FINAL` with **no automatic overlay**;
-- optional `Logo only` / `Editorial` treatments are explicit and reversible;
-- 1:1 / 9:16 adaptation uses safe-fit preservation rather than silent rebranding/cropping;
-- FINAL ZIP includes provider handoff, logo reference, original source when relevant, release texts/assets and V0.2 provenance;
-- Bridge V3 returns the staged FINAL preview/provenance to Studio.
-
-Track-To-Market still has **no canonical write authority**.
-
-TTM rollback anchor:
-
-`safety/pre-v0.2-release-orchestrator-20260812`
-
-## PHASE UX — FINAL STATUS
-
-**COMPLETE — REAL USER VALIDATED**
-
-### C2.5-A → F
-Canonical Album read/write/migration/public cutover and virtual Singles semantics are complete and real-user validated.
-
-### C3-A — Deep Audio resilience
-**COMPLETE — REAL USER PASS**
-
-SonicTrace Build 06 + Studio produced a truthful FULL profile for **Stick to You**, including mastering, Neural, finite 512D embedding, structure and semantic summary.
-
-Checkpoint: `safety/c3-a-real-user-pass-20260811-1900`.
-
-### C3-B — Studio V2-E parity
-**COMPLETE — REAL USER PASS**
-
-Builds 42–43 provide canonical read-only Catalog Intelligence with finite-512D projection, acoustic zones, Neural families, nearest-neighbor similarity, redundant/outlier/bridge insights, Album/Project intelligence and explicit analyzed-vs-mappable truthfulness.
-
-Checkpoint: `safety/post-c3-b-real-user-pass-20260811-1958`.
-
-### C3-C — Premium Feel / LaunchPAD corrective line
-**COMPLETE — REAL USER PASS**
-
-LaunchPAD Builds 91–102 were iterated against real-user feedback. Accepted baseline: `2026.08.12.102`.
-
-Checkpoint: `safety/post-c3-c-build102-real-user-pass-20260812-0923`.
-
-### Track-To-Market Bridge V2 — Build 45
-**COMPLETE — REAL USER PASS (transport/finality contract)**
-
-Real-user validation confirmed Studio → TTM → FINAL → Studio context/lyrics transfer, matching `trackId`, FINAL-only acceptance and absence of R2/Track Manager writes.
-
-Build 47 does not revoke that pass; it improves the later-observed premium artwork workflow and review quality.
-
-## Architecture roles — frozen
-
-- **Studio** — private artist cockpit / orchestrator.
-- **LaunchPAD** — public listener product.
-- **Track Manager** — protected canonical write authority.
-- **SonicTrace** — audio intelligence / Catalog Intelligence engine.
-- **LRC Maker** — lyrics synchronization engine.
-- **Track-To-Market** — release orchestration/finalization assistant, not canonical write authority.
-- **Cloudflare R2** — canonical catalog/media/data authority.
-- **GitHub** — application-code authority.
-
-Canonical `trackId` is the R2 track slug everywhere.
-
-**Phase 7 means orchestration, not centralization.**
+Only after 7-B validation.
 
 ## Canonical Album contract
 
@@ -206,8 +155,6 @@ albums/<album-id>/thumbnail/thumbnail.webp
 - `catalog/index.json` is rebuildable projection;
 - Singles is a virtual collection.
 
-Current canonical Albums: Neon Heartbreaks, Coal to Diamond, Love Letters from Saigon.
-
 ## Canonical Lyrics contract
 
 ```text
@@ -220,9 +167,9 @@ recognized timestamps    = synchronized lyrics
 
 ## Track Manager / protected-write rules
 
-Track Manager remains the protected canonical write authority. Studio uses operation-specific capabilities such as `track-create`, `assets`, `catalog-rebuild` and guarded Album capabilities. Missing capability blocks that operation. Whole-track delete remains unavailable in Studio.
+Track Manager remains the protected canonical write authority. Studio uses operation-specific capabilities. Missing capability blocks that operation. Whole-track delete remains unavailable in Studio.
 
-Build 47 imports none of these mutation APIs.
+The native Release Campaign in Builds 48/49 imports **none** of these mutation APIs and performs no canonical write.
 
 ## SonicTrace persistence
 
@@ -233,47 +180,21 @@ tracks/<slug>/analysis/sonictrace/history/<analysisId>.json
 
 C3-A/C3-B contracts remain unchanged.
 
-## Phase 7 roadmap
+## Safety
 
-### 7-A — Workflow Overview
-**COMPLETE — REAL USER PASS · Build 46**
-
-### 7-A corrective — TTM V3 staged review
-**CURRENT CANDIDATE · Build 47**
-
-Correct the premium TTM workflow/review layer without introducing a new authority.
-
-### 7-B — Contextual continuation receipts
-**NEXT AFTER BUILD 47 CORRECTIVE SMOKE · FIRST AVAILABLE BUILD 48**
-
-Specialist tools may report completion/result receipts. Studio must re-read canonical state after canonical writes instead of trusting optimistic child/local copies. No generic write endpoint is introduced.
-
-### 7-C — Guided end-to-end actions
-**PLANNED / NOT STARTED**
-
-Guarded resumable New Track → media → metadata → lyrics → analysis → release-readiness flow using existing operation owners and explicit confirmations.
-
-## Later roadmap
-
-- **Phase 8** — Dashboard Intelligence & Content Health.
-- **Phase 9** — Security / reliability / PWA hardening.
-- **Phase 10** — progressive extraction of mature shared engines.
-
-There is no official Phase 11.
-
-## Security / safety
-
-- Cloudflare Access remains mandatory for the private bridge;
+- Cloudflare Access remains mandatory for private protected-write bridges;
 - no Access/R2 secrets ship to GitHub Pages;
 - credentialed CORS never uses wildcard origin;
 - no generic arbitrary cross-origin Track write route;
-- TTM requires origin + exact-child + FINAL + trackId gates;
-- staged artwork preview is transient browser memory only;
-- future 7-B receipts must trigger canonical rereads rather than create alternate authority.
+- Release Campaign browser-local state never masquerades as canonical R2 state;
+- external provider links are navigation only, not API/key integrations;
+- future Phase 7-B receipts must trigger canonical rereads rather than create alternate authority.
 
 ## Rollback anchors
 
 ```text
+safety/pre-build49-master-concept-reroll-20260812
+safety/pre-build48-native-release-campaign-20260812-1707
 safety/pre-build47-ttm-v3-preview-20260812
 safety/pre-v0.2-release-orchestrator-20260812   # Track-To-Market repo
 safety/pre-phase7-authorized-post-build45-20260812-0232
@@ -281,12 +202,20 @@ safety/post-phase7-a-build46-real-user-pass-20260812-0923
 safety/pre-track-to-market-build45-20260812
 safety/post-c3-b-real-user-pass-20260811-1958
 safety/c3-a-real-user-pass-20260811-1900
-safety/post-build41-real-user-pass-20260811-1833
-safety/phase-ux-c2-5-complete-20260811-1356
 ```
 
 ## Verification policy
 
-CI is necessary but not sufficient. Accepted Build 102/45/46 history remains accepted. **Build 47 / TTM V0.2 is a new post-pass corrective candidate and requires its own real-user smoke.**
+CI is necessary but not sufficient. Accepted Build 102/45/46 history remains accepted. Build 49 is a native Release Campaign corrective candidate and requires real-user proof of:
+
+- from-scratch MASTER concept reroll;
+- accepted visuals preserved during exploration;
+- direct Google Flow shortcut without Studio draft loss;
+- logo reference handoff;
+- faithful 16:9 MASTER import;
+- coherent anchored 1:1 + 9:16;
+- three-format review;
+- export;
+- no canonical writes/regressions.
 
 Do not mutate production WAV/cover/lyrics/Album objects merely to manufacture a frontend smoke test.
