@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { makeContinuationReceipt, type ContinuationReceipt } from '../phase7-receipts';
 import { studioConfig } from '../services/config';
 import type { StudioTrackDetail } from '../types/studio';
 
@@ -44,7 +45,7 @@ function compactVisualDirection(track: StudioTrackDetail) {
   ].filter(Boolean).join('\n');
 }
 
-export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
+export function TrackToMarketPanel({ track, onReceipt }: { track: StudioTrackDetail; onReceipt?: (receipt: ContinuationReceipt) => Promise<void> | void }) {
   const childRef = useRef<Window | null>(null);
   const [bridgeState, setBridgeState] = useState<BridgeState>('idle');
   const [bridgeDetail, setBridgeDetail] = useState('Not opened yet.');
@@ -91,7 +92,7 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
           setBridgeDetail('Rejected non-FINAL Track-To-Market return. No canonical action taken.');
           return;
         }
-        setLastFinal({
+        const returned: ReturnedFinalPack = {
           version: typeof data.version === 'string' ? data.version : undefined,
           trackId: track.id,
           releaseStatus: 'final',
@@ -99,15 +100,25 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
           artworkModel: typeof data.artworkModel === 'string' ? data.artworkModel : undefined,
           mode: typeof data.mode === 'string' ? data.mode : undefined,
           pack: data.pack && typeof data.pack === 'object' ? data.pack as ReturnedFinalPack['pack'] : undefined,
-        });
+        };
+        setLastFinal(returned);
         setBridgeState('final-received');
-        setBridgeDetail('FINAL pack returned for review. Build 45 does not write it to R2 or Track Manager.');
+        setBridgeDetail('FINAL pack returned for review. Build 47 still does not write it to R2 or Track Manager.');
+        void onReceipt?.(makeContinuationReceipt({
+          trackId: track.id,
+          source: 'track-to-market',
+          operation: 'final-pack-received',
+          effect: 'review-only',
+          summary: 'FINAL release pack returned for review.',
+          detail: 'Review-only receipt: no canonical write is expected or authorized from Track-To-Market.',
+          sourceRevision: returned.version,
+        }));
       }
     };
 
     globalThis.addEventListener('message', onMessage);
     return () => globalThis.removeEventListener('message', onMessage);
-  }, [input, track.id]);
+  }, [input, onReceipt, track.id]);
 
   const openTrackToMarket = () => {
     const child = globalThis.open(launchUrl, 'shinobiwan-track-to-market');
@@ -144,13 +155,14 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
       </article>
 
       <article className="panel ttm-safety-card">
-        <span className="eyebrow">BUILD 45 / SAFETY</span>
+        <span className="eyebrow">BUILD 47 / SAFETY</span>
         <h3>Review only</h3>
         <ul>
           <li>No R2 write from this panel.</li>
           <li>No Track Manager mutation API imported.</li>
           <li>DRAFT returns are rejected.</li>
           <li>Only a matching FINAL trackId is accepted in memory.</li>
+          <li>FINAL creates a review-only continuation receipt, never a canonical completion claim.</li>
         </ul>
       </article>
     </div>
