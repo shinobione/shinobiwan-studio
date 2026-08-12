@@ -6,6 +6,7 @@ const TTME_ORIGIN = 'https://shinobione.github.io';
 const READY_MESSAGE = 'shinobiwan:track-to-market:ready';
 const INPUT_MESSAGE = 'shinobiwan:track-to-market:input';
 const PACK_MESSAGE = 'shinobiwan:track-to-market:pack';
+const MAX_PREVIEW_DATA_URL = 2_500_000;
 
 interface ReturnedFinalPack {
   version?: string;
@@ -14,6 +15,9 @@ interface ReturnedFinalPack {
   artworkProvider?: string;
   artworkModel?: string;
   mode?: string;
+  artworkStrategy?: 'integrated' | 'clean';
+  brandingMode?: 'preserve' | 'logo-only' | 'editorial';
+  previewDataUrl?: string;
   pack?: {
     coverPrompt?: string;
     soundcloudDescription?: string;
@@ -44,6 +48,13 @@ function compactVisualDirection(track: StudioTrackDetail) {
   ].filter(Boolean).join('\n');
 }
 
+function validatedPreview(value: unknown): string | undefined {
+  if (typeof value !== 'string') return undefined;
+  if (!value.startsWith('data:image/')) return undefined;
+  if (value.length > MAX_PREVIEW_DATA_URL) return undefined;
+  return value;
+}
+
 export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
   const childRef = useRef<Window | null>(null);
   const [bridgeState, setBridgeState] = useState<BridgeState>('idle');
@@ -58,6 +69,7 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
     audioStyle: compactAudioStyle(track),
     style: compactVisualDirection(track),
     lyrics: track.lyricsRaw || '',
+    artworkStrategy: 'integrated' as const,
   }), [track]);
 
   const launchUrl = useMemo(() => {
@@ -78,7 +90,7 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
       if (!data || typeof data.type !== 'string') return;
 
       if (data.type === READY_MESSAGE) {
-        child.postMessage({ type: INPUT_MESSAGE, version: '0.1.5', input }, TTME_ORIGIN);
+        child.postMessage({ type: INPUT_MESSAGE, version: '0.2.0', input }, TTME_ORIGIN);
         setBridgeState('ready');
         setBridgeDetail(`Bridge ${typeof data.version === 'string' ? data.version : 'ready'} · full track context sent.`);
         return;
@@ -91,6 +103,9 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
           setBridgeDetail('Rejected non-FINAL Track-To-Market return. No canonical action taken.');
           return;
         }
+
+        const artworkStrategy = data.artworkStrategy === 'integrated' || data.artworkStrategy === 'clean' ? data.artworkStrategy : undefined;
+        const brandingMode = data.brandingMode === 'preserve' || data.brandingMode === 'logo-only' || data.brandingMode === 'editorial' ? data.brandingMode : undefined;
         setLastFinal({
           version: typeof data.version === 'string' ? data.version : undefined,
           trackId: track.id,
@@ -98,10 +113,13 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
           artworkProvider: typeof data.artworkProvider === 'string' ? data.artworkProvider : undefined,
           artworkModel: typeof data.artworkModel === 'string' ? data.artworkModel : undefined,
           mode: typeof data.mode === 'string' ? data.mode : undefined,
+          artworkStrategy,
+          brandingMode,
+          previewDataUrl: validatedPreview(data.previewDataUrl),
           pack: data.pack && typeof data.pack === 'object' ? data.pack as ReturnedFinalPack['pack'] : undefined,
         });
         setBridgeState('final-received');
-        setBridgeDetail('FINAL pack returned for review. Build 45 does not write it to R2 or Track Manager.');
+        setBridgeDetail('FINAL artwork + release pack returned for review. Build 47 still performs no R2 or Track Manager write.');
       }
     };
 
@@ -118,15 +136,15 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
     }
     childRef.current = child;
     setBridgeState('waiting');
-    setBridgeDetail('Track-To-Market opened. Waiting for Bridge V2 ready handshake…');
+    setBridgeDetail('Track-To-Market opened. Waiting for Bridge V3 ready handshake…');
   };
 
   return <section className="ttm-workspace">
     <article className="panel ttm-hero">
       <div>
-        <span className="eyebrow">RELEASE PACK / V0.2 BRIDGE</span>
+        <span className="eyebrow">RELEASE PACK / V0.2 ORCHESTRATOR</span>
         <h3>Track-To-Market</h3>
-        <p>Open the standalone engine with this canonical track context. Title, genres and trackId bootstrap the tab; lyrics and richer context are transferred only after the secure Bridge V2 handshake.</p>
+        <p>Open the standalone orchestrator with this canonical track context. TTM prepares the premium provider handoff, references, faithful FINAL import and release assets, then stages the actual selected artwork back here for review.</p>
       </div>
       <button className="primary-btn" type="button" onClick={openTrackToMarket}>Open Track-To-Market <span>↗</span></button>
     </article>
@@ -139,18 +157,19 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
         <dl>
           <div><dt>trackId</dt><dd>{track.id}</dd></div>
           <div><dt>Lyrics payload</dt><dd>{track.lyricsRaw ? `${track.lyricsRaw.length.toLocaleString()} chars via postMessage` : 'No canonical lyrics'}</dd></div>
-          <div><dt>Target</dt><dd>Track-To-Market v0.1.5+</dd></div>
+          <div><dt>Target</dt><dd>Track-To-Market v0.2.0+</dd></div>
         </dl>
       </article>
 
       <article className="panel ttm-safety-card">
-        <span className="eyebrow">BUILD 45 / SAFETY</span>
-        <h3>Review only</h3>
+        <span className="eyebrow">BUILD 47 / SAFETY</span>
+        <h3>Stage + review only</h3>
         <ul>
           <li>No R2 write from this panel.</li>
           <li>No Track Manager mutation API imported.</li>
           <li>DRAFT returns are rejected.</li>
-          <li>Only a matching FINAL trackId is accepted in memory.</li>
+          <li>Only matching FINAL trackId returns are accepted.</li>
+          <li>Artwork preview is transient browser memory only.</li>
         </ul>
       </article>
     </div>
@@ -166,15 +185,25 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
     </article>
 
     {lastFinal && <article className="panel ttm-final-card">
-      <div className="ttm-final-head"><div><span className="eyebrow">FINAL / RETURNED</span><h3>Release pack received</h3></div><span className="ttm-final-badge">FINAL</span></div>
-      <div className="ttm-context-grid">
-        <div><span>Provider</span><strong>{lastFinal.artworkProvider || 'external-ai'}</strong></div>
-        <div><span>Model/source</span><strong>{lastFinal.artworkModel || 'Premium external import'}</strong></div>
-        <div><span>Mode</span><strong>{lastFinal.mode || 'quality-import'}</strong></div>
-        <div><span>Bridge</span><strong>{lastFinal.version || '0.1.5'}</strong></div>
+      <div className="ttm-final-head"><div><span className="eyebrow">FINAL / STAGED FROM TTM</span><h3>Release pack received</h3></div><span className="ttm-final-badge">FINAL</span></div>
+      <div className={`ttm-final-stage ${lastFinal.previewDataUrl ? 'has-preview' : ''}`}>
+        {lastFinal.previewDataUrl && <div className="ttm-final-preview"><img src={lastFinal.previewDataUrl} alt={`${track.title} FINAL artwork staged from Track-To-Market`} /></div>}
+        <div className="ttm-final-details">
+          <div className="ttm-context-grid">
+            <div><span>Provider</span><strong>{lastFinal.artworkProvider || 'external-ai'}</strong></div>
+            <div><span>Source/model</span><strong>{lastFinal.artworkModel || 'Premium external import'}</strong></div>
+            <div><span>Artwork</span><strong>{lastFinal.artworkStrategy || 'integrated'}</strong></div>
+            <div><span>Brand treatment</span><strong>{lastFinal.brandingMode || 'preserve'}</strong></div>
+          </div>
+          <div className="ttm-context-grid ttm-context-grid-compact">
+            <div><span>Mode</span><strong>{lastFinal.mode || 'quality-import'}</strong></div>
+            <div><span>Bridge</span><strong>{lastFinal.version || '0.2.0'}</strong></div>
+          </div>
+          {lastFinal.pack?.soundcloudDescription && <div className="ttm-return-copy"><span>SoundCloud</span><p>{lastFinal.pack.soundcloudDescription}</p></div>}
+          {lastFinal.pack?.caption && <div className="ttm-return-copy"><span>Social</span><p>{lastFinal.pack.caption}</p></div>}
+        </div>
       </div>
-      {lastFinal.pack?.soundcloudDescription && <div className="ttm-return-copy"><span>SoundCloud</span><p>{lastFinal.pack.soundcloudDescription}</p></div>}
-      <p className="ttm-review-note">This is a transient review snapshot only. Canonical asset persistence is intentionally deferred to a later guarded Studio/Track Manager contract.</p>
+      <p className="ttm-review-note">Staged preview only. The canonical cover, R2 objects and Track Manager manifest remain untouched until a later explicit guarded persistence action is designed and authorized.</p>
     </article>}
   </section>;
 }

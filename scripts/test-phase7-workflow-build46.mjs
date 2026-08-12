@@ -11,10 +11,13 @@ const styles = read('src/phase7-workflow.css');
 const release = read('src/release.ts');
 const pkg = JSON.parse(read('package.json'));
 
-assert.match(release, /version:\s*'0\.16\.0'/, 'Phase 7-A must publish on Studio 0.16.x.');
-assert.match(release, /build:\s*46/, 'Phase 7-A must be Build 46.');
-assert.match(release, /codename:\s*'phase7-a-workflow-overview'/, 'Phase 7-A codename mismatch.');
-assert.equal(pkg.version, '0.16.0', 'package.json must match Studio release version.');
+const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
+assert.match(version, /^0\.16\.\d+$/, 'Phase 7-A successors must stay on Studio 0.16.x.');
+assert.ok(build >= 46, `Phase 7-A successor must preserve Build 46 or later, got Build ${build}.`);
+assert.ok(codename.startsWith('phase7-'), `Phase 7 successor codename must remain explicit, got ${codename}.`);
+assert.equal(pkg.version, version, 'package.json must match Studio release version.');
 assert.ok(pkg.scripts['check:phase7']?.includes('test-phase7-workflow-build46.mjs'), 'Phase 7 guard must be wired into package scripts.');
 assert.ok(pkg.scripts.build.includes('check:phase7'), 'Production build must execute the Phase 7 guard.');
 
@@ -71,4 +74,4 @@ assert.doesNotMatch(
   'Phase 7-A readiness model must not declare a write HTTP method.'
 );
 
-console.log('Studio Phase 7-A Build 46 keeps workflow orchestration read-only, canonical and deep-linked to existing guarded specialist surfaces.');
+console.log(`Studio Phase 7-A successor ${version} Build ${build} keeps workflow orchestration read-only, canonical and deep-linked to existing guarded specialist surfaces.`);
