@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import JSZip from 'jszip';
 import type { StudioTrackDetail } from '../types/studio';
 import {
+  buildFreshMasterPrompt,
   buildMasterPrompt,
   buildMotionPrompt,
   buildReleaseCopy,
@@ -91,6 +92,7 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
   const [master, setMaster] = useState<CampaignImageAsset | null>(null);
   const [square, setSquare] = useState<CampaignImageAsset | null>(null);
   const [vertical, setVertical] = useState<CampaignImageAsset | null>(null);
+  const [masterConceptIndex, setMasterConceptIndex] = useState(0);
   const [masterPrompt, setMasterPrompt] = useState(() => buildMasterPrompt(track, false));
   const [squarePrompt, setSquarePrompt] = useState(() => buildVariantPrompt(track, '1:1'));
   const [verticalPrompt, setVerticalPrompt] = useState(() => buildVariantPrompt(track, '9:16'));
@@ -114,12 +116,14 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
     void loadReleaseCampaignDraft(track.id).then(draft => {
       if (cancelled) return;
       if (draft?.version === 1 && draft.trackId === track.id) {
+        const restoredConceptIndex = draft.masterConceptIndex || 0;
         setProvider(draft.provider || 'Google Flow');
         setLogo(draft.logo || null);
         setMaster(draft.master || null);
         setSquare(draft.square || null);
         setVertical(draft.vertical || null);
-        setMasterPrompt(draft.masterPrompt || buildMasterPrompt(track, Boolean(draft.logo)));
+        setMasterConceptIndex(restoredConceptIndex);
+        setMasterPrompt(draft.masterPrompt || buildFreshMasterPrompt(track, Boolean(draft.logo), restoredConceptIndex));
         setSquarePrompt(draft.squarePrompt || buildVariantPrompt(track, '1:1'));
         setVerticalPrompt(draft.verticalPrompt || buildVariantPrompt(track, '9:16'));
         setCopyPack(draft.copy || buildReleaseCopy(track));
@@ -130,6 +134,7 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
         setMaster(null);
         setSquare(null);
         setVertical(null);
+        setMasterConceptIndex(0);
         setMasterPrompt(buildMasterPrompt(track, false));
         setSquarePrompt(buildVariantPrompt(track, '1:1'));
         setVerticalPrompt(buildVariantPrompt(track, '9:16'));
@@ -148,6 +153,7 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
       trackId: track.id,
       provider,
       masterPrompt,
+      masterConceptIndex,
       squarePrompt,
       verticalPrompt,
       logo,
@@ -161,7 +167,7 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
       void saveReleaseCampaignDraft(draft).catch(() => setNotice('Local draft could not be saved. Current browser session remains usable.'));
     }, 450);
     return () => window.clearTimeout(timer);
-  }, [copyPack, hydrated, logo, master, masterPrompt, provider, square, squarePrompt, track.id, vertical, verticalPrompt]);
+  }, [copyPack, hydrated, logo, master, masterConceptIndex, masterPrompt, provider, square, squarePrompt, track.id, vertical, verticalPrompt]);
 
   const copyText = async (text: string, key: string) => {
     await navigator.clipboard.writeText(text);
@@ -175,7 +181,7 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
       const asset = await imageAssetFromFile(file);
       if (slot === 'logo') {
         setLogo(asset);
-        setMasterPrompt(buildMasterPrompt(track, true));
+        setMasterPrompt(buildFreshMasterPrompt(track, true, masterConceptIndex));
         setNotice('Logo reference loaded locally. Attach this same file in the premium provider for the MASTER handoff.');
         return;
       }
@@ -198,6 +204,13 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
     }
   };
 
+  const newMasterConcept = () => {
+    const nextConceptIndex = masterConceptIndex + 1;
+    setMasterConceptIndex(nextConceptIndex);
+    setMasterPrompt(buildFreshMasterPrompt(track, Boolean(logo), nextConceptIndex));
+    setNotice(`New MASTER concept #${nextConceptIndex + 1} generated from canonical track context. Existing imported MASTER and derivatives were preserved until you choose to replace them.`);
+  };
+
   const resetDraft = async () => {
     if (!globalThis.confirm('Reset the browser-local Release Campaign draft for this track? Canonical assets will not be touched.')) return;
     await clearReleaseCampaignDraft(track.id);
@@ -206,6 +219,7 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
     setMaster(null);
     setSquare(null);
     setVertical(null);
+    setMasterConceptIndex(0);
     setMasterPrompt(buildMasterPrompt(track, false));
     setSquarePrompt(buildVariantPrompt(track, '1:1'));
     setVerticalPrompt(buildVariantPrompt(track, '9:16'));
@@ -251,6 +265,7 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
         trackId: track.id,
         title: track.title,
         provider,
+        masterConceptIndex,
         status: ready ? 'campaign-complete' : 'partial-campaign',
         exportedAt: new Date().toISOString(),
         canonicalWrite: false,
@@ -297,7 +312,7 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
 
     <article className="panel rc-hero">
       <div>
-        <span className="eyebrow">RELEASE CAMPAIGN / NATIVE STUDIO · BUILD 48</span>
+        <span className="eyebrow">RELEASE CAMPAIGN / NATIVE STUDIO · BUILD 49</span>
         <h3>MASTER → coherent formats</h3>
         <p>The standalone Track-To-Market step is removed from the primary workflow. Studio now owns the browser-local campaign draft while canonical R2/Track Manager authority remains unchanged.</p>
       </div>
@@ -331,13 +346,14 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
         </div>
         <div className="rc-master-grid">
           <div className="rc-handoff">
-            <label><span>MASTER handoff · editable</span><textarea value={masterPrompt} onChange={event => setMasterPrompt(event.target.value)} /></label>
+            <label><span>MASTER handoff · editable · concept {masterConceptIndex + 1}</span><textarea value={masterPrompt} onChange={event => setMasterPrompt(event.target.value)} /></label>
             <div className="rc-button-row">
               <button className="primary-btn" type="button" onClick={() => { void copyText(masterPrompt, 'master'); }}>{copied === 'master' ? 'Copied ✓' : `Copy MASTER handoff for ${provider}`}</button>
+              <button className="secondary-btn" type="button" onClick={newMasterConcept}>New MASTER concept</button>
               <button className="secondary-btn" type="button" onClick={() => logoInput.current?.click()}>{logo ? 'Replace logo reference' : 'Load SHINOBIWAN logo'}</button>
               {logo && <button className="secondary-btn" type="button" onClick={() => downloadDataUrl(logo, `SHINOBIWAN_Logo_Reference.${extensionForMime(logo.mimeType)}`)}>Download logo reference</button>}
             </div>
-            <p className="rc-helper">{logo ? 'Logo ready: attach this exact file with the MASTER prompt in the provider.' : 'Optional but recommended: load the authoritative SHINOBIWAN logo, then attach it as a provider reference image.'}</p>
+            <p className="rc-helper">{logo ? 'Logo ready: attach this exact file with the MASTER prompt in the provider.' : 'Optional but recommended: load the authoritative SHINOBIWAN logo, then attach it as a provider reference image.'} New MASTER concept starts a different creative direction from scratch without deleting your imported campaign.</p>
           </div>
           <div className="rc-import-panel">
             <ImagePreview asset={master} format="16:9" title={track.title} />
@@ -402,7 +418,7 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
         <p>ZIP includes available visual formats, prompts, logo reference, release copy, provenance and an explicit `canonicalWrite: false` manifest.</p>
         <button className="primary-btn" type="button" disabled={!master || exporting} onClick={() => { void exportCampaign(); }}>{exporting ? 'Building ZIP…' : ready ? 'Export complete Release Campaign ZIP' : 'Export partial campaign ZIP'}</button>
         <button className="secondary-btn" type="button" onClick={() => { void copyText(motionPrompt, 'motion'); }}>{copied === 'motion' ? 'Motion prompt copied ✓' : 'Copy optional 8s MASTER-anchored loop prompt'}</button>
-        <small>Motion is recorded for the next slice; Build 48 does not pretend a provider video has been generated inside Studio.</small>
+        <small>Motion is recorded for the next slice; Build 49 does not pretend a provider video has been generated inside Studio.</small>
       </article>
     </div>
   </section>;
