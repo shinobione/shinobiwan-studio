@@ -1,4 +1,5 @@
 import { createElement, useEffect, useRef, useState } from 'react';
+import { makeContinuationReceipt, type ContinuationReceipt } from '../phase7-receipts';
 import { contextualLrcMakerUrl } from '../services/lrc-maker';
 import { studioConfig } from '../services/config';
 
@@ -48,7 +49,7 @@ function loadEmbedBundle(): Promise<void> {
 
 interface LyricsSavedEvent extends CustomEvent<{ trackId: string; updatedAt: string }> {}
 
-export function EmbeddedLyricsStudio({ trackId, onSaved }: { trackId: string; onSaved: () => Promise<void> | void }) {
+export function EmbeddedLyricsStudio({ trackId, onReceipt }: { trackId: string; onReceipt: (receipt: ContinuationReceipt) => Promise<void> | void }) {
   const hostRef = useRef<HTMLElement | null>(null);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [error, setError] = useState<string | null>(null);
@@ -73,11 +74,19 @@ export function EmbeddedLyricsStudio({ trackId, onSaved }: { trackId: string; on
     const listener = (event: Event) => {
       const detail = (event as LyricsSavedEvent).detail;
       if (detail?.trackId !== trackId) return;
-      void onSaved();
+      void onReceipt(makeContinuationReceipt({
+        trackId,
+        source: 'lrc-maker',
+        operation: 'lyrics-saved',
+        effect: 'canonical-write',
+        summary: 'Lyrics synchronization saved.',
+        detail: 'Embedded LRC Maker reported a completed save. Studio will verify the canonical Track state before continuing.',
+        sourceRevision: detail.updatedAt,
+      }));
     };
     host.addEventListener('lyrics-saved', listener);
     return () => host.removeEventListener('lyrics-saved', listener);
-  }, [onSaved, trackId]);
+  }, [onReceipt, trackId]);
 
   return (
     <div className="workspace-lyrics-portal-card">
