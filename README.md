@@ -15,11 +15,23 @@ Deep Audio      2.0.3-alpha
 LRC Maker       6.3.8
 ```
 
-Build 62 is the accepted Studio Focus program-closeout corrective. Final deployed smoke validated palette extraction and save on `Magnetic Midnight`, stable palette layout, `Sonic` wording and artist-facing `Album track` presentation. The paired Track Manager v5.20 correction removed the false legacy `STALE_MANIFEST` condition while keeping revision protection intact.
+Build 62 remains the accepted Studio runtime until the current corrective receives a new real-user browser pass. Final Build 62 smoke validated palette extraction/save on `Magnetic Midnight`, stable palette layout, `Sonic` wording and artist-facing `Album track` presentation. The paired Track Manager v5.20 correction removed the false legacy `STALE_MANIFEST` condition while keeping revision protection intact.
+
+### Current candidate
+
+```text
+Studio          v0.19.3 · Build 64    Foundation Regression Repair · REAL USER PASS PENDING
+Track Manager   v5.21                 candidate · admin Worker only
+Studio bridge   v1.11                 unchanged
+Public Worker   v2.7                  unchanged
+Phase 7-C       contract locked       runtime Slice 1 PAUSED during repair validation
+```
+
+Build 64 was triggered by a real Studio smoke that exposed three foundation regressions: private/draft Album artwork could write successfully but remain invisible in Studio; track-side Album cache could diverge from authoritative `album.trackIds`; and a missing `lyrics.txt` had no visible upload path in the focused Lyrics UX. See [Build 64 Foundation Regression Repair](docs/STUDIO-BUILD64-FOUNDATION-REGRESSION-REPAIR.md).
 
 ## Release terminology
 
-`Studio v0.19.2 · Build 62` is the current accepted **project/runtime release identity**.
+`Studio v0.19.2 · Build 62` is the current accepted **project/runtime release identity**. `v0.19.3 · Build 64` is a candidate only until exact deployment + real-user smoke.
 
 This repository currently publishes **no GitHub Release objects and no Git tags**. Formal GitHub Releases/tags would be a separate distribution/versioning decision.
 
@@ -35,9 +47,9 @@ Studio Focus Slice 4  Build 61   REAL USER PASS
 Studio Focus closeout Build 62   REAL USER PASS
 ```
 
-Build 62 is a closeout corrective, not a fifth Studio Focus slice.
+Build 62 is a closeout corrective, not a fifth Studio Focus slice. Historical Build 63 remains superseded and is not reused.
 
-**Phase 7-C remains CLOSED / NOT STARTED.**
+**Phase 7-C is STARTED at contract level after explicit authorization; runtime Slice 1 is PAUSED until Build 64 / Track Manager v5.21 foundation repair is real-user validated.**
 
 ## Daily product model
 
@@ -102,7 +114,7 @@ Albums:
 albums/<album-id>/manifest.json
 ```
 
-Ordered `album.trackIds` owns membership and artistic order.
+Ordered `album.trackIds` owns membership and artistic order. The Track-side Album field is a compatibility cache and must not be edited independently of guarded Album operations.
 
 SonicTrace:
 
@@ -128,17 +140,16 @@ Build 62 removes the misleading Premium provider selector because provider selec
 ## Final accepted closeout evidence
 
 ```text
-Studio main       b464c0930a5659b208b3a059d443f708b8e55dba
-Studio Pages run  31713370595    SUCCESS
-Track Manager     v5.20
-Studio bridge     v1.11
-LaunchPAD main    586c71333c902fc2ebef214c63e9234ece9e1711
-Worker run        31714222431    SUCCESS · admin only
-Worker Version ID 78609aff-1f4a-4a21-b618-cb97add0c416
-Public Worker     v2.7            unchanged
+Studio tested runtime b464c0930a5659b208b3a059d443f708b8e55dba
+Studio Pages run      31713370595    SUCCESS
+Track Manager         v5.20
+Studio bridge         v1.11
+TM Worker run         31714222431    SUCCESS · admin only
+TM Worker Version ID  78609aff-1f4a-4a21-b618-cb97add0c416
+Public Worker         v2.7            unchanged
 ```
 
-Final browser verdict: **SMOKE2 PASSED**.
+Final accepted Build 62 browser verdict: **SMOKE2 PASSED**.
 
 ## Documentation
 
@@ -146,6 +157,7 @@ Start here:
 
 - [Current roadmap](docs/ROADMAP-CURRENT.md)
 - [Documentation map](docs/README.md)
+- [Build 64 Foundation Regression Repair candidate](docs/STUDIO-BUILD64-FOUNDATION-REGRESSION-REPAIR.md)
 - [Studio Focus product/UX contract](docs/STUDIO-FOCUS-PRODUCTION-FIRST-UX.md)
 - [Studio Focus program closeout REAL USER PASS](docs/STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md)
 - [Build 62 closeout corrective](docs/STUDIO-FOCUS-BUILD62-CLOSEOUT-CORRECTIVE.md)
