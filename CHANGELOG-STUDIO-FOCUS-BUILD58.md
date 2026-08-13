@@ -2,7 +2,7 @@
 
 Date: 2026-08-13
 
-Status: **CANDIDATE — CI + deployed real-user smoke required**
+Status: **COMPLETE — REAL USER PASS**
 
 ## Reason
 
@@ -81,6 +81,10 @@ PR:
 
 `#77 — Studio v0.18.1 Build 58 — Slice 3 smoke corrective`
 
+Accepted Build 58 merge:
+
+`7d68e86413c5d5100eca6ad6d3414a9660aaaca9`
+
 Dedicated Build 58 guard verifies:
 
 - public fallback cannot fake private counts as zero;
@@ -91,17 +95,62 @@ Dedicated Build 58 guard verifies:
 - canonical Canvas preview is 9:16 and non-cropping;
 - no canonical write authority is added.
 
-## Acceptance target
+## Deployed real-user acceptance
 
-Deployed browser smoke must confirm:
+Real-user browser review on 2026-08-13 observed the Build 58 corrective sequence end to end.
 
-1. public fallback clearly explains why private `To finish` tracks are absent;
-2. `To finish` / `Ready` do not show misleading zero counts while private read is unavailable;
-3. after Track Manager authentication + retry, the complete private library returns and the two unfinished tracks reappear if still canonical;
-4. Visuals Canvas renders vertically in 9:16;
-5. Lyrics public fallback clearly shows the engine is locked, not missing;
-6. after PRIVATE READ returns, the embedded Lyrics Studio renders again;
-7. public SonicTrace access no longer looks like a broken full-analysis promise;
-8. no canonical mutation/regression occurs.
+### Public fallback
 
-CI green alone does not grant REAL USER PASS.
+Observed before authentication recovery:
+
+- `PRIVATE TRACKS HIDDEN` displayed;
+- `To finish` / `Ready` private-only counters displayed `—`, not false zero;
+- `31 Released` remained visible as the truthful public projection;
+- Track Workspace displayed `PUBLIC READ-ONLY FALLBACK`;
+- Lyrics displayed `LYRICS STUDIO LOCKED` instead of masquerading raw text as the primary synchronizer;
+- Visuals displayed the canonical Canvas vertically in 9:16.
+
+### PRIVATE READ recovery
+
+After Cloudflare Access authentication through Track Manager, direct `/api/studio/health` navigation returned authenticated Studio bridge JSON with bridge `1.11` and Track Manager `5.19`.
+
+Returning to Studio restored private production state. Home displayed:
+
+```text
+To finish  27
+Ready       6
+Released   31
+```
+
+This proved Studio was no longer limited to the 31-track LaunchPAD public projection.
+
+### Embedded Lyrics restoration
+
+`Magnetic Midnight!` → Lyrics then rendered the embedded LRC engine again with audio loaded and canonical authority:
+
+```text
+tracks/magnetic-midnight/lyrics.txt
+```
+
+No production save was required merely to manufacture acceptance evidence.
+
+A fresh SonicTrace analysis/write was not part of this smoke. Build 58 does not change SonicTrace persistence or canonical sidecar authority; that unchanged specialist path remains covered by its accepted baseline and CI guards.
+
+Full acceptance record:
+
+`docs/STUDIO-FOCUS-BUILD58-REAL-USER-PASS.md`
+
+## Acceptance result
+
+1. public fallback clearly explains why private tracks are absent — **PASS**;
+2. private-only counts do not show misleading zero while private read is unavailable — **PASS**;
+3. authenticated Track Manager PRIVATE READ returns the protected production state — **PASS**;
+4. Visuals Canvas renders vertically in 9:16 — **PASS**;
+5. Lyrics public fallback clearly shows the engine is locked, not missing — **PASS**;
+6. after PRIVATE READ returns, the embedded Lyrics Studio renders again — **PASS**;
+7. public/private authority remains truthful; no public fallback becomes a write owner — **PASS**;
+8. no production media/Album/catalog mutation or Worker deployment was needed for acceptance — **PASS**.
+
+**Studio Focus Slice 3 is COMPLETE — REAL USER PASS.**
+
+CI green alone did not grant this status; the deployed real-user smoke did.
