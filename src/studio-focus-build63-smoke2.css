@@ -1,0 +1,7 @@
+/* Studio v0.19.3 · Build 63 — real-user smoke corrective. */
+.assets-cover-palette{grid-template-columns:minmax(220px,.42fr) minmax(0,1fr)!important;align-items:start!important}
+.assets-cover-palette>.cover-image-preview{grid-column:1!important;grid-row:1 / span 3!important;width:100%}
+.assets-cover-palette>.cover-palette-preview{grid-column:2!important;grid-row:1!important;min-width:0}
+.assets-cover-palette>.primary-btn{grid-column:2!important;grid-row:2!important;justify-self:end;align-self:start!important}
+.assets-cover-palette>.assets-palette-message{grid-column:2!important;grid-row:3!important;align-self:start}
+@media(max-width:820px){.assets-cover-palette{grid-template-columns:1fr!important}.assets-cover-palette>.cover-image-preview,.assets-cover-palette>.cover-palette-preview,.assets-cover-palette>.primary-btn,.assets-cover-palette>.assets-palette-message{grid-column:1!important;grid-row:auto!important}.assets-cover-palette>.primary-btn{width:100%;justify-self:stretch}}
