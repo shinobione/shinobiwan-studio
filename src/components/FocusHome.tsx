@@ -72,6 +72,7 @@ export function FocusHome() {
   const attention = workflow.filter(item => !item.ready);
   const readyCount = workflow.length - attention.length;
   const publishedCount = tracks.filter(track => track.status === 'published' && track.publishing.catalogVisible).length;
+  const draftCount = tracks.filter(track => track.status !== 'published').length;
   const lastTrackId = (() => {
     try { return globalThis.localStorage?.getItem(LAST_TRACK_KEY) || null; } catch { return null; }
   })();
@@ -114,20 +115,21 @@ export function FocusHome() {
             </div>
             <div className="focus-continue-action">
               <span>NEXT</span>
-              <strong>{lead.ready ? 'Everything current is ready' : actionLabel(lead)}</strong>
+              <strong>{lead.ready ? 'Production checklist complete' : actionLabel(lead)}</strong>
               <small>{lead.ready ? 'Open the track or move into release.' : lead.nextAction.detail}</small>
               <a className="primary-btn" href={trackHref(lead.track.id, artistSection(lead.nextAction.section))}>{lead.ready ? 'Open track' : actionLabel(lead)} <span>→</span></a>
             </div>
           </section>
 
-          <section className="focus-summary" aria-label="Production summary">
-            <article className="panel"><span>TO FINISH</span><strong>{attention.length}</strong><small>Tracks with a next action</small></article>
-            <article className="panel"><span>READY</span><strong>{readyCount}</strong><small>Current workflow complete</small></article>
-            <article className="panel"><span>RELEASED</span><strong>{publishedCount}</strong><small>Visible in the public catalog</small></article>
+          <section className="focus-summary" aria-label="Production and catalog summary">
+            <article className="panel"><span>NEEDS ATTENTION</span><strong>{attention.length}</strong><small>Production workflow has a next action</small></article>
+            <article className="panel"><span>PRODUCTION COMPLETE</span><strong>{readyCount}</strong><small>Current production checklist complete</small></article>
+            <article className="panel"><span>PUBLISHED</span><strong>{publishedCount}</strong><small>Visible in the public catalog</small></article>
+            <article className="panel"><span>DRAFTS</span><strong>{draftCount}</strong><small>Not published yet</small></article>
           </section>
 
           <section className="focus-queue">
-            <div className="focus-section-heading"><div><span className="eyebrow">CONTINUE</span><h3>What needs finishing</h3></div><a href={routeHref('workflow')}>Detailed queue ↗</a></div>
+            <div className="focus-section-heading"><div><span className="eyebrow">CONTINUE</span><h3>What needs attention</h3></div><a href={routeHref('workflow')}>Detailed queue ↗</a></div>
             {queue.length ? <div className="focus-queue-list">{queue.map(item => {
               const image = artwork(item.track);
               return <article className="focus-queue-item panel" key={item.track.id}>
