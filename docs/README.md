@@ -7,9 +7,10 @@ This directory contains architecture, roadmap, milestone and acceptance records.
 1. [`../README.md`](../README.md) — concise current project state and architecture.
 2. [`ROADMAP-CURRENT.md`](ROADMAP-CURRENT.md) — current roadmap authority.
 3. [`STUDIO-FOCUS-PRODUCTION-FIRST-UX.md`](STUDIO-FOCUS-PRODUCTION-FIRST-UX.md) — active Studio Focus product/UX contract.
-4. [`INTEGRATION_SAFETY.md`](INTEGRATION_SAFETY.md) — integration and authority safety rules.
-5. [`../CHANGELOG.md`](../CHANGELOG.md) — concise current changelog.
-6. [`../changelogs/README.md`](../changelogs/README.md) — detailed per-build changelog archive.
+4. [`STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md`](STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md) — final Studio Focus program closeout and acceptance evidence.
+5. [`INTEGRATION_SAFETY.md`](INTEGRATION_SAFETY.md) — integration and authority safety rules.
+6. [`../CHANGELOG.md`](../CHANGELOG.md) — concise current changelog.
+7. [`../changelogs/README.md`](../changelogs/README.md) — detailed per-build changelog archive.
 
 ## Current accepted closeouts
 
@@ -19,6 +20,8 @@ This directory contains architecture, roadmap, milestone and acceptance records.
 - [`TRACK-TO-MARKET-BUILD45-REAL-USER-PASS.md`](TRACK-TO-MARKET-BUILD45-REAL-USER-PASS.md)
 - [`STUDIO-FOCUS-BUILD58-REAL-USER-PASS.md`](STUDIO-FOCUS-BUILD58-REAL-USER-PASS.md)
 - [`STUDIO-FOCUS-BUILD61-REAL-USER-PASS.md`](STUDIO-FOCUS-BUILD61-REAL-USER-PASS.md)
+- [`STUDIO-FOCUS-BUILD62-CLOSEOUT-CORRECTIVE.md`](STUDIO-FOCUS-BUILD62-CLOSEOUT-CORRECTIVE.md)
+- [`STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md`](STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md)
 - [`ROADMAP-STUDIO-FOCUS-BUILD61-CLOSEOUT.md`](ROADMAP-STUDIO-FOCUS-BUILD61-CLOSEOUT.md)
 
 ## Active architecture/reference docs
