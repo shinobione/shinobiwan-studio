@@ -6,7 +6,7 @@ Private artist production cockpit and orchestrator for the SHINOBIWAN toolchain.
 
 ```text
 Studio accepted   v0.19.3 · Build 68    Home lead priority fix · REAL USER PASS
-Studio candidate  v0.20.0 · Build 69    Phase 7-C Slice 1 guided metadata · PR #99 · CI REQUIRED
+Studio candidate  v0.19.4 · Build 69    Phase 7-C Slice 1 guided metadata · PR #99 · CI REQUIRED
 LaunchPAD          2026.08.12.102        C3-C · REAL USER PASS
 Track Manager      v5.21                 repair scope · REAL USER PASS
 Studio bridge      v1.11
@@ -20,13 +20,15 @@ Build 68 remains the **current accepted Studio baseline** until Build 69 complet
 
 Build 69 is the authorized **Phase 7-C Runtime Slice 1 implementation candidate**. It guides Identity/Metadata Next Actions into the existing protected metadata validate/save flow, rejects public fallback as post-save verification, and recomputes the workflow from reread canonical Track state. The implementation audit found no need for a new Worker route or Track Manager bump.
 
+Build 69 stays on the mature Studio Focus compatibility line as `v0.19.4` / `studio-focus-phase7c-slice1-guided-metadata`. The initial `0.20.0 / phase7c-*` candidate exposed inherited version-line guard collisions; historical C3 / Track-To-Market / PHASE UX guards were restored unchanged rather than widened merely for a new minor line. The current private-read integration guard alone is updated for the real Phase 7-C / TM5.21 / bridge1.11 state.
+
 Build 67 remains the accepted Foundation Regression Repair closeout underneath Build 68. Build 64 is preserved as **deployed candidate / FAILED REAL USER SMOKE** evidence; Builds 65 and 66 are corrective lineage superseded by Build 67.
 
 ## Release terminology
 
 `Studio v0.19.3 · Build 68` is the current accepted **project/runtime release identity**.
 
-`Studio v0.20.0 · Build 69` is an **implementation candidate**, not yet a deployed or accepted release.
+`Studio v0.19.4 · Build 69` is an **implementation candidate**, not yet a deployed or accepted release.
 
 This repository currently publishes **no GitHub Release objects and no Git tags**. Formal GitHub Releases/tags would be a separate distribution/versioning decision.
 
@@ -124,7 +126,9 @@ Accepted baseline      v0.19.3 · Build 68 · REAL USER PASS
 Safety checkpoint      safety/pre-phase7c-slice1-build69-20260814-0013
 Feature branch         agent/phase7c-runtime-slice1
 PR                     #99 · DRAFT
-Initial CI             31749799202 · FAILED historical successor whitelist
+Initial CI             31749799202 · FAILED initial successor identity whitelist
+Final identity         v0.19.4 · Build 69 · studio-focus-phase7c-slice1-guided-metadata
+Historical guards      C3 / TTME / PHASE UX restored unchanged
 Final exact-head CI    REQUIRED before merge
 Runtime merge          PENDING
 Pages deployment       PENDING
