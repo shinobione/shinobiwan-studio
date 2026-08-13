@@ -15,6 +15,12 @@ Deep Audio      2.0.3-alpha
 LRC Maker       6.3.8
 ```
 
+## Release terminology
+
+`Studio v0.19.1 · Build 61` is the current accepted **project/runtime release identity**. This repository currently publishes **no GitHub Release objects and no Git tags**. Unless a GitHub Release or tag is explicitly named, `release` in current Studio documentation means the accepted version/build identity carried by `main` and the deployed GitHub Pages runtime.
+
+Creating formal GitHub Releases or tags would be a separate distribution/versioning decision; runtime acceptance does not create them implicitly.
+
 Accepted Studio lineage:
 
 ```text
