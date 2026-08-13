@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — CURRENT ROADMAP
 
-Updated: 2026-08-13 after **Studio v0.19.2 · Build 62 — Studio Focus program closeout REAL USER PASS**.
+Updated: 2026-08-13 after explicit **Phase 7-C — Guided end-to-end actions** authorization. The accepted runtime baseline remains **Studio v0.19.2 · Build 62 — Studio Focus program closeout REAL USER PASS** until the first Phase 7-C runtime candidate is separately validated.
 
 This file is the **current roadmap authority**. Historical build detail belongs in milestone docs and [`../changelogs/`](../changelogs/README.md), not here.
 
@@ -11,13 +11,13 @@ Studio          v0.19.2 · Build 62    accepted current baseline
 Studio Focus    Slices 1–4 + closeout REAL USER PASS
 Phase 7-A       Build 46              REAL USER PASS
 Phase 7-B       Build 51              REAL USER PASS
-Phase 7-C                              CLOSED / NOT STARTED
+Phase 7-C                              STARTED · contract locked / Slice 1 pending
 Track Manager   v5.20
 Studio bridge   v1.11
 Public Worker   v2.7                  unchanged
 ```
 
-Build 62 is the accepted program-closeout corrective, not a fifth Studio Focus slice. Build 60 is historical deployed candidate evidence and is superseded by Build 61 for Slice 4 acceptance. Build 59 was reserved by a parallel branch and was never reused.
+Build 62 is the accepted program-closeout corrective, not a fifth Studio Focus slice. Build 60 is historical deployed candidate evidence and is superseded by Build 61 for Slice 4 acceptance. Build 59 was reserved by a parallel branch and was never reused. Historical Draft Build 63 is not to be reused for Phase 7-C.
 
 ## Frozen architecture
 
@@ -49,6 +49,7 @@ Build 62 is the accepted program-closeout corrective, not a fifth Studio Focus s
 - Studio Focus Slice 3 ✅ Build 58 REAL USER PASS
 - Studio Focus Slice 4 ✅ Build 61 REAL USER PASS
 - Studio Focus program closeout ✅ Build 62 REAL USER PASS
+- Phase 7-C — Guided end-to-end actions 🚧 STARTED · contract locked
 
 ## Studio Focus — accepted production-first UX
 
@@ -184,16 +185,48 @@ Public fallback never confirms a canonical write.
 
 ## Phase 7-C — Guided end-to-end actions
 
-Status: **PLANNED / CLOSED / NOT STARTED**.
+Status: **STARTED — CONTRACT LOCKED / RUNTIME SLICE 1 NOT YET STARTED**.
 
-Potential direction only, not authorization:
+Fresh explicit authorization was given on 2026-08-13. The executable safety/product contract is now [`PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md`](PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md).
 
-- guided next actions from Studio;
-- operation-specific guarded writes only;
-- no generic Studio/R2 authority;
-- explicit receipts and canonical rereads for every canonical mutation.
+Accepted Phase 7-C rules:
 
-Start only after fresh explicit user authorization and a new safety/branch/CI/smoke cycle.
+- Studio guides one truthful Next Action at a time;
+- guided canonical mutations reuse existing operation-specific protected write authority rather than adding a generic Studio/R2 writer;
+- private read and the operation's advertised capability are required before mutation;
+- fresh revision / ETag / state token protections remain mandatory where applicable;
+- explicit human confirmation remains required before a canonical mutation;
+- ambiguous write failures are canonically reread before any retry;
+- every successful canonical mutation must be privately reread before Studio shows it as verified;
+- Phase 7-B typed receipts remain authoritative for LRC Maker / SonicTrace specialist continuations;
+- Release Campaign remains review-only and `canonicalWrite: false`;
+- workflow state and the next useful action are recomputed from canonical reread state, never optimistic local state.
+
+### Phase 7-C Slice 1 — next runtime candidate
+
+**Guided Metadata / Identity completion** around the already production-proven metadata validate/save path:
+
+```text
+Home / Tracks / Workflow Next Action
+→ Track guided Metadata / Identity context
+→ edit
+→ validate
+→ review normalized proposal
+→ explicit Save confirmation
+→ existing guarded metadata save
+→ backend + Studio canonical reread
+→ VERIFIED
+→ refreshed workflow / next action
+```
+
+No new Worker route or Track Manager version bump is planned for Slice 1 unless implementation audit proves one genuinely necessary. Deployment itself performs no production data mutation; the only mutation remains an explicit user-triggered existing guarded operation.
+
+Opening safety anchors:
+
+```text
+Studio:    safety/pre-phase7c-guided-actions-20260813-1837
+LaunchPAD: safety/pre-phase7c-guided-actions-20260813-1837
+```
 
 ## Later roadmap
 
@@ -263,10 +296,11 @@ safety/post-phase7-b-build51-real-user-pass-20260812-2120
 safety/post-phase7-a-build46-real-user-pass-20260812-0923
 ```
 
-Pre-final-closeout documentation safety anchor:
+Pre-Phase-7-C opening safety anchors:
 
 ```text
-safety/pre-studio-focus-final-closeout-20260813-1720
+Studio:    safety/pre-phase7c-guided-actions-20260813-1837
+LaunchPAD: safety/pre-phase7c-guided-actions-20260813-1837
 ```
 
 ## Verification policy
