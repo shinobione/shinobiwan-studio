@@ -1,6 +1,6 @@
 export const studioRelease = {
-  version: '0.18.0',
-  build: 57,
-  codename: 'studio-focus-track-workshop',
+  version: '0.18.1',
+  build: 58,
+  codename: 'studio-focus-slice3-smoke-corrective',
   releasedAt: '2026-08-13',
 } as const;
