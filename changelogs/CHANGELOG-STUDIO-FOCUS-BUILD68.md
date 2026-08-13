@@ -1,7 +1,8 @@
 # Studio Focus Build 68 — Home lead priority corrective
 
-Status: **DEPLOYED CANDIDATE — REAL USER SMOKE PENDING**  
+Status: **COMPLETE — REAL USER PASS**  
 Date: 2026-08-13  
+Accepted: 2026-08-14  
 Version: **v0.19.3 · Build 68**  
 Codename: `studio-focus-slice4-home-lead-priority`
 
@@ -53,18 +54,22 @@ PR                    #96
 Tested head           cf5131f489d72ca5fae72544dacd9eaecc78077f
 Validation run        31741483430 · SUCCESS
 Merge commit          5c0428e500b4e6d5c9d1069bb440eac78b79955e
-Studio main           5c0428e500b4e6d5c9d1069bb440eac78b79955e
-Pages deployment      31743413418 · SUCCESS
-Real-user smoke       PENDING
+Runtime Pages deploy  31743413418 · SUCCESS
+Real-user smoke       PASS · 2026-08-14
+Post-pass checkpoint  safety/post-build68-home-real-user-pass-20260814-0005
 ```
 
-## Acceptance gate
+The docs-only merge that follows this acceptance does not alter the Build 68 runtime identity or its tested/deployed runtime SHA.
 
-Build 68 must not be called accepted/REAL USER PASS until browser smoke confirms:
+## Real-user acceptance
 
-1. a completed last-opened track no longer owns the Home lead;
+Build 68 is accepted after browser smoke confirmed the Home lead-priority corrective behaves as intended:
+
+1. a production-complete last-opened track no longer owns the Home lead merely because it was visited most recently;
 2. an unfinished track becomes lead when one exists;
 3. an empty attention queue produces `PRODUCTION QUEUE CLEAR`;
 4. Home counters/navigation remain intact.
 
-Until then, **Build 67 remains the accepted Studio baseline** and Build 68 remains a deployed candidate.
+**Build 68 is therefore the current accepted Studio baseline.**
+
+Phase 7-C remains **STARTED at contract level / Runtime Slice 1 NOT STARTED**. This Build 68 acceptance does not itself authorize or implement Runtime Slice 1.

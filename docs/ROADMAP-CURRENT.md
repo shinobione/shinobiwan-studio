@@ -1,14 +1,13 @@
 # SHINOBIWAN STUDIO — CURRENT ROADMAP
 
-Updated: 2026-08-13 after **Build 68 Home lead priority fix deployment**.
+Updated: 2026-08-14 after **Build 68 Home lead priority REAL USER PASS**.
 
 This file is the **current roadmap authority**. Historical build detail belongs in milestone docs and [`../changelogs/`](../changelogs/README.md).
 
 ## Current state
 
 ```text
-Studio accepted    v0.19.3 · Build 67    Foundation Regression Repair · REAL USER PASS
-Studio candidate   v0.19.3 · Build 68    Home lead priority fix · DEPLOYED · REAL USER SMOKE PENDING
+Studio accepted    v0.19.3 · Build 68    Home lead priority fix · REAL USER PASS
 Phase 7-A          Build 46              REAL USER PASS
 Phase 7-B          Build 51              REAL USER PASS
 Phase 7-C                                STARTED · contract locked · runtime Slice 1 not started
@@ -23,17 +22,9 @@ LRC Maker          6.3.8
 
 ### Immediate gate
 
-**Do not start Phase 7-C runtime Slice 1 until Build 68 receives a real-user Home smoke.**
+Build 68 has passed its required real-user Home smoke and is now the accepted Studio baseline.
 
-Required smoke:
-
-1. hard-refresh Studio;
-2. confirm a production-complete track such as `Magnetic Midnight` no longer remains the large Home lead only because it was last opened;
-3. confirm Home promotes an unfinished track when one exists;
-4. if no track needs attention, confirm `PRODUCTION QUEUE CLEAR` is shown;
-5. confirm Home counters and navigation remain intact.
-
-Only an explicit browser verdict upgrades Build 68 from **DEPLOYED CANDIDATE** to **REAL USER PASS**.
+**Do not start Phase 7-C runtime Slice 1 without a fresh explicit authorization in the active conversation.**
 
 ## Frozen architecture
 
@@ -63,7 +54,7 @@ Phase 7-A Workflow Overview                                   ✅ REAL USER PASS
 Phase 7-B Contextual continuation receipts                    ✅ REAL USER PASS
 Studio Focus Slices 1–4 + program closeout                    ✅ REAL USER PASS
 Foundation Regression Repair · Build 67 + TM5.21              ✅ REAL USER PASS
-Build 68 Home lead priority corrective                        🚧 DEPLOYED · SMOKE PENDING
+Build 68 Home lead priority corrective                        ✅ REAL USER PASS
 Phase 7-C Guided end-to-end actions                           🚧 CONTRACT LOCKED
 Phase 7-C runtime Slice 1                                      ⛔ NOT STARTED
 ```
@@ -76,8 +67,8 @@ Historical numbering discipline:
 - Build 63 is historical/superseded and must not be reused.
 - Build 64 is deployed **FAILED REAL USER SMOKE** evidence.
 - Builds 65 and 66 are corrective lineage superseded by Build 67.
-- Build 67 is the current accepted Studio runtime.
-- Build 68 is the current deployed candidate awaiting Home smoke.
+- Build 67 is the accepted Foundation Regression Repair baseline underneath Build 68.
+- Build 68 is the current accepted Studio runtime.
 
 ## Daily product model
 
@@ -159,7 +150,7 @@ Closeout: [`STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md`](STU
 
 ## Build 68 — Home lead priority corrective
 
-Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**.
+Status: **COMPLETE · REAL USER PASS**.
 
 Scope is Studio-only presentation/orchestration. No Worker route, R2 mutation, Track Manager authority change or public Worker deployment.
 
@@ -169,9 +160,10 @@ Feature branch        agent/build68-home-lead-priority
 PR                     #96
 Tested head            cf5131f489d72ca5fae72544dacd9eaecc78077f
 Validation             31741483430 · SUCCESS
-Merge / current main   5c0428e500b4e6d5c9d1069bb440eac78b79955e
+Runtime merge          5c0428e500b4e6d5c9d1069bb440eac78b79955e
 Pages deployment       31743413418 · SUCCESS
-Real-user smoke        PENDING
+Real-user smoke        PASS · 2026-08-14
+Post-pass checkpoint   safety/post-build68-home-real-user-pass-20260814-0005
 ```
 
 Detailed record: [`../changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md`](../changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md).
@@ -247,7 +239,7 @@ Home / Tracks / Workflow Next Action
 
 No new Worker route or Track Manager version bump is planned unless implementation audit proves one genuinely necessary.
 
-**Do not start this Slice until Build 68 real-user Home smoke passes and a fresh session authorization is explicit.**
+**Build 68 prerequisite is cleared. Runtime Slice 1 still requires a fresh explicit GO before implementation.**
 
 ## Later roadmap
 
@@ -306,6 +298,7 @@ Source audio is not persisted in sidecars.
 ## Important checkpoints
 
 ```text
+safety/post-build68-home-real-user-pass-20260814-0005
 safety/pre-build68-home-lead-priority-20260813-2228
 safety/post-build67-lyrics-source-anchor-20260813-2205
 safety/post-studio-focus-program-closeout-20260813-1720
