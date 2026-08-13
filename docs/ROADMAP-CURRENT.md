@@ -8,7 +8,7 @@ This file is the **current roadmap authority**. Historical build detail belongs 
 
 ```text
 Studio accepted    v0.19.3 · Build 68    Home lead priority fix · REAL USER PASS
-Studio candidate   v0.20.0 · Build 69    Phase 7-C Slice 1 guided metadata · PR #99
+Studio candidate   v0.19.4 · Build 69    Phase 7-C Slice 1 guided metadata · PR #99
 Phase 7-A          Build 46              REAL USER PASS
 Phase 7-B          Build 51              REAL USER PASS
 Phase 7-C                                STARTED · contract locked
@@ -212,13 +212,15 @@ Implementation audit result: **no Worker or Track Manager version bump required*
 
 Build 69 candidate specifics:
 
-- version `v0.20.0 · Build 69`;
-- codename `phase7c-slice1-guided-metadata`;
+- version `v0.19.4 · Build 69`;
+- codename `studio-focus-phase7c-slice1-guided-metadata`;
 - safety `safety/pre-phase7c-slice1-build69-20260814-0013`;
 - feature branch `agent/phase7c-runtime-slice1`;
 - Draft PR #99;
-- initial CI `31749799202` correctly failed on a historical successor whitelist and caused no production deployment;
-- historical guard repaired additively to recognize authorized Phase 7-C / TM5.21 / Studio0.20 while retaining the old authority assertions;
+- initial `v0.20.0 / phase7c-*` candidate CI correctly exposed inherited release-line whitelist collisions and caused no production deployment;
+- Build 69 was normalized to the `v0.19.4 / studio-focus-*` compatibility lineage rather than widening every historical C3 / TTME / PHASE UX guard;
+- historical C3 / TTME / PHASE UX guard files are restored unchanged from `main`;
+- the current private-read integration guard alone is extended for PHASE 7-C / TM5.21 / bridge v1.11;
 - final exact-head CI still required before merge.
 
 Candidate record: [`../changelogs/CHANGELOG-PHASE7-C-BUILD69.md`](../changelogs/CHANGELOG-PHASE7-C-BUILD69.md).
