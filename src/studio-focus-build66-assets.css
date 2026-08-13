@@ -1,0 +1,46 @@
+/* Studio Focus Build 66 — Asset Identity & Lyrics Continuity */
+
+.phase4-asset-control{position:relative;overflow:hidden;isolation:isolate}
+.phase4-asset-main>div:first-child{position:relative;padding-left:46px;min-height:38px}
+.phase4-asset-main>div:first-child::before{position:absolute;left:0;top:0;display:grid;width:34px;height:34px;place-items:center;border:1px solid rgba(255,255,255,.14);border-radius:9px;background:rgba(255,255,255,.035);color:var(--studio-text-soft);font-size:10px;font-weight:900;letter-spacing:.06em}
+.phase4-asset-main strong{font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--studio-text)}
+.phase4-asset-main strong::after{display:block;margin-top:4px;color:var(--studio-text-dim);font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.phase4-asset-control::after{content:"";position:absolute;inset:0 auto 0 0;width:3px;opacity:.82}
+
+.phase4-asset-control:has(input[accept*="audio/*"])::after{background:#54e8e0}
+.phase4-asset-control:has(input[accept*="audio/*"]) .phase4-asset-main>div:first-child::before{content:"AUD";color:#8ff4ec;border-color:rgba(84,232,224,.28);background:rgba(84,232,224,.07)}
+.phase4-asset-control:has(input[accept*="audio/*"]) .phase4-asset-main strong::after{content:"Master audio · playback + lyrics timing"}
+
+.phase4-asset-control:has(input[accept*=".gif"])::after{background:#aa8cff}
+.phase4-asset-control:has(input[accept*=".gif"]) .phase4-asset-main>div:first-child::before{content:"ART";color:#c8b7ff;border-color:rgba(170,140,255,.3);background:rgba(170,140,255,.08)}
+.phase4-asset-control:has(input[accept*=".gif"]) .phase4-asset-main strong::after{content:"Main artwork · primary cover"}
+
+.phase4-asset-control:has(input[accept=".jpg,.jpeg,.png,.webp,image/*"])::after{background:#72b8ff}
+.phase4-asset-control:has(input[accept=".jpg,.jpeg,.png,.webp,image/*"]) .phase4-asset-main>div:first-child::before{content:"THM";color:#9fd0ff;border-color:rgba(114,184,255,.3);background:rgba(114,184,255,.08)}
+.phase4-asset-control:has(input[accept=".jpg,.jpeg,.png,.webp,image/*"]) .phase4-asset-main strong::after{content:"Small preview · max 2 MB · not the main cover"}
+
+.phase4-asset-control:has(input[accept*="text/plain"])::after{background:#f1c86c}
+.phase4-asset-control:has(input[accept*="text/plain"]) .phase4-asset-main>div:first-child::before{content:"TXT";color:#f5d58e;border-color:rgba(241,200,108,.3);background:rgba(241,200,108,.07)}
+.phase4-asset-control:has(input[accept*="text/plain"]) .phase4-asset-main strong::after{content:"Canonical source · lyrics.txt"}
+
+.phase4-asset-control:has(input[accept*="video/mp4"])::after{background:#ef8be8}
+.phase4-asset-control:has(input[accept*="video/mp4"]) .phase4-asset-main>div:first-child::before{content:"VID";color:#f4b5ef;border-color:rgba(239,139,232,.3);background:rgba(239,139,232,.07)}
+.phase4-asset-control:has(input[accept*="video/mp4"]) .phase4-asset-main strong::after{content:"Video / Canvas · motion artwork"}
+
+.workspace-lyrics-plain{display:flex;flex-direction:column;gap:12px}
+.workspace-lyrics-plain>summary{order:3;margin-top:0}
+.workspace-lyrics-plain>.phase4-assets-manager{display:block!important;order:1;margin:0}
+.workspace-lyrics-plain>.lyrics-sync-prerequisite{display:flex!important;order:2}
+.workspace-lyrics-plain>.lyrics-editor-panel{order:4}
+
+.lyrics-sync-prerequisite{align-items:center;justify-content:space-between;gap:18px;padding:16px 18px;border:1px solid rgba(241,200,108,.25);border-radius:12px;background:linear-gradient(135deg,rgba(241,200,108,.08),rgba(111,78,24,.08))}
+.lyrics-sync-prerequisite>div{min-width:0}
+.lyrics-sync-prerequisite strong{display:block;margin-top:7px;color:var(--studio-text);font-size:14px}
+.lyrics-sync-prerequisite p{max-width:720px;margin:6px 0 0;color:var(--studio-text-muted);font-size:11px;line-height:1.55}
+.lyrics-sync-prerequisite .primary-btn{flex:0 0 auto;white-space:nowrap}
+
+@media(max-width:680px){
+  .phase4-asset-main>div:first-child{padding-left:42px}
+  .lyrics-sync-prerequisite{align-items:stretch;flex-direction:column}
+  .lyrics-sync-prerequisite .primary-btn{width:100%;justify-content:center}
+}

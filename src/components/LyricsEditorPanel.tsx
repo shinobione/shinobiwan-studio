@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { trackHref } from '../router';
 import { studioConfig } from '../services/config';
 import {
   AdminLyricsError,
@@ -125,113 +126,130 @@ export function LyricsEditorPanel({ track, onSaved }: { track: StudioTrackDetail
     );
   }
 
-  if (!track.assets.lyricsTxt) {
-    return (
-      <AssetsManager
-        track={track}
-        onChanged={onSaved}
-        kinds={['lyrics']}
-        eyebrow="LYRICS / CANONICAL SOURCE"
-        title="Add lyrics.txt"
-        description="Choose a UTF-8 TXT file. This uses the existing guarded Track asset operation and canonical reread before Studio continues."
-      />
-    );
-  }
+  const sourceManager = (
+    <AssetsManager
+      track={track}
+      onChanged={onSaved}
+      kinds={['lyrics']}
+      eyebrow="LYRICS / CANONICAL SOURCE"
+      title="Add lyrics.txt"
+      description={track.assets.lyricsTxt
+        ? 'Canonical lyrics.txt is present. Replace or remove it here without losing the fixed location of the Lyrics source control.'
+        : 'Choose a UTF-8 TXT file. This uses the existing guarded Track asset operation and canonical reread before Studio continues.'}
+    />
+  );
+
+  if (!track.assets.lyricsTxt) return sourceManager;
 
   return (
-    <article className="panel lyrics-editor-panel">
-      <div className="lyrics-editor-head">
-        <div>
-          <span className="eyebrow">LYRICS / GUARDED WRITE</span>
-          <h3>Canonical lyrics.txt editor</h3>
-        </div>
-        <div className="lyrics-editor-badges">
-          <b>TXT CANONICAL</b>
-          <b>NO .LRC REQUIRED</b>
-        </div>
-      </div>
+    <>
+      {sourceManager}
 
-      {loading && <div className="catalog-message">Loading canonical lyrics + ETag…</div>}
-
-      {!loading && snapshot && (
-        <>
-          <div className="lyrics-editor-revisions">
-            <div><span>Manifest revision</span><strong>{snapshot.updatedAt}</strong></div>
-            <div><span>Lyrics ETag</span><strong>{snapshot.lyricsEtag}</strong></div>
-            <div><span>Stored bytes</span><strong>{bytesLabel(snapshot.bytes)}</strong></div>
-            <div><span>Stored timestamps</span><strong>{snapshot.timestampCount ?? 0}</strong></div>
+      {!track.assets.audio && (
+        <section className="lyrics-sync-prerequisite" role="status">
+          <div>
+            <span className="eyebrow">SYNC PREREQUISITE</span>
+            <strong>Master audio required for synchronization</strong>
+            <p>Your canonical lyrics.txt is ready, but LRC Maker needs the Track master audio to time the lines.</p>
           </div>
-
-          <textarea
-            className="lyrics-editor-textarea"
-            value={draft}
-            onChange={event => {
-              setDraft(event.target.value);
-              setValidation(null);
-              setSaved(null);
-            }}
-            spellCheck={false}
-            aria-label="Canonical lyrics.txt"
-          />
-
-          <div className="lyrics-editor-toolbar">
-            <div className="lyrics-editor-stats">
-              <span>{stats.lines} lines</span>
-              <span>{stats.chars} chars</span>
-              <span>{changed ? 'Modified locally' : 'Matches canonical'}</span>
-            </div>
-            <div className="lyrics-editor-actions">
-              <button className="ghost-btn" type="button" disabled={validating || saving || !changed} onClick={() => {
-                setDraft(snapshot.lyrics || '');
-                setValidation(null);
-                setSaved(null);
-                setError(null);
-              }}>Reset</button>
-              <button className="ghost-btn" type="button" disabled={validating || saving} onClick={() => void loadCanonicalLyrics()}>Reload canonical</button>
-              <button className="primary-btn" type="button" disabled={validating || saving} onClick={() => void validate()}>{validating ? 'Validating…' : 'Validate lyrics'}</button>
-            </div>
-          </div>
-
-          {validation && (
-            <section className={`lyrics-editor-result ${validation.valid ? 'ok' : 'blocked'}`}>
-              <div className="lyrics-editor-result-head">
-                <div><span>{validation.valid ? 'VALID PROPOSAL' : 'BLOCKED PROPOSAL'}</span><strong>{validation.changed ? 'Canonical text would change' : 'No lyrics change'}</strong></div>
-                <b>PREVIEW · NOT SAVED</b>
-              </div>
-              <div className="lyrics-editor-result-grid">
-                <div><span>Bytes</span><strong>{bytesLabel(validation.proposed?.bytes)}</strong></div>
-                <div><span>Timestamps</span><strong>{validation.proposed?.timestampCount ?? 0}</strong></div>
-                <div><span>Segments</span><strong>{validation.proposed?.segmentCount ?? 0}</strong></div>
-                <div><span>Quality</span><strong>{validation.quality?.state || '—'}</strong></div>
-              </div>
-              <p>Validation is non-mutating. Save is allowed only against this exact manifest revision + lyrics ETag.</p>
-              {validation.changed && validation.valid && (
-                <button className="primary-btn lyrics-save-btn" type="button" disabled={saving} onClick={() => void save()}>{saving ? 'Saving…' : 'Save lyrics.txt'}</button>
-              )}
-            </section>
-          )}
-
-          {saved && (
-            <section className={`lyrics-editor-result ${saved.clientVerified ? 'ok' : 'blocked'}`}>
-              <div className="lyrics-editor-result-head">
-                <div><span>LYRICS SAVED</span><strong>{saved.saved ? 'Canonical text persisted' : 'No change required'}</strong></div>
-                <b>{saved.clientVerified ? 'CANONICAL REREAD · VERIFIED' : 'REREAD WARNING'}</b>
-              </div>
-              <div className="lyrics-editor-result-grid">
-                <div><span>New revision</span><strong>{saved.updatedAt || '—'}</strong></div>
-                <div><span>New ETag</span><strong>{saved.lyricsEtag || '—'}</strong></div>
-                <div><span>Catalog rebuilt</span><strong>{saved.catalogRebuilt ? 'Yes' : 'No change'}</strong></div>
-                <div><span>Browser reread</span><strong>{saved.clientVerified ? 'Verified' : 'Check required'}</strong></div>
-              </div>
-              {saved.verificationWarning && <p>{saved.verificationWarning}</p>}
-            </section>
-          )}
-        </>
+          <a className="primary-btn" href={trackHref(track.id, 'overview')}>Add master audio →</a>
+        </section>
       )}
 
-      {error && <div className="lyrics-editor-error"><strong>LYRICS ERROR</strong><span>{error}</span></div>}
+      <article className="panel lyrics-editor-panel">
+        <div className="lyrics-editor-head">
+          <div>
+            <span className="eyebrow">LYRICS / GUARDED WRITE</span>
+            <h3>Canonical lyrics.txt editor</h3>
+          </div>
+          <div className="lyrics-editor-badges">
+            <b>TXT CANONICAL</b>
+            <b>NO .LRC REQUIRED</b>
+          </div>
+        </div>
 
-      <p className="workspace-footnote">Canonical rule: <strong>lyrics.txt wins</strong>. Timestamp content defines synchronized state. LRC Maker remains available as the advanced timing editor; Studio does not create a mandatory duplicate .lrc asset.</p>
-    </article>
+        {loading && <div className="catalog-message">Loading canonical lyrics + ETag…</div>}
+
+        {!loading && snapshot && (
+          <>
+            <div className="lyrics-editor-revisions">
+              <div><span>Manifest revision</span><strong>{snapshot.updatedAt}</strong></div>
+              <div><span>Lyrics ETag</span><strong>{snapshot.lyricsEtag}</strong></div>
+              <div><span>Stored bytes</span><strong>{bytesLabel(snapshot.bytes)}</strong></div>
+              <div><span>Stored timestamps</span><strong>{snapshot.timestampCount ?? 0}</strong></div>
+            </div>
+
+            <textarea
+              className="lyrics-editor-textarea"
+              value={draft}
+              onChange={event => {
+                setDraft(event.target.value);
+                setValidation(null);
+                setSaved(null);
+              }}
+              spellCheck={false}
+              aria-label="Canonical lyrics.txt"
+            />
+
+            <div className="lyrics-editor-toolbar">
+              <div className="lyrics-editor-stats">
+                <span>{stats.lines} lines</span>
+                <span>{stats.chars} chars</span>
+                <span>{changed ? 'Modified locally' : 'Matches canonical'}</span>
+              </div>
+              <div className="lyrics-editor-actions">
+                <button className="ghost-btn" type="button" disabled={validating || saving || !changed} onClick={() => {
+                  setDraft(snapshot.lyrics || '');
+                  setValidation(null);
+                  setSaved(null);
+                  setError(null);
+                }}>Reset</button>
+                <button className="ghost-btn" type="button" disabled={validating || saving} onClick={() => void loadCanonicalLyrics()}>Reload canonical</button>
+                <button className="primary-btn" type="button" disabled={validating || saving} onClick={() => void validate()}>{validating ? 'Validating…' : 'Validate lyrics'}</button>
+              </div>
+            </div>
+
+            {validation && (
+              <section className={`lyrics-editor-result ${validation.valid ? 'ok' : 'blocked'}`}>
+                <div className="lyrics-editor-result-head">
+                  <div><span>{validation.valid ? 'VALID PROPOSAL' : 'BLOCKED PROPOSAL'}</span><strong>{validation.changed ? 'Canonical text would change' : 'No lyrics change'}</strong></div>
+                  <b>PREVIEW · NOT SAVED</b>
+                </div>
+                <div className="lyrics-editor-result-grid">
+                  <div><span>Bytes</span><strong>{bytesLabel(validation.proposed?.bytes)}</strong></div>
+                  <div><span>Timestamps</span><strong>{validation.proposed?.timestampCount ?? 0}</strong></div>
+                  <div><span>Segments</span><strong>{validation.proposed?.segmentCount ?? 0}</strong></div>
+                  <div><span>Quality</span><strong>{validation.quality?.state || '—'}</strong></div>
+                </div>
+                <p>Validation is non-mutating. Save is allowed only against this exact manifest revision + lyrics ETag.</p>
+                {validation.changed && validation.valid && (
+                  <button className="primary-btn lyrics-save-btn" type="button" disabled={saving} onClick={() => void save()}>{saving ? 'Saving…' : 'Save lyrics.txt'}</button>
+                )}
+              </section>
+            )}
+
+            {saved && (
+              <section className={`lyrics-editor-result ${saved.clientVerified ? 'ok' : 'blocked'}`}>
+                <div className="lyrics-editor-result-head">
+                  <div><span>LYRICS SAVED</span><strong>{saved.saved ? 'Canonical text persisted' : 'No change required'}</strong></div>
+                  <b>{saved.clientVerified ? 'CANONICAL REREAD · VERIFIED' : 'REREAD WARNING'}</b>
+                </div>
+                <div className="lyrics-editor-result-grid">
+                  <div><span>New revision</span><strong>{saved.updatedAt || '—'}</strong></div>
+                  <div><span>New ETag</span><strong>{saved.lyricsEtag || '—'}</strong></div>
+                  <div><span>Catalog rebuilt</span><strong>{saved.catalogRebuilt ? 'Yes' : 'No change'}</strong></div>
+                  <div><span>Browser reread</span><strong>{saved.clientVerified ? 'Verified' : 'Check required'}</strong></div>
+                </div>
+                {saved.verificationWarning && <p>{saved.verificationWarning}</p>}
+              </section>
+            )}
+          </>
+        )}
+
+        {error && <div className="lyrics-editor-error"><strong>LYRICS ERROR</strong><span>{error}</span></div>}
+
+        <p className="workspace-footnote">Canonical rule: <strong>lyrics.txt wins</strong>. Timestamp content defines synchronized state. LRC Maker remains available as the advanced timing editor; Studio does not create a mandatory duplicate .lrc asset.</p>
+      </article>
+    </>
   );
 }

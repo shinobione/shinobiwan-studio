@@ -36,6 +36,7 @@ import './studio-focus-sonictrace-summary.css';
 import './studio-focus-build61-polish.css';
 import './studio-focus-build62-closeout-corrective.css';
 import './studio-focus-build63-smoke2.css';
+import './studio-focus-build66-assets.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
