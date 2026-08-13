@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
 import { computeContentHealth } from '../content-health';
 import { emitContinuationReceipt, makeContinuationReceipt } from '../phase7-receipts';
+import { buildTrackWorkflow } from '../phase7-workflow';
 import { routeHref, trackHref } from '../router';
 import { getCatalogTrack } from '../services/catalog-api';
 import { studioConfig } from '../services/config';
@@ -74,6 +75,9 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
 
   async function refreshTrackAfterWrite() {
     const item = await getCatalogTrack(trackId);
+    if (section === 'metadata' && (item.id !== trackId || item.readSource !== 'private')) {
+      throw new Error('Guided metadata verification requires a private canonical reread for the exact current trackId. Public fallback cannot verify this write.');
+    }
     setTrack(item);
     setError(null);
   }
@@ -89,6 +93,8 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
     return <section className="track-read-error panel"><span className="eyebrow">WORKSPACE / READ ERROR</span><h2>Track unavailable.</h2><p>{error || 'The canonical read layer did not return this track.'}</p><a className="ghost-btn" href={routeHref('catalog')}>← Back to Tracks</a></section>;
   }
 
+  const workflow = buildTrackWorkflow(track);
+  const identityStage = workflow.stages.find(stage => stage.id === 'identity');
   const artwork = fullArtwork(track);
   const syncedLyrics = track.timestampsAvailable;
   const privateRead = track.readSource === 'private';
@@ -193,6 +199,19 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
       {section === 'metadata' && (
         <div className="workspace-focus-subpage">
           <section className="panel workspace-focus-subpage-head"><div><span className="eyebrow">TRACK / DETAILS</span><h3>Edit identity and release metadata</h3><p>This is still the protected Track Manager metadata editor; it simply lives under Track now.</p></div><a className="ghost-btn" href={trackHref(track.id, 'overview')}>← Back to Track</a></section>
+          <section className="panel workspace-focus-subpage-head phase7c-guided-action" role="status">
+            <div>
+              <span className="eyebrow">PHASE 7-C / GUIDED METADATA</span>
+              <h3>{identityStage?.state === 'ready' ? 'Identity is canonically ready' : 'Complete identity without widening write authority'}</h3>
+              <p>Exact trackId <code>{track.id}</code>. Edit → Validate → review the normalized proposal → confirm the protected save → private canonical reread. The workflow below is recomputed only from the reread Track state.</p>
+            </div>
+            <div className="workspace-summary">
+              <span>CURRENT NEXT ACTION</span>
+              <strong>{workflow.nextAction.label}</strong>
+              <small>{workflow.nextAction.detail}</small>
+              <b>{privateRead ? 'PRIVATE CANONICAL' : 'LOCKED · PUBLIC FALLBACK'}</b>
+            </div>
+          </section>
           <MetadataValidationPanel track={track} onSaved={refreshTrackAfterWrite} />
         </div>
       )}

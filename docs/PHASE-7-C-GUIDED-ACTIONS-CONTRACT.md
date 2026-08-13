@@ -1,8 +1,8 @@
 # PHASE 7-C — Guided end-to-end actions contract
 
-Status: **STARTED — CONTRACT LOCKED / RUNTIME SLICE 1 NOT YET STARTED**
+Status: **STARTED — CONTRACT LOCKED / RUNTIME SLICE 1 BUILD 69 IMPLEMENTATION CANDIDATE**
 
-Authorization: explicit user `GO PHASE 7-C` on 2026-08-13.
+Authorization: explicit user `GO PHASE 7-C` on 2026-08-13; fresh runtime authorization renewed on 2026-08-14 after Build 68 REAL USER PASS.
 
 This document operationalizes the current-roadmap definition of Phase 7-C. It does **not** create a new write authority. It defines how Studio may guide an artist through already-authorized, operation-specific production actions while preserving the accepted Phase 7-A / 7-B and Track Manager safety model.
 
@@ -106,7 +106,7 @@ Phase 7-C may guide the artist *to* Release Campaign as a Next Action. It may no
 
 ## Slice 1 — guided Metadata / Identity completion
 
-The first runtime slice will use the oldest production-proven guarded Studio write path rather than inventing a new backend capability.
+The first runtime slice uses the oldest production-proven guarded Studio write path rather than inventing a new backend capability.
 
 Target flow:
 
@@ -145,11 +145,29 @@ Slice 1 constraints:
 - Phase 7-B receipt rules remain active;
 - public fallback must show the guided action as locked/unavailable rather than offer a fake save path.
 
+### Build 69 implementation candidate
+
+`v0.19.3 · Build 69 · studio-focus-slice4-phase7c-slice1-guided-metadata` is the first runtime candidate under PR #99.
+
+Implementation audit confirmed that Track Manager v5.21 / bridge v1.11 already exposes the required production-proven `metadata` capability and guarded validate/save operations, so **no Worker route or Worker deployment is required for this slice**.
+
+The initial `v0.20.0 / phase7c-*` identity collided with inherited release-line compatibility guards. The intermediate `v0.19.4 / studio-focus-*` identity still crossed intentionally pinned Build60→68 lineage guards. Build 69 therefore remains on the accepted `v0.19.3 / studio-focus-slice4-*` runtime compatibility line rather than widening historical C3 / Track-To-Market / PHASE UX / Studio Focus proofs. Only the current private-read integration guard is updated for the truthful Phase 7-C / Track Manager v5.21 / bridge v1.11 state.
+
+Build 69 adds only Studio orchestration around the existing authority:
+
+- direct Metadata destination from Home when Identity is the workflow Next Action;
+- existing direct Tracks / Workflow destinations preserved;
+- guided exact-track context in the Track Metadata surface;
+- strict post-save Studio reread that rejects public fallback as proof;
+- workflow / Next Action recomputation from the reread Track state;
+- a focused Build 69 regression guard preserving all prior functional guards;
+- explicit source-level preservation of Phase 7-B receipt ancestry under the Phase 7-C shell.
+
+Candidate record: [`../changelogs/CHANGELOG-PHASE7-C-BUILD69.md`](../changelogs/CHANGELOG-PHASE7-C-BUILD69.md).
+
+Build 69 remains **unaccepted** until exact-head CI, anti-drift, exact merge-SHA Pages deployment and real-user browser smoke all pass.
+
 ## Runtime acceptance discipline
-
-The contract itself is documentation-only and does not claim a runtime build.
-
-The first runtime candidate must use the next unambiguous build identity; historical Draft Build 63 is not to be reused.
 
 For every Phase 7-C runtime slice:
 
@@ -168,6 +186,8 @@ safety checkpoint
 
 ## Current cross-stack baseline at Phase 7-C opening
 
+The following is the immutable opening snapshot, retained for history rather than current-state reporting:
+
 ```text
 Studio main       46b92cbb984cde2c10b4957e425a4fb99d6d5e81
 Studio            v0.19.2 · Build 62 · Studio Focus REAL USER PASS
@@ -185,6 +205,12 @@ Opening safety anchors:
 ```text
 Studio:    safety/pre-phase7c-guided-actions-20260813-1837
 LaunchPAD: safety/pre-phase7c-guided-actions-20260813-1837
+```
+
+Current Slice 1 safety anchor:
+
+```text
+Studio:    safety/pre-phase7c-slice1-build69-20260814-0013
 ```
 
 ## Stop conditions

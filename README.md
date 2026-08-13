@@ -6,6 +6,7 @@ Private artist production cockpit and orchestrator for the SHINOBIWAN toolchain.
 
 ```text
 Studio accepted   v0.19.3 · Build 68    Home lead priority fix · REAL USER PASS
+Studio candidate  v0.19.3 · Build 69    Phase 7-C Slice 1 guided metadata · PR #99 · CI REQUIRED
 LaunchPAD          2026.08.12.102        C3-C · REAL USER PASS
 Track Manager      v5.21                 repair scope · REAL USER PASS
 Studio bridge      v1.11
@@ -15,15 +16,19 @@ Deep Audio         2.0.3-alpha
 LRC Maker          6.3.8
 ```
 
-Build 68 is the **current accepted Studio baseline**. It sits on top of the Build 67 Foundation Regression Repair and fixes Focus Home lead selection so a completed track cannot remain the large Home lead merely because it was the last track opened. Home now prefers unfinished work and shows `PRODUCTION QUEUE CLEAR` when nothing needs attention.
+Build 68 remains the **current accepted Studio baseline** until Build 69 completes exact-head CI, exact deployment and real-user browser smoke.
+
+Build 69 is the authorized **Phase 7-C Runtime Slice 1 implementation candidate**. It guides Identity/Metadata Next Actions into the existing protected metadata validate/save flow, rejects public fallback as post-save verification, and recomputes the workflow from reread canonical Track state. The implementation audit found no need for a new Worker route or Track Manager bump.
+
+Build 69 deliberately stays on the accepted `v0.19.3` / `studio-focus-slice4-*` runtime compatibility line as `studio-focus-slice4-phase7c-slice1-guided-metadata`. Earlier `0.20.0 / phase7c-*` then `0.19.4 / studio-focus-*` candidate identities exposed intentionally inherited release-line guards. Rather than weakening historical C3 / Track-To-Market / PHASE UX / Studio Focus proofs, the final identity preserves the accepted runtime lineage while naming the new Phase 7-C milestone. The current private-read integration guard alone is updated for the real Phase 7-C / TM5.21 / bridge1.11 state.
 
 Build 67 remains the accepted Foundation Regression Repair closeout underneath Build 68. Build 64 is preserved as **deployed candidate / FAILED REAL USER SMOKE** evidence; Builds 65 and 66 are corrective lineage superseded by Build 67.
-
-Phase 7-C remains **STARTED at contract level**. Runtime Slice 1 has **not started yet**.
 
 ## Release terminology
 
 `Studio v0.19.3 · Build 68` is the current accepted **project/runtime release identity**.
+
+`Studio v0.19.3 · Build 69` is an **implementation candidate**, not yet a deployed or accepted release.
 
 This repository currently publishes **no GitHub Release objects and no Git tags**. Formal GitHub Releases/tags would be a separate distribution/versioning decision.
 
@@ -42,11 +47,12 @@ Foundation repair crash fix       Build 65   superseded by Build 67
 Foundation repair UX continuity   Build 66   superseded by Build 67
 Foundation repair closeout        Build 67   REAL USER PASS
 Home lead priority corrective     Build 68   REAL USER PASS
+Phase 7-C Runtime Slice 1         Build 69   IMPLEMENTATION CANDIDATE · PR #99
 ```
 
 Build 62 remains the accepted Studio Focus program closeout. Historical Build 63 remains superseded and is not reused.
 
-**Phase 7-C is STARTED at contract level after explicit authorization; runtime Slice 1 remains NOT YET STARTED.**
+**Phase 7-C Runtime Slice 1 is now implemented as a candidate on PR #99; Build 68 remains accepted until the full Build 69 acceptance chain completes.**
 
 ## Daily product model
 
@@ -61,7 +67,7 @@ Advanced ▾
   System
 ```
 
-Final closeout decision: **Workflow remains under Advanced**. Home owns daily continuation, counters and the abbreviated attention queue; Workflow owns the full detailed searchable/filterable production queue.
+Workflow remains under Advanced. Home owns daily continuation, counters and the abbreviated attention queue; Workflow owns the full detailed searchable/filterable production queue.
 
 Home lead rule after Build 68:
 
@@ -74,6 +80,8 @@ first unfinished workflow item
 ```
 
 A production-complete track must not be promoted as the Home lead only because it was visited most recently.
+
+Build 69 preserves that rule and makes an Identity/Metadata Next Action land directly in the guided Metadata context rather than collapsing it back to Track overview.
 
 Track Workspace:
 
@@ -93,6 +101,41 @@ Production and publication remain separate overlapping axes:
 Production:  Needs attention / Production complete
 Publication: Published / Drafts
 ```
+
+## Phase 7-C Runtime Slice 1 — candidate
+
+```text
+Home / Tracks / Workflow Next Action
+→ guided Track Metadata / Identity context
+→ edit
+→ Validate metadata
+→ review normalized proposal
+→ explicit human confirmation
+→ existing protected metadata-save-v1
+→ backend verification + Studio private canonical reread
+→ VERIFIED only on exact private reread
+→ recompute Workflow / Next Action from reread state
+```
+
+The existing Track Manager v5.21 / bridge v1.11 metadata capability is sufficient. Build 69 adds **no generic Studio/R2 writer, no new Worker route, no auto-save, no auto-publish and no Album mutation**. Public fallback stays read-only and cannot verify a write.
+
+Candidate evidence:
+
+```text
+Accepted baseline      v0.19.3 · Build 68 · REAL USER PASS
+Safety checkpoint      safety/pre-phase7c-slice1-build69-20260814-0013
+Feature branch         agent/phase7c-runtime-slice1
+PR                     #99 · DRAFT
+Initial CI             31749799202 · FAILED initial successor identity whitelist
+Final identity         v0.19.3 · Build 69 · studio-focus-slice4-phase7c-slice1-guided-metadata
+Historical guards      C3 / TTME / PHASE UX / Focus assertions preserved
+Final exact-head CI    REQUIRED before merge
+Runtime merge          PENDING
+Pages deployment       PENDING
+Real-user smoke        PENDING
+```
+
+Detailed candidate record: [`changelogs/CHANGELOG-PHASE7-C-BUILD69.md`](changelogs/CHANGELOG-PHASE7-C-BUILD69.md).
 
 ## Toolchain roles
 
@@ -192,8 +235,9 @@ Start here:
 - [Current roadmap](docs/ROADMAP-CURRENT.md)
 - [Documentation map](docs/README.md)
 - [Next-session handoff](docs/NEXT-SESSION-HANDOFF.md)
-- [Foundation Regression Repair closeout REAL USER PASS](docs/STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md)
+- [Phase 7-C Build 69 candidate](changelogs/CHANGELOG-PHASE7-C-BUILD69.md)
 - [Build 68 Home lead REAL USER PASS record](changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md)
+- [Foundation Regression Repair closeout REAL USER PASS](docs/STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md)
 - [Build 64 failed-smoke repair record](docs/STUDIO-BUILD64-FOUNDATION-REGRESSION-REPAIR.md)
 - [Phase 7-C guided actions contract](docs/PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md)
 - [Studio Focus product/UX contract](docs/STUDIO-FOCUS-PRODUCTION-FIRST-UX.md)
