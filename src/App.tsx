@@ -21,7 +21,7 @@ import type { ServiceStatus, StudioReadSource, StudioRoute, WorkspaceSection } f
 import './studio-focus-build63-smoke2.css';
 
 const LAST_TRACK_KEY = 'shinobiwan-studio:last-track-id';
-const SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.20 · bridge v1.11';
+const SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.19 · bridge v1.11';
 
 const DAILY_NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
   { route: 'dashboard', label: 'Home', glyph: '⌂' },
