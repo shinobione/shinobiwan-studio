@@ -1,7 +1,7 @@
 export const studioRelease = {
   version: '0.19.3',
-  build: 67,
-  codename: 'studio-focus-slice4-lyrics-source-anchor',
+  build: 68,
+  codename: 'studio-focus-slice4-home-lead-priority',
   releasedAt: '2026-08-13',
 } as const;
 
@@ -9,3 +9,4 @@ export const studioRelease = {
 export const build64AncestryMarker = "build: 64 · codename: 'foundation-regression-repair'";
 export const build65AncestryMarker = "build: 65 · codename: 'studio-focus-slice4-lyrics-crash-corrective'";
 export const build66AncestryMarker = "build: 66 · codename: 'studio-focus-slice4-asset-identity-lyrics-continuity'";
+export const build67AncestryMarker = "build: 67 · codename: 'studio-focus-slice4-lyrics-source-anchor'";

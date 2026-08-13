@@ -46,6 +46,13 @@ function stepLabel(step: FocusStep): string {
   return 'Release';
 }
 
+function selectHomeLead(workflow: TrackWorkflowState[], lastTrackId: string | null): TrackWorkflowState | null {
+  const unfinishedLast = lastTrackId
+    ? workflow.find(item => item.track.id === lastTrackId && !item.ready) || null
+    : null;
+  return unfinishedLast || workflow.find(item => !item.ready) || null;
+}
+
 export function FocusHome() {
   const [tracks, setTracks] = useState<StudioTrack[]>([]);
   const [loading, setLoading] = useState(true);
@@ -76,8 +83,8 @@ export function FocusHome() {
   const lastTrackId = (() => {
     try { return globalThis.localStorage?.getItem(LAST_TRACK_KEY) || null; } catch { return null; }
   })();
-  const lastItem = lastTrackId ? workflow.find(item => item.track.id === lastTrackId) || null : null;
-  const lead = lastItem || attention[0] || workflow[0] || null;
+  const lead = selectHomeLead(workflow, lastTrackId);
+  const lastItem = lastTrackId && lead?.track.id === lastTrackId ? lead : null;
   const queue = attention.filter(item => item.track.id !== lead?.track.id).slice(0, 5);
   const steps: FocusStep[] = ['track', 'visuals', 'lyrics', 'sonic', 'release'];
 
@@ -115,9 +122,9 @@ export function FocusHome() {
             </div>
             <div className="focus-continue-action">
               <span>NEXT</span>
-              <strong>{lead.ready ? 'Production checklist complete' : actionLabel(lead)}</strong>
-              <small>{lead.ready ? 'Open the track or move into release.' : lead.nextAction.detail}</small>
-              <a className="primary-btn" href={trackHref(lead.track.id, artistSection(lead.nextAction.section))}>{lead.ready ? 'Open track' : actionLabel(lead)} <span>→</span></a>
+              <strong>{actionLabel(lead)}</strong>
+              <small>{lead.nextAction.detail}</small>
+              <a className="primary-btn" href={trackHref(lead.track.id, artistSection(lead.nextAction.section))}>{actionLabel(lead)} <span>→</span></a>
             </div>
           </section>
 
@@ -142,12 +149,38 @@ export function FocusHome() {
                 </div>
                 <a className="ghost-btn" href={trackHref(item.track.id, artistSection(item.nextAction.section))}>{actionLabel(item)} →</a>
               </article>;
-            })}</div> : <div className="focus-home-message panel"><strong>Nothing is waiting on you.</strong><span>Your current workflow queue is clear.</span></div>}
+            })}</div> : <div className="focus-home-message panel"><strong>Nothing else is waiting on you.</strong><span>This is the only track with a current next action.</span></div>}
           </section>
         </>
       )}
 
-      {!loading && !error && !lead && <div className="focus-home-message panel"><strong>No tracks yet.</strong><span>Create the first track to start the production flow.</span></div>}
+      {!loading && !error && !lead && tracks.length > 0 && (
+        <>
+          <section className="focus-continue panel">
+            <div className="focus-continue-copy">
+              <span className="eyebrow">PRODUCTION QUEUE CLEAR</span>
+              <div className="focus-continue-title">
+                <div><h3>Nothing needs attention</h3><p>All current production workflows are complete.</p></div>
+              </div>
+            </div>
+            <div className="focus-continue-action">
+              <span>STATUS</span>
+              <strong>Everything current is ready</strong>
+              <small>No track has a workflow next action right now.</small>
+              <a className="ghost-btn" href={routeHref('catalog')}>Open all tracks →</a>
+            </div>
+          </section>
+
+          <section className="focus-summary" aria-label="Production and catalog summary">
+            <article className="panel"><span>NEEDS ATTENTION</span><strong>0</strong><small>Production workflow has a next action</small></article>
+            <article className="panel"><span>PRODUCTION COMPLETE</span><strong>{readyCount}</strong><small>Current production checklist complete</small></article>
+            <article className="panel"><span>PUBLISHED</span><strong>{publishedCount}</strong><small>Visible in the public catalog</small></article>
+            <article className="panel"><span>DRAFTS</span><strong>{draftCount}</strong><small>Not published yet</small></article>
+          </section>
+        </>
+      )}
+
+      {!loading && !error && tracks.length === 0 && <div className="focus-home-message panel"><strong>No tracks yet.</strong><span>Create the first track to start the production flow.</span></div>}
     </section>
   );
 }
