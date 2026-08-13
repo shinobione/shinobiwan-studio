@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — CURRENT ROADMAP
 
-Updated: 2026-08-14 after **Build 68 Home lead priority REAL USER PASS**.
+Updated: 2026-08-14 during **Phase 7-C Runtime Slice 1 · Build 69 implementation candidate**.
 
 This file is the **current roadmap authority**. Historical build detail belongs in milestone docs and [`../changelogs/`](../changelogs/README.md).
 
@@ -8,9 +8,11 @@ This file is the **current roadmap authority**. Historical build detail belongs 
 
 ```text
 Studio accepted    v0.19.3 · Build 68    Home lead priority fix · REAL USER PASS
+Studio candidate   v0.20.0 · Build 69    Phase 7-C Slice 1 guided metadata · PR #99
 Phase 7-A          Build 46              REAL USER PASS
 Phase 7-B          Build 51              REAL USER PASS
-Phase 7-C                                STARTED · contract locked · runtime Slice 1 not started
+Phase 7-C                                STARTED · contract locked
+Phase 7-C Slice 1  Build 69              IMPLEMENTATION CANDIDATE · CI/DEPLOY/SMOKE REQUIRED
 Track Manager      v5.21                 repair scope · REAL USER PASS
 Studio bridge      v1.11
 Public Worker      v2.7                  unchanged
@@ -22,9 +24,9 @@ LRC Maker          6.3.8
 
 ### Immediate gate
 
-Build 68 has passed its required real-user Home smoke and is now the accepted Studio baseline.
+Build 68 has passed its required real-user Home smoke and remains the accepted Studio baseline.
 
-**Do not start Phase 7-C runtime Slice 1 without a fresh explicit authorization in the active conversation.**
+Build 69 is authorized and implemented as PR #99, but it **must not be accepted** until final exact-head CI, anti-drift, exact tested-head merge, exact merge-SHA Pages deployment and real-user browser smoke all pass.
 
 ## Frozen architecture
 
@@ -37,9 +39,9 @@ Build 68 has passed its required real-user Home smoke and is now the accepted St
 - LRC Maker = lyrics synchronization engine.
 - canonical `trackId` is identical across the toolchain.
 - no generic Studio write route and no second R2 owner.
-- public fallback is read-only and never invents private state.
+- public fallback is read-only and never invents private state or verifies a write.
 
-## Accepted foundations
+## Accepted foundations / current candidate
 
 ```text
 Phase 0   architecture/data contracts                         ✅
@@ -56,7 +58,7 @@ Studio Focus Slices 1–4 + program closeout                    ✅ REAL USER PA
 Foundation Regression Repair · Build 67 + TM5.21              ✅ REAL USER PASS
 Build 68 Home lead priority corrective                        ✅ REAL USER PASS
 Phase 7-C Guided end-to-end actions                           🚧 CONTRACT LOCKED
-Phase 7-C runtime Slice 1                                      ⛔ NOT STARTED
+Phase 7-C Runtime Slice 1 · Build 69                          🚧 IMPLEMENTATION CANDIDATE
 ```
 
 Historical numbering discipline:
@@ -69,6 +71,7 @@ Historical numbering discipline:
 - Builds 65 and 66 are corrective lineage superseded by Build 67.
 - Build 67 is the accepted Foundation Regression Repair baseline underneath Build 68.
 - Build 68 is the current accepted Studio runtime.
+- Build 69 is the first Phase 7-C runtime candidate and is not accepted yet.
 
 ## Daily product model
 
@@ -85,7 +88,7 @@ Advanced ▾
 
 Workflow remains under Advanced. Home owns daily continuation, counters and the abbreviated attention queue; Workflow owns the full detailed searchable/filterable production queue.
 
-### Home lead rule — Build 68
+### Home lead rule — Build 68 preserved by Build 69
 
 ```text
 last opened track
@@ -96,6 +99,8 @@ first unfinished workflow item
 ```
 
 A production-complete track must never be promoted as the Home lead merely because it was the last track visited.
+
+Build 69 changes only the destination semantics for an Identity/Metadata Next Action: Home now keeps `metadata` as the direct destination instead of collapsing it to overview.
 
 ## Track Workspace
 
@@ -116,43 +121,9 @@ Production axis:   Needs attention / Production complete
 Publication axis:  Published / Drafts
 ```
 
-## Foundation Regression Repair — accepted
-
-Status: **COMPLETE · REAL USER PASS** on Build 67 / TM5.21.
-
-Accepted outcomes:
-
-1. private/draft Album artwork renders through protected canonical Album media;
-2. `album.trackIds` remains the only Album membership/order authority;
-3. generic Track metadata no longer edits the Album compatibility cache;
-4. guarded membership verification/repair uses fresh private reads + canonical reread;
-5. Build 64 failed real-user smoke because of a self-triggering Lyrics `MutationObserver`;
-6. Build 65 fixed the crash;
-7. Build 66 clarified asset identity and synchronization prerequisites;
-8. Build 67 permanently anchors `LYRICS TXT` above synchronization;
-9. Build 67 received final real-user acceptance.
-
-Accepted evidence:
-
-```text
-Studio tested head   6c1d801b14ae8daedfb246da539a42125f7c80d9
-Studio validation    31738652169    SUCCESS
-Studio accepted main 5f061a460f17e27b9c2f06fdcbdda2f34e07e240
-Studio Pages run     31738982707    SUCCESS
-Track Manager        v5.21
-Studio bridge        v1.11
-TM Worker run        31728992790    SUCCESS · admin only
-TM Worker Version ID 0e1b9a3f-eabd-432e-8872-24ff0a9c085f
-Public Worker        v2.7            unchanged
-```
-
-Closeout: [`STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md`](STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md).
-
-## Build 68 — Home lead priority corrective
+## Build 68 — accepted baseline
 
 Status: **COMPLETE · REAL USER PASS**.
-
-Scope is Studio-only presentation/orchestration. No Worker route, R2 mutation, Track Manager authority change or public Worker deployment.
 
 ```text
 Safety before change  safety/pre-build68-home-lead-priority-20260813-2228
@@ -203,7 +174,7 @@ Rules:
 
 ## Phase 7-C — Guided end-to-end actions
 
-Status: **STARTED AT CONTRACT LEVEL · RUNTIME SLICE 1 NOT STARTED**.
+Status: **STARTED · RUNTIME SLICE 1 BUILD 69 IMPLEMENTATION CANDIDATE**.
 
 Contract: [`PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md`](PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md).
 
@@ -220,9 +191,9 @@ Frozen rules:
 - Phase 7-B receipts remain authoritative for specialist continuations;
 - Release Campaign remains review-only.
 
-### Runtime Slice 1 — Guided Metadata / Identity completion
+### Runtime Slice 1 — Build 69 Guided Metadata / Identity
 
-Planned flow:
+Implemented candidate flow:
 
 ```text
 Home / Tracks / Workflow Next Action
@@ -237,9 +208,20 @@ Home / Tracks / Workflow Next Action
 → recompute Workflow / Next Action
 ```
 
-No new Worker route or Track Manager version bump is planned unless implementation audit proves one genuinely necessary.
+Implementation audit result: **no Worker or Track Manager version bump required**. Existing TM v5.21 / bridge v1.11 metadata validate/save authority is reused.
 
-**Build 68 prerequisite is cleared. Runtime Slice 1 still requires a fresh explicit GO before implementation.**
+Build 69 candidate specifics:
+
+- version `v0.20.0 · Build 69`;
+- codename `phase7c-slice1-guided-metadata`;
+- safety `safety/pre-phase7c-slice1-build69-20260814-0013`;
+- feature branch `agent/phase7c-runtime-slice1`;
+- Draft PR #99;
+- initial CI `31749799202` correctly failed on a historical successor whitelist and caused no production deployment;
+- historical guard repaired additively to recognize authorized Phase 7-C / TM5.21 / Studio0.20 while retaining the old authority assertions;
+- final exact-head CI still required before merge.
+
+Candidate record: [`../changelogs/CHANGELOG-PHASE7-C-BUILD69.md`](../changelogs/CHANGELOG-PHASE7-C-BUILD69.md).
 
 ## Later roadmap
 
@@ -298,6 +280,7 @@ Source audio is not persisted in sidecars.
 ## Important checkpoints
 
 ```text
+safety/pre-phase7c-slice1-build69-20260814-0013
 safety/post-build68-home-real-user-pass-20260814-0005
 safety/pre-build68-home-lead-priority-20260813-2228
 safety/post-build67-lyrics-source-anchor-20260813-2205
