@@ -1,18 +1,18 @@
 # Studio Focus — Build 62 closeout corrective
 
-Status: **CANDIDATE · REAL USER PENDING**  
+Status: **COMPLETE · REAL USER PASS**  
 Studio: **v0.19.2 · Build 62**  
 Date: 2026-08-13
 
 ## Why Build 62 exists
 
-The representative deployed Build 61 Studio Focus program-closeout smoke was not promoted to a program-level REAL USER PASS because it exposed one runtime failure and two artist-facing UX issues.
+The representative deployed Build 61 Studio Focus program-closeout smoke was not promoted immediately because it exposed one runtime failure and two artist-facing UX issues.
 
 Observed on `Magnetic Midnight` during the real-user Visuals review:
 
 - canonical cover preview rendered successfully;
 - clicking `Extract colors` failed with `Failed to fetch`;
-- the failure occurred before any palette save or canonical write.
+- the failure occurred before any palette save.
 
 The same smoke also identified:
 
@@ -23,7 +23,7 @@ The same smoke also identified:
 
 A private Studio track may legitimately reuse the public LaunchPAD cover URL when the public asset exists. The palette extractor was fetching every canonical cover with `credentials: include`.
 
-That credential mode is required for Track Manager private `/api/media/...` reads but is inappropriate for the public cover URL and can trigger a browser CORS failure even while the same image renders normally through `<img>`.
+That mode is required for private Track Manager media but is inappropriate for the public cover URL and can trigger a browser CORS failure even while the same image renders normally through `<img>`.
 
 Build 62 chooses fetch credentials from the actual media URL:
 
@@ -33,13 +33,9 @@ Build 62 chooses fetch credentials from the actual media URL:
 
 A failed palette read now surfaces as `Palette extraction failed` rather than a generic Studio error.
 
-This changes no asset upload/delete contract and performs no canonical mutation by itself.
-
 ## Artist wording — Sonic
 
-The Home production readiness step now uses `Sonic` rather than `Sound` and intelligence next-actions use `Analyze with SonicTrace` / `Refresh SonicTrace`.
-
-The compact SonicTrace card also uses explicit Sonic/SonicTrace wording. Existing truth states, sidecar reads, routing and full Advanced diagnostics are unchanged.
+The artist-facing production workflow now uses `Sonic` / `SonicTrace` rather than the ambiguous `Sound` label. Existing SonicTrace truth states, sidecar reads, routing and full Advanced diagnostics are unchanged.
 
 ## Release Campaign provider cleanup
 
@@ -49,47 +45,66 @@ Code inspection confirmed that provider selection was not an input to:
 - `buildFreshMasterPrompt`;
 - `buildVariantPrompt`.
 
-Changing the selector therefore did not change the generated visual prompt. It only changed provider metadata/button copy while the direct external shortcut remained Google Flow.
+Changing the selector therefore did not change the generated visual prompt. Build 62 removes the misleading selector from the artist-facing UI while preserving historical browser-local metadata compatibility. Prompt generation remains provider-agnostic and the Google Flow shortcut remains available.
 
-Build 62 removes this misleading selector from the artist-facing UI while preserving the historical browser-local draft/ZIP field for compatibility. Prompt generation remains provider-agnostic and the Google Flow shortcut remains available.
+## Smoke-2 findings and paired Track Manager correction
 
-## Safety
+The next deployed smoke confirmed palette extraction but exposed two final closeout issues:
 
-Pre-corrective anchor:
+- the palette workbench changed geometry when `Save palette` appeared;
+- an explicit palette save on a legacy track could be rejected as `STALE_MANIFEST` although the track had not changed concurrently.
+
+The presentation layout was stabilized so the cover and palette keep a consistent two-column composition on desktop and stack cleanly on mobile.
+
+The false stale condition was traced to legacy manifests without a persisted `updatedAt`. Repeated reads could synthesize different current timestamps for the same unchanged object. Track Manager v5.20 now derives a stable legacy read revision from existing manifest/object metadata while preserving a real persisted `manifest.updatedAt` when present. The stale comparison itself remains in place.
+
+The same corrective presents the legacy French artist-facing type `Titre d'Album` as **`Album track`** without silently changing stored metadata.
+
+## Final deployment state
+
+```text
+Studio main       b464c0930a5659b208b3a059d443f708b8e55dba
+Studio Pages run  31713370595    SUCCESS
+Track Manager     v5.20
+Studio bridge     v1.11
+LaunchPAD main    586c71333c902fc2ebef214c63e9234ece9e1711
+Worker run        31714222431    SUCCESS · admin only
+Worker Version ID 78609aff-1f4a-4a21-b618-cb97add0c416
+Public Worker     v2.7            unchanged
+```
+
+## Final real-user acceptance
+
+The user explicitly reported **`SMOKE2 PASSED`** after testing the deployed production stack.
+
+Confirmed:
+
+- `Extract colors` works on `Magnetic Midnight`;
+- palette preview renders correctly;
+- layout remains stable when the preview/save controls appear;
+- explicit `Save palette` succeeds;
+- the false `STALE_MANIFEST` rejection is gone;
+- `Album track` displays correctly;
+- `Sonic` wording displays correctly.
+
+Full program-level evidence: [`STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md`](STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md).
+
+## Safety anchors
+
+Pre-Build-62 corrective:
 
 ```text
 safety/pre-studio-focus-build62-closeout-corrective-20260813-1529
 ```
 
-Exact pre-corrective `main`:
+Pre-final-program-closeout documentation:
 
 ```text
-70c491b3c5a1f965145e642c0384c25cc7edf1dc
+safety/pre-studio-focus-final-closeout-20260813-1720
 ```
 
-Build 62 does **not** authorize or perform:
+## Final boundary
 
-- Worker deployment/change;
-- R2/catalog/media mutation for smoke evidence;
-- generic Studio write authority;
-- automatic campaign promotion;
-- Phase 7-C.
+Build 62 is now the accepted Studio baseline and Studio Focus program closeout is complete.
 
 **Phase 7-C remains CLOSED / NOT STARTED.**
-
-## Acceptance gate
-
-Build 62 may become accepted only after:
-
-1. full inherited CI on the exact candidate head;
-2. merge of only that tested head after re-reading `main`;
-3. GitHub Pages deployment verified on the exact merge SHA;
-4. real-user smoke confirming:
-   - Home says `Sonic` / SonicTrace actions are understandable;
-   - `Magnetic Midnight → Visuals → Extract colors` no longer raises `Failed to fetch`;
-   - palette preview still does not write until explicit `Save palette`;
-   - the misleading Premium provider selector is absent;
-   - Google Flow handoff remains usable;
-   - no regression in Track / Visuals / Lyrics / Release.
-
-Until those observations exist, **Build 61 remains the accepted baseline and Build 62 remains only a candidate**.
