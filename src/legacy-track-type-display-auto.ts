@@ -12,8 +12,9 @@ function exposeMissingLyricsSourceControl(): void {
   if (!details.open) details.open = true;
 
   const summary = details.querySelector<HTMLElement>('summary');
-  const nextLabel = 'Add lyrics.txt / plain-text editor';
-  if (summary && summary.textContent?.trim() !== nextLabel) summary.textContent = nextLabel;
+  if (summary && summary.textContent?.trim() !== 'Add lyrics.txt / plain-text editor') {
+    summary.textContent = 'Add lyrics.txt / plain-text editor';
+  }
 }
 
 function installBuild65MissingLyricsPresentation(): void {
