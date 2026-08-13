@@ -12,10 +12,13 @@ const catalog = read('src/components/CatalogView.tsx');
 const main = read('src/main.tsx');
 const css = read('src/studio-focus-sonictrace-summary.css');
 
-assert.match(release, /version:\s*'0\.19\.0'/);
-assert.match(release, /build:\s*60/);
-assert.match(release, /studio-focus-slice4-sonictrace-summary/);
-assert.equal(pkg.version, '0.19.0');
+const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
+assert.match(version, /^0\.19\.\d+$/);
+assert.ok(build >= 60, `Slice 4 successor must remain Build 60 or later, got ${build}.`);
+assert.ok(codename.startsWith('studio-focus-slice4-'), `Slice 4 successor codename must remain explicit, got ${codename}.`);
+assert.equal(pkg.version, version);
 assert.ok(pkg.scripts['check:focus']?.includes('test-studio-focus-build60.mjs'), 'Build 60 guard must run in the Studio Focus chain.');
 assert.ok(main.indexOf("import './studio-focus-sonictrace-summary.css';") > main.indexOf("import './studio-focus-workshop.css';"), 'Slice 4 presentation must layer after the accepted Track Workshop styles.');
 
@@ -97,4 +100,4 @@ for (const marker of [
   '.focus-summary{grid-template-columns:repeat(4,minmax(0,1fr))}',
 ]) assert.ok(css.includes(marker), `Build 60 compact/responsive presentation is missing ${marker}.`);
 
-console.log('Studio Focus Build 60 guard passed: Track now surfaces compact truthful SonicTrace conclusions, deep diagnostics remain Advanced, stale/unavailable states do not fake insight, and production attention is clearly separated from publication.');
+console.log(`Studio Focus Build 60 ancestry passed under ${version} Build ${build}: compact truthful SonicTrace conclusions, Advanced diagnostics and production/publication semantics remain intact.`);
