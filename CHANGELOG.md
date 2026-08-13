@@ -2,6 +2,37 @@
 
 This file is the **current concise changelog**. Detailed per-build records are organized under [`changelogs/`](changelogs/README.md).
 
+## Current deployed candidate
+
+### v0.19.3 · Build 68 — 2026-08-13
+
+Codename: `studio-focus-slice4-home-lead-priority`  
+Status: **DEPLOYED CANDIDATE — REAL USER SMOKE PENDING**
+
+Home lead priority corrective:
+
+- a production-complete track can no longer remain the large Home lead merely because it was the last track opened;
+- Home keeps the last-opened track only while that track is unfinished;
+- otherwise Home selects the first unfinished workflow item;
+- when no track needs attention, Home shows `PRODUCTION QUEUE CLEAR` while retaining the summary counters;
+- no Worker route, R2 mutation, Track Manager authority change or public Worker deployment;
+- Phase 7-C runtime Slice 1 remains not started.
+
+Exact candidate evidence:
+
+```text
+Safety before change  safety/pre-build68-home-lead-priority-20260813-2228
+Feature branch        agent/build68-home-lead-priority
+PR                    #96
+Tested head           cf5131f489d72ca5fae72544dacd9eaecc78077f
+Validation run        31741483430 · SUCCESS
+Merge / current main  5c0428e500b4e6d5c9d1069bb440eac78b79955e
+Pages deploy run      31743413418 · SUCCESS
+Real-user smoke       PENDING
+```
+
+Detailed record: [`changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md`](changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md).
+
 ## Current accepted release
 
 ### v0.19.3 · Build 67 — 2026-08-13
@@ -22,16 +53,15 @@ Foundation Regression Repair closeout:
 - public fallback remains read-only and public Worker v2.7 was not redeployed;
 - Phase 7-C foundation-repair gate is cleared, while runtime Slice 1 remains not yet started.
 
-Final accepted deployment:
+Accepted deployment evidence:
 
 ```text
 Studio tested head    6c1d801b14ae8daedfb246da539a42125f7c80d9
 Studio validation     31738652169    SUCCESS
-Studio main           5f061a460f17e27b9c2f06fdcbdda2f34e07e240
+Studio accepted main  5f061a460f17e27b9c2f06fdcbdda2f34e07e240
 Studio Pages run      31738982707    SUCCESS
 Track Manager         v5.21
 Studio bridge         v1.11
-LaunchPAD main        813eb845b563b9a176c23f490d7fc044d4a0abc3
 TM Worker run         31728992790    SUCCESS · admin only
 TM Worker Version ID  0e1b9a3f-eabd-432e-8872-24ff0a9c085f
 Public Worker         v2.7            unchanged
@@ -49,6 +79,7 @@ Historical Build 63 remains superseded and is not reused. Build 64 remains faile
 
 ## Detailed history
 
+- Build 68 candidate: [`changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md`](changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md)
 - Foundation repair closeout: [`docs/STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md`](docs/STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md)
 - Build 64 failed-smoke repair record: [`docs/STUDIO-BUILD64-FOUNDATION-REGRESSION-REPAIR.md`](docs/STUDIO-BUILD64-FOUNDATION-REGRESSION-REPAIR.md)
 - Build 67 detailed record: [`changelogs/CHANGELOG-STUDIO-FOCUS-BUILD67.md`](changelogs/CHANGELOG-STUDIO-FOCUS-BUILD67.md)
@@ -57,6 +88,7 @@ Historical Build 63 remains superseded and is not reused. Build 64 remains faile
 - Studio Focus final closeout: [`docs/STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md`](docs/STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md)
 - Original monolithic history through Build 29: [`changelogs/LEGACY-CHANGELOG-THROUGH-BUILD29.md`](changelogs/LEGACY-CHANGELOG-THROUGH-BUILD29.md)
 - Current roadmap: [`docs/ROADMAP-CURRENT.md`](docs/ROADMAP-CURRENT.md)
+- Next-session handoff: [`docs/NEXT-SESSION-HANDOFF.md`](docs/NEXT-SESSION-HANDOFF.md)
 - Documentation map: [`docs/README.md`](docs/README.md)
 
-Repository cleanup on 2026-08-13 moved the detailed `CHANGELOG-*.md` records out of the repository root **without altering their historical contents**. The root keeps only this current changelog entry point.
+Repository cleanup on 2026-08-13 moved detailed `CHANGELOG-*.md` records out of the repository root **without altering historical contents**. The root keeps only this current changelog entry point.

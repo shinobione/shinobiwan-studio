@@ -2,32 +2,37 @@
 
 Private artist production cockpit and orchestrator for the SHINOBIWAN toolchain.
 
-## Current accepted baseline
+## Current state
 
 ```text
-Studio          v0.19.3 · Build 67    Foundation Regression Repair closeout · REAL USER PASS
-LaunchPAD       2026.08.12.102        C3-C · REAL USER PASS
-Track Manager   v5.21                 repair scope · REAL USER PASS
-Studio bridge   v1.11
-Public Worker   v2.7                  unchanged
-SonicTrace      V2-E Build 08         REAL USER PASS
-Deep Audio      2.0.3-alpha
-LRC Maker       6.3.8
+Studio accepted   v0.19.3 · Build 67    Foundation Regression Repair closeout · REAL USER PASS
+Studio candidate  v0.19.3 · Build 68    Home lead priority fix · DEPLOYED · REAL USER SMOKE PENDING
+LaunchPAD          2026.08.12.102        C3-C · REAL USER PASS
+Track Manager      v5.21                 repair scope · REAL USER PASS
+Studio bridge      v1.11
+Public Worker      v2.7                  unchanged
+SonicTrace         V2-E Build 08         REAL USER PASS
+Deep Audio         2.0.3-alpha
+LRC Maker          6.3.8
 ```
 
-Build 67 is the accepted Studio runtime. It closes the Foundation Regression Repair discovered after the Phase 7-C contract was locked and before runtime Slice 1 started. The repair restored private Album artwork presentation, canonical Album membership discipline, stable missing-Lyrics handling, clearer asset identity and a permanent top-level `LYRICS TXT` source control.
+Build 67 remains the **accepted Studio baseline**. It closes the Foundation Regression Repair discovered after the Phase 7-C contract was locked and before runtime Slice 1 started.
+
+Build 68 is a narrowly scoped **deployed candidate** on top of Build 67. It fixes Focus Home lead selection so a completed track cannot remain the large Home lead merely because it was the last track opened. Home now prefers unfinished work and shows `PRODUCTION QUEUE CLEAR` when nothing needs attention. Build 68 requires a final real-user Home smoke before it can replace Build 67 as the accepted baseline.
 
 Build 64 is preserved as **deployed candidate / FAILED REAL USER SMOKE** evidence. Builds 65 and 66 are corrective lineage superseded by Build 67.
 
-Phase 7-C remains **STARTED at contract level**. The repair gate is cleared, but runtime Slice 1 has **not started yet**.
+Phase 7-C remains **STARTED at contract level**. The Foundation Regression Repair gate is cleared, but runtime Slice 1 has **not started yet**.
 
 ## Release terminology
 
 `Studio v0.19.3 · Build 67` is the current accepted **project/runtime release identity**.
 
+`Studio v0.19.3 · Build 68` is currently a **deployed candidate**, not yet a REAL USER PASS.
+
 This repository currently publishes **no GitHub Release objects and no Git tags**. Formal GitHub Releases/tags would be a separate distribution/versioning decision.
 
-Accepted Studio lineage:
+Accepted/candidate Studio lineage:
 
 ```text
 Phase 7-A                         Build 46   REAL USER PASS
@@ -41,11 +46,12 @@ Foundation repair candidate       Build 64   FAILED REAL USER SMOKE
 Foundation repair crash fix       Build 65   superseded by Build 67
 Foundation repair UX continuity   Build 66   superseded by Build 67
 Foundation repair closeout        Build 67   REAL USER PASS
+Home lead priority corrective     Build 68   DEPLOYED · REAL USER SMOKE PENDING
 ```
 
 Build 62 remains the accepted Studio Focus program closeout. Historical Build 63 remains superseded and is not reused.
 
-**Phase 7-C is STARTED at contract level after explicit authorization; the Foundation Regression Repair gate is now CLEARED and runtime Slice 1 remains NOT YET STARTED.**
+**Phase 7-C is STARTED at contract level after explicit authorization; the Foundation Regression Repair gate is CLEARED and runtime Slice 1 remains NOT YET STARTED.**
 
 ## Daily product model
 
@@ -61,6 +67,18 @@ Advanced ▾
 ```
 
 Final closeout decision: **Workflow remains under Advanced**. Home owns daily continuation, counters and the abbreviated attention queue; Workflow owns the full detailed searchable/filterable production queue.
+
+Home lead rule after Build 68:
+
+```text
+last opened track
+  └─ unfinished? → use as lead
+       otherwise ↓
+first unfinished workflow item
+  └─ none? → PRODUCTION QUEUE CLEAR
+```
+
+A production-complete track must not be promoted as the Home lead only because it was visited most recently.
 
 Track Workspace:
 
@@ -133,16 +151,16 @@ MASTER FINAL 16:9
 
 Build 62 removed the misleading Premium provider selector because provider selection never changed MASTER or derivative prompt generation. Prompts remain provider-agnostic and Google Flow stays available as a direct convenience handoff.
 
-## Final accepted repair evidence
+## Accepted Foundation Repair evidence
 
 ```text
 Studio tested PR head  6c1d801b14ae8daedfb246da539a42125f7c80d9
 Studio validation run  31738652169    SUCCESS
-Studio main            5f061a460f17e27b9c2f06fdcbdda2f34e07e240
+Studio accepted main   5f061a460f17e27b9c2f06fdcbdda2f34e07e240
 Studio Pages run       31738982707    SUCCESS
 Track Manager          v5.21
 Studio bridge          v1.11
-LaunchPAD main         813eb845b563b9a176c23f490d7fc044d4a0abc3
+LaunchPAD code main    813eb845b563b9a176c23f490d7fc044d4a0abc3
 TM Worker run          31728992790    SUCCESS · admin only
 TM Worker Version ID   0e1b9a3f-eabd-432e-8872-24ff0a9c085f
 Public Worker          v2.7           unchanged
@@ -150,11 +168,26 @@ Public Worker          v2.7           unchanged
 
 Final accepted Build 67 browser verdict: **REAL USER PASS**.
 
-Rollback/checkpoint:
+Accepted repair rollback/checkpoint:
 
 ```text
 safety/post-build67-lyrics-source-anchor-20260813-2205
 ```
+
+## Build 68 deployed candidate evidence
+
+```text
+Feature branch        agent/build68-home-lead-priority
+Safety before change  safety/pre-build68-home-lead-priority-20260813-2228
+Tested PR head        cf5131f489d72ca5fae72544dacd9eaecc78077f
+Validation run        31741483430 · SUCCESS
+PR                    #96 · merged
+Merge / current main  5c0428e500b4e6d5c9d1069bb440eac78b79955e
+Pages deploy run      31743413418 · SUCCESS
+Real-user smoke       PENDING
+```
+
+Build 68 changes Studio presentation/orchestration only. It does not add a Worker route, mutate R2, change Track Manager authority or redeploy the public Worker.
 
 ## Documentation
 
@@ -162,7 +195,9 @@ Start here:
 
 - [Current roadmap](docs/ROADMAP-CURRENT.md)
 - [Documentation map](docs/README.md)
+- [Next-session handoff](docs/NEXT-SESSION-HANDOFF.md)
 - [Foundation Regression Repair closeout REAL USER PASS](docs/STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md)
+- [Build 68 Home lead candidate record](changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md)
 - [Build 64 failed-smoke repair record](docs/STUDIO-BUILD64-FOUNDATION-REGRESSION-REPAIR.md)
 - [Phase 7-C guided actions contract](docs/PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md)
 - [Studio Focus product/UX contract](docs/STUDIO-FOCUS-PRODUCTION-FIRST-UX.md)
