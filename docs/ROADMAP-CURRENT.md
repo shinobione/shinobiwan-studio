@@ -1,24 +1,39 @@
 # SHINOBIWAN STUDIO — CURRENT ROADMAP
 
-Updated: 2026-08-13 after **Foundation Regression Repair closeout REAL USER PASS**. The accepted runtime baseline is now **Studio v0.19.3 · Build 67** with **Track Manager v5.21 / bridge v1.11**.
+Updated: 2026-08-13 after **Build 68 Home lead priority fix deployment**.
 
-This file is the **current roadmap authority**. Historical build detail belongs in milestone docs and [`../changelogs/`](../changelogs/README.md), not here.
+This file is the **current roadmap authority**. Historical build detail belongs in milestone docs and [`../changelogs/`](../changelogs/README.md).
 
 ## Current state
 
 ```text
-Studio          v0.19.3 · Build 67    accepted current baseline · REAL USER PASS
-Studio Focus    Slices 1–4 + closeout REAL USER PASS
-Foundation Repair Build 67            COMPLETE · REAL USER PASS
-Phase 7-A       Build 46              REAL USER PASS
-Phase 7-B       Build 51              REAL USER PASS
-Phase 7-C                              STARTED · contract locked / repair gate CLEARED / Slice 1 not started
-Track Manager   v5.21                 repair scope · REAL USER PASS
-Studio bridge   v1.11
-Public Worker   v2.7                  unchanged
+Studio accepted    v0.19.3 · Build 67    Foundation Regression Repair · REAL USER PASS
+Studio candidate   v0.19.3 · Build 68    Home lead priority fix · DEPLOYED · REAL USER SMOKE PENDING
+Phase 7-A          Build 46              REAL USER PASS
+Phase 7-B          Build 51              REAL USER PASS
+Phase 7-C                                STARTED · contract locked · runtime Slice 1 not started
+Track Manager      v5.21                 repair scope · REAL USER PASS
+Studio bridge      v1.11
+Public Worker      v2.7                  unchanged
+LaunchPAD          2026.08.12.102        C3-C · REAL USER PASS
+SonicTrace         V2-E Build 08         REAL USER PASS
+Deep Audio         2.0.3-alpha
+LRC Maker          6.3.8
 ```
 
-Build 62 remains the accepted Studio Focus program-closeout corrective, not a fifth Studio Focus slice. Build 60 is historical deployed candidate evidence and is superseded by Build 61 for Slice 4 acceptance. Build 59 was reserved by a parallel branch and was never reused. Historical Draft Build 63 is superseded and must not be reused. Build 64 is historical **FAILED REAL USER SMOKE** evidence; Builds 65 and 66 are corrective lineage superseded by Build 67.
+### Immediate gate
+
+**Do not start Phase 7-C runtime Slice 1 until Build 68 receives a real-user Home smoke.**
+
+Required smoke:
+
+1. hard-refresh Studio;
+2. confirm a production-complete track such as `Magnetic Midnight` no longer remains the large Home lead only because it was last opened;
+3. confirm Home promotes an unfinished track when one exists;
+4. if no track needs attention, confirm `PRODUCTION QUEUE CLEAR` is shown;
+5. confirm Home counters and navigation remain intact.
+
+Only an explicit browser verdict upgrades Build 68 from **DEPLOYED CANDIDATE** to **REAL USER PASS**.
 
 ## Frozen architecture
 
@@ -35,27 +50,36 @@ Build 62 remains the accepted Studio Focus program-closeout corrective, not a fi
 
 ## Accepted foundations
 
-- Phase 0 — architecture/data contracts ✅
-- Phase 1 — Studio shell ✅
-- Phase 2 — Catalog ✅
-- Phase 3 — Track Workspace ✅
-- Phase 4 — Track Manager integration ✅
-- Phase 5 — SonicTrace / Catalog Intelligence ✅
-- Phase 6 — Lyrics / LRC ✅ REAL USER VALIDATED
-- PHASE UX ✅ REAL USER VALIDATED
-- Phase 7-A — Workflow Overview ✅ REAL USER PASS
-- Phase 7-B — contextual continuation receipts ✅ REAL USER PASS
-- Studio Focus Slice 1 ✅ Build 53 REAL USER PASS
-- Studio Focus Slice 2 ✅ Build 56 REAL USER PASS
-- Studio Focus Slice 3 ✅ Build 58 REAL USER PASS
-- Studio Focus Slice 4 ✅ Build 61 REAL USER PASS
-- Studio Focus program closeout ✅ Build 62 REAL USER PASS
-- Foundation Regression Repair ✅ Build 67 + TM5.21 REAL USER PASS
-- Phase 7-C — Guided end-to-end actions 🚧 STARTED · contract locked · runtime Slice 1 not started
+```text
+Phase 0   architecture/data contracts                         ✅
+Phase 1   Studio shell                                        ✅
+Phase 2   Catalog                                             ✅
+Phase 3   Track Workspace                                     ✅
+Phase 4   Track Manager integration                           ✅
+Phase 5   SonicTrace / Catalog Intelligence                   ✅
+Phase 6   Lyrics / LRC                                        ✅ REAL USER VALIDATED
+PHASE UX                                                       ✅ REAL USER VALIDATED
+Phase 7-A Workflow Overview                                   ✅ REAL USER PASS
+Phase 7-B Contextual continuation receipts                    ✅ REAL USER PASS
+Studio Focus Slices 1–4 + program closeout                    ✅ REAL USER PASS
+Foundation Regression Repair · Build 67 + TM5.21              ✅ REAL USER PASS
+Build 68 Home lead priority corrective                        🚧 DEPLOYED · SMOKE PENDING
+Phase 7-C Guided end-to-end actions                           🚧 CONTRACT LOCKED
+Phase 7-C runtime Slice 1                                      ⛔ NOT STARTED
+```
 
-## Studio Focus — accepted production-first UX
+Historical numbering discipline:
 
-### Daily navigation
+- Build 59 was reserved and never reused.
+- Build 60 is superseded by Build 61 for Slice 4 acceptance.
+- Build 62 is the Studio Focus program closeout.
+- Build 63 is historical/superseded and must not be reused.
+- Build 64 is deployed **FAILED REAL USER SMOKE** evidence.
+- Builds 65 and 66 are corrective lineage superseded by Build 67.
+- Build 67 is the current accepted Studio runtime.
+- Build 68 is the current deployed candidate awaiting Home smoke.
+
+## Daily product model
 
 ```text
 Home
@@ -68,94 +92,101 @@ Advanced ▾
   System
 ```
 
-### Track Workspace
+Workflow remains under Advanced. Home owns daily continuation, counters and the abbreviated attention queue; Workflow owns the full detailed searchable/filterable production queue.
+
+### Home lead rule — Build 68
+
+```text
+last opened track
+  └─ unfinished? → use as lead
+       otherwise ↓
+first unfinished workflow item
+  └─ none? → PRODUCTION QUEUE CLEAR
+```
+
+A production-complete track must never be promoted as the Home lead merely because it was the last track visited.
+
+## Track Workspace
 
 ```text
 Track · Visuals · Lyrics · Release
 ```
 
-- Track owns day-to-day identity, canonical audio, production state and compact SonicTrace conclusions.
-- Visuals owns canonical Cover / Thumbnail / Canvas; Canvas presentation is 9:16.
-- Lyrics owns a permanent top-level canonical `LYRICS TXT` source control, embedded LRC Maker synchronization and a secondary plain-text editor.
-- Release owns the final checklist and native Release Campaign.
-- full Metadata and SonicTrace diagnostics remain reachable through progressive disclosure / Details / Advanced.
+- **Track** — identity, canonical master audio, production state and compact SonicTrace conclusions.
+- **Visuals** — canonical Cover / Thumbnail / Canvas; Canvas preview is 9:16.
+- **Lyrics** — permanent top-level canonical `LYRICS TXT` source control, embedded LRC Maker and secondary plain-text editor.
+- **Release** — final checklist + browser-local Release Campaign.
+- full Metadata and SonicTrace diagnostics remain under progressive disclosure / Details / Advanced.
 
-### Production vs publication
+Production and publication remain separate overlapping axes:
 
 ```text
 Production axis:   Needs attention / Production complete
 Publication axis:  Published / Drafts
 ```
 
-These axes intentionally overlap. A published track can still have useful production work left.
+## Foundation Regression Repair — accepted
 
-### Accepted SonicTrace behavior
+Status: **COMPLETE · REAL USER PASS** on Build 67 / TM5.21.
 
-The Track page shows a compact artist-facing projection only:
+Accepted outcomes:
 
-- Style;
-- Mood;
-- Character;
-- Arrangement;
-- Master;
-- Palette.
+1. private/draft Album artwork renders through protected canonical Album media;
+2. `album.trackIds` remains the only Album membership/order authority;
+3. generic Track metadata no longer edits the Album compatibility cache;
+4. guarded membership verification/repair uses fresh private reads + canonical reread;
+5. Build 64 failed real-user smoke because of a self-triggering Lyrics `MutationObserver`;
+6. Build 65 fixed the crash;
+7. Build 66 clarified asset identity and synchronization prerequisites;
+8. Build 67 permanently anchors `LYRICS TXT` above synchronization;
+9. Build 67 received final real-user acceptance.
 
-Truth state remains inherited from the protected SonicTrace profile contract: `FULL / PARTIAL / UNAVAILABLE / OUTDATED`. The 512D vector, engine/GPU plumbing and full diagnostics stay out of routine Track use.
-
-Artist-facing workflow wording is `Sonic` / `SonicTrace`, not the ambiguous legacy `Sound` label.
-
-## Foundation Regression Repair — COMPLETE
-
-Status: **COMPLETE · REAL USER PASS**.
-
-A fresh real-user smoke performed before Phase 7-C runtime Slice 1 exposed foundation regressions, so runtime work was paused until repair acceptance.
-
-Accepted repair outcomes:
-
-1. private/draft Album artwork renders through protected canonical Album media rather than depending on the public Album projection;
-2. `album.trackIds` remains the only Album membership/order authority and the generic Track metadata path no longer edits the Album cache;
-3. Track Manager v5.21 removes `album` from the generic Studio metadata allowlist and provides protected Album media reads;
-4. explicit membership verification/repair uses the existing guarded Album operation with fresh reads and canonical reread verification;
-5. Build 64 corrected the original issues but **failed real-user smoke** because a Lyrics `MutationObserver` could self-trigger and freeze affected routes;
-6. Build 65 corrected that crash without changing backend authority;
-7. Build 66 clarified Audio / Cover / Thumbnail / Lyrics TXT / Video-Canvas identities and explains missing-master-audio synchronization prerequisites;
-8. Build 67 permanently anchors `LYRICS TXT` above synchronization, outside the secondary plain-text disclosure;
-9. final Build 67 browser review was accepted by the user.
-
-Exact accepted repair evidence:
+Accepted evidence:
 
 ```text
 Studio tested head   6c1d801b14ae8daedfb246da539a42125f7c80d9
 Studio validation    31738652169    SUCCESS
-Studio main          5f061a460f17e27b9c2f06fdcbdda2f34e07e240
+Studio accepted main 5f061a460f17e27b9c2f06fdcbdda2f34e07e240
 Studio Pages run     31738982707    SUCCESS
 Track Manager        v5.21
 Studio bridge        v1.11
-LaunchPAD main       813eb845b563b9a176c23f490d7fc044d4a0abc3
 TM Worker run        31728992790    SUCCESS · admin only
 TM Worker Version ID 0e1b9a3f-eabd-432e-8872-24ff0a9c085f
 Public Worker        v2.7            unchanged
 ```
 
-Closeout evidence: [`STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md`](STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md).
+Closeout: [`STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md`](STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md).
 
-## Studio Focus program closeout — COMPLETE
+## Build 68 — Home lead priority corrective
 
-Status: **COMPLETE · REAL USER PASS**.
+Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**.
 
-Accepted closeout findings and decisions remain preserved:
+Scope is Studio-only presentation/orchestration. No Worker route, R2 mutation, Track Manager authority change or public Worker deployment.
 
-1. public-cover `Extract colors` works on the exercised `Magnetic Midnight` track;
-2. palette preview layout remains stable when save controls appear;
-3. explicit `Save palette` succeeds on the exercised legacy track;
-4. the false legacy `STALE_MANIFEST` condition is fixed without removing stale revision checks;
-5. legacy artist-facing `Titre d'Album` displays as `Album track` without silently changing stored metadata;
-6. `Sonic` wording is accepted;
-7. Release Campaign prompt generation remains provider-agnostic and the misleading Premium provider selector is gone;
-8. Google Flow remains a direct convenience handoff;
-9. **Workflow remains under Advanced** because Home owns the daily abbreviated production queue while Workflow owns the full detailed searchable/filterable queue.
+```text
+Safety before change  safety/pre-build68-home-lead-priority-20260813-2228
+Feature branch        agent/build68-home-lead-priority
+PR                     #96
+Tested head            cf5131f489d72ca5fae72544dacd9eaecc78077f
+Validation             31741483430 · SUCCESS
+Merge / current main   5c0428e500b4e6d5c9d1069bb440eac78b79955e
+Pages deployment       31743413418 · SUCCESS
+Real-user smoke        PENDING
+```
 
-Historical closeout evidence: [`STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md`](STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md).
+Detailed record: [`../changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md`](../changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md).
+
+## Phase 7-B receipt authority — preserved
+
+```text
+lrc-maker        + lyrics-saved      → canonical-write
+sonictrace       + analysis-saved    → canonical-write
+release-campaign + campaign-exported → review-only
+```
+
+Canonical-write verification requires exact current `trackId`, allowlisted source/operation/effect, private canonical Track Manager reread, returned ID match, operation-specific evidence and stale async protection.
+
+Public fallback never confirms a canonical write.
 
 ## Native Release Campaign — preserved contract
 
@@ -170,87 +201,53 @@ MASTER FINAL 16:9
 Rules:
 
 - 9:16 is never derived from 1:1;
-- accepted MASTER and derivatives are browser-local campaign state until a separately authorized persistence design exists;
+- MASTER and derivatives stay browser-local until a separately authorized persistence design exists;
 - `New MASTER concept` is non-destructive;
 - prompt generation is provider-agnostic;
-- Google Flow remains a direct convenience handoff;
-- ZIP export remains review-only;
-- successful export emits `release-campaign / campaign-exported / review-only`;
+- Google Flow remains a convenience handoff;
+- ZIP export is review-only;
+- `release-campaign / campaign-exported / review-only` remains the receipt;
 - manifest remains `canonicalWrite: false`.
-
-### Release Campaign follow-ups — later
-
-- optional ~8s motion/loop provider handoff anchored to the selected MASTER;
-- fixed title/logo and clean loop seam where relevant;
-- provider/model provenance recorded rather than guessed;
-- independent variant replacement;
-- future guarded persistence only through existing Track Manager operation-specific authority + canonical reread.
-
-## Phase 7-B receipt authority — preserved
-
-```text
-lrc-maker        + lyrics-saved      → canonical-write
-sonictrace       + analysis-saved    → canonical-write
-release-campaign + campaign-exported → review-only
-```
-
-Canonical-write verification requires:
-
-- exact current `trackId`;
-- allowlisted source/operation/effect;
-- private canonical Track Manager reread;
-- returned ID still matching;
-- operation-specific canonical evidence;
-- stale async reread protection.
-
-Public fallback never confirms a canonical write.
 
 ## Phase 7-C — Guided end-to-end actions
 
-Status: **STARTED — CONTRACT LOCKED / FOUNDATION REPAIR GATE CLEARED / RUNTIME SLICE 1 NOT YET STARTED**.
+Status: **STARTED AT CONTRACT LEVEL · RUNTIME SLICE 1 NOT STARTED**.
 
-Fresh explicit authorization was given on 2026-08-13. The executable safety/product contract is [`PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md`](PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md).
+Contract: [`PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md`](PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md).
 
-Accepted Phase 7-C rules:
+Frozen rules:
 
 - Studio guides one truthful Next Action at a time;
-- guided canonical mutations reuse existing operation-specific protected write authority rather than adding a generic Studio/R2 writer;
-- private read and the operation's advertised capability are required before mutation;
-- fresh revision / ETag / state token protections remain mandatory where applicable;
-- explicit human confirmation remains required before a canonical mutation;
-- ambiguous write failures are canonically reread before any retry;
-- every successful canonical mutation must be privately reread before Studio shows it as verified;
-- Phase 7-B typed receipts remain authoritative for LRC Maker / SonicTrace specialist continuations;
-- Release Campaign remains review-only and `canonicalWrite: false`;
-- workflow state and the next useful action are recomputed from canonical reread state, never optimistic local state.
+- canonical mutations reuse existing operation-specific protected Track Manager authority;
+- private read + advertised capability are required;
+- fresh revision / ETag / state token protections remain mandatory;
+- explicit human confirmation before canonical mutation;
+- ambiguous write failure → canonical reread before retry decision;
+- apparent success is not VERIFIED until private canonical reread proves it;
+- workflow/Next Action recomputes from canonical reread state, never optimistic local state;
+- Phase 7-B receipts remain authoritative for specialist continuations;
+- Release Campaign remains review-only.
 
-### Phase 7-C Slice 1 — next runtime candidate
+### Runtime Slice 1 — Guided Metadata / Identity completion
 
-**Guided Metadata / Identity completion** around the already production-proven metadata validate/save path:
+Planned flow:
 
 ```text
 Home / Tracks / Workflow Next Action
 → Track guided Metadata / Identity context
 → edit
-→ validate
+→ Validate metadata
 → review normalized proposal
-→ explicit Save confirmation
+→ explicit confirmation
 → existing guarded metadata save
-→ backend + Studio canonical reread
+→ backend + Studio private canonical reread
 → VERIFIED
-→ refreshed workflow / next action
+→ recompute Workflow / Next Action
 ```
 
-No new Worker route or Track Manager version bump is planned for Slice 1 unless implementation audit proves one genuinely necessary. Deployment itself performs no production data mutation; the only mutation remains an explicit user-triggered existing guarded operation.
+No new Worker route or Track Manager version bump is planned unless implementation audit proves one genuinely necessary.
 
-Before runtime implementation resumes in a fresh session, verify current GitHub and deployed production state. Do not treat the repair closeout itself as a new runtime-implementation authorization.
-
-Opening safety anchors:
-
-```text
-Studio:    safety/pre-phase7c-guided-actions-20260813-1837
-LaunchPAD: safety/pre-phase7c-guided-actions-20260813-1837
-```
+**Do not start this Slice until Build 68 real-user Home smoke passes and a fresh session authorization is explicit.**
 
 ## Later roadmap
 
@@ -268,16 +265,14 @@ Potential extraction of mature LRC/SonicTrace/catalog engines while Studio remai
 
 There is currently no official Phase 11.
 
-### Premium interaction feel — rolling polish backlog
+### Premium interaction feel — rolling backlog
 
-Keep improving perceived quality without changing product semantics:
-
-- tactile button press/click feedback;
-- restrained glow and focus transitions;
-- premium hover/active states;
+- tactile press/release feedback;
+- restrained glow/focus transitions;
+- coherent hover/active states;
 - smooth panel/tab transitions;
 - reduced-motion-safe animation;
-- no decorative motion that obscures state or slows production work.
+- no decorative motion that obscures state or slows work.
 
 ## Canonical data contracts
 
@@ -308,9 +303,10 @@ tracks/<slug>/analysis/sonictrace/history/<analysisId>.json
 
 Source audio is not persisted in sidecars.
 
-## Accepted checkpoints
+## Important checkpoints
 
 ```text
+safety/pre-build68-home-lead-priority-20260813-2228
 safety/post-build67-lyrics-source-anchor-20260813-2205
 safety/post-studio-focus-program-closeout-20260813-1720
 safety/post-studio-focus-build61-real-user-pass-20260813-1347
@@ -321,7 +317,7 @@ safety/post-phase7-b-build51-real-user-pass-20260812-2120
 safety/post-phase7-a-build46-real-user-pass-20260812-0923
 ```
 
-Pre-Phase-7-C opening safety anchors:
+Phase 7-C contract opening anchors:
 
 ```text
 Studio:    safety/pre-phase7c-guided-actions-20260813-1837
@@ -332,4 +328,4 @@ LaunchPAD: safety/pre-phase7c-guided-actions-20260813-1837
 
 **CI GREEN ≠ DEPLOYED CANDIDATE ≠ REAL USER PASS.**
 
-Every new runtime slice must use exact-head CI, anti-collision reread, exact tested merge, exact merge-SHA deployment and real-user smoke. Historical candidates never receive retroactive acceptance.
+Every runtime slice must use exact-head CI, anti-drift reread, exact tested merge, exact merge-SHA deployment and real-user smoke. Historical candidates never receive retroactive acceptance.
