@@ -225,6 +225,31 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
             <div className="workspace-lyrics-status-facts"><span>Source <b>{track.assets.lyricsTxt ? 'Ready' : 'Missing'}</b></span><span>Sync <b>{syncedLyrics ? 'Ready' : 'Not synced'}</b></span><span>Lines <b>{track.lyricSegments.length}</b></span></div>
             <button className="ghost-btn" type="button" disabled={!privateRead || !track.assets.audio || !track.assets.lyricsTxt} onClick={() => openContextualLrcMaker(track.id)}>Open standalone fallback ↗</button>
           </section>
+
+          <div className="workspace-lyrics-source-anchor">
+            <AssetsManager
+              track={track}
+              onChanged={refreshTrackAfterWrite}
+              kinds={['lyrics']}
+              eyebrow="LYRICS / CANONICAL SOURCE"
+              title="Lyrics TXT"
+              description={track.assets.lyricsTxt
+                ? 'Canonical lyrics.txt is present. Replace or remove the source here; synchronization and text editing stay below.'
+                : 'Upload the canonical UTF-8 lyrics.txt here. This source control stays in the same place before and after upload.'}
+            />
+          </div>
+
+          {privateRead && track.assets.lyricsTxt && !track.assets.audio && (
+            <section className="lyrics-sync-prerequisite" role="status">
+              <div>
+                <span className="eyebrow">SYNC PREREQUISITE</span>
+                <strong>Master audio required for synchronization</strong>
+                <p>Your canonical lyrics.txt is ready, but LRC Maker needs the Track master audio to time the lines.</p>
+              </div>
+              <a className="primary-btn" href={trackHref(track.id, 'overview')}>Add master audio →</a>
+            </section>
+          )}
+
           <WorkspacePanel eyebrow="LYRICS / STUDIO" title={track.assets.lyricsTxt ? 'Synchronize lyrics' : 'No lyrics'} className={`workspace-lyrics-panel${canEmbedLyrics ? ' workspace-lyrics-panel--embedded' : ''}`}>
             {canEmbedLyrics
               ? <EmbeddedLyricsStudio trackId={track.id} onSaved={() => undefined} />
@@ -234,7 +259,14 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
                   ? <div className="workspace-lyrics-lines">{lyricLines.map((line, index) => <p key={`${index}-${line}`}>{line}</p>)}</div>
                   : <p className="workspace-muted">No lyric text is available yet. Add canonical lyrics.txt to begin.</p>}
           </WorkspacePanel>
-          <details className="workspace-lyrics-plain"><summary>Open plain-text lyrics editor</summary><p>Use this secondary editor for text cleanup or direct timestamp inspection.</p><LyricsEditorPanel track={track} onSaved={refreshTrackAfterWrite} /></details>
+
+          {track.assets.lyricsTxt && (
+            <details className="workspace-lyrics-plain">
+              <summary>Open plain-text lyrics editor</summary>
+              <p>Use this secondary editor for text cleanup or direct timestamp inspection.</p>
+              <LyricsEditorPanel track={track} onSaved={refreshTrackAfterWrite} />
+            </details>
+          )}
         </div>
       )}
 
