@@ -1,6 +1,6 @@
 export const studioRelease = {
-  version: '0.19.2',
-  build: 62,
-  codename: 'studio-focus-slice4-closeout-corrective',
+  version: '0.19.3',
+  build: 64,
+  codename: 'foundation-regression-repair',
   releasedAt: '2026-08-13',
 } as const;
