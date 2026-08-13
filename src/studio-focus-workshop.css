@@ -1,5 +1,5 @@
 /* Studio v0.18.0 · Build 57 — Track Workshop
-   Artist-facing regrouping over the accepted Workspace routes. */
+   Build 58 smoke corrective keeps the same artist-facing regrouping. */
 
 .workspace-artist-tabs{align-items:center;justify-content:space-between;gap:10px}
 .workspace-artist-tabs .workspace-tab-links{display:flex;align-items:center;gap:4px;margin-left:auto}
@@ -55,17 +55,17 @@
 .workspace-focus-details>.workspace-metadata-list{margin:16px 20px}
 .workspace-focus-detail-actions{display:flex;flex-wrap:wrap;gap:8px}
 
-.workspace-focus-visual-grid{display:grid;grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr);gap:12px;margin-top:18px}
+.workspace-focus-visual-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,.62fr);gap:18px;margin-top:18px;align-items:start}
 .workspace-focus-cover-preview,
 .workspace-focus-video-preview{position:relative;min-height:220px;overflow:hidden;border:1px solid rgba(133,231,226,.09);border-radius:14px;background:rgba(4,8,14,.72)}
 .workspace-focus-cover-preview{aspect-ratio:1;max-width:360px}
-.workspace-focus-cover-preview img,
-.workspace-focus-video-preview video{width:100%;height:100%;display:block;object-fit:cover}
+.workspace-focus-cover-preview img{width:100%;height:100%;display:block;object-fit:cover}
+.workspace-focus-video-preview video{width:100%;height:100%;display:block;object-fit:contain;background:#030609}
 .workspace-focus-cover-preview>span,
 .workspace-focus-video-preview>span{position:absolute;inset:0;display:grid;place-items:center;color:#61777b;font-weight:800}
 .workspace-focus-cover-preview small,
-.workspace-focus-video-preview small{position:absolute;left:10px;bottom:10px;padding:6px 9px;border-radius:999px;background:rgba(5,10,16,.86);color:#bcd0d0;font-size:.7rem}
-.workspace-focus-video-preview{aspect-ratio:16/9;align-self:start}
+.workspace-focus-video-preview small{position:absolute;left:10px;top:10px;bottom:auto;padding:6px 9px;border-radius:999px;background:rgba(5,10,16,.86);color:#bcd0d0;font-size:.7rem;z-index:2}
+.workspace-focus-video-preview{aspect-ratio:9/16;align-self:start;justify-self:center;width:min(100%,292px);max-height:520px}
 
 .workspace-focus-handoff{align-items:center}
 .workspace-focus-handoff .primary-btn{flex:0 0 auto}
@@ -79,6 +79,26 @@
 
 .workspace-focus-subpage-head{align-items:center}
 .workspace-focus-subpage-head .ghost-btn{flex:0 0 auto}
+
+.catalog-private-read-notice,
+.workspace-private-read-notice{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:16px 18px;border-color:rgba(255,204,107,.18);background:linear-gradient(135deg,rgba(255,204,107,.035),rgba(91,229,224,.018))}
+.catalog-private-read-notice strong,
+.workspace-private-read-notice strong{display:block;margin-top:4px;color:#e4d2a7;font-size:.92rem}
+.catalog-private-read-notice p,
+.workspace-private-read-notice p{margin:5px 0 0;max-width:850px;color:#8f9693;font-size:.78rem;line-height:1.5}
+.catalog-private-read-actions,
+.workspace-private-read-actions{display:flex;flex-wrap:wrap;gap:8px;flex:0 0 auto}
+.catalog-private-read-actions .ghost-btn,
+.workspace-private-read-actions .ghost-btn{white-space:nowrap}
+.catalog-production-filters button:disabled{opacity:.45;cursor:not-allowed}
+.catalog-production-filters button:disabled:hover{transform:none;box-shadow:none}
+
+.workspace-lyrics-lock{display:grid;gap:10px;padding:18px;border:1px solid rgba(255,204,107,.16);border-radius:12px;background:rgba(255,204,107,.025)}
+.workspace-lyrics-lock>strong{color:#e6d2a4;font-size:1rem}
+.workspace-lyrics-lock>p{margin:0;max-width:820px;color:#8f9998;font-size:.8rem;line-height:1.55}
+.workspace-lyrics-lock details{margin-top:4px;border-top:1px solid rgba(133,231,226,.07);padding-top:10px}
+.workspace-lyrics-lock summary{cursor:pointer;color:#93a9aa;font-size:.78rem;font-weight:800}
+.workspace-lyrics-lock .workspace-lyrics-lines{margin-top:10px;max-height:320px;overflow:auto}
 
 .track-workshop .phase4-assets-manager{min-height:0}
 .track-workshop .phase4-panel-head h3{font-size:1.18rem}
@@ -94,11 +114,15 @@
   .workspace-artist-tabs .workspace-tab-links a{min-width:0;padding:0 8px}
   .workspace-focus-visual-grid{grid-template-columns:1fr}
   .workspace-focus-cover-preview{max-width:none;width:min(100%,360px)}
+  .workspace-focus-video-preview{width:min(100%,300px);justify-self:start}
+  .catalog-private-read-notice,.workspace-private-read-notice{align-items:stretch;flex-direction:column}
 }
 @media(max-width:620px){
   .workspace-focus-summary-head,.workspace-focus-section-head,.workspace-focus-subpage-head,.workspace-focus-handoff{flex-direction:column;align-items:stretch}
   .workspace-focus-stage-grid,.workspace-focus-release-grid,.workspace-focus-facts{grid-template-columns:1fr 1fr}
   .workspace-artist-tabs .workspace-tab-links a{font-size:.76rem}
+  .catalog-private-read-actions,.workspace-private-read-actions{width:100%}
+  .catalog-private-read-actions .ghost-btn,.workspace-private-read-actions .ghost-btn{flex:1 1 170px}
 }
 @media(max-width:430px){
   .workspace-focus-stage-grid,.workspace-focus-release-grid,.workspace-focus-facts{grid-template-columns:1fr}
