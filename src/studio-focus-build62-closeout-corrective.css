@@ -1,0 +1,4 @@
+/* Studio Focus Build 62 closeout corrective.
+   The historical provider field is retained only in browser-local draft/ZIP schema compatibility.
+   It never altered prompt generation, so the misleading selector is removed from the artist-facing UI. */
+.rc-provider-field{display:none!important}
