@@ -1,12 +1,10 @@
 # SHINOBIWAN STUDIO — CURRENT ROADMAP
 
-Updated: 2026-08-13 for **Studio v0.18.0 · Build 57 — Studio Focus Slice 3 / Track Workshop CANDIDATE**.
+Updated: 2026-08-13 for **Studio v0.18.1 · Build 58 — Studio Focus Slice 3 smoke corrective CANDIDATE**.
 
-Build 56 / Slice 2 is now **COMPLETE — REAL USER PASS** after deployed browser review accepted the five-card Tracks library, larger copy and full wrapping `Audio / Cover / Lyrics / Canvas / Release` labels.
+Build 56 remains the accepted Studio Focus Slice 2 baseline. Build 57 introduced the `Track · Visuals · Lyrics · Release` Track Workshop regrouping but did **not** receive REAL USER PASS after deployed smoke exposed public-fallback ambiguity, a wrong 16:9 Canvas preview, and unclear Lyrics Studio availability. Build 58 corrects those points without changing canonical ownership.
 
-Build 57 opens the next validated Studio Focus step: regroup the Track Workspace around the artist mental model **`Track · Visuals · Lyrics · Release`** while preserving all existing canonical authorities and deep-link compatibility.
-
-Historical release detail remains in milestone docs, changelogs and Git history.
+Historical release detail remains in milestone docs and Git history.
 
 ## Architecture roles — frozen
 
@@ -15,14 +13,14 @@ Historical release detail remains in milestone docs, changelogs and Git history.
 - **Track Manager** — protected canonical write authority.
 - **SonicTrace** — audio intelligence / Catalog Intelligence engine.
 - **LRC Maker** — lyrics synchronization engine.
-- **Track-To-Market standalone** — rollback/reference implementation; no longer the intended primary release-campaign UX.
+- **Track-To-Market standalone** — frozen rollback/reference implementation; no longer the intended primary Release Campaign UX.
 - **Cloudflare R2** — canonical catalog/media/data authority.
-- **GitHub** — code authority.
+- **GitHub** — application-code authority.
 - Canonical `trackId` is the R2 track slug everywhere.
 
-No Studio Focus slice may create a second source of truth, a generic write route or a second R2 owner.
+**Phase 7 means orchestration, not centralization. Public fallback is never a second source of truth.**
 
-## Closed / accepted foundations
+## Accepted product phases
 
 - Phase 0 — Architecture freeze / data contracts ✅
 - Phase 1 — Studio shell ✅
@@ -31,214 +29,85 @@ No Studio Focus slice may create a second source of truth, a generic write route
 - Phase 4 — Track Manager integration ✅
 - Phase 5 — SonicTrace / Catalog Intelligence ✅
 - Phase 6 — Lyrics / LRC ✅ REAL USER VALIDATED
-- PHASE UX ✅ REAL USER VALIDATED
 - Phase 7-A — Workflow Overview ✅ REAL USER PASS · Build 46
 - Phase 7-B — Contextual continuation receipts ✅ REAL USER PASS · Build 51
-- SonicTrace V2-E Build 08 ✅ durable FULL profile + canonical R2 reread REAL USER PASS
 
-## Studio Focus — active roadmap
+## PHASE UX
 
-Product rule:
+Status: **COMPLETE — REAL USER VALIDATED**
 
-> When everything works, the technical machinery disappears. When something fails, the technical detail remains available.
+Accepted milestones remain:
 
-### Slice 1 — shell + Home
+- C2.5-A → F ✅
+- C3-A Deep Audio ✅ real-user pass
+- C3-B Studio V2-E parity ✅ real-user pass
+- C3-C LaunchPAD Build 102 ✅ real-user pass
+- Track-To-Market Bridge V2 / Studio Build 45 ✅ real-user pass for transport/finality/no-write contract
 
-Status: **COMPLETE — REAL USER PASS · Build 53**
+Final closeout: `docs/PHASE-UX-FINAL-CLOSEOUT-20260812.md`.
 
-Accepted daily navigation:
+## Native Release Campaign — accepted architecture
 
-```text
-Home
-Tracks
-Albums
-
-Advanced ▾
-  Workflow
-  Intelligence
-  System
-```
-
-Accepted behavior:
-
-- Home answers what to continue / what needs finishing;
-- `Continue where you left off` uses local browser state only as a navigation hint;
-- next actions reuse the accepted Phase 7-A workflow/readiness model;
-- `+ New Track` stays private-read gated and Track Manager-owned;
-- healthy infrastructure detail is hidden from daily use.
-
-Acceptance checkpoint:
-
-`safety/post-studio-focus-build53-real-user-pass-20260813-0032`
-
-### Slice 2 — Tracks production library
-
-Status: **COMPLETE — REAL USER PASS · Build 56**
-
-History:
-
-- Build 54 established the production library and `To finish / Ready / Released / All` filters;
-- Build 55 reduced oversized cover dominance and increased text size, but its first deployed smoke exposed truncated state labels;
-- Build 56 preserved the denser five-card layout and converted production states to full wrapping chips.
-
-Accepted deployed result:
-
-- calmer cover size / higher track density;
-- readable title / album / next action copy;
-- full **Audio / Cover / Lyrics / Canvas / Release** labels;
-- chips wrap naturally instead of ellipsis;
-- one clear continuation action per track;
-- existing Phase 7-A readiness logic remains the source of continuation truth.
-
-Acceptance checkpoint:
-
-`safety/post-studio-focus-build56-real-user-pass-20260813-0143`
-
-### Slice 3 — Track Workshop
-
-Status: **BUILD 57 CANDIDATE — FULL CI REQUIRED, THEN DEPLOYED REAL-USER SMOKE**
-
-Release candidate:
-
-```text
-Studio v0.18.0 · Build 57
-codename: studio-focus-track-workshop
-```
-
-Artist-facing Track navigation becomes:
-
-```text
-Track · Visuals · Lyrics · Release
-```
-
-#### Track
-
-- useful identity / Album / release facts;
-- canonical master audio playback;
-- compact Audio / Visuals / Lyrics / Sound / Release state;
-- protected canonical Audio management only;
-- secondary BPM/key/duration/language/source detail under `More track details`;
-- full protected Metadata editor reachable as Track detail;
-- full SonicTrace reachable through `View full SonicTrace analysis` rather than a permanent daily tab.
-
-#### Visuals
-
-- canonical Cover preview;
-- Canvas/video preview;
-- protected Cover / Thumbnail / Video-Canvas controls only;
-- Audio no longer repeated here;
-- lyrics no longer repeated here;
-- final campaign-format work continues under Release.
-
-#### Lyrics
-
-- embedded LRC Maker remains primary;
-- `tracks/<slug>/lyrics.txt` remains the single canonical source;
-- recognized timestamps inside it remain synchronization authority;
-- `.lrc` remains optional compatibility/export only;
-- standalone LRC Maker remains fallback;
-- canonical-write receipt still requires exact `trackId` + Track Manager private reread before VERIFIED.
-
-#### Release
-
-- compact Audio / Cover / Lyrics / Canvas / Metadata readiness checklist;
-- Canvas remains optional when no accepted release rule makes it globally mandatory;
-- existing native Release Campaign stays immediately below;
-- MASTER 16:9 + independently MASTER-anchored 1:1 and 9:16 contract unchanged;
-- browser-local campaign drafts remain non-canonical;
-- export retains `canonicalWrite: false`.
-
-#### Compatibility / authority
-
-Legacy route tokens remain valid:
-
-```text
-overview
-metadata
-assets
-lyrics
-intelligence
-market
-versions
-publishing
-```
-
-`AssetsManager` now supports task-scoped visibility only:
-
-```text
-Track   → Audio
-Visuals → Cover / Thumbnail / Video-Canvas
-```
-
-Upload/delete/palette writes still use the same existing Track Manager guarded APIs.
-
-Pre-Build57 checkpoint:
-
-`safety/pre-build57-track-workshop-20260813-0143`
-
-Build 57 must not be labeled REAL USER PASS until deployed browser smoke confirms the regrouping.
-
-### Slice 4 — SonicTrace compact / invisible assistant
-
-Status: **PLANNED / NOT STARTED**
-
-Target:
-
-- keep SonicTrace and Catalog Intelligence intact;
-- show only useful artist-facing conclusions by default;
-- keep FULL/PARTIAL/UNAVAILABLE/OUTDATED truthfulness;
-- move engine/provenance/embedding/diagnostic depth behind deliberate detail views;
-- no persistence or authority change.
-
-Do not start until Slice 3 is accepted.
-
-### Studio Focus closeout
-
-Status: **PLANNED / NOT STARTED**
-
-After Slice 4:
-
-1. cross-flow deployed smoke across Track / Visuals / Lyrics / SonicTrace / Release;
-2. confirm all protected write receipts/private rereads;
-3. mobile/responsive review;
-4. decide whether the separate detailed Workflow destination can be fully absorbed into Home;
-5. create final Studio Focus acceptance checkpoint/docs.
-
-## Native Release Campaign — preserved contract
+Core campaign contract:
 
 ```text
 Canonical Track context
         ↓
-Premium handoff / provider generation
+Premium MASTER handoff
         ↓
-MASTER FINAL 16:9 selected
-        ├── 1:1 generated from MASTER 16:9 as reference
-        └── 9:16 generated from MASTER 16:9 as reference
+MASTER FINAL 16:9 selected/imported
+        ├── 1:1 generated independently from MASTER 16:9
+        └── 9:16 generated independently from MASTER 16:9
 ```
 
-1:1 and 9:16 are sibling derivatives. **9:16 is never derived from 1:1.**
+**9:16 is never derived from 1:1.** Both derivatives are siblings anchored to the accepted MASTER to avoid cumulative drift.
 
-Preserved capabilities:
+### Build 47
 
-- non-destructive `New MASTER concept`;
-- direct Google Flow shortcut;
-- logo reference;
-- faithful MASTER import;
-- anchored derivative prompts/imports;
+Historical TTM V3 staged-preview proof. Valuable for FINAL/provenance transport and safety gates, but standalone orchestration is not the primary product boundary.
+
+### Build 48
+
+Native Release Campaign workspace:
+
+- canonical Track context;
+- premium MASTER 16:9 provider handoff/import;
+- optional SHINOBIWAN logo reference;
+- anchored 1:1 + 9:16 handoffs;
+- independent import/replace;
 - three-format review;
 - browser-local IndexedDB persistence;
-- ZIP export;
-- no canonical write.
+- release copy/tags/provenance;
+- non-canonical ZIP export;
+- no external TTM popup in the primary path;
+- no R2/Track Manager write.
 
-Release Campaign completion receipt remains:
+### Build 49
+
+MASTER concept reroll corrective:
+
+- `New MASTER concept`;
+- deliberately distinct concept families;
+- canonical Track context retained;
+- accepted MASTER/1:1/9:16 preserved during exploration;
+- only a new MASTER import invalidates derivative slots;
+- persisted `masterConceptIndex`;
+- direct `Open Google Flow ↗` shortcut;
+- no canonical write path.
+
+### Release Campaign authority
+
+Successful export remains:
 
 ```text
-release-campaign + campaign-exported → review-only
+release-campaign / campaign-exported / review-only
 ```
 
-A visual FINAL never silently becomes canonical Cover/R2 state.
+Manifest remains `canonicalWrite: false`. A visual FINAL is never silently promoted into R2/Track Manager state.
 
-## Phase 7-B receipt authority — preserved
+## Phase 7-B — contextual continuation receipts
+
+Accepted Build 50/51 contract:
 
 ```text
 lrc-maker        + lyrics-saved      → canonical-write
@@ -246,37 +115,213 @@ sonictrace       + analysis-saved    → canonical-write
 release-campaign + campaign-exported → review-only
 ```
 
-For canonical-write receipts:
+Rules:
 
-- exact current `trackId` required;
-- source/operation/effect allowlist required;
-- mismatches ignored;
-- private Track reread required;
-- returned ID must still match;
-- operation-specific canonical evidence required;
+- exact canonical `trackId` required;
+- allowlisted source/operation/effect required;
+- canonical writes enter verification instead of optimistic success;
+- Studio rereads through the existing Track catalog read layer;
+- returned `trackId` must match;
+- reread must be PRIVATE for VERIFIED;
 - public fallback can never verify a write;
-- stale async rereads cannot overwrite newer receipt/context;
-- only private verified reread may display `Canonical reread verified`.
+- Lyrics requires canonical `lyrics.txt` evidence;
+- SonicTrace requires persisted Audio Intelligence evidence;
+- stale async rereads cannot overwrite newer context;
+- Release Campaign remains review-only;
+- no generic write endpoint or second R2 owner.
 
-## Phase 7-C — guided canonical actions
+Build 51 fixed the embedded LRC Maker receipt delivery seam by listening for the bubbling/composed `lyrics-saved` event at `window` scope while keeping exact-track filtering and private reread verification.
+
+Final closeout: `docs/PHASE-7-B-BUILD51-REAL-USER-PASS.md`.
+
+## Studio Focus — production-first UX
+
+Status: **IMPLEMENTATION IN PROGRESS**
+
+Goal: normal Studio use should expose artist tasks first while validated technical machinery remains available under Details/Advanced.
+
+### Slice 1 — shell + Home
+
+**Build 53 — COMPLETE · REAL USER PASS**
+
+- Home / Tracks / Albums daily navigation;
+- Workflow / Intelligence / System under Advanced;
+- actionable continuation and unfinished queue;
+- existing Phase 7-A workflow model remains the readiness source;
+- no authority change.
+
+Acceptance checkpoint:
+
+`safety/post-studio-focus-build53-real-user-pass-20260813-0032`
+
+### Slice 2 — Tracks production library
+
+#### Build 54
+
+Functional base: `To finish / Ready / Released / All`, visual cards, continuation from existing workflow model.
+
+#### Build 55
+
+Desktop density/readability corrective. Superseded at smoke because fixed production-state columns truncated labels.
+
+#### Build 56
+
+**COMPLETE · REAL USER PASS**
+
+- denser five-card desktop library;
+- readable artist-facing copy;
+- full wrapping `Audio / Cover / Lyrics / Canvas / Release` chips;
+- no workflow/route/authority change.
+
+Acceptance checkpoint:
+
+`safety/post-studio-focus-build56-real-user-pass-20260813-0143`
+
+### Slice 3 — Track Workshop
+
+Target mental model:
+
+```text
+Track · Visuals · Lyrics · Release
+```
+
+#### Build 57 — deployed smoke evidence, NOT accepted
+
+Build 57 introduced:
+
+- **Track** — identity, release facts, canonical audio, production summary, audio-only asset management, progressive metadata/SonicTrace details;
+- **Visuals** — canonical Cover / Thumbnail / Canvas management + previews;
+- **Lyrics** — existing embedded LRC Maker / canonical `lyrics.txt` workflow;
+- **Release** — final Audio / Cover / Lyrics / Canvas / Metadata checklist + existing native Release Campaign;
+- old route tokens preserved for deep links;
+- `AssetsManager` task-scoped presentation only; same Track Manager mutation APIs.
+
+Deployed real-user smoke found:
+
+1. Studio was in `LaunchPAD public catalog` fallback; the two private `To finish` tracks were hidden, but the UI misleadingly showed `0 To finish / 31 Released / 31 All`, creating the appearance of data loss;
+2. canonical Canvas preview was explicitly 16:9 instead of LaunchPAD-compatible 9:16;
+3. `EmbeddedLyricsStudio` remained intact but was correctly gated by PRIVATE READ; public fallback silently substituted raw text, making the engine appear removed;
+4. SonicTrace correctly returned `Private analysis is locked` in public fallback, but the preceding Track action looked like a guaranteed full-analysis path.
+
+Build 57 therefore remains historical deployed candidate evidence and does **not** receive REAL USER PASS.
+
+Candidate checkpoint:
+
+`safety/studio-focus-build57-candidate-20260813`
+
+#### Build 58 — Slice 3 smoke corrective
+
+Release: **Studio v0.18.1 · Build 58**
+
+Status: **CANDIDATE — first full CI GREEN; final exact-head CI + Pages + deployed smoke required**
+
+Correctives:
+
+- public fallback explicitly states that private Draft / To finish / Ready tracks are **hidden, not deleted**;
+- private-only `To finish` / `Ready` counts show `—` instead of false zero;
+- fallback automatically presents the public Released projection rather than an empty To finish view;
+- `Open Track Manager ↗` + `Retry private read` recovery actions added;
+- when PRIVATE READ returns, Tracks returns to the `To finish` filter;
+- Track Workspace exposes a persistent `PUBLIC READ-ONLY FALLBACK` notice;
+- public Track action no longer promises full SonicTrace while private analysis is locked;
+- Lyrics public fallback explicitly displays `LYRICS STUDIO LOCKED` while preserving the embedded engine/private-read gate;
+- public lyrics text becomes secondary preview only;
+- canonical Canvas preview corrected to **9:16**, `object-fit: contain`, no crop;
+- Release Campaign MASTER 16:9 / 1:1 / 9:16 pack contract is unchanged.
+
+Pre-corrective checkpoint:
+
+`safety/pre-build58-slice3-smoke-corrective-20260813-0226`
+
+PR: `#77`.
+
+Dedicated changelog: `CHANGELOG-STUDIO-FOCUS-BUILD58.md`.
+
+### Slice 4 — compact SonicTrace artist summary
+
+Status: **PLANNED / NOT STARTED**
+
+Direction:
+
+- compact artist-facing conclusions on Track;
+- full diagnostic/intelligence depth behind Details/Advanced;
+- preserve FULL/PARTIAL/UNAVAILABLE truthfulness and R2 sidecar contract;
+- no embedding vectors/engine internals in routine workflow.
+
+Do not start until Slice 3 receives real-user acceptance.
+
+## Phase 7-C — Guided end-to-end actions
 
 Status: **PLANNED / NOT STARTED / EXPLICITLY CLOSED**
 
-Studio Focus does not authorize Phase 7-C by implication. Start only after fresh explicit authorization.
+Studio Focus does not authorize Phase 7-C. Start only after fresh explicit authorization.
+
+## Canonical Album contract
+
+```text
+albums/<album-id>/manifest.json
+albums/<album-id>/cover/<filename>
+albums/<album-id>/thumbnail/thumbnail.webp
+```
+
+- Album ID = immutable storage identity;
+- ordered `album.trackIds` = authoritative membership/artistic order;
+- track `album.id/title` = compatibility cache;
+- `catalog/index.json` = rebuildable projection;
+- Singles = virtual collection.
+
+## Canonical Lyrics contract
+
+```text
+tracks/<slug>/lyrics.txt = unique canonical lyrics source
+recognized timestamps    = synchronized lyrics
+.lrc                      = optional export/compatibility only
+```
+
+`.lrc` never becomes a second source of truth.
+
+## SonicTrace persistence
+
+```text
+tracks/<slug>/analysis/sonictrace/latest.json
+tracks/<slug>/analysis/sonictrace/history/<analysisId>.json
+```
+
+Source audio is not persisted in analysis sidecars.
+
+## Track Manager / protected-write rules
+
+- Track Manager remains protected canonical write authority;
+- Studio uses operation-specific capabilities;
+- missing capability blocks that operation;
+- whole-track delete remains unavailable in Studio;
+- public fallback never becomes write authority;
+- canonical completion receipts require PRIVATE reread verification.
+
+## Release Campaign follow-ups
+
+Still recorded for later:
+
+- optional motion variant: provider handoff for ~8s loop anchored to selected MASTER; fixed title/logo and clean loop seam;
+- provider provenance: record selected provider/model rather than guessing from import;
+- independent variant replacement;
+- campaign completeness: 16:9 + 1:1 + 9:16 required, motion optional unless later required;
+- future guarded persistence only through existing Track Manager operation-specific authority + canonical reread;
+- local AI lab remains experimentation, not forced premium path.
 
 ## Later roadmap
 
 ### Phase 8 — Dashboard Intelligence & Content Health
 
-Global actionable catalog health built on the mature production-state model.
+Global actionable catalog health built on mature production-state models.
 
 ### Phase 9 — Security / reliability / PWA
 
-Access/CORS hardening, retries/timeouts, anti-loss behavior, degraded/offline UX and PWA resilience.
+Access/CORS hardening, retries/timeouts, anti-loss behavior, degraded/offline UX, PWA resilience.
 
 ### Phase 10 — Progressive extraction
 
-Potential mature extraction of LRC/SonicTrace/catalog engines while Studio remains orchestrator.
+Potential extraction of mature LRC/SonicTrace/catalog engines while Studio remains orchestrator.
 
 There is currently no official Phase 11.
 
@@ -285,43 +330,56 @@ There is currently no official Phase 11.
 ```text
 Accepted:
 LaunchPAD       2026.08.12.102        C3-C REAL USER PASS
+Studio          0.15.1 / Build 45     TTM Bridge V2 REAL USER PASS
 Studio          0.16.0 / Build 46     Phase 7-A REAL USER PASS
 Studio          0.17.1 / Build 51     Phase 7-B REAL USER PASS
-Studio          0.17.3 / Build 53     Studio Focus Slice 1 REAL USER PASS
 Studio          0.17.6 / Build 56     Studio Focus Slice 2 REAL USER PASS
-SonicTrace      V2-E Build 08         REAL USER PASS
+
+Current candidate:
+Studio          0.18.1 / Build 58     Studio Focus Slice 3 smoke corrective
+
+Infrastructure:
 Track Manager   v5.19
 Studio bridge   v1.11
 Public Worker   v2.7
-Deep Audio      2.0.3-alpha
+SonicTrace      V2-E Build 08 accepted FULL profile lineage
+Deep Audio      2.0.1-alpha
 LRC Maker       6.3.8
 
-Candidate:
-Studio          0.18.0 / Build 57     Studio Focus Slice 3 Track Workshop
+Historical Studio Focus:
+Studio          0.18.0 / Build 57     Track Workshop deployed smoke evidence · NOT ACCEPTED
 ```
 
 ## Rollback / acceptance anchors
 
 ```text
-safety/post-studio-focus-build56-real-user-pass-20260813-0143
+safety/pre-build58-slice3-smoke-corrective-20260813-0226
+safety/studio-focus-build57-candidate-20260813
 safety/pre-build57-track-workshop-20260813-0143
+safety/post-studio-focus-build56-real-user-pass-20260813-0143
+safety/studio-focus-build56-candidate-20260813-0119
+safety/pre-build56-status-labels-20260813-0112
 safety/post-studio-focus-build53-real-user-pass-20260813-0032
 safety/post-phase7-b-build51-real-user-pass-20260812-2120
+safety/pre-phase7-b-build50-20260812-1826
+safety/pre-build49-master-concept-reroll-20260812
+safety/pre-build48-native-release-campaign-20260812-1707
 safety/post-phase7-a-build46-real-user-pass-20260812-0923
 ```
 
 ## Verification policy
 
-CI never upgrades a candidate to REAL USER PASS by itself.
+CI is necessary but never sufficient for real-user acceptance.
 
-For Build 57 specifically:
+For Build 58 / Slice 3, deployed smoke must prove:
 
-1. exact feature head must pass all inherited guards plus Build 57 guard;
-2. TypeScript and production Vite build must pass;
-3. `main` must remain unchanged from the accepted Build 56 base before merge;
-4. only the exact tested head may be merged;
-5. GitHub Pages must successfully deploy the exact merge SHA;
-6. deployed browser smoke must confirm Track / Visuals / Lyrics / Release behavior;
-7. only observed behavior may then be documented as REAL USER PASS.
+1. public fallback makes hidden private tracks obvious and never presents their unavailable counts as zero;
+2. restoring Track Manager PRIVATE READ + retry returns the private production library without reconstructing/faking data;
+3. canonical Canvas preview is 9:16;
+4. public Lyrics state clearly says the engine is locked, not removed;
+5. PRIVATE READ restores the embedded LRC Maker engine;
+6. SonicTrace public/private access wording is truthful;
+7. Track / Visuals / Lyrics / Release regrouping remains usable;
+8. no canonical authority or receipt regression appears.
 
-Do not mutate production media merely to manufacture a smoke. Do not start Slice 4 or Phase 7-C before their explicit gates are satisfied.
+Do not mutate production media/Albums merely to manufacture a smoke. Do not start Slice 4 or Phase 7-C before explicit acceptance/authorization.

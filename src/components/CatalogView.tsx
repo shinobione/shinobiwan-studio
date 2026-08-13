@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { buildCatalogWorkflow, type TrackWorkflowState } from '../phase7-workflow';
 import { trackHref } from '../router';
 import { getCatalogTracks } from '../services/catalog-api';
+import { studioConfig } from '../services/config';
 import type { StudioTrack } from '../types/studio';
 import { TrackCreatePanel } from './TrackCreatePanel';
 
@@ -86,11 +87,15 @@ export function CatalogView() {
 
   async function loadCatalog(force = false) {
     const hasSnapshot = Boolean(catalogCache?.length || tracks.length);
+    const hadPrivateRead = tracks.some(track => track.readSource === 'private');
     if (hasSnapshot) setRefreshing(true);
     else setLoading(true);
     try {
       const items = await requestCatalog(force);
+      const nextPrivateRead = items.some(track => track.readSource === 'private');
       setTracks(items);
+      if (!nextPrivateRead && (productionFilter === 'to-finish' || productionFilter === 'ready')) setProductionFilter('released');
+      else if (!hadPrivateRead && nextPrivateRead) setProductionFilter('to-finish');
       setError(null);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : String(reason));
@@ -110,6 +115,7 @@ export function CatalogView() {
 
   const workflows = useMemo(() => buildCatalogWorkflow(tracks), [tracks]);
   const workflowById = useMemo(() => new Map(workflows.map(item => [item.track.id, item])), [workflows]);
+  const privateRead = tracks.some(track => track.readSource === 'private');
 
   const counts = useMemo(() => {
     let toFinish = 0;
@@ -145,8 +151,6 @@ export function CatalogView() {
       });
   }, [album, productionFilter, query, sortMode, tracks, workflowById]);
 
-  const privateRead = tracks.some(track => track.readSource === 'private');
-
   return (
     <section className="catalog-surface">
       <div className="catalog-heading">
@@ -162,9 +166,16 @@ export function CatalogView() {
 
       {showCreate && <TrackCreatePanel privateRead={privateRead} onCancel={() => setShowCreate(false)} onCreated={async () => { await loadCatalog(true); setShowCreate(false); }} />}
 
+      {!loading && !error && tracks.length > 0 && !privateRead && (
+        <div className="catalog-private-read-notice panel" role="status">
+          <div><span className="eyebrow">PRIVATE TRACKS HIDDEN</span><strong>Studio is showing the LaunchPAD public catalog only.</strong><p>Draft, To finish and Ready tracks are not visible in this fallback. Nothing has been deleted: restore Track Manager private read to see the complete production library.</p></div>
+          <div className="catalog-private-read-actions"><a className="ghost-btn" href={studioConfig.trackManagerUrl} target="_blank" rel="noopener noreferrer">Open Track Manager ↗</a><button className="ghost-btn" type="button" disabled={refreshing} onClick={() => void loadCatalog(true)}>{refreshing ? 'Checking…' : 'Retry private read'}</button></div>
+        </div>
+      )}
+
       <div className="catalog-production-filters panel" aria-label="Production filters">
-        <button type="button" className={productionFilter === 'to-finish' ? 'active' : ''} aria-pressed={productionFilter === 'to-finish'} onClick={() => setProductionFilter('to-finish')}><strong>{counts.toFinish}</strong><span>To finish</span></button>
-        <button type="button" className={productionFilter === 'ready' ? 'active' : ''} aria-pressed={productionFilter === 'ready'} onClick={() => setProductionFilter('ready')}><strong>{counts.ready}</strong><span>Ready</span></button>
+        <button type="button" disabled={!privateRead} title={!privateRead ? 'Private read required to count unfinished tracks.' : undefined} className={productionFilter === 'to-finish' ? 'active' : ''} aria-pressed={productionFilter === 'to-finish'} onClick={() => setProductionFilter('to-finish')}><strong>{privateRead ? counts.toFinish : '—'}</strong><span>To finish</span></button>
+        <button type="button" disabled={!privateRead} title={!privateRead ? 'Private read required to count release-ready private tracks.' : undefined} className={productionFilter === 'ready' ? 'active' : ''} aria-pressed={productionFilter === 'ready'} onClick={() => setProductionFilter('ready')}><strong>{privateRead ? counts.ready : '—'}</strong><span>Ready</span></button>
         <button type="button" className={productionFilter === 'released' ? 'active' : ''} aria-pressed={productionFilter === 'released'} onClick={() => setProductionFilter('released')}><strong>{counts.released}</strong><span>Released</span></button>
         <button type="button" className={productionFilter === 'all' ? 'active' : ''} aria-pressed={productionFilter === 'all'} onClick={() => setProductionFilter('all')}><strong>{tracks.length}</strong><span>All</span></button>
       </div>
@@ -181,7 +192,7 @@ export function CatalogView() {
       {!loading && !error && (
         <>
           <div className="catalog-resultline">
-            <span>{filtered.length} shown{refreshing ? ' · refreshing…' : ''}{!privateRead ? ' · read-only' : ''}</span>
+            <span>{filtered.length} shown{refreshing ? ' · refreshing…' : ''}{!privateRead ? ' · public read-only fallback' : ''}</span>
             {(query || album !== 'all') && <button type="button" onClick={() => { setQuery(''); setAlbum('all'); }}>Clear search</button>}
           </div>
 

@@ -1,7 +1,7 @@
 {
   "name": "shinobiwan-studio",
   "private": true,
-  "version": "0.18.0",
+  "version": "0.18.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,7 @@
     "check:phase6": "node scripts/test-phase6-lyrics.mjs",
     "check:c3": "node scripts/test-phase-ux-c3-deep-audio.mjs && node scripts/test-phase-ux-c3-albums-ux.mjs && node scripts/test-phase-ux-c3-track-create-capabilities.mjs && node scripts/test-phase-ux-c3-b-v2e-parity.mjs && node scripts/test-phase-ux-c3-c-premium-feel.mjs && node scripts/test-track-to-market-build45.mjs",
     "check:phase7": "node scripts/test-phase7-workflow-build46.mjs && node scripts/test-phase7-a-build47-ttm-v3.mjs && node scripts/test-phase7-native-release-campaign-build48.mjs && node scripts/test-phase7-native-release-campaign-build49.mjs && node scripts/test-phase7-b-contextual-receipts-build50.mjs && node scripts/test-phase7-b-lyrics-receipt-build51.mjs",
-    "check:focus": "node scripts/test-studio-focus-build53.mjs && node scripts/test-studio-focus-build54.mjs && node scripts/test-studio-focus-build55.mjs && node scripts/test-studio-focus-build56.mjs && node scripts/test-studio-focus-build57.mjs",
+    "check:focus": "node scripts/test-studio-focus-build53.mjs && node scripts/test-studio-focus-build54.mjs && node scripts/test-studio-focus-build55.mjs && node scripts/test-studio-focus-build56.mjs && node scripts/test-studio-focus-build57.mjs && node scripts/test-studio-focus-build58.mjs",
     "check:ux": "node scripts/test-phase-ux-foundation.mjs && node scripts/test-phase-ux-catalog.mjs && node scripts/test-phase-ux-workspace.mjs && node scripts/test-phase-ux-modules.mjs && node scripts/test-phase-ux-closeout.mjs && node scripts/test-phase-ux-live-smoke-corrections.mjs && node scripts/test-phase-ux-final-integration.mjs && node scripts/test-phase-ux-c2-5-a-polish.mjs && node scripts/test-phase-ux-c2-5-d-albums.mjs && node scripts/test-phase-ux-c2-5-d2-intake.mjs && node scripts/test-phase-ux-c2-5-e-migration.mjs && node scripts/test-phase-ux-c2-5-e2-review-pack.mjs && node scripts/test-phase-ux-c2-5-e3-diagnostics.mjs && node scripts/test-build52-tracks-nav-polish.mjs",
     "typecheck": "tsc --noEmit",
     "build": "npm run check:private-read && npm run check:phase5 && npm run check:phase6 && npm run check:c3 && npm run check:ux && npm run check:phase7 && npm run check:focus && npm run typecheck && vite build",
