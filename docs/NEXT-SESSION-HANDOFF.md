@@ -1,29 +1,33 @@
-# NEXT SESSION HANDOFF — Build 68 → Phase 7-C Runtime Slice 1
+# NEXT SESSION HANDOFF — Build 68 accepted → Phase 7-C Runtime Slice 1
 
-Updated: 2026-08-13 after PR #96 merge and exact Pages deployment verification.
+Updated: 2026-08-14 after **Build 68 REAL USER PASS**.
 
 ## Start here
 
 Before modifying anything, verify real GitHub/deployment state again.
 
-Expected Studio state:
+Current accepted Studio runtime:
 
 ```text
-main                 5c0428e500b4e6d5c9d1069bb440eac78b79955e
 version              v0.19.3
 build                68
 codename             studio-focus-slice4-home-lead-priority
 PR                   #96 · merged
 validated head       cf5131f489d72ca5fae72544dacd9eaecc78077f
 validation run       31741483430 · SUCCESS
+runtime merge        5c0428e500b4e6d5c9d1069bb440eac78b79955e
 Pages deploy run     31743413418 · SUCCESS
-Build 68 user smoke PENDING
+Build 68 user smoke  PASS · 2026-08-14
+checkpoint           safety/post-build68-home-real-user-pass-20260814-0005
 ```
 
-Accepted baseline underneath Build 68:
+A later docs-only closeout merge may advance `main`; it does **not** change the Build 68 tested/deployed runtime identity above. Always reread current `main` before new work.
+
+Cross-stack baseline:
 
 ```text
-Studio Build 67      Foundation Regression Repair · REAL USER PASS
+Studio Build 68      Home lead priority corrective · REAL USER PASS
+Studio Build 67      Foundation Regression Repair · REAL USER PASS underneath Build 68
 Track Manager        v5.21 · bridge v1.11 · repair scope REAL USER PASS
 TM deploy run        31728992790 · admin only
 TM Worker Version ID 0e1b9a3f-eabd-432e-8872-24ff0a9c085f
@@ -34,29 +38,18 @@ Deep Audio           2.0.3-alpha
 LRC Maker            6.3.8
 ```
 
-## First mandatory action — Build 68 real-user Home smoke
+## Build 68 gate — CLOSED
 
-Do **not** start Phase 7-C runtime implementation until the user has actually checked Build 68 in the browser.
+The required real-user Home smoke passed on 2026-08-14.
 
-Smoke:
+Accepted behavior:
 
-1. hard-refresh Studio;
-2. verify a production-complete last-opened track such as `Magnetic Midnight` no longer remains the large Home lead;
-3. verify an unfinished track becomes lead when one exists;
-4. if no track needs attention, verify `PRODUCTION QUEUE CLEAR`;
-5. verify Home counters/navigation remain intact.
+1. a production-complete last-opened track no longer remains the large Home lead merely because it was last opened;
+2. an unfinished track becomes lead when one exists;
+3. when no track needs attention, Home shows `PRODUCTION QUEUE CLEAR`;
+4. Home counters/navigation remain intact.
 
-If the user reports PASS:
-
-- record Build 68 as REAL USER PASS in README / ROADMAP / CHANGELOG / Build68 changelog;
-- create a post-Build68 acceptance checkpoint if tooling permits;
-- only then resume Phase 7-C runtime Slice 1 under fresh explicit authorization.
-
-If the user reports FAIL:
-
-- keep Build 68 as deployed candidate/failed smoke evidence;
-- do not start Phase 7-C;
-- diagnose and correct Home only.
+**Build 68 is now the accepted Studio baseline.**
 
 ## Frozen architecture
 
@@ -154,21 +147,22 @@ Mandatory constraints:
 - Release Campaign remains review-only;
 - no Worker / R2 / Track Manager bump unless implementation audit proves it genuinely necessary.
 
-## Required implementation process after Build 68 PASS
+## Required implementation process after fresh Phase 7-C authorization
 
 1. verify GitHub real state and deployments;
-2. create a fresh safety branch from current Studio main;
-3. create a dedicated feature branch;
-4. choose the next coherent unused build number;
-5. document the candidate;
-6. add a focused regression guard while preserving all prior guards;
-7. open Draft PR;
-8. require exact-head CI;
-9. anti-drift check before merge;
-10. merge the exact tested head;
-11. verify exact merge-SHA Pages deployment;
-12. obtain real-user browser smoke;
-13. stop after Slice 1 and require fresh authorization before Slice 2.
+2. verify the next build number is unused/unreserved;
+3. create a fresh safety branch from current Studio main;
+4. create a dedicated feature branch;
+5. choose the next coherent unused build identity;
+6. document the candidate;
+7. add a focused regression guard while preserving all prior guards;
+8. open Draft PR;
+9. require exact-head CI;
+10. anti-drift check before merge;
+11. merge the exact tested head;
+12. verify exact merge-SHA Pages deployment;
+13. obtain real-user browser smoke;
+14. stop after Slice 1 and require fresh authorization before Slice 2.
 
 ## Historical landmines
 
@@ -177,7 +171,7 @@ Mandatory constraints:
 - Build 64 = deployed candidate / FAILED REAL USER SMOKE.
 - Builds 65–66 = corrective lineage superseded by Build 67.
 - Build 67 = accepted Foundation Regression Repair REAL USER PASS.
-- Build 68 = deployed Home lead candidate until browser smoke says otherwise.
+- Build 68 = accepted Home lead priority corrective REAL USER PASS.
 - old Studio PR #84 / #87 are closed historical branches; do not revive them.
 
 ## Files to read before working
@@ -192,4 +186,4 @@ Mandatory constraints:
 
 ## Stop line
 
-**Build 68 browser smoke first. Phase 7-C runtime Slice 1 only after that smoke passes and the user gives fresh explicit authorization in the active conversation.**
+**Build 68 is accepted. Phase 7-C runtime Slice 1 remains NOT STARTED and requires a fresh explicit user authorization before any implementation branch/code work.**
