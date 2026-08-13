@@ -3,7 +3,7 @@ import type { StudioTrack } from './types/studio';
 export type HealthState = 'complete' | 'partial' | 'missing';
 
 export interface ContentHealthItem {
-  id: 'audio' | 'cover' | 'metadata' | 'lyricsTxt' | 'syncedLyrics' | 'sonicTrace' | 'video' | 'publication';
+  id: 'audio' | 'cover' | 'metadata' | 'lyricsTxt' | 'syncedLyrics' | 'sonicTrace' | 'video';
   label: string;
   score: number;
   max: number;
@@ -42,7 +42,7 @@ export function computeContentHealth(track: StudioTrack): ContentHealth {
     track.languages.length > 0,
     Boolean(track.releaseDate || track.year),
   ];
-  const metadataScore = metadataChecks.filter(Boolean).length * 3;
+  const metadataScore = metadataChecks.filter(Boolean).length * 4;
   const syncedLyrics = track.timestampsAvailable;
   const syncedLyricsDetail = track.timestampsAvailable
     ? 'Timestamped lyrics detected in the canonical lyrics source'
@@ -52,15 +52,17 @@ export function computeContentHealth(track: StudioTrack): ContentHealth {
     ? track.audioIntelligence.outdated ? 'Saved analysis is outdated because canonical audio changed' : 'Catalog-linked analysis is current'
     : 'Catalog-linked analysis not saved yet';
 
+  // Build 70: production readiness deliberately excludes publication state.
+  // A fully prepared draft may be 100% production-ready before the artist
+  // explicitly publishes it. Draft/Published remains a separate axis.
   const items: ContentHealthItem[] = [
-    item('audio', 'Audio', track.assets.audio ? 15 : 0, 15, track.assets.audio ? 'Canonical audio available' : 'Canonical audio missing'),
+    item('audio', 'Audio', track.assets.audio ? 20 : 0, 20, track.assets.audio ? 'Canonical audio available' : 'Canonical audio missing'),
     item('cover', 'Cover', track.assets.cover ? 10 : 0, 10, track.assets.cover ? 'Cover available' : 'Cover missing'),
-    item('metadata', 'Metadata', metadataScore, 15, `${metadataChecks.filter(Boolean).length}/5 core metadata fields complete`),
+    item('metadata', 'Metadata', metadataScore, 20, `${metadataChecks.filter(Boolean).length}/5 core metadata fields complete`),
     item('lyricsTxt', 'Lyrics TXT', track.assets.lyricsTxt ? 10 : 0, 10, track.assets.lyricsTxt ? 'Canonical lyrics source available' : 'Canonical lyrics source missing'),
     item('syncedLyrics', 'Synced Lyrics', syncedLyrics ? 10 : 0, 10, syncedLyricsDetail),
     item('sonicTrace', 'SonicTrace', sonicTraceScore, 20, sonicTraceDetail),
     item('video', 'Canvas / Video', track.assets.video ? 10 : 0, 10, track.assets.video ? 'Video asset available' : 'Video asset missing'),
-    item('publication', 'Publication', track.publishing.catalogVisible ? 10 : 0, 10, track.publishing.catalogVisible ? 'Visible in public catalog' : 'Not visible in public catalog'),
   ];
 
   return {
