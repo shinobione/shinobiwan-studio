@@ -13,7 +13,7 @@ const pkg = JSON.parse(read('package.json'));
 const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
-assert.match(version, /^0\.(?:16|17)\.\d+$/, 'Native Release Campaign successors must remain on an explicitly authorized Studio release line.');
+assert.match(version, /^0\.(?:16|17|18)\.\d+$/, 'Native Release Campaign successors must remain on an explicitly authorized Studio release line.');
 assert.ok(build >= 48, `Native Release Campaign successor must preserve Build 48 or later, got Build ${build}.`);
 assert.ok(codename.startsWith('phase7-') || codename.startsWith('studio-focus-'), `Native Release Campaign successor must remain inside Phase 7 or the authorized Studio Focus presentation lineage, got ${codename}.`);
 assert.equal(pkg.version, version, 'package.json must match Studio release version.');
