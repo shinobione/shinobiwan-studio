@@ -32,7 +32,7 @@ const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const phaseUxLine = /^0\.(?:11|12|13|14|15)\./.test(version) && codename.startsWith('phase-ux-');
 const phase7Line = /^0\.(?:16|17)\./.test(version) && codename.startsWith('phase7-');
-const studioFocusLine = /^0\.(?:17|18)\./.test(version) && codename.startsWith('studio-focus-');
+const studioFocusLine = /^0\.(?:17|18|19)\./.test(version) && codename.startsWith('studio-focus-');
 assert.ok(phaseUxLine || phase7Line || studioFocusLine, `Studio UX foundation must stay on the validated PHASE UX / Phase 7 lineage or the explicitly authorized Studio Focus successor, got ${version} / ${codename}.`);
 
 if (studioFocusLine && build >= 57) {
