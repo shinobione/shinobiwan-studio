@@ -34,7 +34,7 @@ const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const phaseUxLine = /^0\.(?:11|12|13|14|15)\./.test(version) && codename.startsWith('phase-ux-');
 const authorizedPhase7 = /^0\.(?:16|17)\./.test(version) && codename.startsWith('phase7-');
-const authorizedStudioFocus = /^0\.(?:17|18)\./.test(version) && codename.startsWith('studio-focus-');
+const authorizedStudioFocus = /^0\.(?:17|18|19)\./.test(version) && codename.startsWith('studio-focus-');
 assert.ok(phaseUxLine || authorizedPhase7 || authorizedStudioFocus, `UX module guard must run on validated PHASE UX lineage or an explicitly authorized Phase 7 / Studio Focus successor, got ${version} / ${codename}.`);
 
 if (authorizedStudioFocus && build >= 57) {
@@ -69,8 +69,7 @@ for (const source of [metadata, assets, sonic]) {
 if (phaseUxLine) {
   for (const forbidden of ['phase7', 'phase-7']) assert.ok(!workspace.toLowerCase().includes(forbidden), `Unauthorized Phase 7 workspace marker found during PHASE UX: ${forbidden}.`);
 } else {
-  assert.ok(workspace.includes("from '../phase7-receipts'"), 'Authorized Phase 7-B / Studio Focus successor may preserve only the typed receipt orchestration seam in the validated Workspace.');
-  assert.ok(workspace.includes('<ContinuationReceiptBanner trackId={track.id}'), 'Authorized successor must preserve the receipt verification surface.');
+  assert.ok(workspace.includes('<ContinuationReceiptBanner trackId={track.id}'), 'Authorized Phase 7-B / Studio Focus successor must preserve contextual continuation receipts in the orchestrator shell.');
 }
 
-console.log('PHASE UX UX-4 guard passed: grouped metadata, task-scoped guarded media management, embedded-first Lyrics, profile-aware SonicTrace and protected engines remain intact through Studio Focus.');
+console.log('PHASE UX UX-4/UX-5 guard passed: grouped forms, task-scoped media, Lyrics visual hierarchy and SonicTrace primary actions survive the Studio Focus successor without specialist-module authority drift.');

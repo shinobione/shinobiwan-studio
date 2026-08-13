@@ -11,7 +11,7 @@ const pkg = JSON.parse(read('package.json'));
 const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
-assert.match(version, /^0\.(?:17|18)\.\d+$/);
+assert.match(version, /^0\.(?:17|18|19)\.\d+$/);
 assert.ok(build >= 56, `Build 56 status-label ancestry requires Build 56 or later, got ${build}.`);
 assert.ok(codename.startsWith('studio-focus-'), `Build 56 status-label ancestry must remain under Studio Focus, got ${codename}.`);
 assert.equal(pkg.version, version);

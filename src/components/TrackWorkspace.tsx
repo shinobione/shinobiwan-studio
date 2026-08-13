@@ -11,6 +11,7 @@ import { ContinuationReceiptBanner } from './ContinuationReceiptBanner';
 import { EmbeddedLyricsStudio } from './EmbeddedLyricsStudio';
 import { LyricsEditorPanel } from './LyricsEditorPanel';
 import { MetadataValidationPanel } from './MetadataValidationPanel';
+import { SonicTraceArtistSummary } from './SonicTraceArtistSummary';
 import { SonicTracePanel } from './SonicTracePanel';
 import { TrackToMarketPanel } from './TrackToMarketPanel';
 
@@ -168,6 +169,8 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
             <div className="workspace-focus-section-head"><div><span className="eyebrow">PRODUCTION</span><h3>What matters next</h3></div>{attention[0] && <a href={trackHref(track.id, healthDestination(attention[0].id))}>Continue →</a>}</div>
             <div className="workspace-focus-stage-grid">{artistStages.map(stage => <a href={stage.href} key={stage.label} className={stage.ready ? 'ready' : 'attention'}><span>{stage.ready ? '✓' : '•'}</span><div><strong>{stage.label}</strong><small>{stage.detail}</small></div></a>)}</div>
           </section>
+
+          <SonicTraceArtistSummary track={track} />
 
           <AssetsManager
             track={track}

@@ -14,6 +14,9 @@ Studio          v0.17.6 · Build 56    Studio Focus Slice 2 · REAL USER PASS
 Studio          v0.18.1 · Build 58    Studio Focus Slice 3 · REAL USER PASS
 SonicTrace      V2-E Build 08         FULL profile + R2 canonical reread · REAL USER PASS
 
+Current candidate:
+Studio          v0.19.0 · Build 60    Studio Focus Slice 4 · compact SonicTrace artist summary · REAL USER PASS pending
+
 Historical candidate:
 Studio          v0.18.0 · Build 57    Track Workshop · deployed smoke evidence · NOT ACCEPTED
 
@@ -25,15 +28,15 @@ Deep Audio      2.0.3-alpha
 LRC Maker       6.3.8
 ```
 
-**PHASE UX, Phase 7-A, Phase 7-B and Studio Focus Slices 1–3 are closed as REAL USER PASS. Studio Focus remains the active presentation/production-ergonomics program. Phase 7-C remains explicitly CLOSED / NOT STARTED.**
+**PHASE UX, Phase 7-A, Phase 7-B and Studio Focus Slices 1–3 are closed as REAL USER PASS. Slice 4 is implemented on Build 60 but remains a candidate until exact-head CI, Pages deployment and real-user smoke complete. Phase 7-C remains explicitly CLOSED / NOT STARTED.**
 
-The accepted Slice 3 artist-facing Track Workspace model is:
+The accepted Slice 3 artist-facing Track Workspace model remains:
 
 ```text
 Track · Visuals · Lyrics · Release
 ```
 
-Build 58 does not create a new canonical write authority. Track Manager/R2 ownership, Lyrics private reread receipts, SonicTrace persistence and native Release Campaign `canonicalWrite: false` remain unchanged.
+Build 60 adds a compact read-only SonicTrace artist summary inside **Track** while keeping full diagnostics behind Details/Advanced. It does not create a new canonical write authority. Track Manager/R2 ownership, Lyrics private reread receipts, SonicTrace persistence and native Release Campaign `canonicalWrite: false` remain unchanged.
 
 See:
 
@@ -42,7 +45,9 @@ See:
 - [`CHANGELOG-STUDIO-FOCUS-BUILD56.md`](CHANGELOG-STUDIO-FOCUS-BUILD56.md)
 - [`CHANGELOG-STUDIO-FOCUS-BUILD57.md`](CHANGELOG-STUDIO-FOCUS-BUILD57.md)
 - [`CHANGELOG-STUDIO-FOCUS-BUILD58.md`](CHANGELOG-STUDIO-FOCUS-BUILD58.md)
+- [`CHANGELOG-STUDIO-FOCUS-BUILD60.md`](CHANGELOG-STUDIO-FOCUS-BUILD60.md)
 - [`docs/STUDIO-FOCUS-BUILD58-REAL-USER-PASS.md`](docs/STUDIO-FOCUS-BUILD58-REAL-USER-PASS.md)
+- [`docs/STUDIO-FOCUS-SLICE4-BUILD60-SONICTRACE-SUMMARY.md`](docs/STUDIO-FOCUS-SLICE4-BUILD60-SONICTRACE-SUMMARY.md)
 - [`docs/PHASE-UX-FINAL-CLOSEOUT-20260812.md`](docs/PHASE-UX-FINAL-CLOSEOUT-20260812.md)
 - [`docs/PHASE-7-A-BUILD46-REAL-USER-PASS.md`](docs/PHASE-7-A-BUILD46-REAL-USER-PASS.md)
 - [`docs/PHASE-7-B-BUILD51-REAL-USER-PASS.md`](docs/PHASE-7-B-BUILD51-REAL-USER-PASS.md)
@@ -90,7 +95,7 @@ Advanced ▾
 
 Tracks became the main production library:
 
-- `To finish / Ready / Released / All`;
+- `To finish / Ready / Released / All` in the accepted Build 56 baseline;
 - cover, title and release state;
 - complete **Audio / Cover / Lyrics / Canvas / Release** chips;
 - one continuation action per track;
@@ -183,7 +188,41 @@ safety/post-studio-focus-build58-real-user-pass-20260813-0952
 
 Full closeout: [`docs/STUDIO-FOCUS-BUILD58-REAL-USER-PASS.md`](docs/STUDIO-FOCUS-BUILD58-REAL-USER-PASS.md).
 
-Slice 4 — compact/invisible SonicTrace assistant — is now the next planned Studio Focus item, but remains **PLANNED / NOT STARTED** until fresh explicit authorization.
+### Slice 4 — Build 60 · IMPLEMENTED CANDIDATE
+
+Fresh authorization was given on 2026-08-13. Build 59 was already reserved by a parallel branch and was deliberately not reused; Slice 4 uses **Build 60**.
+
+Track now surfaces a compact artist-facing SonicTrace summary derived only from the existing protected sidecar:
+
+- relative style/genre matches;
+- relative mood matches;
+- strongest useful character traits;
+- compact arrangement/hook facts;
+- mastering loudness/true-peak when retained;
+- compact instrument palette.
+
+The card directly reuses existing `FULL / PARTIAL / UNAVAILABLE / OUTDATED` truth authority. OUTDATED profiles hide stale conclusions; UNAVAILABLE profiles do not fake Deep Audio; public fallback does not expose or reconstruct private analysis. The 512D embedding and engine/GPU plumbing remain out of the routine Track workflow.
+
+Full SonicTrace diagnostics stay behind the existing Track `intelligence` deep link / Details-Advanced surface.
+
+Build 60 also clarifies a Slice 3 smoke ambiguity by separating two different axes:
+
+```text
+Production:  Needs attention / Production complete
+Publication: Published / Drafts
+```
+
+A published track can therefore remain under `Needs attention` when it still has a valid Studio production action. The underlying Phase 7-A workflow/readiness model is unchanged.
+
+Status remains **NOT REAL USER PASS** until exact-head CI, exact merge-SHA Pages deployment and deployed browser review complete.
+
+Pre-Slice checkpoint:
+
+```text
+safety/pre-studio-focus-slice4-build60-20260813-1021
+```
+
+Implementation detail: [`docs/STUDIO-FOCUS-SLICE4-BUILD60-SONICTRACE-SUMMARY.md`](docs/STUDIO-FOCUS-SLICE4-BUILD60-SONICTRACE-SUMMARY.md).
 
 ## Native Release Campaign
 
@@ -300,6 +339,8 @@ Build 57/58 scope the existing AssetsManager presentation:
 
 Both continue to call the same guarded Track Manager asset APIs.
 
+Build 60's SonicTrace artist summary is read-only and continues to use the existing protected sidecar read adapter.
+
 ## Safety
 
 - Cloudflare Access remains mandatory for private protected-write bridges;
@@ -310,7 +351,7 @@ Both continue to call the same guarded Track Manager asset APIs.
 - external provider links are navigation only, not API/key integrations;
 - canonical-write receipts require private canonical rereads;
 - public fallback can never verify a write;
-- public fallback never reconstructs or invents hidden private tracks;
+- public fallback never reconstructs or invents hidden private tracks or private SonicTrace analysis;
 - no Album membership/order mutation from Catalog Intelligence;
 - no Worker deployment is implied by Studio Focus;
 - **Phase 7-C remains CLOSED / NOT STARTED.**
@@ -318,6 +359,7 @@ Both continue to call the same guarded Track Manager asset APIs.
 ## Rollback / acceptance anchors
 
 ```text
+safety/pre-studio-focus-slice4-build60-20260813-1021
 safety/post-studio-focus-build58-real-user-pass-20260813-0952
 safety/pre-build58-slice3-smoke-corrective-20260813-0226
 safety/studio-focus-build57-candidate-20260813
@@ -344,4 +386,4 @@ For a new Studio Focus slice:
 
 Build 58 met that policy: its deployed smoke first exposed truthful public fallback/locked private tooling, then real Cloudflare Access recovery returned the protected production state and embedded Lyrics engine. The pass records only what was actually observed; it does not claim a fresh SonicTrace write that was not performed.
 
-Do not mutate production media merely to manufacture a smoke. Do not start Slice 4 or Phase 7-C without fresh explicit authorization.
+Build 60 is currently before that acceptance boundary. Do not mutate production media merely to manufacture a smoke. Do not mark Slice 4 REAL USER PASS or start Phase 7-C without the required deployed evidence / fresh authorization.

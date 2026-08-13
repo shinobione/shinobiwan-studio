@@ -11,7 +11,7 @@ const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const c3Candidate = /^0\.15\.\d+$/.test(version) && codename.startsWith('phase-ux-c3-');
 const phase7Successor = /^0\.(?:16|17)\.\d+$/.test(version) && codename.startsWith('phase7-');
-const studioFocusSuccessor = /^0\.(?:17|18)\.\d+$/.test(version) && codename.startsWith('studio-focus-');
+const studioFocusSuccessor = /^0\.(?:17|18|19)\.\d+$/.test(version) && codename.startsWith('studio-focus-');
 assert.ok(c3Candidate || phase7Successor || studioFocusSuccessor, `C3-C premium interaction layer must remain inherited by the C3 candidate or authorized Phase 7 / Studio Focus successor, got ${version} / ${codename}.`);
 assert.ok(build >= 44, `C3-C inherited build must remain >= 44, got ${build}.`);
 
