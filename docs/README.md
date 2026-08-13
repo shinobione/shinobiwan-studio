@@ -6,11 +6,12 @@ This directory contains architecture, roadmap, milestone and acceptance records.
 
 1. [`../README.md`](../README.md) — concise current project state and architecture.
 2. [`ROADMAP-CURRENT.md`](ROADMAP-CURRENT.md) — current roadmap authority.
-3. [`STUDIO-FOCUS-PRODUCTION-FIRST-UX.md`](STUDIO-FOCUS-PRODUCTION-FIRST-UX.md) — active Studio Focus product/UX contract.
-4. [`STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md`](STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md) — final Studio Focus program closeout and acceptance evidence.
-5. [`INTEGRATION_SAFETY.md`](INTEGRATION_SAFETY.md) — integration and authority safety rules.
-6. [`../CHANGELOG.md`](../CHANGELOG.md) — concise current changelog.
-7. [`../changelogs/README.md`](../changelogs/README.md) — detailed per-build changelog archive.
+3. [`PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md`](PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md) — active Phase 7-C guided end-to-end action contract and runtime gates.
+4. [`STUDIO-FOCUS-PRODUCTION-FIRST-UX.md`](STUDIO-FOCUS-PRODUCTION-FIRST-UX.md) — accepted Studio Focus product/UX contract.
+5. [`STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md`](STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md) — final Studio Focus program closeout and acceptance evidence.
+6. [`INTEGRATION_SAFETY.md`](INTEGRATION_SAFETY.md) — integration and authority safety rules.
+7. [`../CHANGELOG.md`](../CHANGELOG.md) — concise current changelog.
+8. [`../changelogs/README.md`](../changelogs/README.md) — detailed per-build changelog archive.
 
 ## Current accepted closeouts
 
@@ -26,6 +27,7 @@ This directory contains architecture, roadmap, milestone and acceptance records.
 
 ## Active architecture/reference docs
 
+- [`PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md`](PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md)
 - [`PHASE-5-SONICTRACE-COMPLETE.md`](PHASE-5-SONICTRACE-COMPLETE.md)
 - [`PHASE-6-LYRICS-COMPLETE.md`](PHASE-6-LYRICS-COMPLETE.md)
 - [`NATIVE-RELEASE-CAMPAIGN-BUILD48.md`](NATIVE-RELEASE-CAMPAIGN-BUILD48.md)
