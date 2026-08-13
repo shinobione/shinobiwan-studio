@@ -14,7 +14,7 @@ function artwork(track: StudioTrack): string | null {
 }
 
 function artistSection(section: WorkspaceSection): WorkspaceSection {
-  if (section === 'metadata' || section === 'versions') return 'overview';
+  if (section === 'versions') return 'overview';
   if (section === 'assets') return 'assets';
   if (section === 'intelligence') return 'intelligence';
   if (section === 'publishing') return 'market';
