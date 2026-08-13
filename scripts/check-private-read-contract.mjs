@@ -110,15 +110,15 @@ for (const required of [
   '<CatalogRebuildPanel privateRead={privateRead} />', '<CatalogIntelligenceView />',
 ]) assert.ok(app.includes(required), `Studio integration contract missing ${required}.`);
 // Phase 6 remains a completed inherited contract after the shell advances through
-// Phase 7 and into the explicitly-authorized Studio Focus UX successor. The actual
+// Phase 7 and its explicitly-authorized guided-action successors. The actual
 // Phase 6 write/read contracts are asserted above; this assertion only verifies that
 // the successor still preserves access to the Phase 7 workflow ancestry.
 assert.ok(
   app.includes('PHASE 6 / COMPLETE')
-    || ((app.includes('PHASE 7 / ORCHESTRATION') || app.includes('PHASE 7-B')) && app.includes("route === 'workflow'")),
-  'Studio must preserve the completed Phase 6 integration while exposing the authorized Phase 7 / Studio Focus successor.'
+    || ((app.includes('PHASE 7 / ORCHESTRATION') || app.includes('PHASE 7-B') || app.includes('PHASE 7-C')) && app.includes("route === 'workflow'")),
+  'Studio must preserve the completed Phase 6 integration while exposing the authorized Phase 7 successor.'
 );
-assert.match(app, /Track Manager v5\.(?:17|18|19) · bridge v1\.(?:9|10|11)/, 'Studio must still surface a supported C2.5 Track Manager/bridge lineage.');
+assert.match(app, /Track Manager v5\.(?:17|18|19|20|21) · bridge v1\.(?:9|10|11)/, 'Studio must still surface a supported C2.5/Phase 7 Track Manager/bridge lineage.');
 
 for (const required of [
   "const SAVE_INTENT = 'sonictrace-analysis-save-v1'", '/api/studio/analyze', '/analysis/sonictrace',
@@ -174,9 +174,9 @@ for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog 
 
 const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
-assert.match(releaseVersion, /^0\.(?:11|12|13|14|15|16|17|18|19)\./, 'Studio private-read ancestry must remain on the validated PHASE UX / Phase 7 / Studio Focus release lines.');
+assert.match(releaseVersion, /^0\.(?:11|12|13|14|15|16|17|18|19|20)\./, 'Studio private-read ancestry must remain on the validated PHASE UX / Phase 7 successor release lines.');
 assert.ok(releaseBuild >= 33, 'Studio private-read ancestry must remain at Build 33 or later.');
-assert.match(release, /codename:\s*'(?:phase-ux-(?:c2-5|c3)-|phase7-|studio-focus-)/, 'Studio release codename must remain inside validated PHASE UX, Phase 7, or explicitly authorized Studio Focus lineage.');
+assert.match(release, /codename:\s*'(?:phase-ux-(?:c2-5|c3)-|phase7-|phase7c-|studio-focus-)/, 'Studio release codename must remain inside validated PHASE UX, Phase 7, Phase 7-C, or explicitly authorized Studio Focus lineage.');
 assert.equal(pkg.version, releaseVersion, 'package.json must match the current Studio release version.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'Production build must run the integration regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase5'), 'Production build must run the Phase 5 algorithm guard.');
@@ -187,4 +187,4 @@ assert.ok(String(pkg.scripts?.['check:c3'] || '').includes('test-phase-ux-c3-c-p
 assert.ok(String(pkg.scripts?.build || '').includes('check:ux'), 'Production build must run the PHASE UX regression guard.');
 assert.ok(String(pkg.scripts?.build || '').includes('check:phase7'), 'Authorized successor production builds must run the Phase 7 regression guard.');
 
-console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves Phase 0-6/C2.5/C3/7-A/7-B contracts while the authorized Studio Focus successor changes presentation without replacing canonical authorities.`);
+console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves Phase 0-6/C2.5/C3/7-A/7-B contracts while the authorized Phase 7 successor changes presentation without replacing canonical authorities.`);
