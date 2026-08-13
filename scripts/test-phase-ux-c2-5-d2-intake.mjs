@@ -59,7 +59,6 @@ for (const required of [
   'resolveIntakeAlbum(values.albumId, values.albumTitle, albums)',
   'Create canonical ${newAlbumType} draft',
   'createRequestedAlbumDraft()',
-  'safeInitialTrackAlbum()',
   "sourceAlbumId: null",
   'expectedTargetUpdatedAt: target.updatedAt',
   'targetIndex: target.trackIds.length',
@@ -69,12 +68,22 @@ for (const required of [
   'Do not retry blindly',
   'never creates a phantom albumId',
   "albumResolution.kind === 'existing' ? 'album-track'",
+  'Create & Publish',
+  'validateAdminTrackMetadata',
+  'saveAdminTrackMetadata',
 ]) assert.ok(intakeUi.includes(required), `C2.5-D2 intake missing: ${required}`);
 
-const createFunction = intakeUi.slice(intakeUi.indexOf('async function create()'), intakeUi.indexOf('const provenanceEntries'));
-assert.ok(createFunction.includes('createAdminTrack(effectiveSlug, metadataPatch(resolution))'));
-assert.ok(createFunction.indexOf('uploadAdminTrackAsset') < createFunction.indexOf('bindNewTrackToCanonicalAlbum'), 'Album binding must happen after verified track asset writes.');
+assert.ok(!intakeUi.includes('safeInitialTrackAlbum'), 'New Track must not send the Album compatibility cache through generic metadata under TM v5.21.');
+const metadataPatchFunction = intakeUi.slice(intakeUi.indexOf('function metadataPatch('), intakeUi.indexOf('async function bindNewTrackToCanonicalAlbum'));
+assert.ok(!metadataPatchFunction.includes('album:'), 'New Track metadataPatch must omit Album cache; Album binding owns it.');
+assert.ok(metadataPatchFunction.includes("type: targetsCanonicalAlbum ? 'album-track'"), 'Canonical Album target must derive album-track type.');
+
+const createFunction = intakeUi.slice(intakeUi.indexOf('async function create(mode: CreateMode)'), intakeUi.indexOf('const provenanceEntries'));
+assert.ok(createFunction.includes("createAdminTrack(effectiveSlug, metadataPatch(resolution, 'draft'))"));
+assert.ok(createFunction.indexOf('uploadAdminTrackAsset') < createFunction.indexOf('bindNewTrackToCanonicalAlbum'), 'Album binding must happen after verified asset writes.');
+assert.ok(createFunction.indexOf('bindNewTrackToCanonicalAlbum') < createFunction.indexOf('publishCreatedTrack'), 'Optional publication must happen only after Album binding.');
 assert.ok(!createFunction.includes('createAdminAlbum('), 'Final track creation must never silently create an Album.');
+assert.ok(!createFunction.includes('saveTrack('), 'D2 intake must never introduce a generic saveTrack surface.');
 assert.ok(intakeUi.includes("disabled={busy || albumCreating || (step === 1 && Boolean(problems.length)) || (step === 2 && (!basicsValid || !albumReady))}"), 'Unknown/blocked Album references must prevent Review.');
 assert.ok(albumApi.includes("'ALBUM_WRITE_TRANSPORT'"), 'Ambiguous Album transport must be distinguishable for canonical reread recovery.');
 assert.ok(main.includes("import './c2-5-d2-intake.css';"), 'D2 intake styles must load after D1 styles.');
@@ -90,4 +99,4 @@ assert.ok(releaseBuild >= 33, 'C2.5-D2 ancestry must remain at Build 33 or later
 assert.equal(pkg.version, releaseVersion, 'package.json must match the active Studio release.');
 assert.ok(String(pkg.scripts?.['check:ux'] || '').includes('test-phase-ux-c2-5-d2-intake.mjs'));
 
-console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves D2 canonical Album binding through Studio Focus: explicit non-Singles requests override the safe Singles default, missing Albums block Review and final creation never invents a phantom Album.`);
+console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves D2 canonical Album binding through Studio Focus: generic Track metadata never owns Album cache, explicit non-Singles requests bind through Album authority, missing Albums block Review and final creation never invents a phantom Album.`);
