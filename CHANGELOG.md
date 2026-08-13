@@ -4,9 +4,9 @@ This file is the **current concise changelog**. Detailed per-build records are o
 
 ## Current implementation candidate
 
-### v0.19.4 · Build 69 — 2026-08-14
+### v0.19.3 · Build 69 — 2026-08-14
 
-Codename: `studio-focus-phase7c-slice1-guided-metadata`  
+Codename: `studio-focus-slice4-phase7c-slice1-guided-metadata`  
 Status: **IMPLEMENTATION CANDIDATE — PR #99 · EXACT-HEAD CI REQUIRED**
 
 Phase 7-C Runtime Slice 1:
@@ -28,8 +28,8 @@ Safety checkpoint      safety/pre-phase7c-slice1-build69-20260814-0013
 Feature branch         agent/phase7c-runtime-slice1
 PR                     #99 · DRAFT
 Initial CI             31749799202 · FAILED initial successor identity whitelist
-Final identity         v0.19.4 · Build 69 · studio-focus-phase7c-slice1-guided-metadata
-Historical guards      C3 / TTME / PHASE UX restored unchanged
+Final identity         v0.19.3 · Build 69 · studio-focus-slice4-phase7c-slice1-guided-metadata
+Historical guards      C3 / TTME / PHASE UX / Focus assertions preserved
 Current guard update   private-read integration only · PHASE 7-C / TM5.21 / bridge1.11
 Final exact-head CI    REQUIRED before merge
 Runtime merge          PENDING
