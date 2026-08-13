@@ -13,7 +13,7 @@ const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const originalBuild45 = version === '0.15.1' && build === 45 && codename.includes('track-to-market-bridge-v2');
 const authorizedPhase7Successor = /^0\.(?:16|17)\.\d+$/.test(version) && build >= 46 && codename.startsWith('phase7-');
-const authorizedStudioFocusSuccessor = /^0\.(?:17|18)\.\d+$/.test(version) && build >= 53 && codename.startsWith('studio-focus-');
+const authorizedStudioFocusSuccessor = /^0\.(?:17|18|19)\.\d+$/.test(version) && build >= 53 && codename.startsWith('studio-focus-');
 assert.ok(originalBuild45 || authorizedPhase7Successor || authorizedStudioFocusSuccessor, `Build 45 lineage guard must run on Build 45 or an explicitly authorized Phase 7 / Studio Focus successor, got ${version} Build ${build} / ${codename}.`);
 
 assert.match(types, /\| 'market'/, 'WorkspaceSection must preserve the native Release Campaign route token.');
