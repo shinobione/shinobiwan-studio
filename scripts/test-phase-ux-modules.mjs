@@ -24,13 +24,30 @@ assert.ok(metadata.includes('metadata-color-field'));
 assert.ok(!metadata.includes('validate against Track Manager v5.11'), 'Normal metadata copy must not expose backend version jargon.');
 for (const marker of ['.metadata-form-groups', '.metadata-group-wide', '.metadata-color-field', '@media (max-width: 590px)']) assert.ok(metadataCss.includes(marker));
 
-for (const marker of ['Manage production media', 'EDITING ENABLED', 'Safety details', 'uploadAdminTrackAsset', 'deleteAdminTrackAsset', 'globalThis.confirm']) {
+for (const marker of ['EDITING ENABLED', 'Safety details', 'uploadAdminTrackAsset', 'deleteAdminTrackAsset', 'globalThis.confirm', 'kinds?: AdminAssetKind[]', 'visibleAssets']) {
   assert.ok(assets.includes(marker), `Assets media-management surface is missing ${marker}.`);
 }
-assert.ok(!workspace.includes('<AssetRow'), 'The Assets tab must not duplicate the media state above the manager.');
-assert.equal((workspace.match(/<AssetsManager track=\{track\}/g) || []).length, 1, 'Assets must render exactly one media-management surface.');
-const assetsSection = workspace.slice(workspace.indexOf("section === 'assets'"), workspace.indexOf("section === 'versions'"));
-assert.ok(assetsSection.includes('<AssetsManager track={track}'), 'The single media manager must live in the Assets section.');
+assert.ok(!workspace.includes('<AssetRow'), 'Track Workshop must not duplicate legacy media rows above the guarded managers.');
+
+const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
+const phaseUxLine = /^0\.(?:11|12|13|14|15)\./.test(version) && codename.startsWith('phase-ux-');
+const authorizedPhase7 = /^0\.(?:16|17)\./.test(version) && codename.startsWith('phase7-');
+const authorizedStudioFocus = /^0\.(?:17|18)\./.test(version) && codename.startsWith('studio-focus-');
+assert.ok(phaseUxLine || authorizedPhase7 || authorizedStudioFocus, `UX module guard must run on validated PHASE UX lineage or an explicitly authorized Phase 7 / Studio Focus successor, got ${version} / ${codename}.`);
+
+if (authorizedStudioFocus && build >= 57) {
+  assert.equal((workspace.match(/<AssetsManager/g) || []).length, 2, 'Build 57 must expose exactly two task-scoped views of the same guarded asset manager: Track audio + Visuals media.');
+  assert.ok(workspace.includes("kinds={['audio']}"), 'Track surface must scope the asset manager to canonical audio.');
+  assert.ok(workspace.includes("kinds={['cover', 'thumbnail', 'video']}"), 'Visuals surface must scope the asset manager to cover/thumbnail/video.');
+  const assetsSection = workspace.slice(workspace.indexOf("section === 'assets'"), workspace.indexOf("section === 'lyrics'"));
+  assert.ok(assetsSection.includes("kinds={['cover', 'thumbnail', 'video']}"), 'Visual media manager must live in the Visuals/assets route.');
+} else {
+  assert.equal((workspace.match(/<AssetsManager track=\{track\}/g) || []).length, 1, 'Pre-Build57 Assets must render exactly one media-management surface.');
+  const assetsSection = workspace.slice(workspace.indexOf("section === 'assets'"), workspace.indexOf("section === 'versions'"));
+  assert.ok(assetsSection.includes('<AssetsManager track={track}'), 'The single media manager must live in the Assets section.');
+}
 for (const marker of ['grid-template-columns:repeat(2,minmax(0,1fr))', ':has(.assets-cover-palette)', '.phase4-assets-diagnostics']) assert.ok(assetsCss.includes(marker));
 
 for (const marker of ['workspace-lyrics-shell', 'workspace-lyrics-status', 'LYRICS / STUDIO', '<EmbeddedLyricsStudio', '<details className="workspace-lyrics-plain">', 'Open standalone fallback']) {
@@ -46,12 +63,6 @@ for (const marker of ['Understand this track', 'profile ready', 'Analyze with So
 for (const protectedBehavior of ['fetchCanonicalAudio', 'analyzeBrowserDsp', 'runSonicTraceAnalysis', 'browserOnlyAnalysis', 'saveSonicTraceAnalysis']) assert.ok(sonic.includes(protectedBehavior));
 for (const marker of ['.sonic-progress', '.sonic-diagnostics', '.sonic-intro p']) assert.ok(sonicCss.includes(marker));
 
-const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
-const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
-const phaseUxLine = /^0\.(?:11|12|13|14|15)\./.test(version) && codename.startsWith('phase-ux-');
-const authorizedPhase7 = /^0\.(?:16|17)\./.test(version) && codename.startsWith('phase7-');
-const authorizedStudioFocus = /^0\.17\./.test(version) && codename.startsWith('studio-focus-');
-assert.ok(phaseUxLine || authorizedPhase7 || authorizedStudioFocus, `UX module guard must run on validated PHASE UX lineage or an explicitly authorized Phase 7 / Studio Focus successor, got ${version} / ${codename}.`);
 for (const source of [metadata, assets, sonic]) {
   for (const forbidden of ['phase7', 'phase-7']) assert.ok(!source.toLowerCase().includes(forbidden), `Specialist module acquired unauthorized Phase 7 coupling: ${forbidden}.`);
 }
@@ -62,4 +73,4 @@ if (phaseUxLine) {
   assert.ok(workspace.includes('<ContinuationReceiptBanner trackId={track.id}'), 'Authorized successor must preserve the receipt verification surface.');
 }
 
-console.log('PHASE UX UX-4 guard passed: grouped metadata, single media manager, embedded-first Lyrics, profile-aware SonicTrace and guarded engines remain intact through the authorized Studio Focus successor.');
+console.log('PHASE UX UX-4 guard passed: grouped metadata, task-scoped guarded media management, embedded-first Lyrics, profile-aware SonicTrace and protected engines remain intact through Studio Focus.');

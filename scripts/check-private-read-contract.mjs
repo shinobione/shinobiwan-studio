@@ -78,8 +78,9 @@ for (const required of ['Shape how this track appears', 'PROTECTED SAVE', 'Valid
 for (const required of ['LYRICS / GUARDED WRITE', 'Canonical lyrics.txt editor', 'Validate lyrics', 'Save lyrics.txt', 'NO .LRC REQUIRED', 'CANONICAL REREAD · VERIFIED']) assert.ok(lyrics.includes(required), `Lyrics UI missing ${required}.`);
 
 for (const required of [
-  'Manage production media', 'EDITING ENABLED', 'Upload', 'Replace', 'Delete asset', 'globalThis.confirm',
+  'EDITING ENABLED', 'Upload', 'Replace', 'Delete asset', 'globalThis.confirm',
   'uploadAdminTrackAsset', 'deleteAdminTrackAsset', 'phase4-upload-progress', 'One asset changes per operation', 'whole-track deletion is intentionally not exposed',
+  'kinds?: AdminAssetKind[]', 'const visibleAssets = useMemo',
 ]) assert.ok(assets.includes(required), `Assets Manager missing ${required}.`);
 
 for (const required of [
@@ -90,7 +91,8 @@ for (const required of ['TRACK MANAGER / CATALOG', 'Explicit catalog rebuild', '
 
 for (const required of ['showCreate && <TrackCreatePanel', 'privateRead={privateRead}', 'onCreated={async () =>', '+ New Track', 'Tracks are available read-only']) assert.ok(catalog.includes(required), `Catalog private-write boundary missing ${required}.`);
 for (const required of [
-  '<AssetsManager track={track} onChanged={refreshTrackAfterWrite} />',
+  "kinds={['audio']}",
+  "kinds={['cover', 'thumbnail', 'video']}",
   '<LyricsEditorPanel track={track} onSaved={refreshTrackAfterWrite} />',
   '<MetadataValidationPanel track={track} onSaved={refreshTrackAfterWrite} />',
   '<SonicTracePanel track={track} onSaved={() => {',
@@ -172,7 +174,7 @@ for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog 
 
 const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
-assert.match(releaseVersion, /^0\.(?:11|12|13|14|15|16|17)\./, 'Studio private-read ancestry must remain on the validated PHASE UX / Phase 7 / Studio Focus release lines.');
+assert.match(releaseVersion, /^0\.(?:11|12|13|14|15|16|17|18)\./, 'Studio private-read ancestry must remain on the validated PHASE UX / Phase 7 / Studio Focus release lines.');
 assert.ok(releaseBuild >= 33, 'Studio private-read ancestry must remain at Build 33 or later.');
 assert.match(release, /codename:\s*'(?:phase-ux-(?:c2-5|c3)-|phase7-|studio-focus-)/, 'Studio release codename must remain inside validated PHASE UX, Phase 7, or explicitly authorized Studio Focus lineage.');
 assert.equal(pkg.version, releaseVersion, 'package.json must match the current Studio release version.');

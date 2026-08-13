@@ -84,7 +84,7 @@ const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const phaseUxLine = /^0\.(?:11|12|13|14|15)\./.test(releaseVersion) && /^phase-ux-(?:c2-5|c3)-/.test(codename);
 const phase7Line = /^0\.(?:16|17)\./.test(releaseVersion) && codename.startsWith('phase7-');
-const studioFocusLine = /^0\.17\./.test(releaseVersion) && codename.startsWith('studio-focus-');
+const studioFocusLine = /^0\.(?:17|18)\./.test(releaseVersion) && codename.startsWith('studio-focus-');
 assert.ok(phaseUxLine || phase7Line || studioFocusLine, 'D2 ancestry must remain on the validated PHASE UX C2.5/C3 line or its explicitly authorized Phase 7 / Studio Focus successor.');
 assert.ok(releaseBuild >= 33, 'C2.5-D2 ancestry must remain at Build 33 or later.');
 assert.equal(pkg.version, releaseVersion, 'package.json must match the active Studio release.');

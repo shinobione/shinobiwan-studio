@@ -8,10 +8,13 @@ const statusCss = read('src/studio-focus-status-labels.css');
 const release = read('src/release.ts');
 const pkg = JSON.parse(read('package.json'));
 
-assert.match(release, /version:\s*'0\.17\.6'/);
-assert.match(release, /build:\s*56/);
-assert.match(release, /studio-focus-tracks-status-labels/);
-assert.equal(pkg.version, '0.17.6');
+const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
+assert.match(version, /^0\.(?:17|18)\.\d+$/);
+assert.ok(build >= 56, `Build 56 status-label ancestry requires Build 56 or later, got ${build}.`);
+assert.ok(codename.startsWith('studio-focus-'), `Build 56 status-label ancestry must remain under Studio Focus, got ${codename}.`);
+assert.equal(pkg.version, version);
 assert.ok(pkg.scripts['check:focus']?.includes('test-studio-focus-build56.mjs'), 'Build 56 status-label guard must run in the Studio Focus chain.');
 
 const focusIndex = main.indexOf("import './studio-focus.css';");
@@ -29,4 +32,4 @@ for (const label of ['Audio', 'Cover', 'Lyrics', 'Canvas', 'Release']) {
   assert.ok(catalog.includes(`>${label}</span>`), `Build 56 must keep the full ${label} label in Tracks.`);
 }
 
-console.log('Studio Focus Build 56 guard passed: Audio / Cover / Lyrics / Canvas / Release remain fully readable with wrapping chips while Build 55 card density is preserved.');
+console.log(`Studio Focus Build 56 ancestry passed under ${version} Build ${build}: Audio / Cover / Lyrics / Canvas / Release remain fully readable while later Studio Focus slices evolve the Track workspace.`);
