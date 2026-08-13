@@ -1,9 +1,9 @@
 # Studio Focus Slice 4 — Build 61 polish
 
-Release candidate: **Studio v0.19.1 · Build 61**  
+Release: **Studio v0.19.1 · Build 61**  
 Codename: `studio-focus-slice4-polish`  
 Date: 2026-08-13  
-Status: **IMPLEMENTED CANDIDATE — REAL USER PASS PENDING**
+Status: **COMPLETE — REAL USER PASS**
 
 ## Trigger
 
@@ -12,7 +12,7 @@ Build 60 deployed successfully and the real-user smoke confirmed that Home/Track
 1. the `PHASE 7-B · FOCUS` release/status block was visually stranded high in the desktop sidebar instead of sitting at the bottom;
 2. the compact SonicTrace artist summary was functionally correct but visually under-composed.
 
-Build 60 is therefore **not** promoted to REAL USER PASS. Build 61 is a presentation corrective on top of the exact Build 60 merge.
+Build 60 was therefore not promoted to REAL USER PASS. Build 61 is the accepted presentation corrective on top of the exact Build 60 merge.
 
 ## Sidebar corrective
 
@@ -61,28 +61,62 @@ Pre-corrective safety anchor:
 safety/pre-build61-slice4-polish-20260813-1317
 ```
 
+Accepted runtime checkpoint:
+
+```text
+safety/post-studio-focus-build61-real-user-pass-20260813-1347
+```
+
 Feature branch:
 
 ```text
 studio-focus/build61-slice4-polish
 ```
 
-## Acceptance boundary
+## Validation evidence
 
-Required sequence:
+Exact candidate head:
 
 ```text
-exact-head CI GREEN
-→ main collision recheck
-→ merge exact tested head
-→ exact merge-SHA Pages GREEN
-→ real-user browser smoke
-→ only then REAL USER PASS
+bf00ca0aa1a0a070199f3cf94fd920f342d644a9
 ```
 
-The smoke should visually confirm only:
+Validation CI:
 
-1. desktop release/status card is truly anchored at the bottom of the sidebar;
-2. SonicTrace compact card is cleaner and easier to scan;
-3. `Details / Advanced` still reaches full SonicTrace;
-4. no truth/authority regression is visible.
+```text
+Validate SHINOBIWAN Studio · run 31695460411 · SUCCESS
+```
+
+Exact merge SHA:
+
+```text
+9e362cce54522f5cd703363db4b92066c8909565
+```
+
+Pages deployment:
+
+```text
+Deploy SHINOBIWAN Studio · run 31695599704 · SUCCESS
+```
+
+## Real-user acceptance — 2026-08-13
+
+Deployed browser smoke at approximately 13:46–13:47 Europe/Paris confirmed:
+
+1. the `PHASE 7-B · FOCUS` release/status card is visibly anchored at the bottom of the desktop sidebar;
+2. the release card is compact and visually integrated with the sidebar rather than stranded beneath Advanced;
+3. the compact SonicTrace card is clearly readable with Style / Mood / Character on the primary row;
+4. Arrangement / Master are grouped beneath as secondary production facts;
+5. Palette is visually separated as a coherent footer strip;
+6. FULL profile state remains visible and truthful;
+7. `Details / Advanced →` remains available for deeper SonicTrace diagnostics;
+8. no visible authority, Lyrics, Album, Track Manager, Release Campaign or canonical-data regression was observed in this smoke.
+
+This evidence closes **Studio Focus Slice 4 as REAL USER PASS on Build 61**.
+
+## Roadmap consequence
+
+- Studio Focus Slice 4: **COMPLETE — REAL USER PASS**.
+- Build 60 remains historical deployed candidate evidence, superseded by Build 61 for acceptance.
+- Build 61 becomes the accepted Studio Focus baseline.
+- Phase 7-C remains **CLOSED / NOT STARTED** until fresh explicit authorization.
