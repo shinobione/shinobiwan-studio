@@ -8,19 +8,22 @@ function exposeMissingLyricsSourceControl(): void {
   const heading = shell.querySelector<HTMLElement>('.workspace-lyrics-status h3');
   const details = shell.querySelector<HTMLDetailsElement>('details.workspace-lyrics-plain');
   if (!heading || !details || heading.textContent?.trim() !== 'Add lyrics to begin') return;
-  details.open = true;
+
+  if (!details.open) details.open = true;
+
   const summary = details.querySelector<HTMLElement>('summary');
-  if (summary) summary.textContent = 'Add lyrics.txt / plain-text editor';
+  const nextLabel = 'Add lyrics.txt / plain-text editor';
+  if (summary && summary.textContent?.trim() !== nextLabel) summary.textContent = nextLabel;
 }
 
-function installBuild64PresentationRepair(): void {
+function installBuild65MissingLyricsPresentation(): void {
   exposeMissingLyricsSourceControl();
   const observer = new MutationObserver(() => exposeMissingLyricsSourceControl());
   observer.observe(document.documentElement, { childList: true, subtree: true });
 }
 
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', installBuild64PresentationRepair, { once: true });
+  document.addEventListener('DOMContentLoaded', installBuild65MissingLyricsPresentation, { once: true });
 } else {
-  installBuild64PresentationRepair();
+  installBuild65MissingLyricsPresentation();
 }
