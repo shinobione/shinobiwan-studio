@@ -40,15 +40,26 @@ type MetadataFormState = {
   accent2: string;
 };
 
+type QualityIssue = {
+  level?: string;
+  code?: string;
+  label?: string;
+  message?: string;
+};
+
 function csv(values: string[]): string {
   return values.join(', ');
+}
+
+function albumBoundType(type: string | null | undefined, albumId: string | null | undefined): string {
+  return albumId && albumId !== 'singles' ? 'album-track' : (type || 'single');
 }
 
 function initialForm(track: StudioTrackDetail): MetadataFormState {
   return {
     title: track.title,
     status: track.status,
-    type: track.type,
+    type: albumBoundType(track.type, track.album.id),
     year: track.year == null ? '' : String(track.year),
     releaseDate: track.releaseDate || '',
     genres: csv(track.genres),
@@ -71,7 +82,7 @@ function formFromManifest(manifest: AdminManifest): MetadataFormState {
   return {
     title: manifest.title || '',
     status: manifest.status || 'draft',
-    type: manifest.type || '',
+    type: albumBoundType(manifest.type, manifest.album?.id),
     year: manifest.year == null ? '' : String(manifest.year),
     releaseDate: manifest.releaseDate || '',
     genres: csv(manifest.genres || []),
@@ -136,6 +147,15 @@ function proposalValue(manifest: AdminManifest | undefined, field: keyof AdminMa
   return value == null || value === '' ? '—' : String(value);
 }
 
+function qualityIssues(value: unknown): QualityIssue[] {
+  if (!value || typeof value !== 'object') return [];
+  const items = (value as { items?: unknown }).items;
+  if (!Array.isArray(items)) return [];
+  return items
+    .filter((item): item is QualityIssue => Boolean(item) && typeof item === 'object')
+    .filter(item => item.level === 'error' || item.level === 'warning');
+}
+
 function albumErrorMessage(reason: unknown): string {
   if (reason instanceof AlbumAdminError) {
     return `${reason.message}${reason.code ? ` [${reason.code}]` : ''}${reason.currentUpdatedAt ? ` · revision ${reason.currentUpdatedAt}` : ''}`;
@@ -159,6 +179,8 @@ export function MetadataValidationPanel({
   onSaved?: () => Promise<void> | void;
 }) {
   const privateRead = track.readSource === 'private';
+  const claimedAlbumId = track.album.id || 'singles';
+  const albumBound = claimedAlbumId !== 'singles';
   const [form, setForm] = useState<MetadataFormState>(() => initialForm(track));
   const [validation, setValidation] = useState<AdminMetadataValidationResponse | null>(null);
   const [saveResult, setSaveResult] = useState<AdminMetadataSaveResponse | null>(null);
@@ -178,7 +200,7 @@ export function MetadataValidationPanel({
     setRefreshWarning(null);
     setAlbumAuthorityMessage(null);
     setAlbumAuthorityError(null);
-  }, [track.id, track.readSource]);
+  }, [track.id, track.readSource, track.updatedAt]);
 
   const patch = useMemo(() => buildPatch(form), [form]);
   const changedFields = validation?.changedFields || [];
@@ -193,8 +215,7 @@ export function MetadataValidationPanel({
     && !validating
     && !saving
     && !saveResult;
-  const claimedAlbumId = track.album.id || 'singles';
-  const canCheckAlbumAuthority = privateRead && claimedAlbumId !== 'singles' && !albumAuthorityBusy;
+  const canCheckAlbumAuthority = privateRead && albumBound && !albumAuthorityBusy;
 
   function update<K extends keyof MetadataFormState>(key: K, value: MetadataFormState[K]) {
     setForm(current => ({ ...current, [key]: value }));
@@ -210,6 +231,10 @@ export function MetadataValidationPanel({
     setSaveResult(null);
     setError(null);
     setRefreshWarning(null);
+  }
+
+  function preparePublication() {
+    update('status', 'published');
   }
 
   async function verifyOrRepairAlbumMembership() {
@@ -323,7 +348,7 @@ export function MetadataValidationPanel({
         if (reason.code === 'STALE_MANIFEST') {
           setError(`Save refused: the canonical manifest changed${reason.currentUpdatedAt ? ` (${reason.currentUpdatedAt})` : ''}. Reload the track, validate again, then save.`);
         } else if (reason.code === 'QUALITY_BLOCKED') {
-          setError('Save refused by Track Manager quality control. Review the validation result before retrying.');
+          setError('Save refused by Track Manager quality control. The exact blocking checks are listed in the validation result below.');
         } else if (reason.code === 'SAVE_ROLLBACK') {
           const rollback = reason.rollback;
           setError(`Save failed after manifest write; rollback was attempted. Manifest restored: ${rollback?.manifestRestored ? 'yes' : 'no'}, catalog restored: ${rollback?.catalogRestored ? 'yes' : 'no'}. Stop editing and verify Track Manager before retrying.`);
@@ -339,6 +364,9 @@ export function MetadataValidationPanel({
   }
 
   const quality = validation?.quality;
+  const issues = qualityIssues(quality);
+  const blockingIssues = issues.filter(issue => issue.level === 'error');
+  const warningIssues = issues.filter(issue => issue.level === 'warning');
 
   return (
     <div className="metadata-validation-shell">
@@ -366,24 +394,32 @@ export function MetadataValidationPanel({
       <div className="metadata-form-groups">
         <MetadataGroup title="Identity" hint="Track identity only. Album membership has its own canonical authority.">
           <Field label="Title" wide><input value={form.title} onChange={event => update('title', event.target.value)} /></Field>
-          <Field label="Type"><input value={form.type} onChange={event => update('type', event.target.value)} /></Field>
+          <Field label="Type">
+            <select value={form.type} disabled={albumBound} onChange={event => update('type', event.target.value)}>
+              <option value="single">Single</option>
+              <option value="album-track">Album track</option>
+              <option value="demo">Demo</option>
+            </select>
+            {albumBound && <small>Derived from the current Album binding. Saving this proposal repairs legacy <code>single</code> metadata to <code>album-track</code> without changing Album membership.</small>}
+          </Field>
           <div className="metadata-album-authority metadata-field-wide">
             <span>Album / project</span>
             <strong>{track.album.title || 'Singles'}</strong>
             <small><code>{claimedAlbumId}</code> · display cache only here. Canonical membership/order is owned by <code>album.trackIds</code>.</small>
             <div className="metadata-album-authority-actions">
               <a className="ghost-btn compact" href={routeHref('albums')}>Manage Album membership →</a>
-              {claimedAlbumId !== 'singles' && <button className="ghost-btn compact" type="button" disabled={!canCheckAlbumAuthority} onClick={() => void verifyOrRepairAlbumMembership()}>{albumAuthorityBusy ? 'Checking…' : 'Verify / repair membership'}</button>}
+              {albumBound && <button className="ghost-btn compact" type="button" disabled={!canCheckAlbumAuthority} onClick={() => void verifyOrRepairAlbumMembership()}>{albumAuthorityBusy ? 'Checking…' : 'Verify / repair membership'}</button>}
             </div>
             {albumAuthorityMessage && <p className="metadata-album-authority-message">{albumAuthorityMessage}</p>}
             {albumAuthorityError && <p className="metadata-album-authority-error">{albumAuthorityError}</p>}
           </div>
         </MetadataGroup>
-        <MetadataGroup title="Release" hint="Control timing, visibility and content labeling.">
+        <MetadataGroup title="Release" hint="Production readiness and publication are separate: a draft may be 100% ready before you publish it.">
           <Field label="Status"><select value={form.status} onChange={event => update('status', event.target.value)}><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></Field>
           <Field label="Content"><select value={form.explicit} onChange={event => update('explicit', event.target.value as MetadataFormState['explicit'])}><option value="unrated">Unrated</option><option value="clean">Clean</option><option value="explicit">Explicit</option></select></Field>
           <Field label="Release date"><input type="date" value={form.releaseDate} onChange={event => update('releaseDate', event.target.value)} /></Field>
           <Field label="Year"><input inputMode="numeric" value={form.year} onChange={event => update('year', event.target.value)} placeholder="2026" /></Field>
+          {form.status !== 'published' && <div className="metadata-field metadata-field-wide"><span>Publication</span><button className="primary-btn compact" type="button" disabled={!privateRead || saving || validating} onClick={preparePublication}>Prepare publication</button><small>This only changes the local proposal to Published. Nothing is written until Validate → review → explicit Save.</small></div>}
         </MetadataGroup>
         <MetadataGroup title="Discovery" hint="Help Catalog and LaunchPAD organize and surface the track." wide>
           <Field label="Genres" wide><input value={form.genres} onChange={event => update('genres', event.target.value)} placeholder="R&B, Trap" /></Field>
@@ -430,11 +466,13 @@ export function MetadataValidationPanel({
             <div><span>Publishable</span><strong>{quality?.publishable == null ? '—' : quality.publishable ? 'Yes' : 'No'}</strong></div>
             <div><span>Errors / warnings</span><strong>{quality?.counts ? `${quality.counts.error || 0} / ${quality.counts.warning || 0}` : '—'}</strong></div>
           </div>
+          {issues.length > 0 && <div className="workspace-note metadata-quality-details" role="status"><strong>{blockingIssues.length ? `Why publication is blocked (${blockingIssues.length})` : 'Quality warnings'}</strong>{blockingIssues.map((issue, index) => <p key={`error-${issue.code || index}`}><b>ERROR · {issue.label || issue.code || 'Quality check'}</b> — {issue.message || 'Blocking quality check failed.'}</p>)}{warningIssues.map((issue, index) => <p key={`warning-${issue.code || index}`}><b>WARNING · {issue.label || issue.code || 'Quality check'}</b> — {issue.message || 'Review recommended.'}</p>)}</div>}
           <details className="metadata-proposal-preview">
             <summary>Normalized proposal preview</summary>
             <dl className="workspace-metadata-list metadata-wide">
               <div><dt>Title</dt><dd>{proposalValue(validation.proposed, 'title')}</dd></div>
               <div><dt>Status</dt><dd>{proposalValue(validation.proposed, 'status')}</dd></div>
+              <div><dt>Type</dt><dd>{proposalValue(validation.proposed, 'type')}</dd></div>
               <div><dt>Genres</dt><dd>{proposalValue(validation.proposed, 'genres')}</dd></div>
               <div><dt>Moods</dt><dd>{proposalValue(validation.proposed, 'moods')}</dd></div>
               <div><dt>Languages</dt><dd>{proposalValue(validation.proposed, 'languages')}</dd></div>
@@ -444,8 +482,8 @@ export function MetadataValidationPanel({
           </details>
           {canSave && (
             <div className="metadata-save-zone">
-              <div><strong>Review complete?</strong><p>Save writes Track metadata only, rebuilds the canonical catalog index, verifies the persisted revision and leaves Album membership plus every media object untouched.</p></div>
-              <button className="metadata-save-btn" type="button" onClick={save}>{saving ? 'Saving…' : 'Save metadata'}</button>
+              <div><strong>{form.status === 'published' ? 'Publish this track?' : 'Review complete?'}</strong><p>{form.status === 'published' ? 'Saving this validated proposal publishes the canonical Track and rebuilds the catalog. Album membership/order and media remain untouched.' : 'Save writes Track metadata only, rebuilds the canonical catalog index, verifies the persisted revision and leaves Album membership plus every media object untouched.'}</p></div>
+              <button className="metadata-save-btn" type="button" onClick={save}>{saving ? 'Saving…' : form.status === 'published' ? 'Publish track' : 'Save metadata'}</button>
             </div>
           )}
           <p className="workspace-footnote">Validation itself remains non-mutating. A save is possible only after this preview, against this exact canonical revision.</p>
@@ -455,7 +493,7 @@ export function MetadataValidationPanel({
       {saveResult && (
         <div className="metadata-validation-result metadata-result-saved">
           <div className="metadata-result-title">
-            <div><b>METADATA SAVED</b><strong>{saveResult.changedFields?.length ? `${saveResult.changedFields.length} field${saveResult.changedFields.length > 1 ? 's' : ''} persisted` : 'Canonical metadata already matched'}</strong></div>
+            <div><b>{saveResult.track?.status === 'published' ? 'TRACK PUBLISHED' : 'METADATA SAVED'}</b><strong>{saveResult.changedFields?.length ? `${saveResult.changedFields.length} field${saveResult.changedFields.length > 1 ? 's' : ''} persisted` : 'Canonical metadata already matched'}</strong></div>
             <span>{saveResult.clientVerified ? 'CANONICAL REREAD · VERIFIED' : 'SERVER SAVED · REREAD WARNING'}</span>
           </div>
           <div className="metadata-result-grid">
