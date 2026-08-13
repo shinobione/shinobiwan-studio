@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
+import './legacy-track-type-display-auto';
 import './styles.css';
 import './catalog.css';
 import './workspace.css';
@@ -34,6 +35,7 @@ import './studio-focus-workshop.css';
 import './studio-focus-sonictrace-summary.css';
 import './studio-focus-build61-polish.css';
 import './studio-focus-build62-closeout-corrective.css';
+import './studio-focus-build63-smoke2.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
