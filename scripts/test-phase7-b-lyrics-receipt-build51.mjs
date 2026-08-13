@@ -12,7 +12,7 @@ const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const build51 = releaseVersion === '0.17.1' && releaseBuild === 51 && codename === 'phase7-b-lyrics-receipt-window-listener-corrective';
 const acceptedPhase7Successor = /^0\.17\.\d+$/.test(releaseVersion) && releaseBuild > 51 && codename.startsWith('phase7-b-');
-const acceptedStudioFocusSuccessor = /^0\.17\.\d+$/.test(releaseVersion) && releaseBuild >= 53 && codename.startsWith('studio-focus-');
+const acceptedStudioFocusSuccessor = /^0\.(?:17|18)\.\d+$/.test(releaseVersion) && releaseBuild >= 53 && codename.startsWith('studio-focus-');
 assert.ok(build51 || acceptedPhase7Successor || acceptedStudioFocusSuccessor, `Build 51 Lyrics receipt contract must remain inherited by accepted post-pass / Studio Focus successors, got ${releaseVersion} Build ${releaseBuild} / ${codename}.`);
 assert.equal(pkg.version, releaseVersion);
 assert.ok(pkg.scripts['check:phase7']?.includes('test-phase7-b-contextual-receipts-build50.mjs'), 'Build 50 receipt contract must remain active.');
