@@ -147,18 +147,21 @@ Slice 1 constraints:
 
 ### Build 69 implementation candidate
 
-`v0.20.0 · Build 69 · phase7c-slice1-guided-metadata` is the first runtime candidate under PR #99.
+`v0.19.4 · Build 69 · studio-focus-phase7c-slice1-guided-metadata` is the first runtime candidate under PR #99.
 
 Implementation audit confirmed that Track Manager v5.21 / bridge v1.11 already exposes the required production-proven `metadata` capability and guarded validate/save operations, so **no Worker route or Worker deployment is required for this slice**.
 
-Build 69 adds only Studio orchestration around that authority:
+The initial `v0.20.0 / phase7c-*` identity collided with inherited release-line compatibility guards. Build 69 was therefore normalized onto the mature `v0.19 / studio-focus-*` compatibility lineage rather than widening historical C3 / Track-To-Market / PHASE UX guards. Those historical guard files are restored unchanged; only the current private-read integration guard is updated for the truthful Phase 7-C / Track Manager v5.21 / bridge v1.11 state.
+
+Build 69 adds only Studio orchestration around the existing authority:
 
 - direct Metadata destination from Home when Identity is the workflow Next Action;
 - existing direct Tracks / Workflow destinations preserved;
 - guided exact-track context in the Track Metadata surface;
 - strict post-save Studio reread that rejects public fallback as proof;
 - workflow / Next Action recomputation from the reread Track state;
-- a focused regression guard preserving all prior guards.
+- a focused Build 69 regression guard preserving all prior functional guards;
+- explicit source-level preservation of Phase 7-B receipt ancestry under the Phase 7-C shell.
 
 Candidate record: [`../changelogs/CHANGELOG-PHASE7-C-BUILD69.md`](../changelogs/CHANGELOG-PHASE7-C-BUILD69.md).
 
