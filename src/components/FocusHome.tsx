@@ -7,7 +7,7 @@ import { TrackCreatePanel } from './TrackCreatePanel';
 
 const LAST_TRACK_KEY = 'shinobiwan-studio:last-track-id';
 
-type FocusStep = 'track' | 'visuals' | 'lyrics' | 'sound' | 'release';
+type FocusStep = 'track' | 'visuals' | 'lyrics' | 'sonic' | 'release';
 
 function artwork(track: StudioTrack): string | null {
   return track.assets.thumbnail?.url || track.assets.cover?.url || null;
@@ -25,7 +25,7 @@ function actionLabel(item: TrackWorkflowState): string {
   const section = artistSection(item.nextAction.section);
   if (section === 'assets') return item.track.assets.cover ? 'Continue visuals' : 'Add cover';
   if (section === 'lyrics') return item.track.assets.lyricsTxt ? 'Synchronize lyrics' : 'Add lyrics';
-  if (section === 'intelligence') return item.track.audioIntelligence.available ? 'Refresh sound analysis' : 'Analyze sound';
+  if (section === 'intelligence') return item.track.audioIntelligence.available ? 'Refresh SonicTrace' : 'Analyze with SonicTrace';
   if (section === 'market') return 'Prepare release';
   return item.blocked ? 'Fix track details' : 'Continue track';
 }
@@ -34,7 +34,7 @@ function productionStep(track: StudioTrack, step: FocusStep): boolean {
   if (step === 'track') return Boolean(track.assets.audio && track.title.trim() && track.album?.id);
   if (step === 'visuals') return Boolean(track.assets.cover && track.assets.video);
   if (step === 'lyrics') return Boolean(track.assets.lyricsTxt && track.timestampsAvailable);
-  if (step === 'sound') return Boolean(track.audioIntelligence.available && !track.audioIntelligence.outdated);
+  if (step === 'sonic') return Boolean(track.audioIntelligence.available && !track.audioIntelligence.outdated);
   return track.status === 'published' ? track.publishing.catalogVisible : track.publishing.publishable === true;
 }
 
@@ -42,7 +42,7 @@ function stepLabel(step: FocusStep): string {
   if (step === 'track') return 'Track';
   if (step === 'visuals') return 'Visuals';
   if (step === 'lyrics') return 'Lyrics';
-  if (step === 'sound') return 'Sound';
+  if (step === 'sonic') return 'Sonic';
   return 'Release';
 }
 
@@ -79,7 +79,7 @@ export function FocusHome() {
   const lastItem = lastTrackId ? workflow.find(item => item.track.id === lastTrackId) || null : null;
   const lead = lastItem || attention[0] || workflow[0] || null;
   const queue = attention.filter(item => item.track.id !== lead?.track.id).slice(0, 5);
-  const steps: FocusStep[] = ['track', 'visuals', 'lyrics', 'sound', 'release'];
+  const steps: FocusStep[] = ['track', 'visuals', 'lyrics', 'sonic', 'release'];
 
   return (
     <section className="focus-home">
