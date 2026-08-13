@@ -40,6 +40,8 @@ assert.ok(assets.includes('uploadAdminTrackAsset'), 'Existing guarded asset uplo
 assert.ok(assets.includes('deleteAdminTrackAsset'), 'Existing guarded asset deletion remains intact.');
 
 assert.ok(correctiveCss.includes('.rc-provider-field{display:none!important}'), 'Misleading premium-provider selector must be removed from the artist-facing UI.');
+assert.ok(correctiveCss.includes("content:'Sonic'"), 'Track Workshop legacy Sound stage must render as Sonic in the Build 62 corrective layer.');
+assert.ok(correctiveCss.includes("content:'TRACK / SONIC'"), 'Full SonicTrace subpage must render TRACK / SONIC in the Build 62 corrective layer.');
 assert.ok(main.indexOf("import './studio-focus-build62-closeout-corrective.css';") > main.indexOf("import './studio-focus-build61-polish.css';"), 'Build 62 corrective styles must layer after Build 61.');
 assert.ok(campaign.includes("const GOOGLE_FLOW_URL = 'https://labs.google/fx/fr/tools/flow/'"), 'Google Flow direct handoff must remain available.');
 assert.ok(campaign.includes('Open Google Flow ↗'), 'Google Flow shortcut must remain visible after provider-selector cleanup.');
