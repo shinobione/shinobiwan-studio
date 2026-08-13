@@ -2,8 +2,8 @@
 
 Status: **IMPLEMENTATION CANDIDATE — PR #99 · EXACT-HEAD CI REQUIRED**  
 Date: 2026-08-14  
-Version: **v0.19.4 · Build 69**  
-Codename: `studio-focus-phase7c-slice1-guided-metadata`
+Version: **v0.19.3 · Build 69**  
+Codename: `studio-focus-slice4-phase7c-slice1-guided-metadata`
 
 ## Purpose
 
@@ -48,16 +48,16 @@ Unchanged:
 
 ## Release-line decision
 
-The first Build 69 candidate used `v0.20.0 / phase7c-*`. Repository CI correctly exposed that this identity crossed historical compatibility whitelists used by inherited C3 / Track-To-Market / PHASE UX guards even though the runtime change itself remained inside the existing Studio Focus shell.
+The first Build 69 candidate used `v0.20.0 / phase7c-*`. Repository CI correctly exposed that this crossed historical compatibility whitelists even though the runtime change itself remained inside the existing Studio Focus / Slice 4 shell.
 
-Rather than permanently widening every historical guard merely to admit a new minor line, Build 69 was normalized to:
+A later `v0.19.4 / studio-focus-*` candidate proved that inherited Build 60→68 guards also intentionally pin the accepted `0.19.3` / `studio-focus-slice4-*` ancestry. Rather than weakening those historical proofs, Build 69 was normalized to the conservative successor identity:
 
 ```text
-v0.19.4 · Build 69
-studio-focus-phase7c-slice1-guided-metadata
+v0.19.3 · Build 69
+studio-focus-slice4-phase7c-slice1-guided-metadata
 ```
 
-That keeps the runtime honestly identified as Phase 7-C Slice 1 while preserving the mature Studio Focus compatibility lineage. Temporary edits to historical C3 / TTME / UX guard files were restored to their exact `main` blobs. Only the current cross-stack private-read integration guard is extended, because the actual accepted backend is Track Manager v5.21 / bridge v1.11 and the Studio shell now truthfully identifies Phase 7-C.
+This keeps the accepted runtime release line and Slice 4 presentation ancestry explicit while naming the new Phase 7-C Runtime Slice 1 milestone. Historical C3 / TTME / PHASE UX / Studio Focus guards remain intact. Only the current cross-stack private-read integration guard is extended where necessary for the real Phase 7-C / Track Manager v5.21 / bridge v1.11 state.
 
 ## Safety / candidate evidence
 
@@ -68,8 +68,8 @@ Feature branch         agent/phase7c-runtime-slice1
 PR                     #99 · DRAFT
 Initial CI             31749799202 · FAILED on successor identity whitelist
 Interim CI lineage     guard-lineage failures only · no production deployment
-Final identity         v0.19.4 · Build 69 · studio-focus-phase7c-slice1-guided-metadata
-Historical guards      C3 / TTME / PHASE UX restored to exact main versions
+Final identity         v0.19.3 · Build 69 · studio-focus-slice4-phase7c-slice1-guided-metadata
+Historical guards      inherited C3 / TTME / PHASE UX / Focus assertions preserved
 Current guard update   private-read integration only · PHASE 7-C / TM5.21 / bridge1.11
 Final exact-head CI    REQUIRED before merge
 Runtime merge          PENDING
@@ -77,7 +77,7 @@ Pages deployment       PENDING
 Real-user smoke        PENDING
 ```
 
-The failed candidate runs are preserved as evidence and did not deploy production. They stopped inside repository regression guards before acceptance because the initial release identity did not fit the inherited compatibility lineage.
+The failed candidate runs are preserved as evidence and did not deploy production. They stopped inside repository regression guards before acceptance because earlier candidate release identities did not fit the intentionally inherited compatibility lineage.
 
 ## Acceptance gate
 
