@@ -80,7 +80,6 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
     }
     setTrack(item);
     setError(null);
-    return item;
   }
 
   const health = useMemo(() => track ? computeContentHealth(track) : null, [track]);
