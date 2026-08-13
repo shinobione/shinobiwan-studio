@@ -1,7 +1,7 @@
 export const studioRelease = {
-  version: '0.20.0',
+  version: '0.19.4',
   build: 69,
-  codename: 'phase7c-slice1-guided-metadata',
+  codename: 'studio-focus-phase7c-slice1-guided-metadata',
   releasedAt: '2026-08-14',
 } as const;
 

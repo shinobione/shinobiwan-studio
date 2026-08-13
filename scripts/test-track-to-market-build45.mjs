@@ -14,8 +14,7 @@ const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const originalBuild45 = version === '0.15.1' && build === 45 && codename.includes('track-to-market-bridge-v2');
 const authorizedPhase7Successor = /^0\.(?:16|17)\.\d+$/.test(version) && build >= 46 && codename.startsWith('phase7-');
 const authorizedStudioFocusSuccessor = /^0\.(?:17|18|19)\.\d+$/.test(version) && build >= 53 && codename.startsWith('studio-focus-');
-const authorizedPhase7CSuccessor = /^0\.20\.\d+$/.test(version) && build >= 69 && codename.startsWith('phase7c-');
-assert.ok(originalBuild45 || authorizedPhase7Successor || authorizedStudioFocusSuccessor || authorizedPhase7CSuccessor, `Build 45 lineage guard must run on Build 45 or an explicitly authorized Phase 7 / Studio Focus / Phase 7-C successor, got ${version} Build ${build} / ${codename}.`);
+assert.ok(originalBuild45 || authorizedPhase7Successor || authorizedStudioFocusSuccessor, `Build 45 lineage guard must run on Build 45 or an explicitly authorized Phase 7 / Studio Focus successor, got ${version} Build ${build} / ${codename}.`);
 
 assert.match(types, /\| 'market'/, 'WorkspaceSection must preserve the native Release Campaign route token.');
 assert.match(router, /'market'/, 'Router must accept the native Release Campaign workspace section.');
@@ -45,4 +44,4 @@ for (const forbidden of [
   'fetch(',
 ]) assert.ok(!panel.includes(forbidden), `Release Campaign successor must preserve the no-canonical-write boundary: ${forbidden}`);
 
-console.log(`Build 45 accepted bridge history remains documented while Studio ${version} Build ${build} preserves the Release Campaign route and no-write authority boundary through Phase 7-C.`);
+console.log(`Build 45 accepted bridge history remains documented while Studio ${version} Build ${build} preserves the Release Campaign route and no-write authority boundary through Studio Focus.`);

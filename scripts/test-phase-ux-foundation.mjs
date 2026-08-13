@@ -33,10 +33,9 @@ const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const phaseUxLine = /^0\.(?:11|12|13|14|15)\./.test(version) && codename.startsWith('phase-ux-');
 const phase7Line = /^0\.(?:16|17)\./.test(version) && codename.startsWith('phase7-');
 const studioFocusLine = /^0\.(?:17|18|19)\./.test(version) && codename.startsWith('studio-focus-');
-const phase7CLine = /^0\.20\./.test(version) && codename.startsWith('phase7c-');
-assert.ok(phaseUxLine || phase7Line || studioFocusLine || phase7CLine, `Studio UX foundation must stay on the validated PHASE UX / Phase 7 lineage or an explicitly authorized Studio Focus / Phase 7-C successor, got ${version} / ${codename}.`);
+assert.ok(phaseUxLine || phase7Line || studioFocusLine, `Studio UX foundation must stay on the validated PHASE UX / Phase 7 lineage or the explicitly authorized Studio Focus successor, got ${version} / ${codename}.`);
 
-if ((studioFocusLine && build >= 57) || phase7CLine) {
+if (studioFocusLine && build >= 57) {
   for (const required of [
     "{ label: 'Track', href: 'overview'",
     "{ label: 'Visuals', href: 'assets'",
@@ -47,7 +46,7 @@ if ((studioFocusLine && build >= 57) || phase7CLine) {
     "section === 'intelligence'",
     "section === 'versions'",
     "section === 'publishing'",
-  ]) assert.ok(workspace.includes(required), `Modern Track Workshop must preserve artist navigation and legacy workspace detail routes: ${required}.`);
+  ]) assert.ok(workspace.includes(required), `Build 57 Track Workshop must preserve artist navigation and legacy workspace detail routes: ${required}.`);
 } else {
   for (const required of [
     "{ id: 'overview', label: 'Overview' }",
@@ -74,9 +73,9 @@ assert.ok(albumCss.includes('grid-template-columns: repeat(5, minmax(0, 1fr))'),
 assert.ok(css.includes('.nav-list-utility { display: none; }'), 'Legacy utility navigation rule must remain available.');
 assert.ok(focusCss.includes('.focus-advanced-nav'), 'Studio Focus must implement progressive disclosure for Advanced routes.');
 
-if (phase7Line || studioFocusLine || phase7CLine) {
+if (phase7Line || studioFocusLine) {
   assert.ok(router.includes("'workflow'"), 'Authorized successor router must preserve Workflow.');
-  assert.ok(app.includes('PHASE 7-A') || app.includes('PHASE 7-B') || app.includes('PHASE 7-C'), 'Authorized successor must preserve its validated Phase 7 ancestry in the shell.');
+  assert.ok(app.includes('PHASE 7-A') || app.includes('PHASE 7-B'), 'Authorized successor must preserve its validated Phase 7 ancestry in the shell.');
 }
 
-console.log('Studio UX foundation guard passed through the authorized Phase 7-C successor.');
+console.log('Studio UX foundation guard passed: Studio Focus daily navigation is artist-first, Track Workshop may regroup local tabs, Advanced keeps specialist routes, shared tokens and legacy deep links remain intact.');
