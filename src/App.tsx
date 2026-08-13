@@ -18,6 +18,7 @@ import { studioConfig } from './services/config';
 import { getSonicTraceHealth } from './services/sonictrace-api';
 import type { ServiceStatus, StudioReadSource, StudioRoute, WorkspaceSection } from './types/studio';
 
+// PHASE 7-B receipt authority remains inherited unchanged under the PHASE 7-C guided-action shell.
 const LAST_TRACK_KEY = 'shinobiwan-studio:last-track-id';
 const SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.21 · bridge v1.11';
 
