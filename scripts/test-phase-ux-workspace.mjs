@@ -13,7 +13,7 @@ const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const phaseUxLine = /^0\.(?:11|12|13|14|15)\./.test(version) && codename.startsWith('phase-ux-');
 const authorizedPhase7 = /^0\.(?:16|17)\./.test(version) && codename.startsWith('phase7-');
-const authorizedStudioFocus = /^0\.(?:17|18)\./.test(version) && codename.startsWith('studio-focus-');
+const authorizedStudioFocus = /^0\.(?:17|18|19)\./.test(version) && codename.startsWith('studio-focus-');
 assert.ok(phaseUxLine || authorizedPhase7 || authorizedStudioFocus, `Workspace guard must run on validated PHASE UX lineage or an explicitly authorized Phase 7 / Studio Focus successor, got ${version} / ${codename}.`);
 
 if (authorizedStudioFocus && build >= 57) {
