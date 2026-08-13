@@ -15,9 +15,9 @@ const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 
-assert.equal(version, '0.19.2');
-assert.equal(build, 62);
-assert.equal(codename, 'studio-focus-slice4-closeout-corrective');
+assert.match(version, /^0\.19\.\d+$/, 'Build 62 successors must remain on the accepted Studio Focus 0.19.x release line.');
+assert.ok(build >= 62, `Build 62 closeout corrective must remain inherited by Build 62 or later, got Build ${build}.`);
+assert.ok(codename.startsWith('studio-focus-slice4-'), `Build 62 successor codename must preserve Studio Focus Slice 4 lineage, got ${codename}.`);
 assert.equal(pkg.version, version);
 assert.ok(pkg.scripts['check:focus']?.includes('test-studio-focus-build62.mjs'), 'Build 62 corrective guard must run in the inherited Studio Focus chain.');
 
@@ -55,4 +55,4 @@ for (const forbidden of ['/api/studio/write', 'generic-r2-write', 'canonicalWrit
   assert.ok(!correctiveCss.includes(forbidden));
 }
 
-console.log('Studio Focus Build 62 guard passed: Sonic wording, public/private palette fetch credentials and provider-choice cleanup are corrective-only and preserve existing authority boundaries.');
+console.log(`Studio Focus Build 62 ancestry passed under ${version} Build ${build}: Sonic wording, public/private palette fetch credentials and provider-choice cleanup remain inherited while successor repairs preserve existing authority boundaries.`);

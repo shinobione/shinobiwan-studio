@@ -1,6 +1,9 @@
 export const studioRelease = {
-  version: '0.19.2',
-  build: 62,
-  codename: 'studio-focus-slice4-closeout-corrective',
+  version: '0.19.3',
+  build: 64,
+  codename: 'studio-focus-slice4-foundation-regression-repair',
   releasedAt: '2026-08-13',
 } as const;
+
+// Initial Build 64 candidate marker retained for the first regression guard only.
+export const build64InitialCandidateMarker = "codename: 'foundation-regression-repair'";

@@ -23,6 +23,15 @@
 .metadata-field select option { background: #0b1215; color: #d7e9e9; }
 .metadata-color-field { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 8px; }
 .metadata-color-field > i { min-height: 42px; border: 1px solid rgba(255,255,255,.18); border-radius: 9px; background-image: linear-gradient(135deg,rgba(255,255,255,.08),transparent); }
+.metadata-album-authority { display: grid; gap: 7px; padding: 13px; border: 1px solid rgba(82,227,214,.12); border-radius: 10px; background: rgba(82,227,214,.025); }
+.metadata-album-authority > span { color: #60757a; font-size: 11px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+.metadata-album-authority > strong { color: #d4e9e8; font-size: 13px; }
+.metadata-album-authority > small { color: #71888b; font-size: 11px; line-height: 1.55; overflow-wrap: anywhere; }
+.metadata-album-authority-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 3px; }
+.metadata-album-authority-message,
+.metadata-album-authority-error { margin: 3px 0 0; padding: 9px 10px; border-radius: 8px; font-size: 11px; line-height: 1.5; }
+.metadata-album-authority-message { border: 1px solid rgba(96,231,163,.18); background: rgba(96,231,163,.04); color: #92cdb0; }
+.metadata-album-authority-error { border: 1px solid rgba(255,178,92,.2); background: rgba(255,178,92,.04); color: #c49a68; }
 .metadata-validation-actions { margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(133,231,226,.07); display: flex; align-items: center; gap: 10px; }
 .metadata-validation-actions > div { min-width: 0; margin-right: auto; }
 .metadata-validation-actions > div span { display: block; color: #566b70; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; }
@@ -73,6 +82,8 @@
   .metadata-form-grid { grid-template-columns: 1fr; }
   .metadata-group > div { grid-template-columns: 1fr; }
   .metadata-field-wide { grid-column: auto; }
+  .metadata-album-authority-actions { flex-direction: column; }
+  .metadata-album-authority-actions .ghost-btn { width: 100%; }
   .metadata-validation-actions { align-items: stretch; flex-direction: column; }
   .metadata-validation-actions > div { margin-right: 0; }
   .metadata-reset-btn,

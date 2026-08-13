@@ -9,6 +9,13 @@ import {
   type AdminMetadataSaveResponse,
   type AdminMetadataValidationResponse,
 } from '../services/admin-api';
+import {
+  AlbumAdminError,
+  getAdminAlbum,
+  getAdminAlbums,
+  moveAdminAlbumTrack,
+} from '../services/album-admin-api';
+import { routeHref } from '../router';
 import { studioConfig } from '../services/config';
 import type { StudioTrackDetail } from '../types/studio';
 
@@ -18,8 +25,6 @@ type MetadataFormState = {
   type: string;
   year: string;
   releaseDate: string;
-  albumId: string;
-  albumTitle: string;
   genres: string;
   tags: string;
   moods: string;
@@ -46,8 +51,6 @@ function initialForm(track: StudioTrackDetail): MetadataFormState {
     type: track.type,
     year: track.year == null ? '' : String(track.year),
     releaseDate: track.releaseDate || '',
-    albumId: track.album.id || '',
-    albumTitle: track.album.title || '',
     genres: csv(track.genres),
     tags: csv(track.tags),
     moods: csv(track.moods),
@@ -71,8 +74,6 @@ function formFromManifest(manifest: AdminManifest): MetadataFormState {
     type: manifest.type || '',
     year: manifest.year == null ? '' : String(manifest.year),
     releaseDate: manifest.releaseDate || '',
-    albumId: manifest.album?.id || '',
-    albumTitle: manifest.album?.title || '',
     genres: csv(manifest.genres || []),
     tags: csv(manifest.tags || []),
     moods: csv(manifest.moods || []),
@@ -105,15 +106,12 @@ function nullableNumber(value: string): number | null {
 }
 
 function buildPatch(form: MetadataFormState): AdminMetadataPatch {
-  const albumId = form.albumId.trim();
-  const albumTitle = form.albumTitle.trim();
   return {
     title: form.title.trim(),
     status: form.status,
     type: form.type.trim(),
     year: nullableNumber(form.year),
     releaseDate: nullableText(form.releaseDate),
-    album: albumId || albumTitle ? { id: albumId, title: albumTitle } : null,
     genres: splitCsv(form.genres),
     tags: splitCsv(form.tags),
     moods: splitCsv(form.moods),
@@ -133,15 +131,16 @@ function buildPatch(form: MetadataFormState): AdminMetadataPatch {
 function proposalValue(manifest: AdminManifest | undefined, field: keyof AdminManifest): string {
   const value = manifest?.[field];
   if (Array.isArray(value)) return value.join(', ') || '—';
-  if (value && typeof value === 'object') {
-    if ('title' in value || 'id' in value) {
-      const album = value as { id?: string; title?: string };
-      return [album.title, album.id ? `(${album.id})` : ''].filter(Boolean).join(' ') || '—';
-    }
-    return JSON.stringify(value);
-  }
+  if (value && typeof value === 'object') return JSON.stringify(value);
   if (typeof value === 'boolean') return value ? 'Yes' : 'No';
   return value == null || value === '' ? '—' : String(value);
+}
+
+function albumErrorMessage(reason: unknown): string {
+  if (reason instanceof AlbumAdminError) {
+    return `${reason.message}${reason.code ? ` [${reason.code}]` : ''}${reason.currentUpdatedAt ? ` · revision ${reason.currentUpdatedAt}` : ''}`;
+  }
+  return reason instanceof Error ? reason.message : String(reason);
 }
 
 function Field({ label, children, wide = false }: { label: string; children: React.ReactNode; wide?: boolean }) {
@@ -167,6 +166,9 @@ export function MetadataValidationPanel({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [refreshWarning, setRefreshWarning] = useState<string | null>(null);
+  const [albumAuthorityBusy, setAlbumAuthorityBusy] = useState(false);
+  const [albumAuthorityMessage, setAlbumAuthorityMessage] = useState<string | null>(null);
+  const [albumAuthorityError, setAlbumAuthorityError] = useState<string | null>(null);
 
   useEffect(() => {
     setForm(initialForm(track));
@@ -174,6 +176,8 @@ export function MetadataValidationPanel({
     setSaveResult(null);
     setError(null);
     setRefreshWarning(null);
+    setAlbumAuthorityMessage(null);
+    setAlbumAuthorityError(null);
   }, [track.id, track.readSource]);
 
   const patch = useMemo(() => buildPatch(form), [form]);
@@ -189,6 +193,8 @@ export function MetadataValidationPanel({
     && !validating
     && !saving
     && !saveResult;
+  const claimedAlbumId = track.album.id || 'singles';
+  const canCheckAlbumAuthority = privateRead && claimedAlbumId !== 'singles' && !albumAuthorityBusy;
 
   function update<K extends keyof MetadataFormState>(key: K, value: MetadataFormState[K]) {
     setForm(current => ({ ...current, [key]: value }));
@@ -204,6 +210,68 @@ export function MetadataValidationPanel({
     setSaveResult(null);
     setError(null);
     setRefreshWarning(null);
+  }
+
+  async function verifyOrRepairAlbumMembership() {
+    if (!canCheckAlbumAuthority) return;
+    setAlbumAuthorityBusy(true);
+    setAlbumAuthorityMessage(null);
+    setAlbumAuthorityError(null);
+    try {
+      const [targetPayload, allPayload] = await Promise.all([
+        getAdminAlbum(claimedAlbumId),
+        getAdminAlbums(),
+      ]);
+      const target = targetPayload.album?.manifest;
+      if (!target) throw new AlbumAdminError('Canonical Album manifest is unavailable.');
+
+      if (target.trackIds.includes(track.id)) {
+        setAlbumAuthorityMessage(`Verified: ${target.title} owns ${track.id} through album.trackIds. No write was needed.`);
+        return;
+      }
+
+      const otherOwners = (allPayload.albums || []).filter(album => album.id !== target.id && album.trackIds.includes(track.id));
+      if (otherOwners.length) {
+        setAlbumAuthorityError(`Canonical owner conflict: ${otherOwners.map(album => album.title).join(', ')} already owns this track. Studio will not guess which Album should win.`);
+        return;
+      }
+
+      if (target.status !== 'draft' || !target.updatedAt) {
+        setAlbumAuthorityError(`CACHE-ONLY CLAIM detected: Track cache says ${target.title}, but album.trackIds is missing ${track.id}. Automatic repair stays locked because the target Album is ${target.status} or has no fresh revision.`);
+        return;
+      }
+
+      const confirmed = globalThis.confirm(
+        `Repair canonical Album membership for "${track.title}"?\n\nTrack cache: ${track.album.title} (${claimedAlbumId})\nCanonical Album trackIds: MISSING ${track.id}\n\nTrack Manager will add this track to the end of the draft Album through album-track-move-v1. Studio will then reread BOTH the Album and Track compatibility cache before reporting success.`,
+      );
+      if (!confirmed) {
+        setAlbumAuthorityMessage('CACHE-ONLY CLAIM detected. No write was performed.');
+        return;
+      }
+
+      const freshPayload = await getAdminAlbum(claimedAlbumId);
+      const fresh = freshPayload.album?.manifest;
+      if (!fresh?.updatedAt) throw new AlbumAdminError('Fresh canonical Album revision is unavailable. No write was performed.');
+      if (fresh.trackIds.includes(track.id)) {
+        setAlbumAuthorityMessage(`Verified after fresh reread: ${fresh.title} already owns ${track.id}. No write was needed.`);
+        return;
+      }
+      if (fresh.status !== 'draft') throw new AlbumAdminError(`Album changed to ${fresh.status}; repair is locked until you review it.`);
+
+      const result = await moveAdminAlbumTrack(fresh.id, {
+        trackId: track.id,
+        sourceAlbumId: null,
+        expectedTargetUpdatedAt: fresh.updatedAt,
+        targetIndex: fresh.trackIds.length,
+      });
+      if (!result.clientVerified) throw new AlbumAdminError(result.verificationWarning || 'Album + Track canonical reread did not verify the repair.');
+      setAlbumAuthorityMessage(`Repaired and verified: ${fresh.title} now canonically owns ${track.id}, and the Track compatibility cache matches.`);
+      if (onSaved) await onSaved();
+    } catch (reason) {
+      setAlbumAuthorityError(albumErrorMessage(reason));
+    } finally {
+      setAlbumAuthorityBusy(false);
+    }
   }
 
   async function validate() {
@@ -231,7 +299,7 @@ export function MetadataValidationPanel({
     if (!canSave || !validationRevision) return;
     const fieldList = changedFields.join(', ');
     const confirmed = globalThis.confirm(
-      `Save metadata for "${track.title}"?\n\nChanged fields: ${fieldList}\n\nThis writes the canonical manifest metadata and rebuilds catalog/index.json. Audio, cover, thumbnail, lyrics and video assets are not touched.`,
+      `Save metadata for "${track.title}"?\n\nChanged fields: ${fieldList}\n\nThis writes canonical Track metadata and rebuilds catalog/index.json. Album membership/order and all media assets remain untouched.`,
     );
     if (!confirmed) return;
 
@@ -292,15 +360,24 @@ export function MetadataValidationPanel({
       )}
 
       {privateRead && !track.updatedAt && (
-        <div className="workspace-note metadata-lock-note"><strong>Canonical revision unavailable.</strong><p>Validation and save stay locked because Build 9 refuses to submit metadata without expectedUpdatedAt stale-write protection.</p></div>
+        <div className="workspace-note metadata-lock-note"><strong>Canonical revision unavailable.</strong><p>Validation and save stay locked because Studio refuses to submit metadata without expectedUpdatedAt stale-write protection.</p></div>
       )}
 
       <div className="metadata-form-groups">
-        <MetadataGroup title="Identity" hint="The name and release this track belongs to.">
+        <MetadataGroup title="Identity" hint="Track identity only. Album membership has its own canonical authority.">
           <Field label="Title" wide><input value={form.title} onChange={event => update('title', event.target.value)} /></Field>
-          <Field label="Album title"><input value={form.albumTitle} onChange={event => update('albumTitle', event.target.value)} /></Field>
           <Field label="Type"><input value={form.type} onChange={event => update('type', event.target.value)} /></Field>
-          <Field label="Album ID" wide><input value={form.albumId} onChange={event => update('albumId', event.target.value)} /></Field>
+          <div className="metadata-album-authority metadata-field-wide">
+            <span>Album / project</span>
+            <strong>{track.album.title || 'Singles'}</strong>
+            <small><code>{claimedAlbumId}</code> · display cache only here. Canonical membership/order is owned by <code>album.trackIds</code>.</small>
+            <div className="metadata-album-authority-actions">
+              <a className="ghost-btn compact" href={routeHref('albums')}>Manage Album membership →</a>
+              {claimedAlbumId !== 'singles' && <button className="ghost-btn compact" type="button" disabled={!canCheckAlbumAuthority} onClick={() => void verifyOrRepairAlbumMembership()}>{albumAuthorityBusy ? 'Checking…' : 'Verify / repair membership'}</button>}
+            </div>
+            {albumAuthorityMessage && <p className="metadata-album-authority-message">{albumAuthorityMessage}</p>}
+            {albumAuthorityError && <p className="metadata-album-authority-error">{albumAuthorityError}</p>}
+          </div>
         </MetadataGroup>
         <MetadataGroup title="Release" hint="Control timing, visibility and content labeling.">
           <Field label="Status"><select value={form.status} onChange={event => update('status', event.target.value)}><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></Field>
@@ -358,7 +435,6 @@ export function MetadataValidationPanel({
             <dl className="workspace-metadata-list metadata-wide">
               <div><dt>Title</dt><dd>{proposalValue(validation.proposed, 'title')}</dd></div>
               <div><dt>Status</dt><dd>{proposalValue(validation.proposed, 'status')}</dd></div>
-              <div><dt>Album</dt><dd>{proposalValue(validation.proposed, 'album')}</dd></div>
               <div><dt>Genres</dt><dd>{proposalValue(validation.proposed, 'genres')}</dd></div>
               <div><dt>Moods</dt><dd>{proposalValue(validation.proposed, 'moods')}</dd></div>
               <div><dt>Languages</dt><dd>{proposalValue(validation.proposed, 'languages')}</dd></div>
@@ -368,7 +444,7 @@ export function MetadataValidationPanel({
           </details>
           {canSave && (
             <div className="metadata-save-zone">
-              <div><strong>Review complete?</strong><p>Save writes metadata only, rebuilds the canonical catalog index, verifies the persisted revision and leaves every media object untouched.</p></div>
+              <div><strong>Review complete?</strong><p>Save writes Track metadata only, rebuilds the canonical catalog index, verifies the persisted revision and leaves Album membership plus every media object untouched.</p></div>
               <button className="metadata-save-btn" type="button" onClick={save}>{saving ? 'Saving…' : 'Save metadata'}</button>
             </div>
           )}
@@ -389,7 +465,7 @@ export function MetadataValidationPanel({
             <div><span>Browser reread</span><strong>{saveResult.clientVerified ? 'Verified' : 'Needs reload'}</strong></div>
           </div>
           {(saveResult.verificationWarning || refreshWarning) && <p className="metadata-save-warning">{saveResult.verificationWarning || refreshWarning}</p>}
-          <p className="workspace-footnote">Track Manager v5.11 performed the guarded metadata write. Audio, cover, thumbnail, lyrics and video assets were not modified.</p>
+          <p className="workspace-footnote">The guarded metadata write cannot change Album membership/order. Audio, cover, thumbnail, lyrics and video assets were not modified.</p>
           <button className="ghost-btn metadata-reload-btn" type="button" onClick={() => globalThis.location.reload()}>Reload canonical workspace</button>
         </div>
       )}

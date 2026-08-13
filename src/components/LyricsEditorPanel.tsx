@@ -10,6 +10,7 @@ import {
   type AdminLyricsValidationResponse,
 } from '../services/lyrics-admin-api';
 import type { StudioTrackDetail } from '../types/studio';
+import { AssetsManager } from './AssetsManager';
 
 function countLines(value: string): number {
   if (!value) return 0;
@@ -126,12 +127,14 @@ export function LyricsEditorPanel({ track, onSaved }: { track: StudioTrackDetail
 
   if (!track.assets.lyricsTxt) {
     return (
-      <article className="panel lyrics-editor-panel">
-        <span className="eyebrow">LYRICS / GUARDED WRITE</span>
-        <h3>No canonical lyrics.txt yet</h3>
-        <p className="workspace-muted">Create the canonical lyrics.txt from Assets before opening the specialized synchronization workflow.</p>
-        <a className="ghost-btn" href={studioConfig.trackManagerUrl} target="_blank" rel="noreferrer">Open Track Manager fallback ↗</a>
-      </article>
+      <AssetsManager
+        track={track}
+        onChanged={onSaved}
+        kinds={['lyrics']}
+        eyebrow="LYRICS / CANONICAL SOURCE"
+        title="Add lyrics.txt"
+        description="Choose a UTF-8 TXT file. This uses the existing guarded Track asset operation and canonical reread before Studio continues."
+      />
     );
   }
 
