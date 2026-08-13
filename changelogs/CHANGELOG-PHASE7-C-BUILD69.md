@@ -2,8 +2,8 @@
 
 Status: **IMPLEMENTATION CANDIDATE — PR #99 · EXACT-HEAD CI REQUIRED**  
 Date: 2026-08-14  
-Version: **v0.20.0 · Build 69**  
-Codename: `phase7c-slice1-guided-metadata`
+Version: **v0.19.4 · Build 69**  
+Codename: `studio-focus-phase7c-slice1-guided-metadata`
 
 ## Purpose
 
@@ -46,6 +46,19 @@ Unchanged:
 - Release Campaign remains browser-local / review-only with `canonicalWrite:false`;
 - no auto-save, auto-publish, hidden batch write or generic Studio/R2 writer.
 
+## Release-line decision
+
+The first Build 69 candidate used `v0.20.0 / phase7c-*`. Repository CI correctly exposed that this identity crossed historical compatibility whitelists used by inherited C3 / Track-To-Market / PHASE UX guards even though the runtime change itself remained inside the existing Studio Focus shell.
+
+Rather than permanently widening every historical guard merely to admit a new minor line, Build 69 was normalized to:
+
+```text
+v0.19.4 · Build 69
+studio-focus-phase7c-slice1-guided-metadata
+```
+
+That keeps the runtime honestly identified as Phase 7-C Slice 1 while preserving the mature Studio Focus compatibility lineage. Temporary edits to historical C3 / TTME / UX guard files were restored to their exact `main` blobs. Only the current cross-stack private-read integration guard is extended, because the actual accepted backend is Track Manager v5.21 / bridge v1.11 and the Studio shell now truthfully identifies Phase 7-C.
+
 ## Safety / candidate evidence
 
 ```text
@@ -53,16 +66,18 @@ Accepted baseline      v0.19.3 · Build 68 · REAL USER PASS
 Pre-slice checkpoint   safety/pre-phase7c-slice1-build69-20260814-0013
 Feature branch         agent/phase7c-runtime-slice1
 PR                     #99 · DRAFT
-Initial CI             31749799202 · FAILED on historical successor whitelist
-Root cause             old guard allowed Phase 7-B / TM<=5.19 / Studio<=0.19 only
-Guard repair           additive successor whitelist; existing assertions preserved
+Initial CI             31749799202 · FAILED on successor identity whitelist
+Interim CI lineage     guard-lineage failures only · no production deployment
+Final identity         v0.19.4 · Build 69 · studio-focus-phase7c-slice1-guided-metadata
+Historical guards      C3 / TTME / PHASE UX restored to exact main versions
+Current guard update   private-read integration only · PHASE 7-C / TM5.21 / bridge1.11
 Final exact-head CI    REQUIRED before merge
 Runtime merge          PENDING
 Pages deployment       PENDING
 Real-user smoke        PENDING
 ```
 
-The failed initial CI is preserved as candidate evidence and is not a production regression: it stopped in `check-private-read-contract.mjs` before runtime/typecheck/build because the historical release-line whitelist had not yet been extended for the explicitly authorized Phase 7-C successor.
+The failed candidate runs are preserved as evidence and did not deploy production. They stopped inside repository regression guards before acceptance because the initial release identity did not fit the inherited compatibility lineage.
 
 ## Acceptance gate
 
