@@ -153,9 +153,12 @@ safety/pre-build58-slice3-smoke-corrective-20260813-0226
 
 Accepted Build 58 merge:
 7d68e86413c5d5100eca6ad6d3414a9660aaaca9
+
+Accepted runtime checkpoint:
+safety/post-studio-focus-build58-real-user-pass-20260813-0952
 ```
 
-A post-acceptance checkpoint is created only from the final documented/accepted `main` after this closeout PR is merged.
+The runtime checkpoint points to the exact deployed Build 58 code accepted by the real-user smoke. A separate documented-closeout checkpoint may be created from `main` after this documentation-only PR is merged; that later anchor does not change the accepted runtime code.
 
 ## Outcome
 
