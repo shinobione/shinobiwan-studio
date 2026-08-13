@@ -5,50 +5,41 @@ Private artist production cockpit and orchestrator for the SHINOBIWAN toolchain.
 ## Current accepted baseline
 
 ```text
-Studio          v0.19.1 · Build 61    Studio Focus Slice 4 · REAL USER PASS
+Studio          v0.19.2 · Build 62    Studio Focus program closeout · REAL USER PASS
 LaunchPAD       2026.08.12.102        C3-C · REAL USER PASS
-Track Manager   v5.19                 protected canonical write authority
+Track Manager   v5.20
 Studio bridge   v1.11
 Public Worker   v2.7
-SonicTrace      V2-E Build 08         durable FULL profile lineage · REAL USER PASS
+SonicTrace      V2-E Build 08         REAL USER PASS
 Deep Audio      2.0.3-alpha
 LRC Maker       6.3.8
 ```
 
-Current corrective candidate:
-
-```text
-Studio          v0.19.2 · Build 62    Studio Focus closeout corrective · REAL USER PENDING
-```
-
-Build 62 exists because the deployed Build 61 program-closeout smoke found a real `Extract colors` cover-read failure plus two artist-facing UX issues: ambiguous `Sound` wording and a misleading Premium provider selector. Build 61 remains the accepted baseline until Build 62 is deployed and explicitly real-user validated.
+Build 62 is the accepted Studio Focus program-closeout corrective. Final deployed smoke validated palette extraction and save on `Magnetic Midnight`, stable palette layout, `Sonic` wording and artist-facing `Album track` presentation. The paired Track Manager v5.20 correction removed the false legacy `STALE_MANIFEST` condition while keeping revision protection intact.
 
 ## Release terminology
 
-`Studio v0.19.1 · Build 61` remains the current accepted **project/runtime release identity** until the Build 62 corrective completes real-user acceptance. `Studio v0.19.2 · Build 62` is a **candidate identity**, not yet an accepted release.
+`Studio v0.19.2 · Build 62` is the current accepted **project/runtime release identity**.
 
-This repository currently publishes **no GitHub Release objects and no Git tags**. Unless a formal GitHub Release or tag is explicitly named, `release` in Studio documentation refers to the qualified project/runtime version/build identity and must state whether it is accepted or only a candidate.
-
-Creating formal GitHub Releases or tags would be a separate distribution/versioning decision; runtime acceptance does not create them implicitly.
+This repository currently publishes **no GitHub Release objects and no Git tags**. Formal GitHub Releases/tags would be a separate distribution/versioning decision.
 
 Accepted Studio lineage:
 
 ```text
-Phase 7-A       Build 46   REAL USER PASS
-Phase 7-B       Build 51   REAL USER PASS
-Studio Focus 1  Build 53   REAL USER PASS
-Studio Focus 2  Build 56   REAL USER PASS
-Studio Focus 3  Build 58   REAL USER PASS
-Studio Focus 4  Build 61   REAL USER PASS
+Phase 7-A             Build 46   REAL USER PASS
+Phase 7-B             Build 51   REAL USER PASS
+Studio Focus Slice 1  Build 53   REAL USER PASS
+Studio Focus Slice 2  Build 56   REAL USER PASS
+Studio Focus Slice 3  Build 58   REAL USER PASS
+Studio Focus Slice 4  Build 61   REAL USER PASS
+Studio Focus closeout Build 62   REAL USER PASS
 ```
 
-Build 62 is a closeout corrective candidate, not a new Studio Focus slice. Build 60 remains historical deployed candidate evidence and is superseded by Build 61 for Slice 4 acceptance. Build 59 was reserved by parallel work and was deliberately not reused.
+Build 62 is a closeout corrective, not a fifth Studio Focus slice.
 
-**Phase 7-C remains CLOSED / NOT STARTED.** No later phase starts by implication.
+**Phase 7-C remains CLOSED / NOT STARTED.**
 
 ## Daily product model
-
-Normal Studio use is intentionally reduced to:
 
 ```text
 Home
@@ -61,82 +52,66 @@ Advanced ▾
   System
 ```
 
-Track Workspace is organized around the artist mental model:
+Final closeout decision: **Workflow remains under Advanced**. Home owns daily continuation, counters and the abbreviated attention queue; Workflow owns the full detailed searchable/filterable production queue.
+
+Track Workspace:
 
 ```text
 Track · Visuals · Lyrics · Release
 ```
 
 - **Track** — identity, canonical master audio, production state and compact SonicTrace artist summary.
-- **Visuals** — canonical Cover / Thumbnail / Canvas; canonical Canvas preview is 9:16.
-- **Lyrics** — embedded LRC Maker; `lyrics.txt` is the only canonical lyrics source.
-- **Release** — final checklist + native browser-local Release Campaign.
+- **Visuals** — Cover / Thumbnail / Canvas; Canvas preview is 9:16.
+- **Lyrics** — embedded LRC Maker; `lyrics.txt` is the canonical lyrics source.
+- **Release** — final checklist + browser-local Release Campaign.
 - **Details / Advanced** — full metadata, SonicTrace diagnostics and technical depth when deliberately requested.
 
-Production and publication are separate overlapping axes:
+Production and publication remain separate overlapping axes:
 
 ```text
 Production:  Needs attention / Production complete
 Publication: Published / Drafts
 ```
 
-A published track may still need lyrics timing, SonicTrace refresh or another useful production action.
+## Toolchain roles
 
-## Frozen authority model
-
-- **GitHub** — application-code authority.
-- **Cloudflare R2** — canonical catalog/media/data authority.
-- **Track Manager** — protected canonical write authority.
-- **Studio** — private cockpit/orchestrator; never a second generic write owner.
+- **GitHub** — application code.
+- **Cloudflare R2** — canonical catalog/media/data.
+- **Track Manager** — protected canonical track/album operations.
+- **Studio** — private cockpit and orchestrator.
 - **LaunchPAD** — public listener experience.
-- **SonicTrace** — audio-intelligence engine.
-- **LRC Maker** — lyrics synchronization engine.
-- canonical `trackId` is the same R2 track slug everywhere.
+- **SonicTrace** — audio intelligence.
+- **LRC Maker** — lyrics synchronization.
+- canonical `trackId` is the same R2 track slug across the toolchain.
 
-**Orchestration does not mean centralization.** Public fallback is never a second source of truth.
+Public fallback remains read-only and never replaces private state.
 
-## Canonical contracts
+## Canonical contracts — quick reference
 
-### Lyrics
+Lyrics:
 
 ```text
-tracks/<slug>/lyrics.txt = unique canonical lyrics source
-recognized timestamps    = synchronized lyrics
-.lrc                      = optional export / compatibility only
+tracks/<slug>/lyrics.txt
 ```
 
-### Albums
+Recognized timestamps inside `lyrics.txt` define synchronization. `.lrc` is optional compatibility/export only.
+
+Albums:
 
 ```text
 albums/<album-id>/manifest.json
-albums/<album-id>/cover/<filename>
-albums/<album-id>/thumbnail/thumbnail.webp
 ```
 
-`album.trackIds` owns membership and artistic order. Track-side Album title/id fields are compatibility cache only.
+Ordered `album.trackIds` owns membership and artistic order.
 
-### SonicTrace
+SonicTrace:
 
 ```text
 tracks/<slug>/analysis/sonictrace/latest.json
 tracks/<slug>/analysis/sonictrace/history/<analysisId>.json
 ```
 
-Source audio is never persisted in the analysis sidecar.
-
-### Phase 7-B receipts
-
-```text
-lrc-maker        + lyrics-saved      → canonical-write
-sonictrace       + analysis-saved    → canonical-write
-release-campaign + campaign-exported → review-only
-```
-
-Canonical-write receipts require exact `trackId`, an allowlisted operation and a **private Track Manager canonical reread** before Studio may display VERIFIED. Public fallback can never verify a write.
-
 ## Native Release Campaign
-
-Primary visual-generation/review contract:
 
 ```text
 Canonical Track context
@@ -146,11 +121,24 @@ MASTER FINAL 16:9
         └── 9:16 derived independently from MASTER
 ```
 
-**9:16 is never derived from 1:1.** Both are sibling derivatives anchored to MASTER.
+9:16 is never derived from 1:1. Campaign drafts remain browser-local and ZIP export remains review-only.
 
-Campaign drafts remain browser-local. ZIP export is review-only and keeps `canonicalWrite: false`; a visual FINAL is never silently promoted to canonical R2 media.
+Build 62 removes the misleading Premium provider selector because provider selection never changed MASTER or derivative prompt generation. Prompts remain provider-agnostic and Google Flow stays available as a direct convenience handoff.
 
-The Build 62 closeout corrective removes the misleading Premium provider selector from the artist-facing UI because provider selection never altered MASTER or derivative prompt generation. The prompts remain provider-agnostic and the direct Google Flow shortcut remains the recommended handoff. Historical browser-local draft/ZIP provider metadata is retained only for compatibility.
+## Final accepted closeout evidence
+
+```text
+Studio main       b464c0930a5659b208b3a059d443f708b8e55dba
+Studio Pages run  31713370595    SUCCESS
+Track Manager     v5.20
+Studio bridge     v1.11
+LaunchPAD main    586c71333c902fc2ebef214c63e9234ece9e1711
+Worker run        31714222431    SUCCESS · admin only
+Worker Version ID 78609aff-1f4a-4a21-b618-cb97add0c416
+Public Worker     v2.7            unchanged
+```
+
+Final browser verdict: **SMOKE2 PASSED**.
 
 ## Documentation
 
@@ -159,28 +147,14 @@ Start here:
 - [Current roadmap](docs/ROADMAP-CURRENT.md)
 - [Documentation map](docs/README.md)
 - [Studio Focus product/UX contract](docs/STUDIO-FOCUS-PRODUCTION-FIRST-UX.md)
-- [Build 62 corrective candidate](docs/STUDIO-FOCUS-BUILD62-CLOSEOUT-CORRECTIVE.md)
-- [Build 61 REAL USER PASS](docs/STUDIO-FOCUS-BUILD61-REAL-USER-PASS.md)
+- [Studio Focus program closeout REAL USER PASS](docs/STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md)
+- [Build 62 closeout corrective](docs/STUDIO-FOCUS-BUILD62-CLOSEOUT-CORRECTIVE.md)
 - [Integration safety](docs/INTEGRATION_SAFETY.md)
 - [Current concise changelog](CHANGELOG.md)
 - [Detailed changelog archive](changelogs/README.md)
 
-Historical milestone documents remain available under `docs/`; `docs/archive/` is reserved for material that is no longer an active reference.
-
-## Safety / acceptance policy
-
-For any runtime change:
-
-1. verify the real `main` head and build identity;
-2. create a safety anchor;
-3. work on a dedicated feature branch;
-4. run the complete inherited CI chain on the exact feature head;
-5. reread `main` before merge to prevent stale merges;
-6. merge only the tested head;
-7. verify Pages/production deployment on the exact merge SHA;
-8. perform real-user browser smoke;
-9. only observed behavior may be promoted to **REAL USER PASS**.
+## Acceptance policy
 
 **CI GREEN ≠ DEPLOYED CANDIDATE ≠ REAL USER PASS.**
 
-Do not mutate production media merely to manufacture smoke evidence.
+Runtime changes are accepted only after exact-head validation, exact deployment verification and real-user browser smoke. Historical candidates never receive retroactive acceptance.
