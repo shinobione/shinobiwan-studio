@@ -33,6 +33,7 @@ import './studio-focus-status-labels.css';
 import './studio-focus-workshop.css';
 import './studio-focus-sonictrace-summary.css';
 import './studio-focus-build61-polish.css';
+import './studio-focus-build62-closeout-corrective.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

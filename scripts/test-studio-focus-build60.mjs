@@ -30,9 +30,9 @@ assert.ok(workspace.includes('<SonicTracePanel track={track}'), 'Existing full S
 for (const marker of [
   'getSonicTraceAnalysisState(track.id)',
   "track.readSource !== 'private'",
-  'Sound insight stays private',
+  'Sonic insight stays private',
   'Details / Advanced →',
-  'Analyze sound →',
+  'Analyze with SonicTrace →',
   'protected canonical SonicTrace sidecar',
 ]) assert.ok(summaryComponent.includes(marker), `Slice 4 SonicTrace artist surface is missing ${marker}.`);
 

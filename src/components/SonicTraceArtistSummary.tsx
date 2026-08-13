@@ -41,7 +41,7 @@ export function SonicTraceArtistSummary({ track }: { track: StudioTrackDetail })
     return (
       <section className="panel sonic-artist-summary sonic-artist-summary--locked">
         <div className="sonic-artist-summary-head">
-          <div><span className="eyebrow">SOUND / SONICTRACE</span><h3>Sound insight stays private</h3><p>Studio is on the public LaunchPAD fallback, so it does not guess or expose private SonicTrace conclusions here.</p></div>
+          <div><span className="eyebrow">SONICTRACE</span><h3>Sonic insight stays private</h3><p>Studio is on the public LaunchPAD fallback, so it does not guess or expose private SonicTrace conclusions here.</p></div>
         </div>
       </section>
     );
@@ -50,27 +50,27 @@ export function SonicTraceArtistSummary({ track }: { track: StudioTrackDetail })
   if (loading) {
     return (
       <section className="panel sonic-artist-summary" aria-live="polite">
-        <div className="sonic-artist-summary-head"><div><span className="eyebrow">SOUND / SONICTRACE</span><h3>Reading the current sound profile…</h3><p>Loading the protected canonical SonicTrace sidecar.</p></div></div>
+        <div className="sonic-artist-summary-head"><div><span className="eyebrow">SONICTRACE</span><h3>Reading the current Sonic profile…</h3><p>Loading the protected canonical SonicTrace sidecar.</p></div></div>
       </section>
     );
   }
 
   const profileState = state?.latest ? model.state : track.audioIntelligence.outdated ? 'outdated' : null;
   const profileLabel = state?.latest ? model.profileLabel : track.audioIntelligence.outdated ? 'OUTDATED' : 'NOT ANALYZED';
-  const headline = state?.latest ? model.headline : track.audioIntelligence.outdated ? 'Sound profile needs a refresh' : model.headline;
+  const headline = state?.latest ? model.headline : track.audioIntelligence.outdated ? 'Sonic profile needs a refresh' : model.headline;
   const detail = state?.latest ? model.detail : track.audioIntelligence.outdated
-    ? 'The catalog marks the previous analysis as outdated. Re-scan the current canonical audio before trusting sound conclusions.'
+    ? 'The catalog marks the previous analysis as outdated. Re-scan the current canonical audio before trusting SonicTrace conclusions.'
     : model.detail;
 
   return (
     <section className={`panel sonic-artist-summary sonic-artist-summary--${profileState || 'none'}`}>
       <div className="sonic-artist-summary-head">
         <div>
-          <span className="eyebrow">SOUND / SONICTRACE</span>
+          <span className="eyebrow">SONICTRACE</span>
           <div className="sonic-artist-summary-title"><h3>{headline}</h3><span className={`sonic-artist-profile ${profileState || 'none'}`}>{profileLabel}</span></div>
-          <p>{error ? 'Studio could not read the protected SonicTrace sidecar. No sound conclusion is being inferred from the failed read.' : detail}</p>
+          <p>{error ? 'Studio could not read the protected SonicTrace sidecar. No SonicTrace conclusion is being inferred from the failed read.' : detail}</p>
         </div>
-        <a className="ghost-btn" href={trackHref(track.id, 'intelligence')}>{state?.latest ? 'Details / Advanced →' : 'Analyze sound →'}</a>
+        <a className="ghost-btn" href={trackHref(track.id, 'intelligence')}>{state?.latest ? 'Details / Advanced →' : 'Analyze with SonicTrace →'}</a>
       </div>
 
       {error && <div className="sonic-artist-warning" role="status">{error}</div>}

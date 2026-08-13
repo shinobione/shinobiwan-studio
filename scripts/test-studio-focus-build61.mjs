@@ -9,12 +9,15 @@ const css = read('src/studio-focus-build61-polish.css');
 const app = read('src/App.tsx');
 const summary = read('src/components/SonicTraceArtistSummary.tsx');
 
-assert.match(release, /version:\s*'0\.19\.1'/);
-assert.match(release, /build:\s*61/);
-assert.match(release, /studio-focus-slice4-polish/);
-assert.equal(pkg.version, '0.19.1');
+const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
+assert.match(version, /^0\.19\.\d+$/, 'Build 61 successors must remain on the accepted Studio Focus 0.19.x release line.');
+assert.ok(build >= 61, `Build 61 polish must remain inherited by Build 61 or later, got Build ${build}.`);
+assert.ok(codename.startsWith('studio-focus-slice4-'), `Build 61 successor codename must preserve Studio Focus Slice 4 lineage, got ${codename}.`);
+assert.equal(pkg.version, version);
 assert.ok(pkg.scripts['check:focus']?.includes('test-studio-focus-build61.mjs'), 'Build 61 polish guard must run in the Studio Focus chain.');
-assert.ok(main.indexOf("import './studio-focus-build61-polish.css';") > main.indexOf("import './studio-focus-sonictrace-summary.css';"), 'Build 61 corrective styles must layer last after the accepted Slice 4 summary styles.');
+assert.ok(main.indexOf("import './studio-focus-build61-polish.css';") > main.indexOf("import './studio-focus-sonictrace-summary.css';"), 'Build 61 corrective styles must layer after the accepted Slice 4 summary styles.');
 
 assert.ok(app.includes('<div className="sidebar-foot">'), 'Existing release/status footer must remain in the desktop sidebar.');
 assert.match(css, /\.sidebar-foot\{[\s\S]*margin-top:auto;/, 'Release/status card must be anchored at the bottom of the desktop sidebar.');
@@ -35,4 +38,4 @@ for (const forbidden of ['fetch(', 'saveSonicTraceAnalysis', 'uploadAdminTrackAs
   assert.ok(!css.includes(forbidden), `Presentation-only Build 61 CSS must not acquire write/network behavior: ${forbidden}`);
 }
 
-console.log('Studio Focus Build 61 guard passed: sidebar release status is bottom-anchored, compact and premium; SonicTrace artist summary has intentional hierarchy without changing truth, routing or authority.');
+console.log(`Studio Focus Build 61 ancestry passed under ${version} Build ${build}: sidebar release status and compact SonicTrace presentation remain inherited without authority changes.`);

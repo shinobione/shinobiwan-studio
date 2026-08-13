@@ -15,9 +15,19 @@ Deep Audio      2.0.3-alpha
 LRC Maker       6.3.8
 ```
 
+Current corrective candidate:
+
+```text
+Studio          v0.19.2 · Build 62    Studio Focus closeout corrective · REAL USER PENDING
+```
+
+Build 62 exists because the deployed Build 61 program-closeout smoke found a real `Extract colors` cover-read failure plus two artist-facing UX issues: ambiguous `Sound` wording and a misleading Premium provider selector. Build 61 remains the accepted baseline until Build 62 is deployed and explicitly real-user validated.
+
 ## Release terminology
 
-`Studio v0.19.1 · Build 61` is the current accepted **project/runtime release identity**. This repository currently publishes **no GitHub Release objects and no Git tags**. Unless a GitHub Release or tag is explicitly named, `release` in current Studio documentation means the accepted version/build identity carried by `main` and the deployed GitHub Pages runtime.
+`Studio v0.19.1 · Build 61` remains the current accepted **project/runtime release identity** until the Build 62 corrective completes real-user acceptance. `Studio v0.19.2 · Build 62` is a **candidate identity**, not yet an accepted release.
+
+This repository currently publishes **no GitHub Release objects and no Git tags**. Unless a formal GitHub Release or tag is explicitly named, `release` in Studio documentation refers to the qualified project/runtime version/build identity and must state whether it is accepted or only a candidate.
 
 Creating formal GitHub Releases or tags would be a separate distribution/versioning decision; runtime acceptance does not create them implicitly.
 
@@ -32,7 +42,7 @@ Studio Focus 3  Build 58   REAL USER PASS
 Studio Focus 4  Build 61   REAL USER PASS
 ```
 
-Build 60 remains historical deployed candidate evidence and is superseded by Build 61 for Slice 4 acceptance. Build 59 was reserved by a parallel branch and was deliberately not reused.
+Build 62 is a closeout corrective candidate, not a new Studio Focus slice. Build 60 remains historical deployed candidate evidence and is superseded by Build 61 for Slice 4 acceptance. Build 59 was reserved by parallel work and was deliberately not reused.
 
 **Phase 7-C remains CLOSED / NOT STARTED.** No later phase starts by implication.
 
@@ -140,6 +150,8 @@ MASTER FINAL 16:9
 
 Campaign drafts remain browser-local. ZIP export is review-only and keeps `canonicalWrite: false`; a visual FINAL is never silently promoted to canonical R2 media.
 
+The Build 62 closeout corrective removes the misleading Premium provider selector from the artist-facing UI because provider selection never altered MASTER or derivative prompt generation. The prompts remain provider-agnostic and the direct Google Flow shortcut remains the recommended handoff. Historical browser-local draft/ZIP provider metadata is retained only for compatibility.
+
 ## Documentation
 
 Start here:
@@ -147,6 +159,7 @@ Start here:
 - [Current roadmap](docs/ROADMAP-CURRENT.md)
 - [Documentation map](docs/README.md)
 - [Studio Focus product/UX contract](docs/STUDIO-FOCUS-PRODUCTION-FIRST-UX.md)
+- [Build 62 corrective candidate](docs/STUDIO-FOCUS-BUILD62-CLOSEOUT-CORRECTIVE.md)
 - [Build 61 REAL USER PASS](docs/STUDIO-FOCUS-BUILD61-REAL-USER-PASS.md)
 - [Integration safety](docs/INTEGRATION_SAFETY.md)
 - [Current concise changelog](CHANGELOG.md)
