@@ -31,6 +31,7 @@ import './studio-focus.css';
 import './studio-focus-readability.css';
 import './studio-focus-status-labels.css';
 import './studio-focus-workshop.css';
+import './studio-focus-sonictrace-summary.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
