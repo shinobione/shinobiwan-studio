@@ -10,6 +10,7 @@ import { FocusHome } from './components/FocusHome';
 import { ServicePill } from './components/ServicePill';
 import { TrackWorkspace } from './components/TrackWorkspace';
 import { WorkflowView } from './components/WorkflowView';
+import { installLegacyTrackTypeDisplay } from './legacy-track-type-display';
 import { studioRelease } from './release';
 import { readRoute, readTrackId, readTrackSection, routeHref } from './router';
 import { adminService } from './services/admin-api';
@@ -17,9 +18,10 @@ import { getCatalogHealth } from './services/catalog-api';
 import { studioConfig } from './services/config';
 import { getSonicTraceHealth } from './services/sonictrace-api';
 import type { ServiceStatus, StudioReadSource, StudioRoute, WorkspaceSection } from './types/studio';
+import './studio-focus-build63-smoke2.css';
 
 const LAST_TRACK_KEY = 'shinobiwan-studio:last-track-id';
-const SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.19 · bridge v1.11';
+const SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.20 · bridge v1.11';
 
 const DAILY_NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
   { route: 'dashboard', label: 'Home', glyph: '⌂' },
@@ -76,6 +78,8 @@ export default function App() {
   const [sonic, setSonic] = useState<ServiceStatus>(checking);
   const [readSource, setReadSource] = useState<StudioReadSource | 'checking'>('checking');
   const adminMode = useMemo(resolveAdminMode, []);
+
+  useEffect(() => installLegacyTrackTypeDisplay(), []);
 
   useEffect(() => {
     const syncLocation = () => { setRoute(readRoute()); setTrackId(readTrackId()); setTrackSection(readTrackSection()); };
