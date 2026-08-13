@@ -27,16 +27,38 @@ for (const required of ["route: 'workflow'", "route: 'intelligence'", "route: 'a
   assert.ok(advancedNav.includes(required), `Studio Focus Advanced navigation is missing ${required}.`);
 }
 
-for (const required of [
-  "{ id: 'overview', label: 'Overview' }",
-  "{ id: 'metadata', label: 'Metadata' }",
-  "{ id: 'assets', label: 'Assets' }",
-  "{ id: 'lyrics', label: 'Lyrics' }",
-  "{ id: 'intelligence', label: 'SonicTrace' }",
-  '← Back to Catalog',
-]) assert.ok(workspace.includes(required), `Build 53 must preserve the validated Track Workspace ancestry before its dedicated regrouping slice: ${required}.`);
+const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
+const phaseUxLine = /^0\.(?:11|12|13|14|15)\./.test(version) && codename.startsWith('phase-ux-');
+const phase7Line = /^0\.(?:16|17)\./.test(version) && codename.startsWith('phase7-');
+const studioFocusLine = /^0\.(?:17|18)\./.test(version) && codename.startsWith('studio-focus-');
+assert.ok(phaseUxLine || phase7Line || studioFocusLine, `Studio UX foundation must stay on the validated PHASE UX / Phase 7 lineage or the explicitly authorized Studio Focus successor, got ${version} / ${codename}.`);
 
-for (const legacyRoute of ["'workflow'", "'intelligence'", "'versions'", "'publishing'"]) {
+if (studioFocusLine && build >= 57) {
+  for (const required of [
+    "{ label: 'Track', href: 'overview'",
+    "{ label: 'Visuals', href: 'assets'",
+    "{ label: 'Lyrics', href: 'lyrics'",
+    "{ label: 'Release', href: 'market'",
+    '← Back to Tracks',
+    "section === 'metadata'",
+    "section === 'intelligence'",
+    "section === 'versions'",
+    "section === 'publishing'",
+  ]) assert.ok(workspace.includes(required), `Build 57 Track Workshop must preserve artist navigation and legacy workspace detail routes: ${required}.`);
+} else {
+  for (const required of [
+    "{ id: 'overview', label: 'Overview' }",
+    "{ id: 'metadata', label: 'Metadata' }",
+    "{ id: 'assets', label: 'Assets' }",
+    "{ id: 'lyrics', label: 'Lyrics' }",
+    "{ id: 'intelligence', label: 'SonicTrace' }",
+    '← Back to Catalog',
+  ]) assert.ok(workspace.includes(required), `Pre-Slice-3 Track Workspace ancestry missing ${required}.`);
+}
+
+for (const legacyRoute of ["'workflow'", "'intelligence'", "'versions'", "'publishing'", "'metadata'", "'assets'", "'lyrics'", "'market'"]) {
   assert.ok(router.includes(legacyRoute), `Studio Focus must preserve existing deep-link compatibility for ${legacyRoute}.`);
 }
 
@@ -51,16 +73,9 @@ assert.ok(albumCss.includes('grid-template-columns: repeat(5, minmax(0, 1fr))'),
 assert.ok(css.includes('.nav-list-utility { display: none; }'), 'Legacy utility navigation rule must remain available.');
 assert.ok(focusCss.includes('.focus-advanced-nav'), 'Studio Focus must implement progressive disclosure for Advanced routes.');
 
-const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
-const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
-const phaseUxLine = /^0\.(?:11|12|13|14|15)\./.test(version) && codename.startsWith('phase-ux-');
-const phase7Line = /^0\.(?:16|17)\./.test(version) && codename.startsWith('phase7-');
-const studioFocusLine = /^0\.17\./.test(version) && codename.startsWith('studio-focus-');
-assert.ok(phaseUxLine || phase7Line || studioFocusLine, `Studio UX foundation must stay on the validated PHASE UX / Phase 7 lineage or the explicitly authorized Studio Focus successor, got ${version} / ${codename}.`);
-
 if (phase7Line || studioFocusLine) {
   assert.ok(router.includes("'workflow'"), 'Authorized successor router must preserve Workflow.');
   assert.ok(app.includes('PHASE 7-A') || app.includes('PHASE 7-B'), 'Authorized successor must preserve its validated Phase 7 ancestry in the shell.');
 }
 
-console.log('Studio UX foundation guard passed: Studio Focus daily navigation is artist-first, Advanced keeps specialist routes, shared tokens and legacy deep links remain intact.');
+console.log('Studio UX foundation guard passed: Studio Focus daily navigation is artist-first, Track Workshop may regroup local tabs, Advanced keeps specialist routes, shared tokens and legacy deep links remain intact.');
