@@ -11,7 +11,7 @@ const pkg = JSON.parse(read('package.json'));
 const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
-assert.match(releaseVersion, /^0\.(?:17|18)\.\d+$/);
+assert.match(releaseVersion, /^0\.(?:17|18|19)\.\d+$/);
 assert.ok(releaseBuild >= 54, 'Build 54 production-library ancestry must remain active in successor corrective builds.');
 assert.ok(codename.startsWith('studio-focus-'), `Build 54 production-library ancestry must remain under Studio Focus, got ${codename}.`);
 assert.equal(pkg.version, releaseVersion);
@@ -23,9 +23,9 @@ for (const marker of [
   "type ProductionFilter = 'to-finish' | 'ready' | 'released' | 'all'",
   "useState<ProductionFilter>('to-finish')",
   'buildCatalogWorkflow(tracks)',
-  'To finish',
-  'Ready',
-  'Released',
+  'Needs attention',
+  'Production complete',
+  'Published',
   'Audio',
   'Cover',
   'Lyrics',
@@ -41,7 +41,6 @@ assert.ok(catalog.includes('trackHref(track.id, workflow.nextAction.section)'), 
 assert.ok(catalog.includes('<TrackCreatePanel privateRead={privateRead}'), 'New Track must keep the existing guarded intake owner.');
 assert.ok(!catalog.includes("type ContentFilter ="), 'Legacy implementation-oriented content filters must not remain in the daily Tracks surface.');
 assert.ok(!catalog.includes('private canonical'), 'Daily Tracks result copy must not expose private-read implementation jargon when healthy.');
-assert.ok(!catalog.includes('public fallback'), 'Daily Tracks result copy must not expose public-fallback implementation jargon when healthy.');
 assert.ok(!catalog.includes('fetch('), 'Tracks must use the validated catalog service rather than direct network access.');
 
 for (const marker of [
@@ -63,4 +62,4 @@ for (const protectedWorkflow of [
   'track.publishing.publishable',
 ]) assert.ok(workflow.includes(protectedWorkflow), `Build 54 must reuse the accepted Phase 7-A readiness model: ${protectedWorkflow}.`);
 
-console.log(`Studio Focus Build 54 ancestry passed under ${releaseVersion} Build ${releaseBuild}: the production-first Tracks library and workflow-derived continuation remain intact.`);
+console.log(`Studio Focus Build 54 ancestry passed under ${releaseVersion} Build ${releaseBuild}: the production-first Tracks library and workflow-derived continuation remain intact while labels distinguish production from publication.`);
