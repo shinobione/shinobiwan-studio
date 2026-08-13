@@ -142,6 +142,13 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
 
       <ContinuationReceiptBanner trackId={track.id} onCanonicalVerified={canonical => { setTrack(canonical); setError(null); }} />
 
+      {!privateRead && (
+        <section className="panel workspace-private-read-notice" role="status">
+          <div><span className="eyebrow">PUBLIC READ-ONLY FALLBACK</span><strong>Private production tools are temporarily locked.</strong><p>You are viewing the LaunchPAD public catalog. Draft tracks, canonical editing, Lyrics Studio synchronization and full private SonicTrace analysis require Track Manager private read. Nothing has been deleted.</p></div>
+          <div className="workspace-private-read-actions"><a className="ghost-btn" href={studioConfig.trackManagerUrl} target="_blank" rel="noopener noreferrer">Open Track Manager ↗</a><button className="ghost-btn" type="button" onClick={() => void refreshTrackAfterWrite()}>Retry private read</button></div>
+        </section>
+      )}
+
       {section === 'overview' && (
         <div className="workspace-focus-track">
           <section className="panel workspace-focus-summary">
@@ -174,7 +181,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
           <details className="panel workspace-focus-details">
             <summary>More track details</summary>
             <div className="workspace-facts"><div><span>BPM</span><strong>{track.bpm ?? '—'}</strong></div><div><span>Key</span><strong>{track.key || '—'}</strong></div><div><span>Duration</span><strong>{formatDuration(displayedDuration)}</strong><small>{durationSource}</small></div><div><span>Language</span><strong>{track.languages.join(', ') || '—'}</strong></div></div>
-            <div className="workspace-focus-detail-actions"><a className="ghost-btn" href={trackHref(track.id, 'metadata')}>Full metadata editor</a><a className="ghost-btn" href={trackHref(track.id, 'intelligence')}>View full SonicTrace analysis</a></div>
+            <div className="workspace-focus-detail-actions"><a className="ghost-btn" href={trackHref(track.id, 'metadata')}>Full metadata editor</a>{privateRead ? <a className="ghost-btn" href={trackHref(track.id, 'intelligence')}>View full SonicTrace analysis</a> : <a className="ghost-btn" href={studioConfig.trackManagerUrl} target="_blank" rel="noopener noreferrer">Unlock SonicTrace via Track Manager ↗</a>}</div>
             <dl className="workspace-metadata-list"><div><dt>Read source</dt><dd>{privateRead ? 'Track Manager private catalog' : 'LaunchPAD public catalog'}</dd></div><div><dt>Last update</dt><dd>{track.updatedAt ? new Date(track.updatedAt).toLocaleString() : 'Not available'}</dd></div><div><dt>trackId</dt><dd>{track.id}</dd></div></dl>
           </details>
         </div>
@@ -193,7 +200,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
             <div><span className="eyebrow">VISUALS</span><h3>Cover and Canvas</h3><p>One place for the canonical visual identity used by Studio and LaunchPAD.</p></div>
             <div className="workspace-focus-visual-grid">
               <div className="workspace-focus-cover-preview">{artwork ? <img src={artwork} alt={`${track.title} cover`} /> : <span>No cover</span>}<small>{track.assets.cover ? 'Cover ready' : 'Cover missing'}</small></div>
-              <div className="workspace-focus-video-preview">{track.assets.video ? <video src={track.assets.video.url} controls preload="metadata" /> : <span>No Canvas yet</span>}<small>{track.assets.video ? 'Canvas ready' : 'Canvas optional / missing'}</small></div>
+              <div className="workspace-focus-video-preview">{track.assets.video ? <video src={track.assets.video.url} controls preload="metadata" /> : <span>No Canvas yet</span>}<small>{track.assets.video ? 'Canvas ready · 9:16' : 'Canvas optional / missing'}</small></div>
             </div>
           </section>
           <AssetsManager
@@ -218,9 +225,11 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
           <WorkspacePanel eyebrow="LYRICS / STUDIO" title={track.assets.lyricsTxt ? 'Synchronize lyrics' : 'No lyrics'} className={`workspace-lyrics-panel${canEmbedLyrics ? ' workspace-lyrics-panel--embedded' : ''}`}>
             {canEmbedLyrics
               ? <EmbeddedLyricsStudio trackId={track.id} onSaved={() => undefined} />
-              : lyricLines.length
-                ? <div className="workspace-lyrics-lines">{lyricLines.map((line, index) => <p key={`${index}-${line}`}>{line}</p>)}</div>
-                : <p className="workspace-muted">No lyric text is available yet. Add canonical lyrics.txt to begin.</p>}
+              : !privateRead
+                ? <div className="workspace-lyrics-lock"><span className="eyebrow">LYRICS STUDIO LOCKED</span><strong>Restore private read to open the synchronization engine.</strong><p>The embedded LRC Maker is still here; Studio will not expose its canonical save/sync surface from the public fallback. Authenticate through Track Manager, then retry private read.</p><div className="workspace-private-read-actions"><a className="ghost-btn" href={studioConfig.trackManagerUrl} target="_blank" rel="noopener noreferrer">Open Track Manager ↗</a><button className="ghost-btn" type="button" onClick={() => void refreshTrackAfterWrite()}>Retry private read</button></div>{lyricLines.length > 0 && <details><summary>Preview public lyrics text</summary><div className="workspace-lyrics-lines">{lyricLines.map((line, index) => <p key={`${index}-${line}`}>{line}</p>)}</div></details>}</div>
+                : lyricLines.length
+                  ? <div className="workspace-lyrics-lines">{lyricLines.map((line, index) => <p key={`${index}-${line}`}>{line}</p>)}</div>
+                  : <p className="workspace-muted">No lyric text is available yet. Add canonical lyrics.txt to begin.</p>}
           </WorkspacePanel>
           <details className="workspace-lyrics-plain"><summary>Open plain-text lyrics editor</summary><p>Use this secondary editor for text cleanup or direct timestamp inspection.</p><LyricsEditorPanel track={track} onSaved={refreshTrackAfterWrite} /></details>
         </div>
