@@ -49,9 +49,9 @@ function artworkUrl(track: StudioTrack): string | null {
 }
 
 function productionMatches(track: StudioTrack, workflow: TrackWorkflowState, filter: ProductionFilter): boolean {
-  if (filter === 'released') return track.status === 'published';
-  if (filter === 'ready') return track.status !== 'published' && workflow.ready;
-  if (filter === 'to-finish') return track.status !== 'published' && !workflow.ready;
+  if (filter === 'released') return track.status === 'published' && track.publishing.catalogVisible;
+  if (filter === 'ready') return workflow.ready;
+  if (filter === 'to-finish') return !workflow.ready;
   return true;
 }
 
@@ -124,9 +124,9 @@ export function CatalogView() {
     for (const track of tracks) {
       const workflow = workflowById.get(track.id);
       if (!workflow) continue;
-      if (track.status === 'published') released += 1;
-      else if (workflow.ready) ready += 1;
+      if (workflow.ready) ready += 1;
       else toFinish += 1;
+      if (track.status === 'published' && track.publishing.catalogVisible) released += 1;
     }
     return { toFinish, ready, released };
   }, [tracks, workflowById]);
@@ -158,7 +158,7 @@ export function CatalogView() {
           <span className="eyebrow">TRACKS / PRODUCTION LIBRARY</span>
           <h2>Pick up a track. Finish the next thing.</h2>
           <p>{privateRead
-            ? 'Your music, reduced to the production state that actually matters.'
+            ? 'Production attention and publication are separate: a released track can still have useful work left.'
             : 'Tracks are available read-only. Sign in through Track Manager when you need to create or edit.'}</p>
         </div>
         <button className="primary-btn catalog-new-track" type="button" disabled={loading} onClick={() => setShowCreate(true)}>+ New Track</button>
@@ -168,15 +168,15 @@ export function CatalogView() {
 
       {!loading && !error && tracks.length > 0 && !privateRead && (
         <div className="catalog-private-read-notice panel" role="status">
-          <div><span className="eyebrow">PRIVATE TRACKS HIDDEN</span><strong>Studio is showing the LaunchPAD public catalog only.</strong><p>Draft, To finish and Ready tracks are not visible in this fallback. Nothing has been deleted: restore Track Manager private read to see the complete production library.</p></div>
+          <div><span className="eyebrow">PRIVATE TRACKS HIDDEN</span><strong>Studio is showing the LaunchPAD public catalog only.</strong><p>Drafts and the complete private production workflow are not visible in this fallback. Nothing has been deleted: restore Track Manager private read to see accurate Needs attention / Production complete counts for the whole library.</p></div>
           <div className="catalog-private-read-actions"><a className="ghost-btn" href={studioConfig.trackManagerUrl} target="_blank" rel="noopener noreferrer">Open Track Manager ↗</a><button className="ghost-btn" type="button" disabled={refreshing} onClick={() => void loadCatalog(true)}>{refreshing ? 'Checking…' : 'Retry private read'}</button></div>
         </div>
       )}
 
-      <div className="catalog-production-filters panel" aria-label="Production filters">
-        <button type="button" disabled={!privateRead} title={!privateRead ? 'Private read required to count unfinished tracks.' : undefined} className={productionFilter === 'to-finish' ? 'active' : ''} aria-pressed={productionFilter === 'to-finish'} onClick={() => setProductionFilter('to-finish')}><strong>{privateRead ? counts.toFinish : '—'}</strong><span>To finish</span></button>
-        <button type="button" disabled={!privateRead} title={!privateRead ? 'Private read required to count release-ready private tracks.' : undefined} className={productionFilter === 'ready' ? 'active' : ''} aria-pressed={productionFilter === 'ready'} onClick={() => setProductionFilter('ready')}><strong>{privateRead ? counts.ready : '—'}</strong><span>Ready</span></button>
-        <button type="button" className={productionFilter === 'released' ? 'active' : ''} aria-pressed={productionFilter === 'released'} onClick={() => setProductionFilter('released')}><strong>{counts.released}</strong><span>Released</span></button>
+      <div className="catalog-production-filters panel" aria-label="Production and publication filters">
+        <button type="button" disabled={!privateRead} title={!privateRead ? 'Private read required to count production attention across the complete library.' : undefined} className={productionFilter === 'to-finish' ? 'active' : ''} aria-pressed={productionFilter === 'to-finish'} onClick={() => setProductionFilter('to-finish')}><strong>{privateRead ? counts.toFinish : '—'}</strong><span>Needs attention</span></button>
+        <button type="button" disabled={!privateRead} title={!privateRead ? 'Private read required to count production-complete tracks across the complete library.' : undefined} className={productionFilter === 'ready' ? 'active' : ''} aria-pressed={productionFilter === 'ready'} onClick={() => setProductionFilter('ready')}><strong>{privateRead ? counts.ready : '—'}</strong><span>Production complete</span></button>
+        <button type="button" className={productionFilter === 'released' ? 'active' : ''} aria-pressed={productionFilter === 'released'} onClick={() => setProductionFilter('released')}><strong>{counts.released}</strong><span>Published</span></button>
         <button type="button" className={productionFilter === 'all' ? 'active' : ''} aria-pressed={productionFilter === 'all'} onClick={() => setProductionFilter('all')}><strong>{tracks.length}</strong><span>All</span></button>
       </div>
 
