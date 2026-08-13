@@ -4,49 +4,54 @@ This file is the **current concise changelog**. Detailed per-build records are o
 
 ## Current accepted release
 
-### v0.19.2 · Build 62 — 2026-08-13
+### v0.19.3 · Build 67 — 2026-08-13
 
-Codename: `studio-focus-program-closeout`  
+Codename: `studio-focus-slice4-lyrics-source-anchor`  
 Status: **COMPLETE — REAL USER PASS**
 
-Accepted Studio Focus program closeout:
+Foundation Regression Repair closeout:
 
-- public-cover `Extract colors` no longer fails from credential/CORS mismatch;
-- artist-facing production wording uses `Sonic` / `SonicTrace` rather than the ambiguous legacy `Sound` label;
-- the misleading Release Campaign `Premium provider` selector is removed because provider selection did not alter MASTER, 1:1 or 9:16 prompt generation;
-- prompt generation remains provider-agnostic and Google Flow remains a direct convenience handoff;
-- the extracted-palette layout remains stable when save controls appear;
-- legacy French artist-facing `Titre d'Album` is presented as `Album track` without silently changing stored metadata;
-- paired Track Manager v5.20 stabilizes legacy manifest revisions so an unchanged legacy track no longer produces a false `STALE_MANIFEST` during palette save;
-- explicit palette save on `Magnetic Midnight` passed real-user production smoke;
-- Workflow remains under Advanced while Home remains the daily continuation/attention surface;
-- Phase 7-C remains **CLOSED / NOT STARTED**.
+- private/draft Album artwork renders from protected canonical Album media rather than depending on public projection;
+- generic Track metadata no longer edits the Track-side Album cache;
+- explicit Album membership verification/repair respects authoritative `album.trackIds` and guarded Track Manager operations;
+- Track Manager v5.21 removes `album` from the generic Studio metadata allowlist and adds protected Album media reads;
+- Build 64 is preserved as a deployed candidate that **FAILED REAL USER SMOKE** because of a self-triggering Lyrics `MutationObserver` loop;
+- Build 65 fixed the Track/Lyrics crash without changing backend/write authority;
+- Build 66 made Audio, Cover, Thumbnail, Lyrics TXT and Video/Canvas roles visually distinct and exposed the missing-master-audio synchronization prerequisite;
+- Build 67 moves canonical `LYRICS TXT` into a permanent top-level Lyrics source block before synchronization;
+- public fallback remains read-only and public Worker v2.7 was not redeployed;
+- Phase 7-C foundation-repair gate is cleared, while runtime Slice 1 remains not yet started.
 
 Final accepted deployment:
 
 ```text
-Studio main       b464c0930a5659b208b3a059d443f708b8e55dba
-Studio Pages run  31713370595    SUCCESS
-Track Manager     v5.20
-Studio bridge     v1.11
-LaunchPAD main    586c71333c902fc2ebef214c63e9234ece9e1711
-Worker run        31714222431    SUCCESS · admin only
-Worker Version ID 78609aff-1f4a-4a21-b618-cb97add0c416
-Public Worker     v2.7            unchanged
+Studio tested head    6c1d801b14ae8daedfb246da539a42125f7c80d9
+Studio validation     31738652169    SUCCESS
+Studio main           5f061a460f17e27b9c2f06fdcbdda2f34e07e240
+Studio Pages run      31738982707    SUCCESS
+Track Manager         v5.21
+Studio bridge         v1.11
+LaunchPAD main        813eb845b563b9a176c23f490d7fc044d4a0abc3
+TM Worker run         31728992790    SUCCESS · admin only
+TM Worker Version ID  0e1b9a3f-eabd-432e-8872-24ff0a9c085f
+Public Worker         v2.7            unchanged
 ```
 
-Full acceptance evidence: [`docs/STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md`](docs/STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md).
+Full acceptance evidence: [`docs/STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md`](docs/STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md).
 
 ## Immediate predecessor
 
-### v0.19.1 · Build 61 — Studio Focus Slice 4 REAL USER PASS
+### v0.19.2 · Build 62 — Studio Focus program closeout REAL USER PASS
 
-Build 61 remains the accepted Slice 4 baseline. Build 62 did not create a fifth Studio Focus slice; it corrected issues found by the final cross-flow closeout and then completed program-level acceptance.
+Build 62 remains the accepted Studio Focus program closeout. Build 67 is a later foundation-repair closeout and does not create a new Studio Focus slice.
 
-Build 60 remains historical deployed candidate evidence and was superseded by Build 61 for Slice 4 acceptance.
+Historical Build 63 remains superseded and is not reused. Build 64 remains failed-smoke evidence; Builds 65 and 66 are corrective lineage superseded by Build 67.
 
 ## Detailed history
 
+- Foundation repair closeout: [`docs/STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md`](docs/STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md)
+- Build 64 failed-smoke repair record: [`docs/STUDIO-BUILD64-FOUNDATION-REGRESSION-REPAIR.md`](docs/STUDIO-BUILD64-FOUNDATION-REGRESSION-REPAIR.md)
+- Build 67 detailed record: [`changelogs/CHANGELOG-STUDIO-FOCUS-BUILD67.md`](changelogs/CHANGELOG-STUDIO-FOCUS-BUILD67.md)
 - Build 30→61 milestone logs: [`changelogs/README.md`](changelogs/README.md)
 - Build 62 corrective record: [`docs/STUDIO-FOCUS-BUILD62-CLOSEOUT-CORRECTIVE.md`](docs/STUDIO-FOCUS-BUILD62-CLOSEOUT-CORRECTIVE.md)
 - Studio Focus final closeout: [`docs/STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md`](docs/STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md)
@@ -54,4 +59,4 @@ Build 60 remains historical deployed candidate evidence and was superseded by Bu
 - Current roadmap: [`docs/ROADMAP-CURRENT.md`](docs/ROADMAP-CURRENT.md)
 - Documentation map: [`docs/README.md`](docs/README.md)
 
-Repository cleanup on 2026-08-13 moved the detailed `CHANGELOG-*.md` records out of the repository root **without altering their historical contents**. The root now keeps only this current changelog entry point.
+Repository cleanup on 2026-08-13 moved the detailed `CHANGELOG-*.md` records out of the repository root **without altering their historical contents**. The root keeps only this current changelog entry point.
