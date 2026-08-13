@@ -84,8 +84,12 @@ for (const required of [
 ]) assert.ok(assets.includes(required), `Assets Manager missing ${required}.`);
 
 for (const required of [
-  'NEW TRACK', 'Build a canonical draft from the files you already have', 'Create canonical draft', 'globalThis.confirm', 'createAdminTrack', 'uploadAdminTrackAsset', "uploads.length ? 'assets' : 'overview'", 'Initial state</span><strong>Recoverable draft',
+  'NEW TRACK', 'Create the track you mean to release', 'Create draft', 'Create & Publish', 'globalThis.confirm',
+  'createAdminTrack', 'uploadAdminTrackAsset', 'moveAdminAlbumTrack', 'validateAdminTrackMetadata', 'saveAdminTrackMetadata',
+  "trackHref(effectiveSlug, 'overview')", 'Safe draft first', 'PUBLISH_QUALITY_BLOCKED',
 ]) assert.ok(create.includes(required), `Track create UI missing ${required}.`);
+assert.ok(!create.includes('safeInitialTrackAlbum'), 'Track create must not send Album cache through generic metadata under TM v5.21.');
+assert.ok(!create.includes('saveTrack('), 'Track create must not introduce a generic saveTrack write surface.');
 
 for (const required of ['TRACK MANAGER / CATALOG', 'Explicit catalog rebuild', 'REBUILD the canonical catalog/index.json', 'globalThis.confirm', 'rebuildAdminCatalog']) assert.ok(rebuild.includes(required), `Catalog rebuild UI missing ${required}.`);
 
