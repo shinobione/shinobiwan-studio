@@ -174,7 +174,7 @@ for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog 
 
 const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
-assert.match(releaseVersion, /^0\.(?:11|12|13|14|15|16|17|18)\./, 'Studio private-read ancestry must remain on the validated PHASE UX / Phase 7 / Studio Focus release lines.');
+assert.match(releaseVersion, /^0\.(?:11|12|13|14|15|16|17|18|19)\./, 'Studio private-read ancestry must remain on the validated PHASE UX / Phase 7 / Studio Focus release lines.');
 assert.ok(releaseBuild >= 33, 'Studio private-read ancestry must remain at Build 33 or later.');
 assert.match(release, /codename:\s*'(?:phase-ux-(?:c2-5|c3)-|phase7-|studio-focus-)/, 'Studio release codename must remain inside validated PHASE UX, Phase 7, or explicitly authorized Studio Focus lineage.');
 assert.equal(pkg.version, releaseVersion, 'package.json must match the current Studio release version.');
