@@ -39,6 +39,15 @@
 .lyrics-sync-prerequisite p{max-width:720px;margin:6px 0 0;color:var(--studio-text-muted);font-size:11px;line-height:1.55}
 .lyrics-sync-prerequisite .primary-btn{flex:0 0 auto;white-space:nowrap}
 
+/* Build 67 — canonical Lyrics source is a permanent top-level control, never hidden inside the secondary editor disclosure. */
+.workspace-lyrics-source-anchor{display:block;margin:0}
+.workspace-lyrics-source-anchor>.phase4-assets-manager{margin:0}
+.workspace-lyrics-shell>.lyrics-sync-prerequisite{margin:0}
+.workspace-lyrics-plain>.phase4-assets-manager,.workspace-lyrics-plain>.lyrics-sync-prerequisite{display:none!important}
+.workspace-lyrics-plain{display:block}
+.workspace-lyrics-plain>summary{margin:0}
+.workspace-lyrics-plain>.lyrics-editor-panel{margin-top:12px}
+
 @media(max-width:680px){
   .phase4-asset-main>div:first-child{padding-left:42px}
   .lyrics-sync-prerequisite{align-items:stretch;flex-direction:column}
