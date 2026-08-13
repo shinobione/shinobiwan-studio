@@ -1,9 +1,9 @@
 # Studio v0.19.3 · Build 64 — Foundation Regression Repair
 
-Status: **CANDIDATE · REAL USER PASS PENDING**  
+Status: **DEPLOYED CANDIDATE · FAILED REAL USER SMOKE · SUPERSEDED**  
 Date: 2026-08-13  
 Trigger: real Studio smoke performed before Phase 7-C runtime Slice 1  
-Backend dependency: **Track Manager v5.21 · Studio bridge v1.11 candidate**
+Backend dependency: **Track Manager v5.21 · Studio bridge v1.11**
 
 ## Why Build 64 exists
 
@@ -19,7 +19,7 @@ The accepted Build 62 Studio Focus runtime exposed three foundation regressions 
    - `AssetsManager` already supported guarded `lyrics` TXT upload.
    - The Focus Lyrics page no longer surfaced that operation when `lyrics.txt` was absent.
 
-These are foundation repairs. **Phase 7-C runtime Slice 1 is paused until Build 64 + TM v5.21 receive a new real-user pass.**
+These were foundation repairs, so Phase 7-C runtime Slice 1 was paused while the repair was validated.
 
 ## Corrective contract
 
@@ -43,30 +43,31 @@ These are foundation repairs. **Phase 7-C runtime Slice 1 is paused until Build 
 - Automatic repair is only offered for a fresh `draft` target Album.
 - Repair requires explicit browser confirmation.
 - Repair uses existing guarded `album-track-move-v1` with `sourceAlbumId: null`.
-- Success now requires client reread of target Album, optional source Album, **and Track cache**.
+- Success requires client reread of target Album, optional source Album, and Track cache.
 - No blind retry is introduced.
 
 ### Lyrics
 
-- When private read is active and `lyrics.txt` is missing, `LyricsEditorPanel` exposes the existing `AssetsManager` with `kinds={['lyrics']}`.
-- The Focus Lyrics page automatically opens that existing secondary panel only in the `Add lyrics to begin` state, so the TXT picker is visible instead of hidden behind a dead-end.
-- Upload semantics are unchanged: explicit file choice + confirmation + Track Manager guarded asset write + canonical reread.
+- When private read is active and `lyrics.txt` is missing, the Focus Lyrics path exposes the existing guarded Lyrics asset operation.
+- Upload semantics remain explicit file choice + confirmation + Track Manager guarded asset write + canonical reread.
 - `lyrics.txt` remains the unique canonical lyrics source; `.lrc` remains optional export/compatibility.
 
 ## Backend dependency — TM v5.21
 
-Track Manager v5.21 / bridge v1.11 adds protected read-only Album media routes and removes the Album cache field from the generic Studio metadata write allowlist. The public Worker remains v2.7 and must not be redeployed.
+Track Manager v5.21 / bridge v1.11 adds protected read-only Album media routes and removes the Album cache field from the generic Studio metadata write allowlist. The public Worker remains v2.7 and was not redeployed for this repair.
 
-## Deployment / acceptance rules
+## Why Build 64 failed smoke
 
-1. TM v5.21 candidate must pass full repository CI + Wrangler dry-run.
-2. Merge exact tested TM head only.
-3. Deploy **admin Worker only** from exact merged LaunchPAD main.
-4. Verify private Worker reports v5.21; record Worker Version ID.
-5. Studio Build 64 must pass full build/typecheck/legacy guards.
-6. Merge exact tested Studio head only after the required private Worker is live.
-7. GitHub Pages must deploy exact Build 64 merge SHA.
-8. User performs the real browser smoke.
-9. Only then may Build 64 / TM v5.21 become `REAL USER PASS` / accepted.
+The deployed Build 64 candidate fixed the original foundation issues, but its Lyrics compatibility adapter introduced a self-triggering `MutationObserver` loop. Rewriting the disclosure label generated another DOM mutation, which could repeatedly retrigger the observer and freeze affected Track/Lyrics routes.
 
-CI, merge and deployment success alone do **not** count as REAL USER PASS.
+The user therefore encountered `Loading Track Workspace…` hangs and Lyrics-route crashes on Tracks with missing lyrics. Build 64 was correctly rejected and never received REAL USER PASS.
+
+## Successor lineage
+
+- **Build 65** — idempotent Lyrics crash corrective; removed the mutation-loop failure mode.
+- **Build 66** — stronger Audio/Cover/Thumbnail/Lyrics/Video-Canvas identity and explicit missing-master-audio synchronization prerequisite.
+- **Build 67** — permanent top-level `LYRICS TXT` source anchor before synchronization; final accepted repair runtime.
+
+Final closeout: [`STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md`](STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md).
+
+Historical candidates never receive retroactive acceptance.
