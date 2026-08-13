@@ -1,8 +1,8 @@
 # SHINOBIWAN STUDIO — STUDIO FOCUS / PRODUCTION-FIRST UX
 
-Status: **ROADMAP APPROVED · IMPLEMENTATION IN PROGRESS · BUILD 58 SLICE 3 SMOKE CORRECTIVE CANDIDATE**
+Status: **ROADMAP APPROVED · IMPLEMENTATION IN PROGRESS · BUILD 58 SLICE 3 REAL USER PASS**
 
-Approved by real-user review on 2026-08-12 after Studio v0.17.2 · Build 52. Implementation opened with Studio v0.17.3 · Build 53. Slice 2 closed with Build 56 REAL USER PASS. Slice 3 opened with Build 57 and continues with the Build 58 smoke corrective after deployed review.
+Approved by real-user review on 2026-08-12 after Studio v0.17.2 · Build 52. Implementation opened with Studio v0.17.3 · Build 53. Slice 2 closed with Build 56 REAL USER PASS. Slice 3 opened with Build 57, received a focused Build 58 smoke corrective, and is now closed as REAL USER PASS after deployed browser review on 2026-08-13.
 
 This roadmap does **not** replace any validated canonical authority or remove specialist capabilities. It changes the daily information architecture so Studio behaves like an artist production tool rather than exposing implementation detail by default.
 
@@ -22,7 +22,7 @@ The validated Track Manager / R2 / SonicTrace / LRC Maker / receipt / private-re
 | Build 55 / Slice 2B | smaller covers + larger card copy | **SUPERSEDED AT SMOKE — status labels truncated** |
 | Build 56 / Slice 2C | full readable Audio/Cover/Lyrics/Canvas/Release chips | **COMPLETE — REAL USER PASS** |
 | Build 57 / Slice 3A | Track Workspace regrouping to `Track · Visuals · Lyrics · Release` | **DEPLOYED SMOKE EVIDENCE — NOT ACCEPTED** |
-| Build 58 / Slice 3B | public-read truthfulness + 9:16 Canvas + specialist-lock clarity | **CANDIDATE — CI + deployed smoke required** |
+| Build 58 / Slice 3B | public-read truthfulness + 9:16 Canvas + specialist-lock clarity | **COMPLETE — REAL USER PASS** |
 | Slice 4 | compact SonicTrace artist summary + Advanced detail | **PLANNED / NOT STARTED** |
 | Closeout | cross-flow real-user smoke + Workflow absorption decision | **PLANNED / NOT STARTED** |
 
@@ -170,11 +170,11 @@ Build 57 introduced:
 
 The browser smoke proved the regrouping direction but found three corrective faults:
 
-1. Studio had fallen back to `LaunchPAD public catalog`, so the two private `To finish` tracks were absent. The UI still displayed `0 To finish / 31 Released / 31 All`, creating the false impression that drafts had disappeared or been reclassified.
+1. Studio had fallen back to `LaunchPAD public catalog`, so private production tracks were absent. The UI still displayed public-only production counts in a way that could look like the complete library.
 2. Visuals explicitly rendered canonical Canvas in a **16:9** frame instead of the LaunchPAD **9:16** Canvas contract.
 3. `EmbeddedLyricsStudio` was still present and correctly gated by PRIVATE READ + canonical assets, but public fallback silently substituted raw public lyrics text, making the engine appear removed.
 
-The observed SonicTrace `Private analysis is locked` page was correct for public fallback; the problem was the preceding Track action looking like a guaranteed full private analysis.
+The observed SonicTrace `Private analysis is locked` state was correct for public fallback; the problem was the preceding Track action looking like a guaranteed full private analysis.
 
 Build 57 is therefore **NOT A REAL USER PASS**.
 
@@ -182,7 +182,7 @@ Candidate checkpoint:
 
 `safety/studio-focus-build57-candidate-20260813`
 
-### Build 58 — Slice 3 smoke corrective
+### Build 58 — Slice 3 smoke corrective — REAL USER PASS
 
 Build 58 preserves the Build 57 Track Workshop architecture and corrects only the smoke findings:
 
@@ -190,7 +190,7 @@ Build 58 preserves the Build 57 Track Workshop architecture and corrects only th
 - unavailable private `To finish` / `Ready` counts display `—` rather than false zero;
 - public fallback defaults to the Released projection instead of an empty `To finish` view;
 - `Open Track Manager ↗` + `Retry private read` recovery actions are available;
-- when PRIVATE READ returns, Tracks returns to `To finish`;
+- when PRIVATE READ returns, Tracks returns to the production library;
 - Track Workspace gets a persistent `PUBLIC READ-ONLY FALLBACK` notice;
 - public Track no longer promises full SonicTrace analysis while the private layer is locked;
 - public Lyrics state shows `LYRICS STUDIO LOCKED` and explains how to restore the engine;
@@ -199,13 +199,42 @@ Build 58 preserves the Build 57 Track Workshop architecture and corrects only th
 - canonical Canvas preview corrected to **9:16** with `object-fit: contain` to avoid cropping;
 - native Release Campaign MASTER 16:9 / 1:1 / 9:16 format pack remains unchanged.
 
-Pre-Build58 checkpoint:
+#### Build 58 deployed real-user acceptance
 
-`safety/pre-build58-slice3-smoke-corrective-20260813-0226`
+The deployed browser review on 2026-08-13 observed the actual recovery path rather than granting acceptance from CI alone.
 
-Build 58 remains a **CANDIDATE** until exact-head CI, Pages and deployed browser smoke pass. Slice 4 remains NOT STARTED.
+Before authentication recovery:
+
+- Tracks displayed `PRIVATE TRACKS HIDDEN`;
+- private-only `To finish` / `Ready` counters rendered `—`;
+- public `31 Released` remained visible;
+- Lyrics displayed `LYRICS STUDIO LOCKED`;
+- Visuals displayed the canonical Canvas vertically in 9:16.
+
+After authenticating through Track Manager / Cloudflare Access:
+
+- `/api/studio/health` returned authenticated Studio bridge JSON with bridge `1.11` and Track Manager `5.19`;
+- Studio Home restored protected production state with `27 To finish / 6 Ready / 31 Released`;
+- `Magnetic Midnight!` → Lyrics rendered the embedded LRC engine again;
+- the engine showed audio loaded and canonical authority `tracks/magnetic-midnight/lyrics.txt`.
+
+No Worker deploy, R2 mutation, Album mutation or catalog rebuild was needed for this acceptance.
+
+A fresh SonicTrace analysis/write was **not** performed merely to manufacture smoke evidence. Build 58 did not change SonicTrace persistence or sidecar authority; that unchanged specialist behavior remains covered by its accepted SonicTrace baseline and the inherited CI guards.
+
+Acceptance checkpoint:
+
+`safety/post-studio-focus-build58-real-user-pass-20260813-0952`
+
+Full closeout:
+
+`docs/STUDIO-FOCUS-BUILD58-REAL-USER-PASS.md`
+
+Slice 3 is **COMPLETE — REAL USER PASS**.
 
 ## 4 — SonicTrace becomes primarily an invisible assistant
+
+Status: **PLANNED / NOT STARTED**
 
 Approved direction:
 
@@ -217,6 +246,8 @@ Approved direction:
 - catalog/project intelligence remains available for deliberate analysis but not mandatory daily noise.
 
 SonicTrace Build 08 is REAL USER PASS with a durable FULL R2 profile after canonical reread. Studio Focus does not alter those analysis semantics. Compact artist conclusions remain reserved for **Slice 4**.
+
+Slice 4 is now the next planned Studio Focus item but is **not started automatically** by Slice 3 acceptance. Fresh explicit authorization remains required.
 
 ## 5 — Progressive disclosure is the global UX architecture
 
@@ -299,8 +330,8 @@ Studio Focus proceeds in small reversible slices:
 3. **Build 55 — desktop density/readability — superseded at smoke**;
 4. **Build 56 — full readable production-state chips — COMPLETE · REAL USER PASS**;
 5. **Build 57 — Track / Visuals / Lyrics / Release workshop — deployed smoke evidence · NOT ACCEPTED**;
-6. **Build 58 — Slice 3 smoke corrective — CANDIDATE**;
-7. SonicTrace compact summary + Advanced detail;
+6. **Build 58 — Slice 3 smoke corrective — COMPLETE · REAL USER PASS**;
+7. SonicTrace compact summary + Advanced detail — **PLANNED / NOT STARTED**;
 8. real-user smoke across existing Track, Lyrics, SonicTrace and Release workflows;
 9. only after pass, decide whether the separate Workflow destination can be fully absorbed into Home.
 
@@ -317,6 +348,7 @@ safety/post-studio-focus-build56-real-user-pass-20260813-0143
 safety/pre-build57-track-workshop-20260813-0143
 safety/studio-focus-build57-candidate-20260813
 safety/pre-build58-slice3-smoke-corrective-20260813-0226
+safety/post-studio-focus-build58-real-user-pass-20260813-0952
 ```
 
 No later slice is considered started merely because it is listed here.
