@@ -14,7 +14,7 @@ const pkg = JSON.parse(read('package.json'));
 const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
-assert.match(version, /^0\.(?:16|17)\.\d+$/, 'Phase 7-A ancestry must remain on an explicitly authorized Studio successor release line.');
+assert.match(version, /^0\.(?:16|17|18)\.\d+$/, 'Phase 7-A ancestry must remain on an explicitly authorized Studio successor release line.');
 assert.ok(build >= 46, `Phase 7-A successor must preserve Build 46 or later, got Build ${build}.`);
 assert.ok(codename.startsWith('phase7-') || codename.startsWith('studio-focus-'), `Phase 7-A successor codename must remain explicit or be the authorized Studio Focus presentation successor, got ${codename}.`);
 assert.equal(pkg.version, version, 'package.json must match Studio release version.');
