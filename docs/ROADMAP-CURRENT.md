@@ -1,23 +1,24 @@
 # SHINOBIWAN STUDIO — CURRENT ROADMAP
 
-Updated: 2026-08-13 after explicit **Phase 7-C — Guided end-to-end actions** authorization. The accepted runtime baseline remains **Studio v0.19.2 · Build 62 — Studio Focus program closeout REAL USER PASS** until the first Phase 7-C runtime candidate is separately validated.
+Updated: 2026-08-13 after **Foundation Regression Repair closeout REAL USER PASS**. The accepted runtime baseline is now **Studio v0.19.3 · Build 67** with **Track Manager v5.21 / bridge v1.11**.
 
 This file is the **current roadmap authority**. Historical build detail belongs in milestone docs and [`../changelogs/`](../changelogs/README.md), not here.
 
 ## Current state
 
 ```text
-Studio          v0.19.2 · Build 62    accepted current baseline
+Studio          v0.19.3 · Build 67    accepted current baseline · REAL USER PASS
 Studio Focus    Slices 1–4 + closeout REAL USER PASS
+Foundation Repair Build 67            COMPLETE · REAL USER PASS
 Phase 7-A       Build 46              REAL USER PASS
 Phase 7-B       Build 51              REAL USER PASS
-Phase 7-C                              STARTED · contract locked / Slice 1 pending
-Track Manager   v5.20
+Phase 7-C                              STARTED · contract locked / repair gate CLEARED / Slice 1 not started
+Track Manager   v5.21                 repair scope · REAL USER PASS
 Studio bridge   v1.11
 Public Worker   v2.7                  unchanged
 ```
 
-Build 62 is the accepted program-closeout corrective, not a fifth Studio Focus slice. Build 60 is historical deployed candidate evidence and is superseded by Build 61 for Slice 4 acceptance. Build 59 was reserved by a parallel branch and was never reused. Historical Draft Build 63 is not to be reused for Phase 7-C.
+Build 62 remains the accepted Studio Focus program-closeout corrective, not a fifth Studio Focus slice. Build 60 is historical deployed candidate evidence and is superseded by Build 61 for Slice 4 acceptance. Build 59 was reserved by a parallel branch and was never reused. Historical Draft Build 63 is superseded and must not be reused. Build 64 is historical **FAILED REAL USER SMOKE** evidence; Builds 65 and 66 are corrective lineage superseded by Build 67.
 
 ## Frozen architecture
 
@@ -49,7 +50,8 @@ Build 62 is the accepted program-closeout corrective, not a fifth Studio Focus s
 - Studio Focus Slice 3 ✅ Build 58 REAL USER PASS
 - Studio Focus Slice 4 ✅ Build 61 REAL USER PASS
 - Studio Focus program closeout ✅ Build 62 REAL USER PASS
-- Phase 7-C — Guided end-to-end actions 🚧 STARTED · contract locked
+- Foundation Regression Repair ✅ Build 67 + TM5.21 REAL USER PASS
+- Phase 7-C — Guided end-to-end actions 🚧 STARTED · contract locked · runtime Slice 1 not started
 
 ## Studio Focus — accepted production-first UX
 
@@ -74,7 +76,7 @@ Track · Visuals · Lyrics · Release
 
 - Track owns day-to-day identity, canonical audio, production state and compact SonicTrace conclusions.
 - Visuals owns canonical Cover / Thumbnail / Canvas; Canvas presentation is 9:16.
-- Lyrics owns the embedded LRC Maker and canonical `lyrics.txt` workflow.
+- Lyrics owns a permanent top-level canonical `LYRICS TXT` source control, embedded LRC Maker synchronization and a secondary plain-text editor.
 - Release owns the final checklist and native Release Campaign.
 - full Metadata and SonicTrace diagnostics remain reachable through progressive disclosure / Details / Advanced.
 
@@ -102,38 +104,58 @@ Truth state remains inherited from the protected SonicTrace profile contract: `F
 
 Artist-facing workflow wording is `Sonic` / `SonicTrace`, not the ambiguous legacy `Sound` label.
 
+## Foundation Regression Repair — COMPLETE
+
+Status: **COMPLETE · REAL USER PASS**.
+
+A fresh real-user smoke performed before Phase 7-C runtime Slice 1 exposed foundation regressions, so runtime work was paused until repair acceptance.
+
+Accepted repair outcomes:
+
+1. private/draft Album artwork renders through protected canonical Album media rather than depending on the public Album projection;
+2. `album.trackIds` remains the only Album membership/order authority and the generic Track metadata path no longer edits the Album cache;
+3. Track Manager v5.21 removes `album` from the generic Studio metadata allowlist and provides protected Album media reads;
+4. explicit membership verification/repair uses the existing guarded Album operation with fresh reads and canonical reread verification;
+5. Build 64 corrected the original issues but **failed real-user smoke** because a Lyrics `MutationObserver` could self-trigger and freeze affected routes;
+6. Build 65 corrected that crash without changing backend authority;
+7. Build 66 clarified Audio / Cover / Thumbnail / Lyrics TXT / Video-Canvas identities and explains missing-master-audio synchronization prerequisites;
+8. Build 67 permanently anchors `LYRICS TXT` above synchronization, outside the secondary plain-text disclosure;
+9. final Build 67 browser review was accepted by the user.
+
+Exact accepted repair evidence:
+
+```text
+Studio tested head   6c1d801b14ae8daedfb246da539a42125f7c80d9
+Studio validation    31738652169    SUCCESS
+Studio main          5f061a460f17e27b9c2f06fdcbdda2f34e07e240
+Studio Pages run     31738982707    SUCCESS
+Track Manager        v5.21
+Studio bridge        v1.11
+LaunchPAD main       813eb845b563b9a176c23f490d7fc044d4a0abc3
+TM Worker run        31728992790    SUCCESS · admin only
+TM Worker Version ID 0e1b9a3f-eabd-432e-8872-24ff0a9c085f
+Public Worker        v2.7            unchanged
+```
+
+Closeout evidence: [`STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md`](STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md).
+
 ## Studio Focus program closeout — COMPLETE
 
 Status: **COMPLETE · REAL USER PASS**.
 
-The representative deployed review deliberately stopped when real issues were found, then resumed only after corrections were deployed.
-
-Accepted closeout findings and decisions:
+Accepted closeout findings and decisions remain preserved:
 
 1. public-cover `Extract colors` works on the exercised `Magnetic Midnight` track;
 2. palette preview layout remains stable when save controls appear;
 3. explicit `Save palette` succeeds on the exercised legacy track;
-4. the false legacy `STALE_MANIFEST` condition is fixed by Track Manager v5.20 without removing stale revision checks;
+4. the false legacy `STALE_MANIFEST` condition is fixed without removing stale revision checks;
 5. legacy artist-facing `Titre d'Album` displays as `Album track` without silently changing stored metadata;
 6. `Sonic` wording is accepted;
 7. Release Campaign prompt generation remains provider-agnostic and the misleading Premium provider selector is gone;
 8. Google Flow remains a direct convenience handoff;
 9. **Workflow remains under Advanced** because Home owns the daily abbreviated production queue while Workflow owns the full detailed searchable/filterable queue.
 
-Final evidence: [`STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md`](STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md).
-
-Final accepted deployed state:
-
-```text
-Studio main       b464c0930a5659b208b3a059d443f708b8e55dba
-Studio Pages run  31713370595    SUCCESS
-Track Manager     v5.20
-Studio bridge     v1.11
-LaunchPAD main    586c71333c902fc2ebef214c63e9234ece9e1711
-Worker run        31714222431    SUCCESS · admin only
-Worker Version ID 78609aff-1f4a-4a21-b618-cb97add0c416
-Public Worker     v2.7            unchanged
-```
+Historical closeout evidence: [`STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md`](STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md).
 
 ## Native Release Campaign — preserved contract
 
@@ -185,9 +207,9 @@ Public fallback never confirms a canonical write.
 
 ## Phase 7-C — Guided end-to-end actions
 
-Status: **STARTED — CONTRACT LOCKED / RUNTIME SLICE 1 NOT YET STARTED**.
+Status: **STARTED — CONTRACT LOCKED / FOUNDATION REPAIR GATE CLEARED / RUNTIME SLICE 1 NOT YET STARTED**.
 
-Fresh explicit authorization was given on 2026-08-13. The executable safety/product contract is now [`PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md`](PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md).
+Fresh explicit authorization was given on 2026-08-13. The executable safety/product contract is [`PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md`](PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md).
 
 Accepted Phase 7-C rules:
 
@@ -220,6 +242,8 @@ Home / Tracks / Workflow Next Action
 ```
 
 No new Worker route or Track Manager version bump is planned for Slice 1 unless implementation audit proves one genuinely necessary. Deployment itself performs no production data mutation; the only mutation remains an explicit user-triggered existing guarded operation.
+
+Before runtime implementation resumes in a fresh session, verify current GitHub and deployed production state. Do not treat the repair closeout itself as a new runtime-implementation authorization.
 
 Opening safety anchors:
 
@@ -287,6 +311,7 @@ Source audio is not persisted in sidecars.
 ## Accepted checkpoints
 
 ```text
+safety/post-build67-lyrics-source-anchor-20260813-2205
 safety/post-studio-focus-program-closeout-20260813-1720
 safety/post-studio-focus-build61-real-user-pass-20260813-1347
 safety/post-studio-focus-build58-real-user-pass-20260813-0952
