@@ -2,6 +2,41 @@
 
 This file is the **current concise changelog**. Detailed per-build records are organized under [`changelogs/`](changelogs/README.md).
 
+## Current implementation candidate
+
+### v0.20.0 · Build 69 — 2026-08-14
+
+Codename: `phase7c-slice1-guided-metadata`  
+Status: **IMPLEMENTATION CANDIDATE — PR #99 · EXACT-HEAD CI REQUIRED**
+
+Phase 7-C Runtime Slice 1:
+
+- Home preserves an Identity/Metadata workflow destination and opens the guided Metadata context directly;
+- Tracks and Workflow retain their direct workflow destinations;
+- guided Metadata shows exact `trackId`, private/public lock state and current canonical Next Action;
+- existing Track Manager metadata validate/save authority is reused unchanged;
+- normalized proposal review and explicit human confirmation remain mandatory;
+- post-save Studio reread rejects public fallback or mismatched track identity as verification;
+- workflow / Next Action recomputes only after reread canonical Track state replaces the workspace state;
+- no new Worker route, Track Manager bump, deployment-time R2 mutation, Album mutation or authority expansion.
+
+Candidate evidence:
+
+```text
+Accepted baseline      v0.19.3 · Build 68 · REAL USER PASS
+Safety checkpoint      safety/pre-phase7c-slice1-build69-20260814-0013
+Feature branch         agent/phase7c-runtime-slice1
+PR                     #99 · DRAFT
+Initial CI             31749799202 · FAILED historical successor whitelist
+Guard correction       additive Phase 7-C / TM5.21 / Studio0.20 successor support
+Final exact-head CI    REQUIRED before merge
+Runtime merge          PENDING
+Pages deploy           PENDING
+Real-user smoke        PENDING
+```
+
+Detailed record: [`changelogs/CHANGELOG-PHASE7-C-BUILD69.md`](changelogs/CHANGELOG-PHASE7-C-BUILD69.md).
+
 ## Current accepted release
 
 ### v0.19.3 · Build 68 — 2026-08-13
@@ -16,8 +51,7 @@ Home lead priority corrective:
 - Home keeps the last-opened track only while that track is unfinished;
 - otherwise Home selects the first unfinished workflow item;
 - when no track needs attention, Home shows `PRODUCTION QUEUE CLEAR` while retaining the summary counters;
-- no Worker route, R2 mutation, Track Manager authority change or public Worker deployment;
-- Phase 7-C runtime Slice 1 remains not started.
+- no Worker route, R2 mutation, Track Manager authority change or public Worker deployment.
 
 Exact acceptance evidence:
 
@@ -81,6 +115,7 @@ Historical Build 63 remains superseded and is not reused. Build 64 remains faile
 
 ## Detailed history
 
+- Build 69 candidate: [`changelogs/CHANGELOG-PHASE7-C-BUILD69.md`](changelogs/CHANGELOG-PHASE7-C-BUILD69.md)
 - Build 68 accepted: [`changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md`](changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md)
 - Foundation repair closeout: [`docs/STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md`](docs/STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md)
 - Build 64 failed-smoke repair record: [`docs/STUDIO-BUILD64-FOUNDATION-REGRESSION-REPAIR.md`](docs/STUDIO-BUILD64-FOUNDATION-REGRESSION-REPAIR.md)
