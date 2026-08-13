@@ -37,8 +37,18 @@ const authorizedPhase7 = /^0\.(?:16|17)\./.test(version) && codename.startsWith(
 const authorizedStudioFocus = /^0\.(?:17|18|19)\./.test(version) && codename.startsWith('studio-focus-');
 assert.ok(phaseUxLine || authorizedPhase7 || authorizedStudioFocus, `UX module guard must run on validated PHASE UX lineage or an explicitly authorized Phase 7 / Studio Focus successor, got ${version} / ${codename}.`);
 
-if (authorizedStudioFocus && build >= 57) {
-  assert.equal((workspace.match(/<AssetsManager/g) || []).length, 2, 'Build 57 must expose exactly two task-scoped views of the same guarded asset manager: Track audio + Visuals media.');
+if (authorizedStudioFocus && build >= 67) {
+  assert.equal((workspace.match(/<AssetsManager/g) || []).length, 3, 'Build 67 must expose exactly three task-scoped views of the same guarded asset manager: Track audio + Visuals media + permanent Lyrics TXT source.');
+  assert.ok(workspace.includes("kinds={['audio']}"), 'Track surface must scope the asset manager to canonical audio.');
+  assert.ok(workspace.includes("kinds={['cover', 'thumbnail', 'video']}"), 'Visuals surface must scope the asset manager to cover/thumbnail/video.');
+  assert.ok(workspace.includes("kinds={['lyrics']}"), 'Lyrics surface must scope the asset manager to canonical lyrics.txt only.');
+  const assetsSection = workspace.slice(workspace.indexOf("section === 'assets'"), workspace.indexOf("section === 'lyrics'"));
+  assert.ok(assetsSection.includes("kinds={['cover', 'thumbnail', 'video']}"), 'Visual media manager must live in the Visuals/assets route.');
+  const lyricsSection = workspace.slice(workspace.indexOf("section === 'lyrics'"), workspace.indexOf("section === 'market'"));
+  assert.ok(lyricsSection.includes('workspace-lyrics-source-anchor'), 'Build 67 Lyrics asset manager must live in the permanent Lyrics source anchor.');
+  assert.ok(lyricsSection.includes("kinds={['lyrics']}"), 'Build 67 permanent Lyrics source anchor must remain scoped to lyrics.txt only.');
+} else if (authorizedStudioFocus && build >= 57) {
+  assert.equal((workspace.match(/<AssetsManager/g) || []).length, 2, 'Build 57-66 must expose exactly two task-scoped views of the same guarded asset manager: Track audio + Visuals media.');
   assert.ok(workspace.includes("kinds={['audio']}"), 'Track surface must scope the asset manager to canonical audio.');
   assert.ok(workspace.includes("kinds={['cover', 'thumbnail', 'video']}"), 'Visuals surface must scope the asset manager to cover/thumbnail/video.');
   const assetsSection = workspace.slice(workspace.indexOf("section === 'assets'"), workspace.indexOf("section === 'lyrics'"));
