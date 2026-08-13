@@ -2,12 +2,13 @@
 
 This file is the **current concise changelog**. Detailed per-build records are organized under [`changelogs/`](changelogs/README.md).
 
-## Current deployed candidate
+## Current accepted release
 
 ### v0.19.3 · Build 68 — 2026-08-13
 
 Codename: `studio-focus-slice4-home-lead-priority`  
-Status: **DEPLOYED CANDIDATE — REAL USER SMOKE PENDING**
+Status: **COMPLETE — REAL USER PASS**  
+Accepted: **2026-08-14**
 
 Home lead priority corrective:
 
@@ -18,7 +19,7 @@ Home lead priority corrective:
 - no Worker route, R2 mutation, Track Manager authority change or public Worker deployment;
 - Phase 7-C runtime Slice 1 remains not started.
 
-Exact candidate evidence:
+Exact acceptance evidence:
 
 ```text
 Safety before change  safety/pre-build68-home-lead-priority-20260813-2228
@@ -26,14 +27,15 @@ Feature branch        agent/build68-home-lead-priority
 PR                    #96
 Tested head           cf5131f489d72ca5fae72544dacd9eaecc78077f
 Validation run        31741483430 · SUCCESS
-Merge / current main  5c0428e500b4e6d5c9d1069bb440eac78b79955e
+Runtime merge         5c0428e500b4e6d5c9d1069bb440eac78b79955e
 Pages deploy run      31743413418 · SUCCESS
-Real-user smoke       PENDING
+Real-user smoke       PASS · 2026-08-14
+Post-pass checkpoint  safety/post-build68-home-real-user-pass-20260814-0005
 ```
 
 Detailed record: [`changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md`](changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md).
 
-## Current accepted release
+## Immediate predecessor
 
 ### v0.19.3 · Build 67 — 2026-08-13
 
@@ -51,7 +53,7 @@ Foundation Regression Repair closeout:
 - Build 66 made Audio, Cover, Thumbnail, Lyrics TXT and Video/Canvas roles visually distinct and exposed the missing-master-audio synchronization prerequisite;
 - Build 67 moves canonical `LYRICS TXT` into a permanent top-level Lyrics source block before synchronization;
 - public fallback remains read-only and public Worker v2.7 was not redeployed;
-- Phase 7-C foundation-repair gate is cleared, while runtime Slice 1 remains not yet started.
+- Phase 7-C foundation-repair gate was cleared before Build 68.
 
 Accepted deployment evidence:
 
@@ -69,17 +71,17 @@ Public Worker         v2.7            unchanged
 
 Full acceptance evidence: [`docs/STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md`](docs/STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md).
 
-## Immediate predecessor
+## Earlier accepted Studio Focus closeout
 
 ### v0.19.2 · Build 62 — Studio Focus program closeout REAL USER PASS
 
-Build 62 remains the accepted Studio Focus program closeout. Build 67 is a later foundation-repair closeout and does not create a new Studio Focus slice.
+Build 62 remains the accepted Studio Focus program closeout. Build 67 is the later foundation-repair closeout; Build 68 is the current accepted Studio runtime.
 
 Historical Build 63 remains superseded and is not reused. Build 64 remains failed-smoke evidence; Builds 65 and 66 are corrective lineage superseded by Build 67.
 
 ## Detailed history
 
-- Build 68 candidate: [`changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md`](changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md)
+- Build 68 accepted: [`changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md`](changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md)
 - Foundation repair closeout: [`docs/STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md`](docs/STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md)
 - Build 64 failed-smoke repair record: [`docs/STUDIO-BUILD64-FOUNDATION-REGRESSION-REPAIR.md`](docs/STUDIO-BUILD64-FOUNDATION-REGRESSION-REPAIR.md)
 - Build 67 detailed record: [`changelogs/CHANGELOG-STUDIO-FOCUS-BUILD67.md`](changelogs/CHANGELOG-STUDIO-FOCUS-BUILD67.md)
