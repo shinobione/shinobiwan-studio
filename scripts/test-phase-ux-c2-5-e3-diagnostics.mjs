@@ -36,7 +36,7 @@ const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const phaseUxLine = /^0\.(?:12|13|14|15)\./.test(releaseVersion) && /^phase-ux-(?:c2-5-e|c3)-/.test(codename);
 const phase7Line = /^0\.(?:16|17)\./.test(releaseVersion) && codename.startsWith('phase7-');
-const studioFocusLine = /^0\.17\./.test(releaseVersion) && codename.startsWith('studio-focus-');
+const studioFocusLine = /^0\.(?:17|18)\./.test(releaseVersion) && codename.startsWith('studio-focus-');
 assert.ok(phaseUxLine || phase7Line || studioFocusLine, 'C2.5-E3 ancestry must remain on the validated PHASE UX line or explicitly authorized Phase 7 / Studio Focus successor.');
 assert.ok(releaseBuild >= 37, 'C2.5-E3 ancestry must remain at Build 37 or later.');
 assert.equal(pkg.version, releaseVersion);
