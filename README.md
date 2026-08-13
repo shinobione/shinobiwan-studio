@@ -14,7 +14,10 @@ Studio          v0.17.6 · Build 56    Studio Focus Slice 2 · REAL USER PASS
 SonicTrace      V2-E Build 08         FULL profile + R2 canonical reread · REAL USER PASS
 
 Current candidate:
-Studio          v0.18.0 · Build 57    Studio Focus Slice 3 · Track Workshop
+Studio          v0.18.1 · Build 58    Studio Focus Slice 3 · smoke corrective
+
+Historical candidate:
+Studio          v0.18.0 · Build 57    Track Workshop · deployed smoke evidence · NOT ACCEPTED
 
 Protected stack:
 Track Manager   v5.19
@@ -26,13 +29,13 @@ LRC Maker       6.3.8
 
 **PHASE UX, Phase 7-A and Phase 7-B remain closed as REAL USER PASS. Studio Focus is the active presentation/production-ergonomics program. Phase 7-C remains explicitly CLOSED / NOT STARTED.**
 
-Build 57 is a deployed-smoke candidate only after CI + Pages publication. Its artist-facing Track Workspace model is:
+The active Slice 3 artist-facing Track Workspace model remains:
 
 ```text
 Track · Visuals · Lyrics · Release
 ```
 
-It does not create a new canonical write authority. Track Manager/R2 ownership, Lyrics private reread receipts, SonicTrace persistence and native Release Campaign `canonicalWrite: false` remain unchanged.
+Build 58 does not create a new canonical write authority. Track Manager/R2 ownership, Lyrics private reread receipts, SonicTrace persistence and native Release Campaign `canonicalWrite: false` remain unchanged.
 
 See:
 
@@ -40,6 +43,7 @@ See:
 - [`docs/STUDIO-FOCUS-PRODUCTION-FIRST-UX.md`](docs/STUDIO-FOCUS-PRODUCTION-FIRST-UX.md)
 - [`CHANGELOG-STUDIO-FOCUS-BUILD56.md`](CHANGELOG-STUDIO-FOCUS-BUILD56.md)
 - [`CHANGELOG-STUDIO-FOCUS-BUILD57.md`](CHANGELOG-STUDIO-FOCUS-BUILD57.md)
+- [`CHANGELOG-STUDIO-FOCUS-BUILD58.md`](CHANGELOG-STUDIO-FOCUS-BUILD58.md)
 - [`docs/PHASE-UX-FINAL-CLOSEOUT-20260812.md`](docs/PHASE-UX-FINAL-CLOSEOUT-20260812.md)
 - [`docs/PHASE-7-A-BUILD46-REAL-USER-PASS.md`](docs/PHASE-7-A-BUILD46-REAL-USER-PASS.md)
 - [`docs/PHASE-7-B-BUILD51-REAL-USER-PASS.md`](docs/PHASE-7-B-BUILD51-REAL-USER-PASS.md)
@@ -101,7 +105,7 @@ Accepted checkpoint:
 safety/post-studio-focus-build56-real-user-pass-20260813-0143
 ```
 
-### Slice 3 — Build 57 · CANDIDATE
+### Slice 3 — Build 57 → Build 58 · CANDIDATE
 
 Target Track Workspace mental model:
 
@@ -119,6 +123,7 @@ Track · Visuals · Lyrics · Release
 **Visuals**
 - canonical Cover + Thumbnail + Canvas controls;
 - Cover and Canvas previews together;
+- canonical Canvas preview is **9:16** in Build 58;
 - campaign format work handed to Release.
 
 **Lyrics**
@@ -135,13 +140,40 @@ Track · Visuals · Lyrics · Release
 
 Historical Workspace route tokens remain valid for deep links/backward compatibility: `overview`, `metadata`, `assets`, `lyrics`, `intelligence`, `market`, `versions`, `publishing`.
 
-Pre-Build57 checkpoint:
+#### Build 57 deployed smoke — NOT ACCEPTED
+
+The first deployed Track Workshop smoke exposed three UX issues:
+
+- Studio had fallen back to the LaunchPAD public catalog, so two private `To finish` tracks were hidden while the UI misleadingly displayed `0 To finish / 31 Released / 31 All`;
+- Visuals framed the canonical Canvas as 16:9 instead of the LaunchPAD 9:16 contract;
+- `EmbeddedLyricsStudio` remained intact but public fallback silently showed raw lyrics text, making the engine look removed.
+
+The SonicTrace `Private analysis is locked` page was correct for public fallback; the preceding full-analysis action was simply too optimistic in that state.
+
+Build 57 therefore remains historical deployed candidate evidence and does **not** receive REAL USER PASS.
+
+#### Build 58 smoke corrective
+
+Build 58 preserves the Track Workshop model and corrects only the smoke findings:
+
+- public fallback states that Draft / To finish / Ready tracks are hidden, not deleted;
+- unavailable private `To finish` / `Ready` counts render as `—`, never false zero;
+- public fallback defaults to the Released projection instead of an empty To finish view;
+- `Open Track Manager ↗` + `Retry private read` recovery actions are visible in Tracks and Track Workspace;
+- when PRIVATE READ returns, Tracks returns to the `To finish` filter;
+- public Track Workspace shows a persistent `PUBLIC READ-ONLY FALLBACK` notice;
+- public Track no longer promises full SonicTrace analysis while the private layer is locked;
+- Lyrics public fallback explicitly shows `LYRICS STUDIO LOCKED` while keeping the validated embedded engine/private-read gate;
+- public lyric text is only a secondary preview;
+- Visuals Canvas is 9:16 with `object-fit: contain`, so the canonical video is not cropped.
+
+Pre-Build58 checkpoint:
 
 ```text
-safety/pre-build57-track-workshop-20260813-0143
+safety/pre-build58-slice3-smoke-corrective-20260813-0226
 ```
 
-Slice 4 — compact/invisible SonicTrace assistant — remains **PLANNED / NOT STARTED** until Build 57 receives deployed real-user acceptance.
+Slice 4 — compact/invisible SonicTrace assistant — remains **PLANNED / NOT STARTED** until Build 58 receives deployed real-user acceptance.
 
 ## Native Release Campaign
 
@@ -251,7 +283,7 @@ Track Manager remains the protected canonical write authority. Studio uses opera
 
 Studio Focus may change **which controls are shown together**, but not where those mutations go.
 
-Build 57 specifically scopes the existing AssetsManager presentation:
+Build 57/58 scope the existing AssetsManager presentation:
 
 - Track → Audio;
 - Visuals → Cover / Thumbnail / Video-Canvas.
@@ -268,6 +300,7 @@ Both continue to call the same guarded Track Manager asset APIs.
 - external provider links are navigation only, not API/key integrations;
 - canonical-write receipts require private canonical rereads;
 - public fallback can never verify a write;
+- public fallback never reconstructs or invents hidden private tracks;
 - no Album membership/order mutation from Catalog Intelligence;
 - no Worker deployment is implied by Studio Focus;
 - **Phase 7-C remains CLOSED / NOT STARTED.**
@@ -275,8 +308,10 @@ Both continue to call the same guarded Track Manager asset APIs.
 ## Rollback / acceptance anchors
 
 ```text
-safety/post-studio-focus-build56-real-user-pass-20260813-0143
+safety/pre-build58-slice3-smoke-corrective-20260813-0226
+safety/studio-focus-build57-candidate-20260813
 safety/pre-build57-track-workshop-20260813-0143
+safety/post-studio-focus-build56-real-user-pass-20260813-0143
 safety/post-studio-focus-build53-real-user-pass-20260813-0032
 safety/post-phase7-b-build51-real-user-pass-20260812-2120
 safety/pre-phase7-b-build50-20260812-1826
@@ -296,4 +331,6 @@ For a new Studio Focus slice:
 5. deployed browser behavior must then be reviewed by the real user;
 6. only observed behaviors are promoted to REAL USER PASS and checkpointed.
 
-Do not mutate production media merely to manufacture a smoke. Do not start Phase 7-C without fresh explicit authorization.
+For Build 58 specifically, the next deployed smoke must prove the truthful public fallback, PRIVATE READ recovery, 9:16 Canvas preview and restoration of the embedded Lyrics Studio after private auth.
+
+Do not mutate production media merely to manufacture a smoke. Do not start Slice 4 or Phase 7-C without fresh explicit authorization.
