@@ -2,3 +2,10 @@
    The historical provider field is retained only in browser-local draft/ZIP schema compatibility.
    It never altered prompt generation, so the misleading selector is removed from the artist-facing UI. */
 .rc-provider-field{display:none!important}
+
+/* TrackWorkspace still carries two legacy Sound strings inside a large protected-write surface.
+   Keep the corrective isolated in the final presentation layer rather than rewriting that surface through the connector. */
+.workspace-focus-stage-grid>a:nth-child(4) strong{font-size:0}
+.workspace-focus-stage-grid>a:nth-child(4) strong::after{content:'Sonic';font-size:.86rem}
+.workspace-focus-subpage:has(.sonic-panel) .workspace-focus-subpage-head .eyebrow{font-size:0}
+.workspace-focus-subpage:has(.sonic-panel) .workspace-focus-subpage-head .eyebrow::after{content:'TRACK / SONIC';font-size:.68rem}
