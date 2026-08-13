@@ -1,7 +1,7 @@
 # SHINOBIWAN STUDIO — STUDIO FOCUS / PRODUCTION-FIRST UX
 
-Status: **SLICES 1–4 COMPLETE · REAL USER PASS · PROGRAM CLOSEOUT PENDING**  
-Current accepted release: **Studio v0.19.1 · Build 61**  
+Status: **SLICES 1–4 COMPLETE · PROGRAM CLOSEOUT COMPLETE · REAL USER PASS**  
+Current accepted release: **Studio v0.19.2 · Build 62**  
 Updated: 2026-08-13
 
 This document is the active product/UX contract for Studio Focus. Historical build detail belongs in milestone docs and [`../changelogs/`](../changelogs/README.md).
@@ -10,7 +10,7 @@ This document is the active product/UX contract for Studio Focus. Historical bui
 
 > When everything works, technical machinery should disappear. When something fails, enough technical detail must remain available to understand and recover safely.
 
-Studio is an artist production tool first; Track Manager, R2, SonicTrace and LRC Maker keep their validated authority underneath.
+Studio is an artist production tool first; Track Manager, R2, SonicTrace and LRC Maker keep their validated responsibilities underneath.
 
 ## Accepted build chain
 
@@ -24,8 +24,9 @@ Studio is an artist production tool first; Track Manager, R2, SonicTrace and LRC
 | Build 58 / Slice 3B | truthful fallback + 9:16 Canvas + Lyrics recovery | **REAL USER PASS** |
 | Build 60 / Slice 4A | compact SonicTrace + production/publication semantics | deployed candidate, not accepted |
 | Build 61 / Slice 4B | sidebar + SonicTrace presentation corrective | **REAL USER PASS** |
+| Build 62 / Program closeout | cross-flow corrective + final acceptance | **REAL USER PASS** |
 
-Build 59 was reserved by parallel work and was deliberately not reused.
+Build 62 is not a fifth Studio Focus slice. It is the corrective/final acceptance build for the whole program. Build 59 was reserved by parallel work and was deliberately not reused.
 
 ## 1 — Artist-first shell
 
@@ -88,6 +89,10 @@ Track combines the information actually needed while working on a song:
 - compact artist-facing SonicTrace conclusions;
 - secondary metadata and full diagnostics behind progressive disclosure.
 
+The artist-facing production step uses **`Sonic` / `SonicTrace`**, not the ambiguous legacy `Sound` wording.
+
+A legacy French track type value `Titre d'Album` is presented in the artist-facing facts card as **`Album track`** without silently changing stored metadata.
+
 ### Visuals
 
 Visuals owns the canonical visual identity:
@@ -97,6 +102,12 @@ Visuals owns the canonical visual identity:
 - Canvas/video;
 - canonical Canvas preview in **9:16**;
 - protected existing Track Manager asset APIs only.
+
+The accepted Build 62 closeout additionally confirms:
+
+- public-cover palette extraction works without a credential/CORS failure;
+- extracted-palette geometry stays stable when the save action appears;
+- explicit palette save succeeds on the exercised legacy track after the paired Track Manager v5.20 revision fix.
 
 Release-campaign format generation remains under Release, not mixed into canonical Visuals state.
 
@@ -124,6 +135,8 @@ Release combines:
 - non-canonical ZIP export.
 
 Release Campaign remains `canonicalWrite: false`.
+
+The removed `Premium provider` selector did not participate in MASTER, 1:1 or 9:16 prompt generation. Accepted behavior is provider-agnostic prompt generation with Google Flow retained as a direct convenience handoff.
 
 ## 3 — SonicTrace as an assistant, not a dashboard
 
@@ -197,7 +210,7 @@ Studio Focus must not:
 
 ## 7 — Accepted Slice 4 polish
 
-Build 61 is the accepted Slice 4 baseline after deployed real-user smoke confirmed:
+Build 61 remains the accepted Slice 4 baseline after deployed real-user smoke confirmed:
 
 - bottom-anchored `PHASE 7-B · FOCUS` release/status card in desktop sidebar;
 - compact release/status presentation rather than a stranded text block;
@@ -216,21 +229,22 @@ Evidence: [`STUDIO-FOCUS-BUILD61-REAL-USER-PASS.md`](STUDIO-FOCUS-BUILD61-REAL-U
 
 ## 8 — Program closeout
 
-Status: **PLANNED / NOT STARTED**.
+Status: **COMPLETE · REAL USER PASS**.
 
-Before declaring the whole Studio Focus program closed, perform a representative cross-flow deployed review:
+The representative deployed closeout reviewed the daily shell and Track workflow, then deliberately stopped rather than claiming PASS when issues were found. Build 62 and paired Track Manager v5.20 corrected those findings, after which the final deployed smoke passed.
 
-1. Home continuation + Needs attention;
-2. Tracks filters and card readability;
-3. Track canonical audio/details;
-4. Visuals Cover + 9:16 Canvas;
-5. Lyrics private-read engine + truthful public lock state;
-6. compact SonicTrace + full Advanced diagnostics;
-7. Release checklist + review-only Release Campaign;
-8. laptop/mobile/responsive pass;
-9. decide whether Workflow should remain under Advanced or be further absorbed into Home.
+Final accepted closeout decisions:
 
-No production mutation is required merely to manufacture this closeout.
+1. Home remains the daily continuation/summary surface;
+2. Tracks remains the main production library;
+3. Track / Visuals / Lyrics / Release remains the artist-facing workspace model;
+4. Visuals palette extraction/save is accepted on the exercised legacy track;
+5. compact SonicTrace stays on Track while full diagnostics remain under Advanced;
+6. Release Campaign remains review-only and provider-agnostic;
+7. **Workflow remains under Advanced** because it is the detailed full production queue while Home already owns the daily abbreviated queue;
+8. Phase 7-C is not opened by this acceptance.
+
+Final evidence: [`STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md`](STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md).
 
 ## 9 — Later premium-feel polish
 
@@ -247,6 +261,6 @@ Polish must never hide state, invent success or slow the production workflow.
 
 ## Roadmap boundary
 
-Studio Focus acceptance does **not** authorize Phase 7-C.
+Studio Focus is complete, but that acceptance does **not** authorize Phase 7-C.
 
 **Phase 7-C remains CLOSED / NOT STARTED** until fresh explicit authorization and its own safety branch, tests, PR, CI, deployment and real-user smoke.
