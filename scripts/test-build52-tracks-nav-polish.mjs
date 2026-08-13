@@ -9,7 +9,7 @@ const pkg = JSON.parse(read('package.json'));
 const buildMatch = release.match(/build:\s*(\d+)/);
 const versionMatch = release.match(/version:\s*'([^']+)'/);
 assert.ok(buildMatch && Number(buildMatch[1]) >= 52, 'Build 52 Tracks label must survive every successor build.');
-assert.ok(versionMatch && /^0\.(?:17|18)\./.test(versionMatch[1]), 'Build 52 Tracks label must survive the authorized Studio Focus 0.17/0.18 successor lines.');
+assert.ok(versionMatch && /^0\.(?:17|18|19)\./.test(versionMatch[1]), 'Build 52 Tracks label must survive the authorized Studio Focus 0.17/0.18/0.19 successor lines.');
 assert.equal(pkg.version, versionMatch[1]);
 
 assert.ok(app.includes("{ route: 'catalog', label: 'Tracks', glyph: '♫' }"), 'Daily navigation must present the catalog route as Tracks.');
