@@ -9,10 +9,13 @@ const workspace = read('src/components/TrackWorkspace.tsx');
 const css = read('src/studio-focus-workshop.css');
 const catalogApi = read('src/services/catalog-api.ts');
 
-assert.match(release, /version:\s*'0\.18\.1'/);
-assert.match(release, /build:\s*58/);
-assert.match(release, /studio-focus-slice3-smoke-corrective/);
-assert.equal(pkg.version, '0.18.1');
+const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
+const build58 = version === '0.18.1' && build === 58 && codename === 'studio-focus-slice3-smoke-corrective';
+const studioFocusSuccessor = /^0\.(?:18|19)\.\d+$/.test(version) && build > 58 && codename.startsWith('studio-focus-');
+assert.ok(build58 || studioFocusSuccessor, `Build 58 smoke-corrective ancestry must survive authorized Studio Focus successors, got ${version} Build ${build} / ${codename}.`);
+assert.equal(pkg.version, version);
 assert.ok(pkg.scripts['check:focus']?.includes('test-studio-focus-build58.mjs'), 'Build 58 guard must run in the Studio Focus chain.');
 
 for (const marker of [
@@ -25,8 +28,8 @@ for (const marker of [
   "setProductionFilter('released')",
   "setProductionFilter('to-finish')",
 ]) assert.ok(catalog.includes(marker), `Build 58 truthful public catalog fallback is missing ${marker}.`);
-assert.ok(catalog.includes("privateRead ? counts.toFinish : '—'"), 'Public fallback must not present a false zero To finish count.');
-assert.ok(catalog.includes("privateRead ? counts.ready : '—'"), 'Public fallback must not present a false zero Ready count.');
+assert.ok(catalog.includes("privateRead ? counts.toFinish : '—'"), 'Public fallback must not present a false zero Needs attention count.');
+assert.ok(catalog.includes("privateRead ? counts.ready : '—'"), 'Public fallback must not present a false zero Production complete count.');
 assert.ok(catalogApi.includes("readSource: 'public'"), 'Public catalog fallback contract must remain explicit.');
 assert.ok(catalogApi.includes("publishing: {\n      catalogVisible: true"), 'Public fallback must remain a projection of public/released catalog state, not invent private tracks.');
 
@@ -53,4 +56,4 @@ for (const forbidden of ['saveAdminTrackMetadata', 'uploadAdminTrackAsset', 'del
   assert.ok(!catalog.includes(forbidden), `Build 58 fallback UX must not acquire canonical write authority: ${forbidden}`);
 }
 
-console.log('Studio Focus Build 58 guard passed: public fallback is truthful, private tracks are never faked as zero/deleted, Lyrics/SonicTrace access states are explicit, and canonical Canvas preview is 9:16 without changing write authority.');
+console.log(`Studio Focus Build 58 ancestry passed under ${version} Build ${build}: public fallback remains truthful, private tracks are never faked as zero/deleted, Lyrics/SonicTrace access states remain explicit, and canonical Canvas preview stays 9:16 without changing write authority.`);
