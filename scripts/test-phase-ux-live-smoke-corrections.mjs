@@ -45,12 +45,17 @@ assert.equal(merged.values.title, 'My manual title', 'TXT inference must not ove
 assert.ok(merged.preserved.includes('title'));
 assert.equal(merged.values.bpm, '144');
 
-for (const marker of ['multiple', 'onDrop=', 'mergeIntakeFiles', 'parseTrackTxt', 'EXISTING USER VALUE PRESERVED', 'DETECTED FROM TXT', 'INFERRED', 'Create canonical draft']) assert.ok(create.includes(marker), `Corrective New Track intake is missing ${marker}.`);
+for (const marker of ['multiple', 'onDrop=', 'mergeIntakeFiles', 'parseTrackTxt', 'EXISTING USER VALUE PRESERVED', 'DETECTED FROM TXT', 'INFERRED', 'Create draft', 'Create & Publish']) assert.ok(create.includes(marker), `Corrective New Track intake is missing ${marker}.`);
 assert.ok(create.includes("intakeFileForRole(assignments, 'lyrics')"));
 assert.ok(create.includes("type=\"file\" multiple"));
 assert.ok(create.indexOf('{step === 1 && <section className="intake-step-panel intake-media-step">') > -1, 'Multi-file drop must be the first New Track step.');
 assert.ok(create.includes("(step === 2 && (!basicsValid || !albumReady))"), 'Metadata + canonical Album resolution must gate the transition from step two to Review.');
 assert.ok(create.includes('CoverImagePreview'));
+assert.ok(create.includes('validateAdminTrackMetadata'), 'Create & Publish must reuse the protected metadata validation operation.');
+assert.ok(create.includes('saveAdminTrackMetadata'), 'Create & Publish must reuse the protected metadata save operation.');
+assert.ok(create.includes('PUBLISH_QUALITY_BLOCKED'), 'Create & Publish must preserve a verified draft when quality blocks publication.');
+assert.ok(!create.includes('safeInitialTrackAlbum'), 'TM v5.21 Album cache must not be sent through generic Track create metadata.');
+assert.ok(!create.includes('saveTrack('), 'New Track must not introduce a generic saveTrack write surface.');
 
 const uploadTransport = service.slice(service.indexOf('async function uploadViaFetch'), service.indexOf('export async function createAdminTrack'));
 assert.ok(uploadTransport.includes('await fetch(url'));
@@ -96,4 +101,4 @@ if (phaseUxLine) {
   assert.ok(workspace.includes('<ContinuationReceiptBanner trackId={track.id}'), 'Authorized Phase 7-B / Studio Focus successor may preserve receipt orchestration only above the previously validated corrective Workspace behavior.');
 }
 
-console.log('PHASE UX live-smoke corrective guard passed: Track Manager intake parity, canonical Album gating, simple multipart upload, canonical lost-response recovery, editable palette and non-overlapping sticky context survive the authorized Studio Focus successor.');
+console.log('PHASE UX live-smoke corrective guard passed: Track Manager intake parity, canonical Album gating, guarded optional publication, simple multipart upload, canonical lost-response recovery, editable palette and non-overlapping sticky context survive the authorized Studio Focus successor.');
