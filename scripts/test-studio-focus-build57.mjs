@@ -9,10 +9,13 @@ const main = read('src/main.tsx');
 const release = read('src/release.ts');
 const pkg = JSON.parse(read('package.json'));
 
-assert.match(release, /version:\s*'0\.18\.0'/);
-assert.match(release, /build:\s*57/);
-assert.match(release, /studio-focus-track-workshop/);
-assert.equal(pkg.version, '0.18.0');
+const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
+const build57 = version === '0.18.0' && build === 57 && codename === 'studio-focus-track-workshop';
+const slice3Successor = /^0\.18\.\d+$/.test(version) && build > 57 && codename.startsWith('studio-focus-');
+assert.ok(build57 || slice3Successor, `Build 57 Track Workshop ancestry must survive authorized Slice 3 successors, got ${version} Build ${build} / ${codename}.`);
+assert.equal(pkg.version, version);
 assert.ok(pkg.scripts['check:focus']?.includes('test-studio-focus-build57.mjs'), 'Build 57 Track Workshop guard must run in the Studio Focus chain.');
 assert.ok(main.indexOf("import './studio-focus-workshop.css';") > main.indexOf("import './studio-focus-status-labels.css';"), 'Track Workshop styles must layer after the accepted Slice 2 presentation.');
 
@@ -34,7 +37,7 @@ for (const marker of [
   '<MetadataValidationPanel',
   '<SonicTracePanel',
   '<TrackToMarketPanel',
-]) assert.ok(workspace.includes(marker), `Build 57 Track Workshop is missing ${marker}.`);
+]) assert.ok(workspace.includes(marker), `Build 57 Track Workshop ancestry is missing ${marker}.`);
 
 assert.ok(workspace.includes("kinds={['audio']}"), 'Track must scope canonical asset management to master audio.');
 assert.ok(workspace.includes("kinds={['cover', 'thumbnail', 'video']}"), 'Visuals must scope canonical asset management to cover/thumbnail/video.');
@@ -67,4 +70,4 @@ assert.ok(!workspace.includes("label: 'Assets'"), 'Assets must not return as an 
 assert.ok(!workspace.includes("label: 'SonicTrace'"), 'SonicTrace must not remain a daily top-level Track tab.');
 assert.ok(!workspace.includes("label: 'Release Pack'"), 'Release Pack must not remain a daily top-level Track tab.');
 
-console.log('Studio Focus Build 57 guard passed: Track / Visuals / Lyrics / Release regroup the existing guarded workspace without changing canonical ownership or removing legacy deep links.');
+console.log(`Studio Focus Build 57 ancestry passed under ${version} Build ${build}: Track / Visuals / Lyrics / Release still regroup the guarded workspace without changing canonical ownership or removing legacy deep links.`);
