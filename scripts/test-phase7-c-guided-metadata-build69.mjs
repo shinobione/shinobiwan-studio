@@ -4,22 +4,21 @@ import fs from 'node:fs';
 const release = fs.readFileSync('src/release.ts', 'utf8');
 const home = fs.readFileSync('src/components/FocusHome.tsx', 'utf8');
 const catalog = fs.readFileSync('src/components/CatalogView.tsx', 'utf8');
-const workflow = fs.readFileSync('src/components/WorkflowView.tsx', 'utf8');
+const workflowView = fs.readFileSync('src/components/WorkflowView.tsx', 'utf8');
+const workflow = fs.readFileSync('src/phase7-workflow.ts', 'utf8');
 const workspace = fs.readFileSync('src/components/TrackWorkspace.tsx', 'utf8');
 const metadata = fs.readFileSync('src/components/MetadataValidationPanel.tsx', 'utf8');
+const intake = fs.readFileSync('src/components/TrackCreatePanel.tsx', 'utf8');
+const health = fs.readFileSync('src/content-health.ts', 'utf8');
 const adminApi = fs.readFileSync('src/services/admin-api.ts', 'utf8');
 
 assert.match(release, /version:\s*'0\.19\.3'/);
-assert.match(release, /build:\s*69/);
-assert.match(release, /codename:\s*'studio-focus-slice4-phase7c-slice1-guided-metadata'/);
-
-// Home / Tracks / Workflow must preserve the workflow's metadata destination.
+assert.match(release, /build:\s*(69|70)/);
+assert.match(release, /codename:\s*'studio-focus-slice4-(phase7c-slice1-guided-metadata|phase7c-presmoke-publication-intake-fix)'/);
 assert.ok(!home.includes("if (section === 'metadata' || section === 'versions') return 'overview';"));
 assert.ok(home.includes("if (section === 'versions') return 'overview';"));
 assert.ok(catalog.includes('trackHref(track.id, workflow.nextAction.section)'));
-assert.ok(workflow.includes('trackHref(track.id, item.nextAction.section)'));
-
-// The existing protected metadata operation remains the only write path.
+assert.ok(workflowView.includes('trackHref(track.id, item.nextAction.section)'));
 assert.ok(metadata.includes('validateAdminTrackMetadata(track.id, track.updatedAt, patch)'));
 assert.ok(metadata.includes('Normalized proposal preview'));
 assert.ok(metadata.includes('globalThis.confirm('));
@@ -28,13 +27,26 @@ assert.ok(metadata.includes('CANONICAL REREAD · VERIFIED'));
 assert.ok(adminApi.includes("writeCapabilities.includes('metadata')"));
 assert.ok(adminApi.includes('const reread = await getAdminTrack(trackId);'));
 assert.ok(!adminApi.includes('saveTrack('));
-
-// Build 69 adds the guided context and forbids public fallback as post-save proof.
 assert.ok(workspace.includes('PHASE 7-C / GUIDED METADATA'));
 assert.ok(workspace.includes('buildTrackWorkflow(track)'));
 assert.ok(workspace.includes("section === 'metadata' && (item.id !== trackId || item.readSource !== 'private')"));
 assert.ok(workspace.includes('Public fallback cannot verify this write.'));
 assert.ok(workspace.includes('CURRENT NEXT ACTION'));
 assert.ok(workspace.includes("privateRead ? 'PRIVATE CANONICAL' : 'LOCKED · PUBLIC FALLBACK'"));
+assert.ok(!health.includes("item('publication'"));
+assert.ok(health.includes('production readiness deliberately excludes publication state'));
+assert.ok(workflow.includes("label: 'Publish track'"));
+assert.ok(workflow.includes('Production ready · draft · publish when ready'));
+assert.ok(metadata.includes('albumBoundType'));
+assert.ok(metadata.includes('Derived from the current Album binding'));
+assert.ok(metadata.includes('qualityIssues'));
+assert.ok(metadata.includes('Why publication is blocked'));
+assert.ok(metadata.includes('Prepare publication'));
+assert.ok(!intake.includes('safeInitialTrackAlbum'));
+assert.ok(intake.includes('Create & Publish'));
+assert.ok(intake.includes('validateAdminTrackMetadata'));
+assert.ok(intake.includes('saveAdminTrackMetadata'));
+assert.ok(intake.includes('PUBLISH_QUALITY_BLOCKED'));
+assert.ok(!intake.includes('saveTrack('));
 
-console.log('Build 69 Phase 7-C guided metadata check passed on the accepted v0.19.3 / Studio Focus Slice 4 compatibility lineage.');
+console.log('Phase 7-C guided metadata and Build 70 pre-smoke corrective checks passed.');
