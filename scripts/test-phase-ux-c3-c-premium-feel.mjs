@@ -12,7 +12,8 @@ const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 const c3Candidate = /^0\.15\.\d+$/.test(version) && codename.startsWith('phase-ux-c3-');
 const phase7Successor = /^0\.(?:16|17)\.\d+$/.test(version) && codename.startsWith('phase7-');
 const studioFocusSuccessor = /^0\.(?:17|18|19)\.\d+$/.test(version) && codename.startsWith('studio-focus-');
-assert.ok(c3Candidate || phase7Successor || studioFocusSuccessor, `C3-C premium interaction layer must remain inherited by the C3 candidate or authorized Phase 7 / Studio Focus successor, got ${version} / ${codename}.`);
+const phase7CSuccessor = /^0\.20\.\d+$/.test(version) && codename.startsWith('phase7c-');
+assert.ok(c3Candidate || phase7Successor || studioFocusSuccessor || phase7CSuccessor, `C3-C premium interaction layer must remain inherited by the C3 candidate or authorized Phase 7 / Studio Focus / Phase 7-C successor, got ${version} / ${codename}.`);
 assert.ok(build >= 44, `C3-C inherited build must remain >= 44, got ${build}.`);
 
 for (const token of [
@@ -32,4 +33,4 @@ assert.match(css, /animation: none !important/, 'Reduced motion must suppress en
 assert.doesNotMatch(css, /animation-iteration-count:\s*infinite/i, 'C3-C must not add perpetual attention-seeking motion.');
 assert.doesNotMatch(css, /transition-delay:/i, 'C3-C must not delay real interactions.');
 
-console.log('C3-C premium feel passed inherited motion-token, press, glow, focus, map-safety and reduced-motion guards through the authorized Studio Focus successor.');
+console.log('C3-C premium feel passed inherited motion-token, press, glow, focus, map-safety and reduced-motion guards through the authorized Phase 7-C successor.');
