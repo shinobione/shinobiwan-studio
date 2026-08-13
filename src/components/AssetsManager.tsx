@@ -8,6 +8,7 @@ import {
   validateAdminTrackMetadata,
   type AdminAssetKind,
 } from '../services/admin-api';
+import { studioConfig } from '../services/config';
 import {
   deleteAdminTrackAsset,
   phase4ErrorPresentation,
@@ -36,6 +37,11 @@ const ASSETS: AssetDefinition[] = [
 function assetFor(track: StudioTrackDetail, kind: AdminAssetKind): StudioAsset | null {
   if (kind === 'lyrics') return track.assets.lyricsTxt;
   return track.assets[kind] || null;
+}
+
+function paletteFetchCredentials(url: string): RequestCredentials {
+  const trackManagerBase = studioConfig.trackManagerUrl.replace(/\/$/, '');
+  return url.startsWith(`${trackManagerBase}/api/media/`) ? 'include' : 'omit';
 }
 
 export function AssetsManager({
@@ -76,9 +82,18 @@ export function AssetsManager({
     if (selectedCover) return selectedCover;
     const current = track.assets.cover;
     if (!current) throw new Error('Choose a cover or upload one before extracting colors.');
-    const response = await fetch(current.fullUrl || current.url, { cache: 'no-store', credentials: 'include' });
-    if (!response.ok) throw new Error(`The current cover is unavailable (HTTP ${response.status}).`);
-    return response.blob();
+    const url = current.fullUrl || current.url;
+    try {
+      const response = await fetch(url, {
+        cache: 'no-store',
+        credentials: paletteFetchCredentials(url),
+        mode: 'cors',
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.blob();
+    } catch (reason) {
+      throw new Error(`Cover palette extraction could not read the current cover (${reason instanceof Error ? reason.message : String(reason)}).`);
+    }
   }
 
   async function recalculatePalette() {
@@ -90,7 +105,13 @@ export function AssetsManager({
       setPalettePreview(await extractCoverPalette(await paletteBlob()));
       setPaletteMessage('Preview recalculated. The saved manifest palette is still unchanged.');
     } catch (reason) {
-      setError(phase4ErrorPresentation(reason));
+      setError({
+        title: 'Palette extraction failed',
+        message: reason instanceof Error ? reason.message : String(reason),
+        nextAction: 'Reload Visuals, or select a local cover file and extract from that file before retrying.',
+        retrySafe: true,
+        technicalDetails: null,
+      });
     } finally {
       setPaletteBusy(false);
     }
