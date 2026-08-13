@@ -2,7 +2,7 @@
 
 Date: 2026-08-13
 
-Status: **CANDIDATE — CI + deployed real-user smoke required**
+Status: **SUPERSEDED AT REAL-USER SMOKE — NOT A REAL USER PASS**
 
 ## Goal
 
@@ -78,6 +78,18 @@ Unchanged authority:
 - cover palette save → existing protected metadata API;
 - stale revision / confirmation / rollback behavior unchanged.
 
+## Deployed real-user smoke result
+
+The first deployed Build 57 browser smoke on 2026-08-13 validated the overall `Track · Visuals · Lyrics · Release` regrouping but exposed three corrective issues:
+
+1. **Public fallback looked like data loss.** Studio had fallen back to `LaunchPAD public catalog`; only 31 published tracks were visible, while the two private `To finish` tracks disappeared from the visible library. The tracks were not deleted, but Build 57 still showed `0 To finish / 31 Released / 31 All`, which incorrectly looked authoritative.
+2. **Canvas preview ratio was wrong.** Visuals explicitly framed canonical Canvas as 16:9 even though the LaunchPAD Canvas contract is 9:16.
+3. **Lyrics engine availability was unclear.** `EmbeddedLyricsStudio` remained in code and correctly required PRIVATE READ + canonical audio + lyrics.txt, but public fallback silently substituted raw public lyrics text. This made the validated LRC Maker engine look removed.
+
+The reported SonicTrace `Private analysis is locked` screen was correct for public fallback. The UX issue was the preceding Track action looking like a guaranteed full-analysis link while PRIVATE READ was unavailable.
+
+Corrective successor: **Studio v0.18.1 · Build 58 — Slice 3 smoke corrective**.
+
 ## Safety boundaries
 
 Build 57 does **not**:
@@ -102,18 +114,14 @@ Pre-Build57 checkpoint:
 
 `safety/pre-build57-track-workshop-20260813-0143`
 
-## Acceptance target
+Deployed Build 57 candidate checkpoint:
 
-Deployed browser smoke must confirm:
+`safety/studio-focus-build57-candidate-20260813`
 
-1. only **Track / Visuals / Lyrics / Release** appear as normal Track tabs;
-2. Track shows useful identity + master audio without the old six-panel information wall;
-3. metadata editing remains reachable and save semantics are unchanged;
-4. Visuals shows Cover/Canvas and only visual asset controls;
-5. Lyrics still synchronizes/saves/privately verifies correctly;
-6. Release shows the compact checklist and the intact native Release Campaign;
-7. full SonicTrace remains reachable from Track details;
-8. legacy deep links do not break;
-9. no canonical write/regression is introduced by the regrouping.
+Pre-Build58 corrective checkpoint:
 
-CI green alone does not grant REAL USER PASS.
+`safety/pre-build58-slice3-smoke-corrective-20260813-0226`
+
+## Acceptance result
+
+Build 57 does **not** receive REAL USER PASS. Its runtime regrouping is preserved as Slice 3 ancestry, but acceptance moves to Build 58 after exact-head CI, Pages deployment and another deployed browser smoke.
