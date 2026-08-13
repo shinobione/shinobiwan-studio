@@ -9,9 +9,9 @@ const workspace = fs.readFileSync('src/components/TrackWorkspace.tsx', 'utf8');
 const metadata = fs.readFileSync('src/components/MetadataValidationPanel.tsx', 'utf8');
 const adminApi = fs.readFileSync('src/services/admin-api.ts', 'utf8');
 
-assert.match(release, /version:\s*'0\.19\.4'/);
+assert.match(release, /version:\s*'0\.19\.3'/);
 assert.match(release, /build:\s*69/);
-assert.match(release, /codename:\s*'studio-focus-phase7c-slice1-guided-metadata'/);
+assert.match(release, /codename:\s*'studio-focus-slice4-phase7c-slice1-guided-metadata'/);
 
 // Home / Tracks / Workflow must preserve the workflow's metadata destination.
 assert.ok(!home.includes("if (section === 'metadata' || section === 'versions') return 'overview';"));
@@ -37,4 +37,4 @@ assert.ok(workspace.includes('Public fallback cannot verify this write.'));
 assert.ok(workspace.includes('CURRENT NEXT ACTION'));
 assert.ok(workspace.includes("privateRead ? 'PRIVATE CANONICAL' : 'LOCKED · PUBLIC FALLBACK'"));
 
-console.log('Build 69 Phase 7-C guided metadata check passed on the v0.19 Studio Focus compatibility lineage.');
+console.log('Build 69 Phase 7-C guided metadata check passed on the accepted v0.19.3 / Studio Focus Slice 4 compatibility lineage.');
