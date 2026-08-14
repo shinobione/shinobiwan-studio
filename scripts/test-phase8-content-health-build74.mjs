@@ -9,7 +9,7 @@ const css = fs.readFileSync('src/phase8-content-health.css', 'utf8');
 const workflow = fs.readFileSync('src/phase7-workflow.ts', 'utf8');
 
 assert.match(release, /build:\s*74/);
-assert.match(release, /codename:\s*'studio-focus-phase8-content-health-truth'/);
+assert.match(release, /codename:\s*'studio-focus-slice4-phase8-content-health-truth'/);
 assert.ok(release.includes('build73AncestryMarker'));
 
 // Build73 truth: Canvas is optional and must not reduce production readiness.
