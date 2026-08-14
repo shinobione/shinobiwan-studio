@@ -31,31 +31,41 @@ function qualityErrorCount(track: StudioTrack): number {
 }
 
 function identityStage(track: StudioTrack): WorkflowStage {
-  const missing: string[] = [];
-  if (!track.title.trim()) missing.push('title');
-  if (!track.type.trim()) missing.push('type');
-  if (!track.status.trim()) missing.push('status');
-  if (!track.album?.id || !track.album?.title) missing.push('release binding');
+  const issues: string[] = [];
+  if (!track.title.trim()) issues.push('title');
+  if (!track.type.trim()) issues.push('type');
+  if (!track.status.trim()) issues.push('status');
+  if (!track.album?.id || !track.album?.title) issues.push('release binding');
+  if (track.year != null && (track.year < 1900 || track.year > 2200)) issues.push('valid release year');
 
-  if (missing.length) {
-    return { id: 'identity', label: 'Identity', state: 'blocked', detail: `Missing ${missing.join(', ')}`, section: 'metadata' };
+  if (issues.length) {
+    return { id: 'identity', label: 'Identity', state: 'blocked', detail: `Missing or invalid ${issues.join(', ')}`, section: 'metadata' };
   }
 
-  const errors = qualityErrorCount(track);
-  if (errors > 0) {
-    return { id: 'identity', label: 'Identity', state: 'attention', detail: `${errors} canonical quality error${errors === 1 ? '' : 's'}`, section: 'metadata' };
-  }
-
+  // Phase 7-C Slice 2: do not collapse every canonical quality error into Identity.
+  // Media, lyrics and intelligence own their explicit workflow prerequisites; the
+  // final Release stage still surfaces the aggregate Track Manager quality gate.
   return { id: 'identity', label: 'Identity', state: 'ready', detail: `${track.album.title} · ${track.status}`, section: 'metadata' };
 }
 
 function mediaStage(track: StudioTrack): WorkflowStage {
-  const missing: string[] = [];
-  if (!track.assets.audio) missing.push('audio');
-  if (!track.assets.cover) missing.push('cover');
+  const audioMissing = !track.assets.audio;
+  const coverMissing = !track.assets.cover;
 
-  if (missing.includes('audio')) return { id: 'media', label: 'Core media', state: 'blocked', detail: `Missing ${missing.join(' + ')}`, section: 'assets' };
-  if (missing.length) return { id: 'media', label: 'Core media', state: 'attention', detail: `Missing ${missing.join(' + ')}`, section: 'assets' };
+  if (audioMissing) {
+    return {
+      id: 'media',
+      label: 'Core media',
+      state: 'blocked',
+      detail: coverMissing ? 'Missing audio + cover · start with master audio' : 'Missing audio',
+      section: 'overview',
+    };
+  }
+
+  if (coverMissing) {
+    return { id: 'media', label: 'Core media', state: 'attention', detail: 'Audio ready · cover missing', section: 'assets' };
+  }
+
   return { id: 'media', label: 'Core media', state: 'ready', detail: track.assets.video ? 'Audio · cover · Canvas' : 'Audio · cover', section: 'assets' };
 }
 

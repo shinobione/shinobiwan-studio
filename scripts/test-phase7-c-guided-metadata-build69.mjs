@@ -16,8 +16,8 @@ const metadataDurationApi = fs.readFileSync('src/services/metadata-duration-api.
 const phase4Api = fs.readFileSync('src/services/phase4-admin-api.ts', 'utf8');
 
 assert.match(release, /version:\s*'0\.19\.3'/);
-assert.match(release, /build:\s*(69|70|71)/);
-assert.match(release, /codename:\s*'studio-focus-slice4-(phase7c-slice1-guided-metadata|phase7c-presmoke-publication-intake-fix|phase7c-duration-evidence-corrective)'/);
+assert.match(release, /build:\s*(69|70|71|72)/);
+assert.match(release, /codename:\s*'studio-focus-slice4-(phase7c-slice1-guided-metadata|phase7c-presmoke-publication-intake-fix|phase7c-duration-evidence-corrective|phase7c-slice2-guided-core-media)'/);
 assert.ok(!home.includes("if (section === 'metadata' || section === 'versions') return 'overview';"));
 assert.ok(home.includes("if (section === 'versions') return 'overview';"));
 assert.ok(catalog.includes('trackHref(track.id, workflow.nextAction.section)'));
@@ -70,4 +70,4 @@ assert.ok(!metadata.includes('name="duration"'));
 assert.ok(!adminApi.match(/AdminMetadataPatch[\s\S]{0,500}\| 'duration'/));
 assert.ok(!metadataDurationApi.includes('saveTrack('));
 
-console.log('Phase 7-C guided metadata, Build 70 pre-smoke corrective and Build 71 duration evidence checks passed.');
+console.log('Phase 7-C Slice 1 lineage through Build 72 compatibility checks passed.');
