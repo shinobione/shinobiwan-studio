@@ -1,20 +1,28 @@
 # PHASE 8 — Slice 1 scope audit
 
 Date: 2026-08-14  
-Status: **BUILD74 RUNTIME CANDIDATE — CONTENT HEALTH TRUTH**
+Status: **COMPLETE — BUILD74 REAL USER PASS / CONTENT HEALTH TRUTH**
 
-Phase 7-C is program-complete on accepted Studio Build73. Build74 is the first genuine Phase8 runtime scope.
+Phase 7-C is program-complete on accepted Studio Build73. Build74 is the first genuine Phase8 runtime scope and is now accepted after the full exact-head/deployment/browser gate.
 
-Safety checkpoint:
+Safety checkpoints:
 
 ```text
-safety/pre-phase8-content-health-build74-20260814-1810
+pre-runtime       safety/pre-phase8-content-health-build74-20260814-1810
+post-deploy       safety/post-build74-deployed-candidate-20260814-1827
+post-RUP          safety/post-build74-real-user-pass-20260814-1926
 ```
 
-Feature branch:
+Runtime branch / receipts:
 
 ```text
-agent/phase8-content-health-build74
+feature branch    agent/phase8-content-health-build74
+PR                #108
+exact tested head da7b5498dd8e1f6120c346e07fe1b1e741d40104
+validation        31819203565 · SUCCESS
+runtime merge     c95e33bcb0c33b18fc8e6e9a35a05ec28ad142a9
+Pages             31819333501 · SUCCESS · exact merge SHA
+real-user smoke   BUILD74 PASS · 2026-08-14
 ```
 
 ## Why Build74 exists
@@ -30,13 +38,13 @@ That meant Track Workspace could correctly show `Visuals ✓ · Cover ready · C
 
 A second truth mismatch also remained on Home: `PRODUCTION COMPLETE` was derived from full `workflow.ready`, which includes the Release/publication stage. A production-ready Draft could therefore be counted as not production-complete merely because publication was intentionally still pending.
 
-These are genuine Phase8 Content Health problems: global/readiness presentation was not fully aligned with the accepted production model.
+These were genuine Phase8 Content Health problems: global/readiness presentation was not fully aligned with the accepted production model.
 
-## Build74 bounded runtime scope
+## Accepted Build74 scope
 
-### 1. Unify per-track production readiness
+### 1. Unified per-track production readiness
 
-The 100-point production health model becomes:
+The accepted 100-point production health model is:
 
 ```text
 Identity      20
@@ -49,7 +57,7 @@ Production   100
 
 Canvas contributes **0** points and creates **0** attention items because it is optional.
 
-Identity health now mirrors the accepted Phase7 workflow prerequisites instead of the older metadata wish-list:
+Identity health mirrors the accepted Phase7 workflow prerequisites:
 
 - title;
 - type;
@@ -59,22 +67,24 @@ Identity health now mirrors the accepted Phase7 workflow prerequisites instead o
 
 Genres, languages and release-date completeness remain useful metadata/quality concerns but do not independently redefine the Phase7 Identity stage.
 
-### 2. Separate production from publication on Home
+### 2. Production and publication are separate on Home
 
-Home summary becomes explicit:
+The accepted summary keeps the established vocabulary:
 
 ```text
-PRODUCTION ATTENTION
+NEEDS ATTENTION
 PRODUCTION COMPLETE
 PUBLISHED
 DRAFTS
 ```
 
-`PRODUCTION COMPLETE` uses only the accepted non-Release stages. A production-ready Draft therefore remains production-complete while still waiting for the separate explicit Publish action.
+`NEEDS ATTENTION` and `PRODUCTION COMPLETE` now use production truth only. `PUBLISHED` and `DRAFTS` remain the separate publication axis.
 
-### 3. Add compact global Content Health on Home
+A production-ready Draft therefore remains production-complete while still waiting for the explicit Publish action.
 
-No new top-level page or duplicate Workflow queue is introduced.
+### 3. Compact global Content Health on Home
+
+No new top-level page or duplicate Workflow queue was introduced.
 
 Read-only signals:
 
@@ -96,17 +106,18 @@ Production-ready Drafts
 
 Each actionable signal links to the affected Track's **existing `workflow.nextAction`**. Phase8 does not invent a second priority model.
 
-### 4. Fix Home Next Action vocabulary drift
+### 4. Home Next Action vocabulary truth
 
-Home now preserves explicit accepted actions that were previously collapsed by presentation logic:
+Home preserves explicit accepted actions:
 
 - `Publish track` remains `Publish track`;
 - Release quality failure becomes `Fix release blockers` rather than generic `Fix track details`;
-- Identity still presents as the artist-friendly `Fix track details`.
+- Identity remains the artist-friendly `Fix track details`;
+- the production step label is `Sonic`, not the obsolete `Sound` wording.
 
-## Explicit non-scope
+## Explicit non-scope — preserved
 
-Build74 does **not**:
+Build74 did **not**:
 
 - add a generic write API;
 - alter Track Manager;
@@ -120,9 +131,19 @@ Build74 does **not**:
 - add a second Workflow/priority engine;
 - duplicate the C3-B SonicTrace map.
 
+Cross-stack remains:
+
+```text
+Track Manager       v5.22 · unchanged
+Studio bridge       v1.12 · unchanged
+TM Worker Version   df00e4c7-bfa1-45a3-b3e8-bd2640e0a159 · unchanged
+Public Worker       v2.7 · unchanged
+R2 migration        NONE
+```
+
 ## Validation guard
 
-Build74 adds `scripts/test-phase8-content-health-build74.mjs` and wires `check:phase8` into the normal Studio build.
+Build74 added `scripts/test-phase8-content-health-build74.mjs` and wired `check:phase8` into the normal Studio build.
 
 The guard asserts:
 
@@ -136,17 +157,18 @@ The guard asserts:
 - no Phase8 `saveTrack`/fetch mutation surface;
 - Phase8 styling is explicitly loaded.
 
-## Acceptance gate
+The final exact tested head also passed all inherited Phase6, C3, UX, Phase7 and Studio Focus guards plus typecheck/build.
 
-Build73 remains the accepted runtime until Build74 completes:
+## Acceptance result
 
 ```text
-exact-head CI
-→ anti-drift main
-→ exact tested-head merge
-→ exact merge-SHA Pages deployment
-→ real-user browser smoke
-→ only then REAL USER PASS
+exact-head CI             PASS
+anti-drift main           PASS
+exact tested-head merge   PASS
+exact merge-SHA Pages     PASS
+real-user browser smoke   PASS
 ```
 
-`CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS`.
+**Build74 = REAL USER PASS / Phase8 Slice1 closed.**
+
+`CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS` remains the acceptance policy for every later runtime slice.
