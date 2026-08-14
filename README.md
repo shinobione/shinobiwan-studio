@@ -5,7 +5,7 @@ Private artist production cockpit and orchestrator for the SHINOBIWAN toolchain.
 ## Current state
 
 ```text
-Studio accepted    v0.19.3 · Build 73    Phase 7-C Runtime Slice 2 · REAL USER PASS
+Studio accepted    v0.19.3 · Build 73    Phase 7-C PROGRAM COMPLETE · REAL USER PASS
 LaunchPAD           2026.08.12.102        C3-C · REAL USER PASS
 Track Manager       v5.22                 canonical duration evidence corrective · DEPLOYED
 Studio bridge       v1.12
@@ -16,7 +16,7 @@ Deep Audio          2.0.3-alpha
 LRC Maker           6.3.8
 ```
 
-**Studio v0.19.3 · Build 73 is the current accepted runtime.** Phase 7-C Runtime Slice 2 is closed through the Build72→73 corrective chain.
+**Studio v0.19.3 · Build 73 is the current accepted runtime.** Phase 7-C is now closed as a program after a post-Build73 audit proved that Lyrics, Intelligence and Release already satisfy the guided-action contract. No synthetic Slice3 runtime is required; **Build74 remains unused for the first real Phase8 runtime scope**.
 
 Phase 7-C runtime lineage:
 
@@ -182,6 +182,24 @@ Public Worker           v2.7 · unchanged
 
 Detailed accepted record: [`changelogs/CHANGELOG-PHASE7-C-BUILD73.md`](changelogs/CHANGELOG-PHASE7-C-BUILD73.md).
 
+## Phase 7-C program closeout — audited complete
+
+After Build73 REAL USER PASS, the remaining workflow stages were reread against real GitHub code before allocating Build74.
+
+The audit found no legitimate runtime Slice3 gap:
+
+- **Lyrics** already follows Next Action → protected LRC Maker context → validate with manifest revision + lyrics ETag → explicit protected save → LRC Maker canonical reread → `lyrics-saved` receipt → Studio private Track reread → workflow recompute.
+- **Intelligence** already follows Next Action → canonical sourceVersion → temporary analysis → REVIEW / NOT SAVED → explicit save → Track Manager `STALE_AUDIO` guard → verified latest/history sidecars → `analysis-saved` receipt → Studio private Track reread → workflow recompute.
+- **Release** already uses the guarded Slice1 metadata/publication flow; Release Campaign remains deliberately browser-local and review-only.
+
+Therefore Phase 7-C is **PROGRAM COMPLETE on Build73**. `Build74` was verified unused and is reserved for the next genuine runtime phase:
+
+```text
+Phase 8 — Dashboard Intelligence & Content Health
+```
+
+Detailed evidence: [`docs/PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md`](docs/PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md).
+
 ## Toolchain roles
 
 - **GitHub** — application code authority.
@@ -249,6 +267,7 @@ Start here:
 - [Current roadmap](docs/ROADMAP-CURRENT.md)
 - [Documentation map](docs/README.md)
 - [Next-session handoff](docs/NEXT-SESSION-HANDOFF.md)
+- [Phase 7-C program closeout audit](docs/PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md)
 - [Build 73 REAL USER PASS](changelogs/CHANGELOG-PHASE7-C-BUILD73.md)
 - [Build 72 Slice 2 origin candidate](changelogs/CHANGELOG-PHASE7-C-BUILD72.md)
 - [Build 71 REAL USER PASS](changelogs/CHANGELOG-PHASE7-C-BUILD71.md)
@@ -261,4 +280,4 @@ Start here:
 
 **CI GREEN ≠ DEPLOYED CANDIDATE ≠ REAL USER PASS.**
 
-Build73 completed the full chain and is the current accepted Studio runtime. Any next runtime slice requires a fresh safety checkpoint, exact-head CI, exact deployment verification and a new real-user smoke gate.
+Build73 completed the full chain and remains the current accepted Studio runtime. Phase 7-C is program-complete without another runtime build. The next runtime scope is Phase8 and must begin from a fresh safety checkpoint, exact-head CI, exact deployment verification and a new real-user smoke gate.
