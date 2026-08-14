@@ -6,6 +6,7 @@ Private artist production cockpit and orchestrator for the SHINOBIWAN toolchain.
 
 ```text
 Studio accepted    v0.19.3 · Build 71    Phase 7-C Slice 1 corrective chain · REAL USER PASS
+Studio candidate   v0.19.3 · Build 72    Phase 7-C Slice 2 guided Core Media · DEPLOYED / SMOKE PENDING
 LaunchPAD           2026.08.12.102        C3-C · REAL USER PASS
 Track Manager       v5.22                 canonical duration evidence corrective · DEPLOYED
 Studio bridge       v1.12
@@ -16,14 +17,15 @@ Deep Audio          2.0.3-alpha
 LRC Maker           6.3.8
 ```
 
-**Studio v0.19.3 · Build 71 is the current accepted runtime.** The real-user acceptance chain is complete.
+**Studio v0.19.3 · Build 71 remains the current accepted runtime.** Build72 is merged and deployed, but remains a candidate until its real-user browser smoke passes.
 
-Build71 contains the cumulative Phase 7-C Runtime Slice 1 behavior introduced through Builds 69→71:
+Phase 7-C runtime lineage:
 
 ```text
 Build 69  guided Metadata / Identity Next Action flow
 Build 70  readiness/publication separation + Album semantics + New Track corrective
 Build 71  canonical audio-duration evidence corrective · REAL USER PASS
+Build 72  guided Core Media routing / stage ownership · DEPLOYED CANDIDATE
 ```
 
 Historical candidates remain historical evidence; they are not retroactively relabeled as accepted.
@@ -31,6 +33,8 @@ Historical candidates remain historical evidence; they are not retroactively rel
 ## Release terminology
 
 `Studio v0.19.3 · Build 71` is the current accepted **project/runtime release identity**.
+
+`Studio v0.19.3 · Build 72` is the current **deployed candidate**, not yet an accepted release.
 
 This repository currently publishes **no GitHub Release objects and no Git tags**. Formal GitHub Releases/tags remain a separate distribution/versioning decision.
 
@@ -52,6 +56,7 @@ Home lead priority corrective     Build 68   REAL USER PASS
 Phase 7-C Runtime Slice 1         Build 69   merged/deployed candidate · superseded by Build70/71
 Phase 7-C pre-smoke corrective    Build 70   merged/deployed candidate · superseded by Build71
 Phase 7-C duration corrective     Build 71   REAL USER PASS
+Phase 7-C Runtime Slice 2         Build 72   DEPLOYED CANDIDATE · SMOKE PENDING
 ```
 
 Build 63 remains historical/superseded and must not be reused.
@@ -141,6 +146,7 @@ Studio runtime merge    0b3c3d452076708c698de71d9c691b5e459f7c17
 Studio Pages run        31789774785 · SUCCESS · exact merge SHA
 Safety before change    safety/pre-build71-duration-evidence-fix-20260814-0216
 Post-deploy checkpoint  safety/post-build71-deployed-candidate-20260814-1152
+Post-RUP checkpoint     safety/post-build71-real-user-pass-20260814-1217
 Real-user smoke         BUILD71 PASS · 2026-08-14
 
 Track Manager           v5.22
@@ -156,6 +162,48 @@ Public Worker           v2.7 · deployment steps skipped
 ```
 
 Detailed accepted record: [`changelogs/CHANGELOG-PHASE7-C-BUILD71.md`](changelogs/CHANGELOG-PHASE7-C-BUILD71.md).
+
+## Phase 7-C Runtime Slice 2 — Build72 deployed candidate
+
+Build72 makes **Core Media** the next truthful executable stage after Identity, while reusing the existing Track Manager asset authority unchanged.
+
+```text
+master audio missing
+→ Fix Core media
+→ Track / overview
+→ Master audio uploader
+→ protected asset-upload-v1
+
+master audio ready + cover missing
+→ Continue Core media
+→ Visuals / assets
+→ Cover uploader
+→ protected asset-upload-v1
+
+Audio + Cover ready
+→ workflow advances to Lyrics
+```
+
+It also stops aggregate canonical quality errors from being mislabeled as Identity work. Aggregate Track Manager quality still blocks the final Release stage; media, lyrics and intelligence own their explicit workflow prerequisites.
+
+Exact candidate evidence:
+
+```text
+Safety before change    safety/pre-phase7c-slice2-build72-20260814-1221
+Feature branch          agent/phase7c-slice2-guided-core-media-build72
+PR                      #103
+Tested head             b79ce03a98fad46e6bf4c488e456af07bba951be
+Studio CI               31792368962 · SUCCESS
+Runtime merge           dceee27dd8f8cdc96f8f88f10c5588e283e56699
+Pages deploy            31792436456 · SUCCESS · exact merge SHA
+Post-deploy checkpoint  safety/post-build72-deployed-candidate-20260814-1230
+Track Manager           v5.22 · unchanged
+Studio bridge           v1.12 · unchanged
+Public Worker           v2.7 · unchanged
+Real-user smoke         PENDING
+```
+
+Detailed candidate record: [`changelogs/CHANGELOG-PHASE7-C-BUILD72.md`](changelogs/CHANGELOG-PHASE7-C-BUILD72.md).
 
 ## Toolchain roles
 
@@ -222,6 +270,7 @@ Start here:
 - [Current roadmap](docs/ROADMAP-CURRENT.md)
 - [Documentation map](docs/README.md)
 - [Next-session handoff](docs/NEXT-SESSION-HANDOFF.md)
+- [Build 72 deployed candidate](changelogs/CHANGELOG-PHASE7-C-BUILD72.md)
 - [Build 71 REAL USER PASS](changelogs/CHANGELOG-PHASE7-C-BUILD71.md)
 - [Phase 7-C guided actions contract](docs/PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md)
 - [Build 68 Home lead record](changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md)
@@ -235,4 +284,4 @@ Start here:
 
 **CI GREEN ≠ DEPLOYED CANDIDATE ≠ REAL USER PASS.**
 
-Runtime changes are accepted only after exact-head validation, exact deployment verification and real-user browser smoke. Build71 has completed that full chain.
+Runtime changes are accepted only after exact-head validation, exact deployment verification and real-user browser smoke. Build71 has completed that full chain. Build72 is deployed but has **not** yet completed the real-user smoke gate.
