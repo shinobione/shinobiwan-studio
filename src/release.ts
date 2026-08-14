@@ -1,7 +1,7 @@
 export const studioRelease = {
   version: '0.19.3',
-  build: 76,
-  codename: 'studio-focus-slice4-phase8-album-health-truth',
+  build: 77,
+  codename: 'studio-focus-slice4-phase8-album-health-visual-polish',
   releasedAt: '2026-08-14',
 } as const;
 
@@ -18,3 +18,4 @@ export const build72AncestryMarker = "build: 72 · codename: 'studio-focus-slice
 export const build73AncestryMarker = "build: 73 · codename: 'studio-focus-slice4-phase7c-slice2-status-truth-corrective'";
 export const build74AncestryMarker = "build: 74 · codename: 'studio-focus-slice4-phase8-content-health-truth'";
 export const build75AncestryMarker = "build: 75 · codename: 'studio-focus-slice4-phase8-health-drilldown'";
+export const build76AncestryMarker = "build: 76 · codename: 'studio-focus-slice4-phase8-album-health-truth'";
