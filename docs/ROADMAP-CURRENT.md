@@ -1,17 +1,20 @@
 # SHINOBIWAN STUDIO — CURRENT ROADMAP
 
-Updated: 2026-08-14 after **Phase 7-C Runtime Slice 2 · Build73 REAL USER PASS**.
+Updated: 2026-08-14 after **Phase 7-C program closeout audit on accepted Build73**.
 
 This file is the **current roadmap authority**. Historical build detail belongs in milestone docs and [`../changelogs/`](../changelogs/README.md).
 
 ## Current state
 
 ```text
-Studio accepted    v0.19.3 · Build 73    Phase 7-C Runtime Slice 2 · REAL USER PASS
+Studio accepted    v0.19.3 · Build 73    Phase 7-C PROGRAM COMPLETE · REAL USER PASS
 Phase 7-A          Build 46              REAL USER PASS
 Phase 7-B          Build 51              REAL USER PASS
 Phase 7-C          Slice 1               COMPLETE · REAL USER PASS via Build71
 Phase 7-C          Slice 2               COMPLETE · REAL USER PASS via Build73
+Phase 7-C          Program               COMPLETE · no Slice3 runtime required
+Next runtime       Phase 8               Dashboard Intelligence & Content Health
+Next build         Build 74              UNUSED / RESERVED FOR REAL PHASE8 SCOPE
 Track Manager      v5.22                 duration evidence corrective · DEPLOYED
 Studio bridge      v1.12
 TM admin Worker    df00e4c7-bfa1-45a3-b3e8-bd2640e0a159
@@ -26,9 +29,11 @@ LRC Maker          6.3.8
 
 Build73 is the **current accepted Studio baseline**.
 
-Phase 7-C Runtime Slice 2 is closed. No Slice 3 runtime work is implicitly authorized by this closeout; the next slice must begin from a fresh real-GitHub audit, fresh scope, unused build number and fresh safety checkpoint.
+A post-Build73 real-GitHub audit proved the remaining Lyrics, Intelligence and Release stages already satisfy the Phase 7-C guided-action contract. **Do not manufacture a Slice3 runtime.** Phase 7-C is program-complete and the next runtime scope is Phase8.
 
-No Track Manager / Worker deployment occurred for Builds72–73. Both reuse the accepted Track Manager v5.22 / bridge v1.12 protected `asset-upload-v1` authority.
+`Build74` was checked and remains unused. Before any Build74 mutation: define a bounded Phase8 scope, create a fresh safety checkpoint from accepted `main`, preserve all Phase7 authority/verification guarantees, then use exact-head CI → anti-drift → exact merge-SHA deployment → real-user smoke.
+
+No Track Manager / Worker deployment occurred for Builds72–73 or for this docs-only program closeout.
 
 ## Frozen architecture
 
@@ -61,6 +66,8 @@ Foundation Regression Repair · Build 67 + TM5.21              ✅ REAL USER PAS
 Build 68 Home lead priority corrective                        ✅ REAL USER PASS
 Phase 7-C Runtime Slice 1 · Builds69→71                       ✅ REAL USER PASS
 Phase 7-C Runtime Slice 2 · Builds72→73                       ✅ REAL USER PASS
+Phase 7-C Program closeout audit                              ✅ COMPLETE · NO EXTRA RUNTIME SLICE
+Phase 8 Dashboard Intelligence & Content Health               ⏭ NEXT
 ```
 
 Historical numbering discipline:
@@ -77,7 +84,8 @@ Historical numbering discipline:
 - Build70 is the pre-smoke readiness/publication/Album/New Track corrective candidate.
 - **Build71 is the accepted cumulative Phase 7-C Runtime Slice1 runtime.**
 - Build72 is the deployed Phase 7-C Runtime Slice2 origin candidate.
-- **Build73 is the accepted cumulative Phase 7-C Runtime Slice2 runtime.**
+- **Build73 is the accepted cumulative Phase 7-C Runtime Slice2 runtime and the Phase 7-C program baseline.**
+- **Build74 is unused and reserved for the first genuine Phase8 runtime scope.**
 
 Historical candidates are preserved rather than retroactively relabeled as accepted.
 
@@ -162,9 +170,10 @@ Rules:
 - `release-campaign / campaign-exported / review-only` remains the receipt;
 - manifest remains `canonicalWrite: false`.
 
-## Phase 7-C — Guided end-to-end actions
+## Phase 7-C — Guided end-to-end actions · PROGRAM COMPLETE
 
-Contract: [`PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md`](PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md).
+Contract: [`PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md`](PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md).  
+Program closeout audit: [`PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md`](PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md).
 
 ### Runtime Slice 1 — COMPLETE · REAL USER PASS
 
@@ -264,22 +273,62 @@ Public Worker            v2.7 · unchanged
 
 Accepted record: [`../changelogs/CHANGELOG-PHASE7-C-BUILD73.md`](../changelogs/CHANGELOG-PHASE7-C-BUILD73.md).
 
-## Next Phase 7-C slice
+### Program closeout audit — COMPLETE, no Slice3 runtime
 
-**Not started by this closeout.** Before any new runtime mutation:
+The accepted Build73 code was reread before allocating another build number.
 
-1. reread current Studio + LaunchPAD/TM GitHub state;
-2. confirm the next guided-action scope;
-3. prove the next build number is unused;
-4. create a fresh safety checkpoint from accepted `main`;
-5. preserve all Slice1/2 authority and verification guarantees;
-6. require exact-head CI, anti-drift, exact merge-SHA deployment and real-user smoke again.
+Already-complete guided paths:
+
+```text
+Lyrics
+Next Action → LRC Maker protected context → validate → explicit save
+→ revision + ETag guards → LRC canonical reread → lyrics-saved receipt
+→ Studio private Track reread → workflow recompute
+
+Intelligence
+Next Action → canonical sourceVersion → analyze → REVIEW / NOT SAVED
+→ explicit save → STALE_AUDIO guard → verified sidecars
+→ analysis-saved receipt → Studio private Track reread → workflow recompute
+
+Release
+quality gate → protected metadata/publication proposal → explicit confirmation
+→ guarded save → private canonical reread
+Campaign export remains review-only / canonicalWrite:false
+```
+
+Because these paths already satisfy the Phase 7-C contract, another runtime slice would be duplication rather than progress. Phase 7-C is closed on Build73.
+
+Audit safety anchor:
+
+```text
+safety/pre-phase7c-program-closeout-audit-20260814-1747
+```
+
+## Phase 8 — Dashboard Intelligence & Content Health · NEXT
+
+Goal: expose **global, actionable catalog health** on top of the mature production-state model without creating a new write authority and without duplicating the existing C3-B SonicTrace map.
+
+Initial scope must be audited before Build74, but the likely read-only signals are:
+
+- missing canonical audio;
+- missing required cover;
+- missing canonical `lyrics.txt`;
+- lyrics timing missing;
+- SonicTrace missing or outdated;
+- canonical release quality blockers;
+- published tracks that still have production/catalog work pending;
+- Draft tracks that are already production-ready;
+- exact links back to each Track's existing `workflow.nextAction`.
+
+Constraints:
+
+- derive from existing canonical Track/Album/SonicTrace read models;
+- keep production and publication as separate axes;
+- reuse existing Next Action authority rather than inventing a second priority model;
+- no new Worker/TM/R2 mutation unless a later sub-scope proves it necessary;
+- `Build74` remains unused until a concrete Phase8 implementation branch is opened.
 
 ## Later roadmap
-
-### Phase 8 — Dashboard Intelligence & Content Health
-
-Global actionable catalog health on top of the mature production-state model.
 
 ### Phase 9 — Security / reliability / PWA
 
@@ -338,6 +387,8 @@ Source audio is not persisted in sidecars.
 ## Important checkpoints
 
 ```text
+safety/pre-phase7c-program-closeout-audit-20260814-1747
+safety/post-build73-rup-docs-closeout-20260814-1726
 safety/post-build73-real-user-pass-20260814-1715
 safety/post-build73-deployed-candidate-20260814-1318
 safety/pre-build73-status-truth-corrective-20260814-1312
@@ -361,4 +412,4 @@ LaunchPAD: safety/pre-phase7c-guided-actions-20260813-1837
 
 **CI GREEN ≠ DEPLOYED CANDIDATE ≠ REAL USER PASS.**
 
-Every runtime slice must use exact-head CI, anti-drift reread, exact tested merge, exact merge-SHA deployment and real-user smoke. Historical candidates never receive retroactive acceptance.
+Every runtime phase/slice must use exact-head CI, anti-drift reread, exact tested merge, exact merge-SHA deployment and real-user smoke. Historical candidates never receive retroactive acceptance. Docs-only closeouts must stay docs-only and must not silently advance runtime acceptance.
