@@ -32,7 +32,7 @@ function actionLabel(item: TrackWorkflowState): string {
 
 function productionStep(track: StudioTrack, step: FocusStep): boolean {
   if (step === 'track') return Boolean(track.assets.audio && track.title.trim() && track.album?.id);
-  if (step === 'visuals') return Boolean(track.assets.cover && track.assets.video);
+  if (step === 'visuals') return Boolean(track.assets.cover);
   if (step === 'lyrics') return Boolean(track.assets.lyricsTxt && track.timestampsAvailable);
   if (step === 'sonic') return Boolean(track.audioIntelligence.available && !track.audioIntelligence.outdated);
   return track.status === 'published' ? track.publishing.catalogVisible : track.publishing.publishable === true;
