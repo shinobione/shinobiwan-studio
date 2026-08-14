@@ -1,20 +1,21 @@
 # SHINOBIWAN STUDIO — CURRENT ROADMAP
 
-Updated: 2026-08-14 after **Phase 7-C program closeout audit on accepted Build73**.
+Updated: 2026-08-14 after **Phase 8 Slice 1 / Build74 REAL USER PASS**.
 
 This file is the **current roadmap authority**. Historical build detail belongs in milestone docs and [`../changelogs/`](../changelogs/README.md).
 
 ## Current state
 
 ```text
-Studio accepted    v0.19.3 · Build 73    Phase 7-C PROGRAM COMPLETE · REAL USER PASS
+Studio accepted    v0.19.3 · Build 74    Phase 8 Slice 1 · REAL USER PASS
 Phase 7-A          Build 46              REAL USER PASS
 Phase 7-B          Build 51              REAL USER PASS
 Phase 7-C          Slice 1               COMPLETE · REAL USER PASS via Build71
 Phase 7-C          Slice 2               COMPLETE · REAL USER PASS via Build73
 Phase 7-C          Program               COMPLETE · no Slice3 runtime required
-Next runtime       Phase 8               Dashboard Intelligence & Content Health
-Next build         Build 74              UNUSED / RESERVED FOR REAL PHASE8 SCOPE
+Phase 8            Slice 1               COMPLETE · REAL USER PASS via Build74
+Next runtime       Phase 8               next bounded sub-scope to audit
+Next build         Build 75              UNUSED / do not allocate before fresh audit
 Track Manager      v5.22                 duration evidence corrective · DEPLOYED
 Studio bridge      v1.12
 TM admin Worker    df00e4c7-bfa1-45a3-b3e8-bd2640e0a159
@@ -27,13 +28,17 @@ LRC Maker          6.3.8
 
 ### Immediate gate
 
-Build73 is the **current accepted Studio baseline**.
+Build74 is the **current accepted Studio baseline**.
 
-A post-Build73 real-GitHub audit proved the remaining Lyrics, Intelligence and Release stages already satisfy the Phase 7-C guided-action contract. **Do not manufacture a Slice3 runtime.** Phase 7-C is program-complete and the next runtime scope is Phase8.
+Phase8 Slice1 is closed. Before any Build75 mutation:
 
-`Build74` was checked and remains unused. Before any Build74 mutation: define a bounded Phase8 scope, create a fresh safety checkpoint from accepted `main`, preserve all Phase7 authority/verification guarantees, then use exact-head CI → anti-drift → exact merge-SHA deployment → real-user smoke.
+1. reread real GitHub state;
+2. define the next bounded Phase8 sub-scope;
+3. prove it does not duplicate the accepted Build74 Content Health layer, C3-B SonicTrace Intelligence, or Phase7 `workflow.nextAction`;
+4. create a fresh safety checkpoint from accepted `main`;
+5. preserve the exact-head CI → anti-drift → exact merge-SHA deployment → real-user smoke gate.
 
-No Track Manager / Worker deployment occurred for Builds72–73 or for this docs-only program closeout.
+No Track Manager / Worker deployment or R2 migration occurred for Build74.
 
 ## Frozen architecture
 
@@ -67,7 +72,7 @@ Build 68 Home lead priority corrective                        ✅ REAL USER PASS
 Phase 7-C Runtime Slice 1 · Builds69→71                       ✅ REAL USER PASS
 Phase 7-C Runtime Slice 2 · Builds72→73                       ✅ REAL USER PASS
 Phase 7-C Program closeout audit                              ✅ COMPLETE · NO EXTRA RUNTIME SLICE
-Phase 8 Dashboard Intelligence & Content Health               ⏭ NEXT
+Phase 8 Slice 1 · Content Health Truth · Build74              ✅ REAL USER PASS
 ```
 
 Historical numbering discipline:
@@ -84,8 +89,9 @@ Historical numbering discipline:
 - Build70 is the pre-smoke readiness/publication/Album/New Track corrective candidate.
 - **Build71 is the accepted cumulative Phase 7-C Runtime Slice1 runtime.**
 - Build72 is the deployed Phase 7-C Runtime Slice2 origin candidate.
-- **Build73 is the accepted cumulative Phase 7-C Runtime Slice2 runtime and the Phase 7-C program baseline.**
-- **Build74 is unused and reserved for the first genuine Phase8 runtime scope.**
+- **Build73 is the accepted cumulative Phase 7-C Runtime Slice2 runtime and Phase 7-C program baseline.**
+- **Build74 is the accepted first genuine Phase8 runtime slice.**
+- **Build75 is currently unused.** Do not reserve/implement it until the next Phase8 scope is proven.
 
 Historical candidates are preserved rather than retroactively relabeled as accepted.
 
@@ -102,7 +108,7 @@ Advanced ▾
   System
 ```
 
-Workflow remains under Advanced. Home owns daily continuation, counters and the abbreviated attention queue; Workflow owns the full detailed searchable/filterable production queue.
+Workflow remains under Advanced. Home owns daily continuation, production/publication counters, abbreviated attention queue and the Phase8 read-only Content Health surface. Workflow owns the full detailed searchable/filterable production queue.
 
 ### Home lead rule — accepted
 
@@ -136,6 +142,74 @@ Publication axis:  Published / Drafts
 ```
 
 A published track may still have production/catalog work pending; a Draft may be 100% production-ready. Publication is not part of readiness scoring.
+
+## Phase 8 Slice 1 — Content Health Truth · COMPLETE / REAL USER PASS
+
+Accepted Build74 goal: expose **global, actionable catalog health** on top of the mature production-state model without creating a new write authority and without duplicating the C3-B SonicTrace map or Phase7 workflow priority.
+
+### Accepted readiness model
+
+```text
+Identity        20
+Master audio    20
+Cover           20
+Lyrics TXT      10
+Lyrics timing   10
+SonicTrace      20
+Canvas           0 · optional
+```
+
+Build74 removes the legacy readiness penalty for Canvas and keeps Cover as the required Visual production asset.
+
+### Accepted global health signals
+
+- missing canonical audio;
+- missing required cover;
+- missing canonical `lyrics.txt`;
+- lyrics timing missing;
+- SonicTrace missing or outdated;
+- canonical Release quality blockers;
+- published tracks that still have production gaps;
+- Draft tracks already production-ready.
+
+Every actionable signal routes through the affected Track's **existing** `workflow.nextAction`. Content Health is read-only and must not become a second action-priority engine.
+
+### Accepted Home truth
+
+```text
+NEEDS ATTENTION      = production gaps only
+PRODUCTION COMPLETE  = production stages complete, excluding publication
+PUBLISHED            = public catalog axis
+DRAFTS               = publication axis
+```
+
+Therefore this is valid and intentional:
+
+```text
+Production complete  YES
+Draft                YES
+Next Action          Publish track
+```
+
+### Exact Build74 acceptance evidence
+
+```text
+Safety pre              safety/pre-phase8-content-health-build74-20260814-1810
+PR                      #108
+Exact tested head       da7b5498dd8e1f6120c346e07fe1b1e741d40104
+Validation              31819203565 · SUCCESS
+Runtime merge           c95e33bcb0c33b18fc8e6e9a35a05ec28ad142a9
+Pages                   31819333501 · SUCCESS · exact merge SHA
+Safety post-deploy      safety/post-build74-deployed-candidate-20260814-1827
+Real-user smoke         BUILD74 PASS · 2026-08-14
+Safety post-RUP         safety/post-build74-real-user-pass-20260814-1926
+TM / bridge             v5.22 / v1.12 · unchanged
+TM Worker Version ID    df00e4c7-bfa1-45a3-b3e8-bd2640e0a159 · unchanged
+Public Worker           v2.7 · unchanged
+R2 migration            NONE
+```
+
+Accepted record: [`../changelogs/CHANGELOG-PHASE8-BUILD74.md`](../changelogs/CHANGELOG-PHASE8-BUILD74.md).
 
 ## Phase 7-B receipt authority — preserved
 
@@ -177,21 +251,6 @@ Program closeout audit: [`PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md`](PHASE-7-C-PROGRA
 
 ### Runtime Slice 1 — COMPLETE · REAL USER PASS
 
-Accepted flow:
-
-```text
-Home / Tracks / Workflow Next Action
-→ Track guided Metadata / Identity context
-→ edit
-→ Validate metadata
-→ normalized proposal + exact quality issues
-→ explicit confirmation
-→ existing guarded metadata save
-→ backend + Studio private canonical reread
-→ VERIFIED
-→ recompute Workflow / Next Action
-```
-
 Cumulative Slice1 chain:
 
 ```text
@@ -203,8 +262,6 @@ Build71  derived canonical audio duration evidence + TM5.22/bridge1.12 · REAL U
 Accepted record: [`../changelogs/CHANGELOG-PHASE7-C-BUILD71.md`](../changelogs/CHANGELOG-PHASE7-C-BUILD71.md).
 
 ### Runtime Slice 2 — COMPLETE · REAL USER PASS via Build73
-
-Slice2 makes the first unresolved production prerequisite after Identity executable from Home / Tracks / Workflow without changing write authority.
 
 Truthful stage ownership:
 
@@ -235,7 +292,7 @@ Audio + Cover ready
 → workflow advances to Lyrics
 ```
 
-Build72 introduced the guided Core Media routing and corrected stage ownership. Real-user smoke on Zero-SUM then revealed status-presentation mismatches, corrected by Build73:
+Build73 status truth:
 
 ```text
 Visuals ready = canonical cover present
@@ -244,59 +301,13 @@ Lyrics ready  = canonical lyrics.txt + recognized timestamps
 TXT only      = attention / Timing needed
 ```
 
-Track Workspace `Continue` now follows the same Phase 7 `workflow.nextAction` authority as Home / Tracks / Workflow.
-
-Exact Slice2 acceptance evidence:
-
-```text
-Build72 safety pre       safety/pre-phase7c-slice2-build72-20260814-1221
-Build72 PR               #103
-Build72 tested head      b79ce03a98fad46e6bf4c488e456af07bba951be
-Build72 CI               31792368962 · SUCCESS
-Build72 runtime merge    dceee27dd8f8cdc96f8f88f10c5588e283e56699
-Build72 Pages            31792436456 · SUCCESS
-Build72 post-deploy      safety/post-build72-deployed-candidate-20260814-1230
-
-Build73 safety pre       safety/pre-build73-status-truth-corrective-20260814-1312
-Build73 PR               #105
-Build73 tested head      b6dc39e7555aa040740de5efa54bd75b1e78101a
-Build73 CI               31795481278 · SUCCESS
-Build73 runtime merge    4684291f64d12bd514f103ba1c5050d05d0143ac
-Build73 Pages            31795547072 · SUCCESS · exact merge SHA
-Build73 post-deploy      safety/post-build73-deployed-candidate-20260814-1318
-Build73 post-RUP         safety/post-build73-real-user-pass-20260814-1715
-Real-user smoke          BUILD73 PASS · 2026-08-14
-
-TM / bridge              v5.22 / v1.12 · unchanged
-Public Worker            v2.7 · unchanged
-```
+Track Workspace `Continue` follows the same Phase7 `workflow.nextAction` authority as Home / Tracks / Workflow.
 
 Accepted record: [`../changelogs/CHANGELOG-PHASE7-C-BUILD73.md`](../changelogs/CHANGELOG-PHASE7-C-BUILD73.md).
 
 ### Program closeout audit — COMPLETE, no Slice3 runtime
 
-The accepted Build73 code was reread before allocating another build number.
-
-Already-complete guided paths:
-
-```text
-Lyrics
-Next Action → LRC Maker protected context → validate → explicit save
-→ revision + ETag guards → LRC canonical reread → lyrics-saved receipt
-→ Studio private Track reread → workflow recompute
-
-Intelligence
-Next Action → canonical sourceVersion → analyze → REVIEW / NOT SAVED
-→ explicit save → STALE_AUDIO guard → verified sidecars
-→ analysis-saved receipt → Studio private Track reread → workflow recompute
-
-Release
-quality gate → protected metadata/publication proposal → explicit confirmation
-→ guarded save → private canonical reread
-Campaign export remains review-only / canonicalWrite:false
-```
-
-Because these paths already satisfy the Phase 7-C contract, another runtime slice would be duplication rather than progress. Phase 7-C is closed on Build73.
+The accepted Build73 code was reread before allocating Build74. Lyrics, Intelligence and Release already satisfied the guided-action contract, so no synthetic Slice3 was created.
 
 Audit safety anchor:
 
@@ -304,29 +315,20 @@ Audit safety anchor:
 safety/pre-phase7c-program-closeout-audit-20260814-1747
 ```
 
-## Phase 8 — Dashboard Intelligence & Content Health · NEXT
+## Next Phase8 sub-scope — NOT YET ALLOCATED
 
-Goal: expose **global, actionable catalog health** on top of the mature production-state model without creating a new write authority and without duplicating the existing C3-B SonicTrace map.
+Build74 closes **Content Health Truth**, not all of Phase8.
 
-Initial scope must be audited before Build74, but the likely read-only signals are:
+The next Phase8 scope must start with a real-code audit. Candidate directions may include richer catalog-level intelligence or decision support, but only if they add capability beyond:
 
-- missing canonical audio;
-- missing required cover;
-- missing canonical `lyrics.txt`;
-- lyrics timing missing;
-- SonicTrace missing or outdated;
-- canonical release quality blockers;
-- published tracks that still have production/catalog work pending;
-- Draft tracks that are already production-ready;
-- exact links back to each Track's existing `workflow.nextAction`.
+- Build74 global Content Health;
+- existing C3-B SonicTrace map/catalog intelligence;
+- existing Phase7 `workflow.nextAction` priority;
+- existing Home production/publication counters.
 
-Constraints:
+Do **not** build another dashboard just to restate the same signals.
 
-- derive from existing canonical Track/Album/SonicTrace read models;
-- keep production and publication as separate axes;
-- reuse existing Next Action authority rather than inventing a second priority model;
-- no new Worker/TM/R2 mutation unless a later sub-scope proves it necessary;
-- `Build74` remains unused until a concrete Phase8 implementation branch is opened.
+The next accepted design should preferably remain read-only unless a concrete capability proves a guarded write is necessary.
 
 ## Later roadmap
 
@@ -387,6 +389,10 @@ Source audio is not persisted in sidecars.
 ## Important checkpoints
 
 ```text
+safety/post-build74-real-user-pass-20260814-1926
+safety/post-build74-deployed-candidate-20260814-1827
+safety/pre-phase8-content-health-build74-20260814-1810
+safety/post-phase7c-program-closeout-20260814-1810
 safety/pre-phase7c-program-closeout-audit-20260814-1747
 safety/post-build73-rup-docs-closeout-20260814-1726
 safety/post-build73-real-user-pass-20260814-1715
