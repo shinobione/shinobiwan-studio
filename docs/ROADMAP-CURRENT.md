@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — CURRENT ROADMAP
 
-Updated: 2026-08-14 after **Studio v0.19.3 · Build 71 REAL USER PASS**.
+Updated: 2026-08-14 after **Phase 7-C Runtime Slice 2 · Build 72 deployment candidate**.
 
 This file is the **current roadmap authority**. Historical build detail belongs in milestone docs and [`../changelogs/`](../changelogs/README.md).
 
@@ -8,9 +8,11 @@ This file is the **current roadmap authority**. Historical build detail belongs 
 
 ```text
 Studio accepted    v0.19.3 · Build 71    Phase 7-C Slice 1 corrective chain · REAL USER PASS
+Studio candidate   v0.19.3 · Build 72    Phase 7-C Slice 2 guided Core Media · DEPLOYED / SMOKE PENDING
 Phase 7-A          Build 46              REAL USER PASS
 Phase 7-B          Build 51              REAL USER PASS
 Phase 7-C          Slice 1               COMPLETE · REAL USER PASS via Build71
+Phase 7-C          Slice 2               DEPLOYED CANDIDATE · Build72
 Track Manager      v5.22                 duration evidence corrective · DEPLOYED
 Studio bridge      v1.12
 TM admin Worker    df00e4c7-bfa1-45a3-b3e8-bd2640e0a159
@@ -23,9 +25,11 @@ LRC Maker          6.3.8
 
 ### Immediate gate
 
-The Build69→70→71 Phase 7-C Runtime Slice 1 chain is **closed**. Build71 is the accepted Studio baseline.
+Build71 remains the **last accepted Studio baseline**.
 
-Do **not** begin a new Phase 7-C slice merely because Slice 1 is complete. Fresh scope/authorization and a real GitHub/deployment audit are required before the next runtime mutation.
+Build72 is merged and deployed, but it must not replace Build71 as accepted until its real-user browser smoke passes. No Phase 7-C Slice 3 work should begin before that gate closes.
+
+Build72 requires no Track Manager / Worker deployment. It reuses the already accepted Track Manager v5.22 / bridge v1.12 protected `asset-upload-v1` authority.
 
 ## Frozen architecture
 
@@ -40,7 +44,7 @@ Do **not** begin a new Phase 7-C slice merely because Slice 1 is complete. Fresh
 - no generic Studio write route and no second R2 owner.
 - public fallback is read-only and never invents private state or verifies a write.
 
-## Accepted foundations
+## Accepted foundations / active candidate
 
 ```text
 Phase 0   architecture/data contracts                         ✅
@@ -57,6 +61,7 @@ Studio Focus Slices 1–4 + program closeout                    ✅ REAL USER PA
 Foundation Regression Repair · Build 67 + TM5.21              ✅ REAL USER PASS
 Build 68 Home lead priority corrective                        ✅ REAL USER PASS
 Phase 7-C Runtime Slice 1 · Builds 69→71                      ✅ REAL USER PASS
+Phase 7-C Runtime Slice 2 · Build72                            🚧 DEPLOYED CANDIDATE / SMOKE PENDING
 ```
 
 Historical numbering discipline:
@@ -72,6 +77,7 @@ Historical numbering discipline:
 - Build 69 is the first Phase 7-C Runtime Slice 1 implementation candidate.
 - Build 70 is the pre-smoke readiness/publication/Album/New Track corrective candidate.
 - **Build 71 is the accepted cumulative Phase 7-C Runtime Slice 1 runtime.**
+- **Build 72 is the deployed Phase 7-C Runtime Slice 2 candidate; real-user smoke is pending.**
 
 Historical candidates are preserved rather than retroactively relabeled as accepted.
 
@@ -196,6 +202,7 @@ Pages deploy            31789774785 · SUCCESS
 Real-user smoke         BUILD71 PASS · 2026-08-14
 Safety pre              safety/pre-build71-duration-evidence-fix-20260814-0216
 Safety post-deploy      safety/post-build71-deployed-candidate-20260814-1152
+Safety post-RUP         safety/post-build71-real-user-pass-20260814-1217
 
 Track Manager           v5.22
 Studio bridge           v1.12
@@ -208,15 +215,68 @@ Public Worker           v2.7 · unchanged / deployment skipped
 
 Accepted record: [`../changelogs/CHANGELOG-PHASE7-C-BUILD71.md`](../changelogs/CHANGELOG-PHASE7-C-BUILD71.md).
 
-### Phase 7-C next slice
+### Runtime Slice 2 — Build72 Guided Core Media · DEPLOYED CANDIDATE
 
-**Not started.** Before any new runtime slice:
+Build72 makes the first unresolved production prerequisite after Identity executable from Home / Tracks / Workflow without changing write authority.
 
-1. reread real GitHub/deployment state;
-2. confirm the next scope and build identity;
-3. create a fresh safety checkpoint;
-4. preserve all Slice 1 authority/verification guarantees;
-5. require exact-head CI, anti-drift, exact deployment and real-user smoke again.
+Truthful stage ownership:
+
+```text
+Identity → Core media → Lyrics → Intelligence → Release
+```
+
+Core Media guidance:
+
+```text
+master audio missing
+→ Fix Core media
+→ Track / overview
+→ Master audio uploader
+→ existing asset-upload-v1
+→ protected canonical verification
+→ workflow recompute
+
+master audio ready + cover missing
+→ Continue Core media
+→ Visuals / assets
+→ Cover uploader
+→ existing asset-upload-v1
+→ protected canonical verification
+→ workflow recompute
+```
+
+Build72 also stops aggregate Track Manager quality errors from being mislabeled as Identity work. Aggregate quality remains authoritative at Release, while Media / Lyrics / Intelligence own their explicit workflow prerequisites.
+
+Exact candidate evidence:
+
+```text
+Safety pre              safety/pre-phase7c-slice2-build72-20260814-1221
+Feature branch          agent/phase7c-slice2-guided-core-media-build72
+PR                      #103
+Tested head             b79ce03a98fad46e6bf4c488e456af07bba951be
+Studio CI               31792368962 · SUCCESS
+Runtime merge           dceee27dd8f8cdc96f8f88f10c5588e283e56699
+Pages deploy            31792436456 · SUCCESS · exact merge SHA
+Safety post-deploy      safety/post-build72-deployed-candidate-20260814-1230
+TM / bridge             v5.22 / v1.12 · unchanged
+Public Worker           v2.7 · unchanged
+Real-user smoke         PENDING
+```
+
+Candidate record: [`../changelogs/CHANGELOG-PHASE7-C-BUILD72.md`](../changelogs/CHANGELOG-PHASE7-C-BUILD72.md).
+
+### Phase 7-C Slice 2 acceptance gate
+
+Required real-user browser smoke:
+
+1. a Track with missing audio recommends `Fix Core media` and lands on Track / Master audio, not Visuals;
+2. after verified audio upload, canonical state refreshes and the Next Action advances to Cover when Cover is missing;
+3. Cover continuation lands in Visuals;
+4. after Audio + Cover are ready, the workflow advances to Lyrics;
+5. public fallback remains read-only;
+6. explicit confirmation and canonical reread verification remain visible.
+
+Do not start Slice 3 until this gate is closed.
 
 ## Later roadmap
 
@@ -281,6 +341,9 @@ Source audio is not persisted in sidecars.
 ## Important checkpoints
 
 ```text
+safety/post-build72-deployed-candidate-20260814-1230
+safety/pre-phase7c-slice2-build72-20260814-1221
+safety/post-build71-real-user-pass-20260814-1217
 safety/post-build71-deployed-candidate-20260814-1152
 safety/pre-build71-duration-evidence-fix-20260814-0216
 safety/pre-phase7c-slice1-build69-20260814-0013
