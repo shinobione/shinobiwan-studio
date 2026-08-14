@@ -5,15 +5,16 @@ This directory contains architecture, roadmap, milestone and acceptance records.
 ## Read these first
 
 1. [`../README.md`](../README.md) — concise current state.
-2. [`ROADMAP-CURRENT.md`](ROADMAP-CURRENT.md) — current roadmap authority.
+2. [`ROADMAP-CURRENT.md`](ROADMAP-CURRENT.md) — current roadmap authority; Phase8 is next.
 3. [`NEXT-SESSION-HANDOFF.md`](NEXT-SESSION-HANDOFF.md) — exact next-session starting point.
-4. [`../changelogs/CHANGELOG-PHASE7-C-BUILD73.md`](../changelogs/CHANGELOG-PHASE7-C-BUILD73.md) — current accepted Build73 / Phase7-C Slice2 REAL USER PASS record.
-5. [`../changelogs/CHANGELOG-PHASE7-C-BUILD72.md`](../changelogs/CHANGELOG-PHASE7-C-BUILD72.md) — Slice2 origin deployed-candidate record.
-6. [`../changelogs/CHANGELOG-PHASE7-C-BUILD71.md`](../changelogs/CHANGELOG-PHASE7-C-BUILD71.md) — accepted Slice1 / TM5.22 REAL USER PASS record.
-7. [`PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md`](PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md) — Phase 7-C contract and runtime gates.
-8. [`INTEGRATION_SAFETY.md`](INTEGRATION_SAFETY.md) — authority and integration safety rules.
-9. [`../CHANGELOG.md`](../CHANGELOG.md) — concise current changelog.
-10. [`../changelogs/README.md`](../changelogs/README.md) — detailed changelog archive.
+4. [`PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md`](PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md) — proof that Phase7-C is program-complete without a synthetic Slice3 runtime.
+5. [`../changelogs/CHANGELOG-PHASE7-C-BUILD73.md`](../changelogs/CHANGELOG-PHASE7-C-BUILD73.md) — accepted Build73 / Phase7-C Slice2 REAL USER PASS record.
+6. [`../changelogs/CHANGELOG-PHASE7-C-BUILD72.md`](../changelogs/CHANGELOG-PHASE7-C-BUILD72.md) — Slice2 origin deployed-candidate record.
+7. [`../changelogs/CHANGELOG-PHASE7-C-BUILD71.md`](../changelogs/CHANGELOG-PHASE7-C-BUILD71.md) — accepted Slice1 / TM5.22 REAL USER PASS record.
+8. [`PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md`](PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md) — preserved Phase7-C guided-action safety contract.
+9. [`INTEGRATION_SAFETY.md`](INTEGRATION_SAFETY.md) — authority and integration safety rules.
+10. [`../CHANGELOG.md`](../CHANGELOG.md) — concise current changelog.
+11. [`../changelogs/README.md`](../changelogs/README.md) — detailed changelog archive.
 
 ## Current status
 
@@ -21,15 +22,21 @@ This directory contains architecture, roadmap, milestone and acceptance records.
 Accepted Studio runtime  v0.19.3 · Build 73 · REAL USER PASS
 Phase 7-C Slice 1        COMPLETE · Builds69→71 corrective chain
 Phase 7-C Slice 2        COMPLETE · Builds72→73 corrective chain
+Phase 7-C Program        COMPLETE · no Slice3 runtime required
+Next runtime phase       Phase 8 · Dashboard Intelligence & Content Health
+Next build               Build74 · UNUSED / RESERVED FOR PHASE8
 Track Manager            v5.22 · bridge v1.12 · deployed admin-only
 TM Worker Version ID     df00e4c7-bfa1-45a3-b3e8-bd2640e0a159
 Public Worker            v2.7 · unchanged
 ```
 
-Build73 is the accepted cumulative runtime for Slice2. Build72 remains historical deployed-candidate lineage and is not retroactively relabeled REAL USER PASS. Builds69/70 remain historical Slice1 candidate lineage superseded by Build71 acceptance.
+Build73 is the accepted cumulative runtime for Slice2 and the Phase7-C program baseline. Build72 remains historical deployed-candidate lineage and is not retroactively relabeled REAL USER PASS. Builds69/70 remain historical Slice1 candidate lineage superseded by Build71 acceptance.
+
+A post-Build73 audit proved Lyrics, Intelligence and Release already complete the guided end-to-end contract; no runtime Build74 was minted for a fake Slice3. Build74 remains unused for the first real Phase8 implementation.
 
 ## Accepted closeouts
 
+- [`PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md`](PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md)
 - [`../changelogs/CHANGELOG-PHASE7-C-BUILD73.md`](../changelogs/CHANGELOG-PHASE7-C-BUILD73.md)
 - [`../changelogs/CHANGELOG-PHASE7-C-BUILD71.md`](../changelogs/CHANGELOG-PHASE7-C-BUILD71.md)
 - [`STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md`](STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md)
@@ -41,6 +48,9 @@ Build73 is the accepted cumulative runtime for Slice2. Build72 remains historica
 
 ## Active reference docs
 
+- [`ROADMAP-CURRENT.md`](ROADMAP-CURRENT.md)
+- [`NEXT-SESSION-HANDOFF.md`](NEXT-SESSION-HANDOFF.md)
+- [`PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md`](PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md)
 - [`PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md`](PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md)
 - [`STUDIO-FOCUS-PRODUCTION-FIRST-UX.md`](STUDIO-FOCUS-PRODUCTION-FIRST-UX.md)
 - [`PHASE-5-SONICTRACE-COMPLETE.md`](PHASE-5-SONICTRACE-COMPLETE.md)
@@ -66,4 +76,4 @@ The remaining `PHASE-*`, `C2.5`, `C3`, migration and parity documents are preser
 - **DEPLOYED CANDIDATE** = tested code is published.
 - **REAL USER PASS** = deployed behavior was actually exercised and accepted.
 
-Historical candidates never receive retroactive REAL USER PASS.
+Historical candidates never receive retroactive REAL USER PASS. A docs-only program closeout never creates or advances a runtime release.
