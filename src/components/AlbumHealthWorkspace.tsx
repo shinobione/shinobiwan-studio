@@ -1,11 +1,16 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { buildCatalogAlbumHealth, type AlbumHealth } from '../album-health';
 import { trackHref } from '../router';
 import { getAdminAlbums, type AdminAlbumSummary } from '../services/album-admin-api';
 import { getCatalogTracks } from '../services/catalog-api';
+import { getPublicAlbumVisuals, type PublicAlbumVisual } from '../services/public-albums-api';
 import type { StudioTrack } from '../types/studio';
 import '../phase8-album-health.css';
 import { AlbumsWorkspace } from './AlbumsWorkspace';
+
+const DEFAULT_ACCENT = '#4de1e2';
+const DEFAULT_ACCENT_2 = '#8f58ff';
+const PRIMARY_MEMBER_ACTIONS = 3;
 
 function messageOf(reason: unknown): string {
   return reason instanceof Error ? reason.message : String(reason);
@@ -15,52 +20,114 @@ function scrollToAlbumsEditor() {
   globalThis.document?.querySelector('.c3-albums-workspace')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+function visualUrl(visual?: PublicAlbumVisual | null) {
+  return visual?.thumbnail || visual?.cover || visual?.fullCover || null;
+}
+
 function HealthState({ album }: { album: AlbumHealth }) {
   if (album.state === 'healthy') return <span className="phase8-album-state healthy">HEALTHY</span>;
   if (album.state === 'unverified') return <span className="phase8-album-state unverified">UNVERIFIED</span>;
   return <span className="phase8-album-state attention">{album.issueCount} ISSUE{album.issueCount === 1 ? '' : 'S'}</span>;
 }
 
-function AlbumHealthCard({ album }: { album: AlbumHealth }) {
+function AlbumArtwork({ album, source, visual }: { album: AlbumHealth; source?: AdminAlbumSummary; visual?: PublicAlbumVisual | null }) {
+  const url = visualUrl(visual);
+  return <div className="phase8-album-art" aria-hidden="true">
+    {url ? <img src={url} alt="" loading="lazy" /> : <span>{album.albumTitle.slice(0, 2).toUpperCase()}</span>}
+    <i style={{ background: source?.accent || DEFAULT_ACCENT }} />
+    <i style={{ background: source?.accent2 || DEFAULT_ACCENT_2 }} />
+  </div>;
+}
+
+function IssueChip({ children, tone = 'attention' }: { children: React.ReactNode; tone?: 'attention' | 'neutral' }) {
+  return <span className={`phase8-album-issue-chip ${tone}`}>{children}</span>;
+}
+
+function TrackAction({ action }: { action: AlbumHealth['productionGapActions'][number] }) {
+  return <a className="phase8-album-track-action" href={trackHref(action.trackId, action.section)}>
+    <span>{action.trackTitle}</span>
+    <b>{action.label} →</b>
+  </a>;
+}
+
+function AlbumHealthCard({ album, source, visual }: { album: AlbumHealth; source?: AdminAlbumSummary; visual?: PublicAlbumVisual | null }) {
   const clear = album.issueCount === 0 && album.crossModelVerified;
-  return <article className={`panel phase8-album-card ${album.state}`}>
-    <div className="phase8-album-card-head">
-      <div><strong>{album.albumTitle}</strong><small><code>{album.albumId}</code> · {album.canonicalTrackCount} canonical track{album.canonicalTrackCount === 1 ? '' : 's'}</small></div>
+  const structuralIssue = album.coverMissing || album.emptyTracklist || album.missingTrackIds.length > 0 || album.cacheDriftTrackIds.length > 0;
+  const primaryActions = album.productionGapActions.slice(0, PRIMARY_MEMBER_ACTIONS);
+  const extraActions = album.productionGapActions.slice(PRIMARY_MEMBER_ACTIONS);
+  const style = {
+    '--album-accent': source?.accent || DEFAULT_ACCENT,
+    '--album-accent-2': source?.accent2 || DEFAULT_ACCENT_2,
+  } as CSSProperties;
+
+  return <article className={`panel phase8-album-card ${album.state}`} style={style}>
+    <div className="phase8-album-card-glow" aria-hidden="true" />
+    <header className="phase8-album-card-head">
+      <AlbumArtwork album={album} source={source} visual={visual} />
+      <div className="phase8-album-card-title">
+        <div className="phase8-album-meta-row">
+          <span>{(source?.type || 'album').toUpperCase()}</span>
+          <span>{(source?.status || 'draft').toUpperCase()}</span>
+          <span>{album.canonicalTrackCount} TRACK{album.canonicalTrackCount === 1 ? '' : 'S'}</span>
+        </div>
+        <h3>{album.albumTitle}</h3>
+        <code>{album.albumId}</code>
+      </div>
       <HealthState album={album} />
-    </div>
+    </header>
 
-    {clear && <p className="phase8-album-clear">Canonical cover, membership references, member production state and compatibility cache all cross-check cleanly. ✓</p>}
-    {!album.crossModelVerified && <div className="phase8-album-unverified"><strong>Cross-model checks unverified</strong><span>Studio did not receive the protected private Track catalog. Missing references, member production gaps and track-side cache drift are intentionally not inferred from the public fallback.</span></div>}
+    {clear && <div className="phase8-album-clear"><b>Release integrity verified</b><span>Cover, membership, Track production state and compatibility cache cross-check cleanly.</span></div>}
 
-    <div className="phase8-album-issues">
-      {album.coverMissing && <div><b>Cover missing</b><span>The canonical Album has no required cover artwork.</span></div>}
-      {album.emptyTracklist && <div><b>Tracklist empty</b><span><code>album.trackIds</code> currently owns no Track.</span></div>}
-      {album.missingTrackIds.length > 0 && <div><b>Broken membership references</b><span>{album.missingTrackIds.join(' · ')}</span></div>}
-      {album.cacheDriftTrackIds.length > 0 && <div><b>Compatibility-cache drift</b><span>{album.cacheDriftTrackIds.join(' · ')}</span><small><code>album.trackIds</code> remains authoritative; <code>track.album</code> is only a compatibility cache.</small></div>}
-    </div>
+    {!album.crossModelVerified && <div className="phase8-album-unverified"><b>Cross-model checks unverified</b><span>Private Track truth is unavailable. Studio refuses to infer broken references, production gaps or cache drift from public fallback data.</span></div>}
 
-    {album.productionGapActions.length > 0 && <div className="phase8-album-member-gaps">
-      <strong>Members with production gaps</strong>
-      <div>{album.productionGapActions.map(action => <a key={action.trackId} href={trackHref(action.trackId, action.section)}><span>{action.trackTitle}</span><b>{action.label} →</b></a>)}</div>
+    {structuralIssue && <div className="phase8-album-issue-strip" aria-label="Album manifest issues">
+      {album.coverMissing && <IssueChip>Cover missing</IssueChip>}
+      {album.emptyTracklist && <IssueChip>Tracklist empty</IssueChip>}
+      {album.missingTrackIds.length > 0 && <IssueChip>{album.missingTrackIds.length} broken member ref{album.missingTrackIds.length === 1 ? '' : 's'}</IssueChip>}
+      {album.cacheDriftTrackIds.length > 0 && <IssueChip>{album.cacheDriftTrackIds.length} cache drift</IssueChip>}
     </div>}
 
-    {(album.coverMissing || album.emptyTracklist || album.missingTrackIds.length > 0 || album.cacheDriftTrackIds.length > 0) && <button className="ghost-btn compact" type="button" onClick={scrollToAlbumsEditor}>Review in Albums editor ↓</button>}
+    {album.missingTrackIds.length > 0 && <div className="phase8-album-detail-line"><b>Broken membership</b><span>{album.missingTrackIds.join(' · ')}</span></div>}
+    {album.cacheDriftTrackIds.length > 0 && <div className="phase8-album-detail-line"><b>Compatibility cache</b><span>{album.cacheDriftTrackIds.join(' · ')}</span><small><code>album.trackIds</code> remains authoritative.</small></div>}
+
+    {album.productionGapActions.length > 0 && <section className="phase8-album-member-gaps">
+      <div className="phase8-album-member-gaps-head">
+        <div><strong>{album.productionGapActions.length} track{album.productionGapActions.length === 1 ? '' : 's'} need production work</strong><span>Existing Track Next Actions — no second Album workflow.</span></div>
+      </div>
+      <div className="phase8-album-track-list">{primaryActions.map(action => <TrackAction action={action} key={action.trackId} />)}</div>
+      {extraActions.length > 0 && <details className="phase8-album-more">
+        <summary>Show {extraActions.length} more track{extraActions.length === 1 ? '' : 's'}</summary>
+        <div className="phase8-album-track-list">{extraActions.map(action => <TrackAction action={action} key={action.trackId} />)}</div>
+      </details>}
+    </section>}
+
+    <footer className="phase8-album-card-actions">
+      {structuralIssue && <button className="ghost-btn compact" type="button" onClick={scrollToAlbumsEditor}>Review Album details ↓</button>}
+      {!structuralIssue && album.productionGapActions.length > 0 && <span>Album manifest clean · Track work remains</span>}
+      {clear && <span>Nothing to fix</span>}
+    </footer>
   </article>;
 }
 
 function AlbumHealthOverview() {
   const [albums, setAlbums] = useState<AdminAlbumSummary[]>([]);
   const [tracks, setTracks] = useState<StudioTrack[]>([]);
+  const [visuals, setVisuals] = useState<Map<string, PublicAlbumVisual>>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
-    Promise.all([getAdminAlbums(), getCatalogTracks()])
-      .then(([albumPayload, catalogTracks]) => {
+    Promise.all([
+      getAdminAlbums(),
+      getCatalogTracks(),
+      getPublicAlbumVisuals().catch(() => new Map<string, PublicAlbumVisual>()),
+    ])
+      .then(([albumPayload, catalogTracks, albumVisuals]) => {
         if (!active) return;
         setAlbums(albumPayload.albums || []);
         setTracks(catalogTracks);
+        setVisuals(albumVisuals);
         setError(null);
       })
       .catch(reason => active && setError(messageOf(reason)))
@@ -69,24 +136,26 @@ function AlbumHealthOverview() {
   }, []);
 
   const health = useMemo(() => buildCatalogAlbumHealth(albums, tracks), [albums, tracks]);
+  const sources = useMemo(() => new Map(albums.map(album => [album.id, album])), [albums]);
 
   return <section className="phase8-album-health" aria-label="Canonical Album health">
-    <div className="catalog-heading phase8-album-heading">
-      <div><span className="eyebrow">PHASE 8 / ALBUM HEALTH</span><h2>Release integrity, without a second Album authority.</h2><p>Studio cross-checks canonical <code>album.trackIds</code>, required cover state, accepted Track production truth and the track-side compatibility cache. Sonic/project intelligence stays in Intelligence; all writes stay in the existing Albums editor.</p></div>
+    <div className="phase8-album-heading">
+      <div><span className="eyebrow">PHASE 8 / ALBUM HEALTH</span><h2>Album Health</h2><p>One visual release overview built from canonical Album truth and the existing Track production model. No second authority, no automatic repair.</p></div>
+      <button className="ghost-btn compact" type="button" onClick={scrollToAlbumsEditor}>Open Albums editor ↓</button>
     </div>
 
     {loading && <div className="catalog-message panel">Reading canonical Album health…</div>}
     {!loading && error && <div className="album-error panel"><strong>Album Health unavailable</strong><span>{error}</span></div>}
     {!loading && !error && <>
-      <div className="catalog-kpis phase8-album-kpis" aria-label="Album health summary">
-        <div><span>CANONICAL RELEASES</span><strong>{health.totalAlbums}</strong><small>Album / EP / Collection manifests</small></div>
-        <div><span>HEALTHY</span><strong>{health.healthyAlbums}</strong><small>Verified with no current issue</small></div>
-        <div><span>NEEDS ATTENTION</span><strong className={health.attentionAlbums ? 'warn' : ''}>{health.attentionAlbums}</strong><small>Manifest or verified member issue</small></div>
-        <div><span>CROSS-CHECK UNVERIFIED</span><strong className={health.unverifiedAlbums ? 'warn' : ''}>{health.unverifiedAlbums}</strong><small>Private Track truth unavailable</small></div>
+      <div className="phase8-album-summary" aria-label="Album health summary">
+        <div><span>RELEASES</span><strong>{health.totalAlbums}</strong></div>
+        <div className="healthy"><span>HEALTHY</span><strong>{health.healthyAlbums}</strong></div>
+        <div className={health.attentionAlbums ? 'attention' : ''}><span>ATTENTION</span><strong>{health.attentionAlbums}</strong></div>
+        <div className={health.unverifiedAlbums ? 'unverified' : ''}><span>UNVERIFIED</span><strong>{health.unverifiedAlbums}</strong></div>
       </div>
 
-      {!health.crossModelVerified && health.totalAlbums > 0 && <div className="panel phase8-album-trust-warning"><strong>Private Track truth unavailable</strong><span>Album manifests are still canonical, but Studio refuses to call Track references broken or caches stale from a public-only fallback.</span></div>}
-      {health.totalAlbums > 0 && <div className="phase8-album-grid">{health.albums.map(album => <AlbumHealthCard album={album} key={album.albumId} />)}</div>}
+      {!health.crossModelVerified && health.totalAlbums > 0 && <div className="phase8-album-trust-warning"><span className="phase8-album-trust-dot" /><div><strong>Private Track truth unavailable</strong><span>Album manifests remain canonical; cross-model Track checks stay explicitly unverified.</span></div></div>}
+      {health.totalAlbums > 0 && <div className="phase8-album-grid">{health.albums.map(album => <AlbumHealthCard album={album} source={sources.get(album.albumId)} visual={visuals.get(album.albumId)} key={album.albumId} />)}</div>}
       {health.totalAlbums === 0 && <div className="panel phase8-album-empty"><strong>No canonical Album / EP exists yet.</strong><span>Album Health has nothing to cross-check.</span></div>}
     </>}
   </section>;
