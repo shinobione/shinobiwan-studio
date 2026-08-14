@@ -60,7 +60,10 @@ assert.ok(metadata.includes('measureCanonicalAudioEvidence(audioUrl)'));
 assert.ok(metadata.includes('CANONICAL DURATION REPAIR PROPOSED'));
 assert.ok(metadata.includes("derivedFields.includes('duration')"));
 assert.ok(metadata.includes("proposalValue(validation.proposed, 'duration')"));
-assert.ok(metadataDurationApi.includes("health.trackManagerVersion !== '5.22' || health.version !== '1.12'"));
+assert.ok(metadataDurationApi.includes("'5.22/1.12'"));
+assert.ok(metadataDurationApi.includes("'5.23/1.13'"));
+assert.ok(metadataDurationApi.includes('durationEvidenceBridgeCompatible'));
+assert.ok(!metadataDurationApi.includes("health.trackManagerVersion !== '5.22' || health.version !== '1.12'"));
 assert.ok(metadataDurationApi.includes('expectedUpdatedAt, metadata, evidence'));
 assert.ok(metadataDurationApi.includes('reread.track?.manifest?.duration'));
 assert.ok(phase4Api.includes("formData.set('audioDuration', String(audioEvidence.audio.duration))"));
@@ -70,4 +73,4 @@ assert.ok(!metadata.includes('name="duration"'));
 assert.ok(!adminApi.match(/AdminMetadataPatch[\s\S]{0,500}\| 'duration'/));
 assert.ok(!metadataDurationApi.includes('saveTrack('));
 
-console.log('Phase 7-C Slice 1 lineage through Build 73 compatibility checks passed.');
+console.log('Phase 7-C Slice 1 lineage through Build 73 compatibility checks passed with bounded duration-evidence successor support.');
