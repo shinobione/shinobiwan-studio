@@ -2,7 +2,7 @@
 
 Codename: `studio-focus-slice4-phase8-health-drilldown`  
 Date: 2026-08-14  
-Status: **CANDIDATE — PHASE 8 SLICE 2 / HEALTH DRILL-DOWN**
+Status: **MERGED + DEPLOYED CANDIDATE — REAL USER SMOKE PENDING**
 
 ## Why this build exists
 
@@ -76,6 +76,7 @@ Safety pre             safety/pre-phase8-health-drilldown-build75-20260814-1946
 Feature branch         agent/phase8-health-drilldown-build75
 Track Manager          v5.22 · unchanged
 Studio bridge          v1.12 · unchanged
+TM Worker Version ID   df00e4c7-bfa1-45a3-b3e8-bd2640e0a159 · unchanged
 Public Worker          v2.7 · unchanged
 R2 migration           NONE
 New write authority    NONE
@@ -83,11 +84,9 @@ New write authority    NONE
 
 No Track Manager/Worker deployment is required by this slice.
 
-## Validation
+## Validation / deployment receipts
 
 `check:phase8` preserves the accepted Build74 Content Health guard and adds the Build75 health-drill-down guard.
-
-Discovery / validation receipts:
 
 ```text
 PR                       #110
@@ -96,20 +95,31 @@ Initial CI               31826089546 · FAILURE
 Failure                  historical Phase7 guard required the literal read-only boundary copy
 Corrected runtime head   fa09c903d122c1e33440335e5c1c691c7c7c698d
 Corrected CI             31826190402 · SUCCESS
+Final tested head        e0cbc92b7d42de2354201da525852c5efe4c6d20
+Final exact-head CI      31826276973 · SUCCESS
+Anti-drift main          2b9fb1fec8da4dc7be467fe647162ab147341799
+Runtime merge            e6c2649583446087d0d256b48e556e9c6e93ede9
+Pages                    31826452231 · SUCCESS · exact runtime merge SHA
+Safety post-deploy       safety/post-build75-deployed-candidate-20260814-1959
 ```
 
 The initial red run did not expose a runtime/type/backend fault. The Phase7 guard correctly caught removal of its explicit historical read-only sentence. Build75 restored that sentence and appended the Phase8 filtering explanation rather than weakening the inherited guard.
 
-A final exact-head CI is required after this receipt commit before merge.
-
 ## Acceptance gate
 
+Completed:
+
 ```text
-exact-head CI
-→ anti-drift main
-→ exact tested-head merge
-→ exact merge-SHA Pages deployment
-→ real-user browser smoke
+exact-head CI            ✅
+anti-drift main          ✅
+exact tested-head merge  ✅
+exact merge-SHA Pages    ✅
+```
+
+Still required:
+
+```text
+real-user browser smoke  ⏳
 → only then REAL USER PASS
 ```
 
