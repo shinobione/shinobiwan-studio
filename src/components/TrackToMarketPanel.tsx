@@ -24,7 +24,7 @@ import {
   saveReleaseCampaignDraft,
 } from '../release-campaign-storage';
 
-const PROVIDERS = ['Google Flow', 'Gemini', 'ChatGPT Images', 'Other premium provider'];
+const CAMPAIGN_HANDOFF_PROVENANCE = 'provider-agnostic external image handoff';
 const GOOGLE_FLOW_URL = 'https://labs.google/fx/fr/tools/flow/';
 
 type ImageSlot = 'logo' | 'master' | 'square' | 'vertical';
@@ -89,7 +89,6 @@ function ImagePreview({ asset, format, title }: { asset: CampaignImageAsset | nu
 }
 
 export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
-  const [provider, setProvider] = useState('Google Flow');
   const [logo, setLogo] = useState<CampaignImageAsset | null>(null);
   const [master, setMaster] = useState<CampaignImageAsset | null>(null);
   const [square, setSquare] = useState<CampaignImageAsset | null>(null);
@@ -119,7 +118,6 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
       if (cancelled) return;
       if (draft?.version === 1 && draft.trackId === track.id) {
         const restoredConceptIndex = draft.masterConceptIndex || 0;
-        setProvider(draft.provider || 'Google Flow');
         setLogo(draft.logo || null);
         setMaster(draft.master || null);
         setSquare(draft.square || null);
@@ -129,9 +127,8 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
         setSquarePrompt(draft.squarePrompt || buildVariantPrompt(track, '1:1'));
         setVerticalPrompt(draft.verticalPrompt || buildVariantPrompt(track, '9:16'));
         setCopyPack(draft.copy || buildReleaseCopy(track));
-        setNotice('Browser-local Release Campaign draft restored. Nothing was read from or written to canonical R2 campaign assets.');
+        setNotice('Browser-local Release Campaign draft restored. Provider choice is intentionally not inferred from older draft provenance. Nothing was read from or written to canonical R2 campaign assets.');
       } else {
-        setProvider('Google Flow');
         setLogo(null);
         setMaster(null);
         setSquare(null);
@@ -153,7 +150,7 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
     const draft: ReleaseCampaignDraft = {
       version: 1,
       trackId: track.id,
-      provider,
+      provider: CAMPAIGN_HANDOFF_PROVENANCE,
       masterPrompt,
       masterConceptIndex,
       squarePrompt,
@@ -169,7 +166,7 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
       void saveReleaseCampaignDraft(draft).catch(() => setNotice('Local draft could not be saved. Current browser session remains usable.'));
     }, 450);
     return () => window.clearTimeout(timer);
-  }, [copyPack, hydrated, logo, master, masterConceptIndex, masterPrompt, provider, square, squarePrompt, track.id, vertical, verticalPrompt]);
+  }, [copyPack, hydrated, logo, master, masterConceptIndex, masterPrompt, square, squarePrompt, track.id, vertical, verticalPrompt]);
 
   const copyText = async (text: string, key: string) => {
     await navigator.clipboard.writeText(text);
@@ -184,7 +181,7 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
       if (slot === 'logo') {
         setLogo(asset);
         setMasterPrompt(buildFreshMasterPrompt(track, true, masterConceptIndex));
-        setNotice('Logo reference loaded locally. Attach this same file in the premium provider for the MASTER handoff.');
+        setNotice('Logo reference loaded locally. Attach this same file in your external image provider for the MASTER handoff.');
         return;
       }
       if (slot === 'master') {
@@ -216,7 +213,6 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
   const resetDraft = async () => {
     if (!globalThis.confirm('Reset the browser-local Release Campaign draft for this track? Canonical assets will not be touched.')) return;
     await clearReleaseCampaignDraft(track.id);
-    setProvider('Google Flow');
     setLogo(null);
     setMaster(null);
     setSquare(null);
@@ -266,7 +262,7 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
         kind: 'shinobiwan-release-campaign',
         trackId: track.id,
         title: track.title,
-        provider,
+        provider: CAMPAIGN_HANDOFF_PROVENANCE,
         masterConceptIndex,
         status: ready ? 'campaign-complete' : 'partial-campaign',
         exportedAt: new Date().toISOString(),
@@ -337,7 +333,11 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
     <article className="panel rc-context-card">
       <div className="rc-section-head">
         <div><span className="eyebrow">CANONICAL INPUT / READ ONLY</span><h3>{track.title}</h3></div>
-        <label className="rc-provider-field"><span>Premium provider</span><select value={provider} onChange={event => setProvider(event.target.value)}>{PROVIDERS.map(item => <option key={item}>{item}</option>)}</select></label>
+        <div className="rc-provider-field">
+          <span>External image handoff</span>
+          <strong className="rc-campaign-badge">PROVIDER-AGNOSTIC</strong>
+          <small className="rc-helper">Use any premium image provider. Google Flow is a convenience shortcut only; Studio does not alter prompt semantics by provider.</small>
+        </div>
       </div>
       <div className="ttm-context-grid">
         <div><span>Genres</span><strong>{track.genres.join(', ') || 'Unclassified'}</strong></div>
@@ -358,13 +358,13 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
           <div className="rc-handoff">
             <label><span>MASTER handoff · editable · concept {masterConceptIndex + 1}</span><textarea value={masterPrompt} onChange={event => setMasterPrompt(event.target.value)} /></label>
             <div className="rc-button-row">
-              <button className="primary-btn" type="button" onClick={() => { void copyText(masterPrompt, 'master'); }}>{copied === 'master' ? 'Copied ✓' : `Copy MASTER handoff for ${provider}`}</button>
+              <button className="primary-btn" type="button" onClick={() => { void copyText(masterPrompt, 'master'); }}>{copied === 'master' ? 'Copied ✓' : 'Copy MASTER handoff'}</button>
               <a className="secondary-btn" href={GOOGLE_FLOW_URL} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>Open Google Flow ↗</a>
               <button className="secondary-btn" type="button" onClick={newMasterConcept}>New MASTER concept</button>
               <button className="secondary-btn" type="button" onClick={() => logoInput.current?.click()}>{logo ? 'Replace logo reference' : 'Load SHINOBIWAN logo'}</button>
               {logo && <button className="secondary-btn" type="button" onClick={() => downloadDataUrl(logo, `SHINOBIWAN_Logo_Reference.${extensionForMime(logo.mimeType)}`)}>Download logo reference</button>}
             </div>
-            <p className="rc-helper">{logo ? 'Logo ready: attach this exact file with the MASTER prompt in the provider.' : 'Optional but recommended: load the authoritative SHINOBIWAN logo, then attach it as a provider reference image.'} Open Flow directly from here, and use New MASTER concept whenever you want a genuinely different visual direction without deleting the currently imported campaign.</p>
+            <p className="rc-helper">{logo ? 'Logo ready: attach this exact file with the MASTER prompt in your external image provider.' : 'Optional but recommended: load the authoritative SHINOBIWAN logo, then attach it as an external provider reference image.'} Google Flow is linked only as a convenience shortcut. Use New MASTER concept whenever you want a genuinely different visual direction without deleting the currently imported campaign.</p>
           </div>
           <div className="rc-import-panel">
             <ImagePreview asset={master} format="16:9" title={track.title} />
