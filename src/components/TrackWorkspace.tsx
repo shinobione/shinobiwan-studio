@@ -116,7 +116,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
     { label: 'Audio', ready: Boolean(track.assets.audio), detail: track.assets.audio ? 'Master ready' : 'Master missing', href: trackHref(track.id, 'overview') },
     { label: 'Visuals', ready: Boolean(track.assets.cover), detail: track.assets.video ? 'Cover + Canvas ready' : track.assets.cover ? 'Cover ready · Canvas optional' : 'Cover missing', href: trackHref(track.id, 'assets') },
     { label: 'Lyrics', ready: Boolean(track.assets.lyricsTxt && syncedLyrics), detail: syncedLyrics ? 'Synchronized' : track.assets.lyricsTxt ? 'Timing needed' : 'Missing', href: trackHref(track.id, 'lyrics') },
-    { label: 'Sound', ready: track.audioIntelligence.available && !track.audioIntelligence.outdated, detail: track.audioIntelligence.available ? track.audioIntelligence.outdated ? 'Update analysis' : 'Analysis ready' : 'Not analyzed', href: trackHref(track.id, 'intelligence') },
+    { label: 'Sonic', ready: track.audioIntelligence.available && !track.audioIntelligence.outdated, detail: track.audioIntelligence.available ? track.audioIntelligence.outdated ? 'Update analysis' : 'Analysis ready' : 'Not analyzed', href: trackHref(track.id, 'intelligence') },
     { label: 'Release', ready: track.publishing.catalogVisible, detail: track.publishing.catalogVisible ? 'Released' : metadataReady ? 'Review release' : 'Metadata needs attention', href: trackHref(track.id, 'market') },
   ];
 
@@ -307,7 +307,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
 
       {section === 'intelligence' && (
         <div className="workspace-focus-subpage">
-          <section className="panel workspace-focus-subpage-head"><div><span className="eyebrow">TRACK / SOUND</span><h3>Full SonicTrace analysis</h3><p>Advanced audio intelligence stays available without occupying the daily workspace navigation.</p></div><a className="ghost-btn" href={trackHref(track.id, 'overview')}>← Back to Track</a></section>
+          <section className="panel workspace-focus-subpage-head"><div><span className="eyebrow">TRACK / SONIC</span><h3>Full SonicTrace analysis</h3><p>Advanced audio intelligence stays available without occupying the daily workspace navigation.</p></div><a className="ghost-btn" href={trackHref(track.id, 'overview')}>← Back to Track</a></section>
           <SonicTracePanel track={track} onSaved={() => {
             emitContinuationReceipt(makeContinuationReceipt({
               trackId: track.id,
