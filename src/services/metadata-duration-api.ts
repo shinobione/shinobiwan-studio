@@ -14,6 +14,10 @@ import { studioConfig } from './config';
 
 const METADATA_VALIDATION_INTENT = 'metadata-validate-v1';
 const METADATA_SAVE_INTENT = 'metadata-save-v1';
+const DURATION_EVIDENCE_BRIDGES = new Set([
+  '5.22/1.12',
+  '5.23/1.13',
+]);
 
 export type DurationAwareValidationResponse = AdminMetadataValidationResponse & { derivedFields?: string[] };
 
@@ -25,10 +29,18 @@ function isJsonResponse(response: Response): boolean {
   return (response.headers.get('content-type') || '').toLowerCase().includes('application/json');
 }
 
+function durationEvidenceBridgeCompatible(trackManagerVersion?: string | null, bridgeVersion?: string | null): boolean {
+  return DURATION_EVIDENCE_BRIDGES.has(`${trackManagerVersion || ''}/${bridgeVersion || ''}`);
+}
+
+function durationEvidenceBridgeError(trackManagerVersion?: string | null, bridgeVersion?: string | null): string {
+  return `Canonical audio-duration repair requires a verified duration-evidence bridge (Track Manager v5.22 / Studio bridge v1.12 or v5.23 / v1.13); active bridge is ${trackManagerVersion || 'unknown'} / ${bridgeVersion || 'unknown'}.`;
+}
+
 async function requireDurationEvidenceBridge(): Promise<void> {
   const health = await getAdminBridgeHealth();
-  if (health.trackManagerVersion !== '5.22' || health.version !== '1.12') {
-    throw new AdminValidationError(`Canonical audio-duration repair requires Track Manager v5.22 / Studio bridge v1.12; active bridge is ${health.trackManagerVersion || 'unknown'} / ${health.version || 'unknown'}.`, 409, 'DURATION_EVIDENCE_BRIDGE_REQUIRED');
+  if (!durationEvidenceBridgeCompatible(health.trackManagerVersion, health.version)) {
+    throw new AdminValidationError(durationEvidenceBridgeError(health.trackManagerVersion, health.version), 409, 'DURATION_EVIDENCE_BRIDGE_REQUIRED');
   }
 }
 
@@ -61,7 +73,7 @@ async function postSaveWithEvidence(trackId: string, expectedUpdatedAt: string, 
   let health;
   try { health = await getAdminBridgeHealth(); }
   catch (reason) { throw new AdminSaveError(reason instanceof Error ? reason.message : String(reason)); }
-  if (health.trackManagerVersion !== '5.22' || health.version !== '1.12') throw new AdminSaveError(`Canonical audio-duration repair requires Track Manager v5.22 / Studio bridge v1.12; active bridge is ${health.trackManagerVersion || 'unknown'} / ${health.version || 'unknown'}.`, 409, 'DURATION_EVIDENCE_BRIDGE_REQUIRED');
+  if (!durationEvidenceBridgeCompatible(health.trackManagerVersion, health.version)) throw new AdminSaveError(durationEvidenceBridgeError(health.trackManagerVersion, health.version), 409, 'DURATION_EVIDENCE_BRIDGE_REQUIRED');
   if (!(health.capabilities?.write ?? []).includes('metadata')) throw new AdminSaveError('Track Manager does not advertise guarded metadata write capability. Save stays locked.');
 
   const controller = new AbortController();
