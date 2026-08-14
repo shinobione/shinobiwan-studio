@@ -7,8 +7,8 @@ const workspace = fs.readFileSync('src/components/TrackWorkspace.tsx', 'utf8');
 const assets = fs.readFileSync('src/components/AssetsManager.tsx', 'utf8');
 const phase4Api = fs.readFileSync('src/services/phase4-admin-api.ts', 'utf8');
 
-assert.match(release, /build:\s*72/);
-assert.match(release, /codename:\s*'studio-focus-slice4-phase7c-slice2-guided-core-media'/);
+assert.match(release, /build:\s*(72|73)/);
+assert.match(release, /codename:\s*'studio-focus-slice4-phase7c-(slice2-guided-core-media|slice2-status-truth-corrective)'/);
 assert.ok(release.includes("build71AncestryMarker"));
 
 // Workflow truth: aggregate release quality must not masquerade as an Identity problem.
@@ -42,4 +42,4 @@ assert.ok(phase4Api.includes('const reread = await getAdminTrack(trackId);'));
 assert.ok(phase4Api.includes('durationVerified'));
 assert.ok(!phase4Api.includes('saveTrack('));
 
-console.log('Phase 7-C Slice 2 Build 72 guided Core Media checks passed.');
+console.log('Phase 7-C Slice 2 Build 72/73 guided Core Media checks passed.');
