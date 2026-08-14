@@ -2,12 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   AdminSaveError,
   AdminValidationError,
-  saveAdminTrackMetadata,
-  validateAdminTrackMetadata,
   type AdminManifest,
   type AdminMetadataPatch,
   type AdminMetadataSaveResponse,
-  type AdminMetadataValidationResponse,
 } from '../services/admin-api';
 import {
   AlbumAdminError,
@@ -15,6 +12,12 @@ import {
   getAdminAlbums,
   moveAdminAlbumTrack,
 } from '../services/album-admin-api';
+import { measureCanonicalAudioEvidence, type AdminAudioEvidence } from '../services/audio-duration-evidence';
+import {
+  saveAdminTrackMetadataWithAudioEvidence,
+  validateAdminTrackMetadataWithAudioEvidence,
+  type DurationAwareValidationResponse,
+} from '../services/metadata-duration-api';
 import { routeHref } from '../router';
 import { studioConfig } from '../services/config';
 import type { StudioTrackDetail } from '../types/studio';
@@ -156,6 +159,14 @@ function qualityIssues(value: unknown): QualityIssue[] {
     .filter(item => item.level === 'error' || item.level === 'warning');
 }
 
+function formatEvidenceDuration(evidence: AdminAudioEvidence | null): string {
+  if (!evidence) return 'not measured';
+  const total = Math.round(evidence.audio.duration);
+  const minutes = Math.floor(total / 60);
+  const seconds = String(total % 60).padStart(2, '0');
+  return `${minutes}:${seconds} (${evidence.audio.duration.toFixed(3)} s)`;
+}
+
 function albumErrorMessage(reason: unknown): string {
   if (reason instanceof AlbumAdminError) {
     return `${reason.message}${reason.code ? ` [${reason.code}]` : ''}${reason.currentUpdatedAt ? ` · revision ${reason.currentUpdatedAt}` : ''}`;
@@ -182,7 +193,9 @@ export function MetadataValidationPanel({
   const claimedAlbumId = track.album.id || 'singles';
   const albumBound = claimedAlbumId !== 'singles';
   const [form, setForm] = useState<MetadataFormState>(() => initialForm(track));
-  const [validation, setValidation] = useState<AdminMetadataValidationResponse | null>(null);
+  const [validation, setValidation] = useState<DurationAwareValidationResponse | null>(null);
+  const [validationEvidence, setValidationEvidence] = useState<AdminAudioEvidence | null>(null);
+  const [evidenceMessage, setEvidenceMessage] = useState<string | null>(null);
   const [saveResult, setSaveResult] = useState<AdminMetadataSaveResponse | null>(null);
   const [validating, setValidating] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -195,6 +208,8 @@ export function MetadataValidationPanel({
   useEffect(() => {
     setForm(initialForm(track));
     setValidation(null);
+    setValidationEvidence(null);
+    setEvidenceMessage(null);
     setSaveResult(null);
     setError(null);
     setRefreshWarning(null);
@@ -204,6 +219,7 @@ export function MetadataValidationPanel({
 
   const patch = useMemo(() => buildPatch(form), [form]);
   const changedFields = validation?.changedFields || [];
+  const derivedFields = validation?.derivedFields || [];
   const validationRevision = validation?.expectedUpdatedAt || null;
   const canValidate = privateRead && Boolean(track.updatedAt) && !validating && !saving;
   const canSave = privateRead
@@ -217,20 +233,23 @@ export function MetadataValidationPanel({
     && !saveResult;
   const canCheckAlbumAuthority = privateRead && albumBound && !albumAuthorityBusy;
 
-  function update<K extends keyof MetadataFormState>(key: K, value: MetadataFormState[K]) {
-    setForm(current => ({ ...current, [key]: value }));
+  function clearReviewedProposal() {
     setValidation(null);
+    setValidationEvidence(null);
+    setEvidenceMessage(null);
     setSaveResult(null);
     setError(null);
     setRefreshWarning(null);
   }
 
+  function update<K extends keyof MetadataFormState>(key: K, value: MetadataFormState[K]) {
+    setForm(current => ({ ...current, [key]: value }));
+    clearReviewedProposal();
+  }
+
   function resetProposal() {
     setForm(initialForm(track));
-    setValidation(null);
-    setSaveResult(null);
-    setError(null);
-    setRefreshWarning(null);
+    clearReviewedProposal();
   }
 
   function preparePublication() {
@@ -304,10 +323,20 @@ export function MetadataValidationPanel({
     setValidating(true);
     setError(null);
     setValidation(null);
+    setValidationEvidence(null);
+    setEvidenceMessage(null);
     setSaveResult(null);
     setRefreshWarning(null);
     try {
-      const result = await validateAdminTrackMetadata(track.id, track.updatedAt, patch);
+      const audioUrl = track.assets.audio?.url || null;
+      const evidence = audioUrl ? await measureCanonicalAudioEvidence(audioUrl) : null;
+      setValidationEvidence(evidence);
+      setEvidenceMessage(audioUrl
+        ? evidence
+          ? `Canonical master measured at ${formatEvidenceDuration(evidence)}. Duration is derived evidence, never a manual metadata field.`
+          : 'Canonical master metadata could not be measured in this browser. Validation remains truthful but no duration repair will be proposed.'
+        : 'No canonical master audio is available, so duration evidence cannot be supplied.');
+      const result = await validateAdminTrackMetadataWithAudioEvidence(track.id, track.updatedAt, patch, evidence);
       setValidation(result);
     } catch (reason) {
       if (reason instanceof AdminValidationError && reason.code === 'STALE_MANIFEST') {
@@ -324,7 +353,7 @@ export function MetadataValidationPanel({
     if (!canSave || !validationRevision) return;
     const fieldList = changedFields.join(', ');
     const confirmed = globalThis.confirm(
-      `Save metadata for "${track.title}"?\n\nChanged fields: ${fieldList}\n\nThis writes canonical Track metadata and rebuilds catalog/index.json. Album membership/order and all media assets remain untouched.`,
+      `Save metadata for "${track.title}"?\n\nChanged fields: ${fieldList}\n\n${derivedFields.includes('duration') ? `Canonical audio duration will be repaired from the reviewed browser measurement (${formatEvidenceDuration(validationEvidence)}).\n\n` : ''}This writes canonical Track metadata and rebuilds catalog/index.json. Album membership/order and all media assets remain untouched.`,
     );
     if (!confirmed) return;
 
@@ -333,7 +362,7 @@ export function MetadataValidationPanel({
     setSaveResult(null);
     setRefreshWarning(null);
     try {
-      const result = await saveAdminTrackMetadata(track.id, validationRevision, patch);
+      const result = await saveAdminTrackMetadataWithAudioEvidence(track.id, validationRevision, patch, validationEvidence);
       if (result.track) setForm(formFromManifest(result.track));
       setSaveResult(result);
       if (onSaved) {
@@ -444,8 +473,10 @@ export function MetadataValidationPanel({
       <div className="metadata-validation-actions">
         <div><span>{validation ? 'Proposal reviewed' : 'Ready to review'}</span><strong>{validation ? `${changedFields.length} changed field${changedFields.length === 1 ? '' : 's'}` : 'Validate before saving'}</strong></div>
         <button className="ghost-btn metadata-reset-btn" type="button" disabled={saving} onClick={resetProposal}>Reset proposal</button>
-        <button className="metadata-validate-btn" type="button" disabled={!canValidate} onClick={validate}>{validating ? 'Validating…' : 'Validate metadata'}</button>
+        <button className="metadata-validate-btn" type="button" disabled={!canValidate} onClick={validate}>{validating ? 'Measuring master + validating…' : 'Validate metadata'}</button>
       </div>
+
+      {evidenceMessage && <div className="workspace-note metadata-duration-evidence" role="status"><strong>AUDIO DURATION EVIDENCE</strong><p>{evidenceMessage}</p></div>}
 
       {error && (
         <div className="metadata-validation-result metadata-result-error">
@@ -462,10 +493,13 @@ export function MetadataValidationPanel({
           </div>
           <div className="metadata-result-grid">
             <div><span>Changed fields</span><strong>{changedFields.join(', ') || 'None'}</strong></div>
+            <div><span>Derived repair</span><strong>{derivedFields.join(', ') || 'None'}</strong></div>
             <div><span>Quality state</span><strong>{quality?.state || '—'}</strong></div>
             <div><span>Publishable</span><strong>{quality?.publishable == null ? '—' : quality.publishable ? 'Yes' : 'No'}</strong></div>
             <div><span>Errors / warnings</span><strong>{quality?.counts ? `${quality.counts.error || 0} / ${quality.counts.warning || 0}` : '—'}</strong></div>
+            <div><span>Master measured</span><strong>{formatEvidenceDuration(validationEvidence)}</strong></div>
           </div>
+          {derivedFields.includes('duration') && <div className="workspace-note metadata-duration-repair"><strong>CANONICAL DURATION REPAIR PROPOSED</strong><p>The Track manifest duration will be derived from the reviewed canonical master measurement. No media object is replaced and duration is not manually editable.</p></div>}
           {issues.length > 0 && <div className="workspace-note metadata-quality-details" role="status"><strong>{blockingIssues.length ? `Why publication is blocked (${blockingIssues.length})` : 'Quality warnings'}</strong>{blockingIssues.map((issue, index) => <p key={`error-${issue.code || index}`}><b>ERROR · {issue.label || issue.code || 'Quality check'}</b> — {issue.message || 'Blocking quality check failed.'}</p>)}{warningIssues.map((issue, index) => <p key={`warning-${issue.code || index}`}><b>WARNING · {issue.label || issue.code || 'Quality check'}</b> — {issue.message || 'Review recommended.'}</p>)}</div>}
           <details className="metadata-proposal-preview">
             <summary>Normalized proposal preview</summary>
@@ -473,6 +507,7 @@ export function MetadataValidationPanel({
               <div><dt>Title</dt><dd>{proposalValue(validation.proposed, 'title')}</dd></div>
               <div><dt>Status</dt><dd>{proposalValue(validation.proposed, 'status')}</dd></div>
               <div><dt>Type</dt><dd>{proposalValue(validation.proposed, 'type')}</dd></div>
+              <div><dt>Duration</dt><dd>{proposalValue(validation.proposed, 'duration')} s</dd></div>
               <div><dt>Genres</dt><dd>{proposalValue(validation.proposed, 'genres')}</dd></div>
               <div><dt>Moods</dt><dd>{proposalValue(validation.proposed, 'moods')}</dd></div>
               <div><dt>Languages</dt><dd>{proposalValue(validation.proposed, 'languages')}</dd></div>
@@ -486,7 +521,7 @@ export function MetadataValidationPanel({
               <button className="metadata-save-btn" type="button" onClick={save}>{saving ? 'Saving…' : form.status === 'published' ? 'Publish track' : 'Save metadata'}</button>
             </div>
           )}
-          <p className="workspace-footnote">Validation itself remains non-mutating. A save is possible only after this preview, against this exact canonical revision.</p>
+          <p className="workspace-footnote">Validation itself remains non-mutating. A save is possible only after this preview, against this exact canonical revision and the reviewed audio evidence above.</p>
         </div>
       )}
 
@@ -498,6 +533,7 @@ export function MetadataValidationPanel({
           </div>
           <div className="metadata-result-grid">
             <div><span>Changed fields</span><strong>{saveResult.changedFields?.join(', ') || 'None'}</strong></div>
+            <div><span>Canonical duration</span><strong>{saveResult.track?.duration == null ? '—' : `${saveResult.track.duration.toFixed(3)} s`}</strong></div>
             <div><span>New revision</span><strong>{saveResult.updatedAt || saveResult.track?.updatedAt || '—'}</strong></div>
             <div><span>Catalog rebuilt</span><strong>{saveResult.catalogRebuilt ? 'Yes' : saveResult.noChange ? 'Not needed' : 'No'}</strong></div>
             <div><span>Browser reread</span><strong>{saveResult.clientVerified ? 'Verified' : 'Needs reload'}</strong></div>
