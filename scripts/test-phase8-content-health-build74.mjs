@@ -12,14 +12,12 @@ assert.match(release, /build:\s*74/);
 assert.match(release, /codename:\s*'studio-focus-slice4-phase8-content-health-truth'/);
 assert.ok(release.includes('build73AncestryMarker'));
 
-// Build73 truth: Canvas is optional and must not reduce production readiness.
 assert.ok(!health.includes("item('video'"));
 assert.ok(!health.includes("'Canvas / Video'"));
 assert.ok(health.includes("item('cover', 'Cover', track.assets.cover ? 20 : 0, 20"));
 assert.ok(health.includes('Canvas is optional and therefore contributes no score and no attention item.'));
 assert.ok(health.includes('Identity 20 + Core media 40 + Lyrics 20 + Intelligence 20'));
 
-// Identity health mirrors the accepted workflow prerequisites, not an old metadata wish-list.
 assert.ok(health.includes('Boolean(track.type.trim())'));
 assert.ok(health.includes('Boolean(track.status.trim())'));
 assert.ok(health.includes('Boolean(track.album?.id && track.album?.title)'));
@@ -27,13 +25,11 @@ assert.ok(health.includes('track.year == null || (track.year >= 1900 && track.ye
 assert.ok(!health.includes('track.genres.length > 0'));
 assert.ok(!health.includes('track.languages.length > 0'));
 
-// Production completion deliberately excludes the Release/publication stage.
 assert.ok(health.includes("filter(stage => stage.id !== 'release')"));
 assert.ok(health.includes('publishedProductionGaps'));
 assert.ok(health.includes('productionReadyDrafts'));
 assert.ok(workflow.includes("const priority: WorkflowStageId[] = ['identity', 'media', 'lyrics', 'intelligence', 'release']"));
 
-// Global Phase8 health is read-only and routes through the accepted workflow Next Action.
 for (const marker of [
   "signal('audio', 'Master audio missing'",
   "signal('cover', 'Cover missing'",
@@ -47,9 +43,9 @@ assert.ok(health.includes('section: item.nextAction.section'));
 assert.ok(!health.includes('saveTrack('));
 assert.ok(!health.includes('fetch('));
 
-// Home keeps production and publication visibly separate and adds no duplicate workflow.
 assert.ok(home.includes('buildCatalogContentHealth(tracks)'));
-assert.ok(home.includes('PRODUCTION ATTENTION'));
+assert.ok(home.includes('NEEDS ATTENTION'));
+assert.ok(home.includes('Production workflow has a next action'));
 assert.ok(home.includes('PRODUCTION COMPLETE'));
 assert.ok(home.includes('Publication remains a separate decision'));
 assert.ok(home.includes('Catalog health, without a second workflow'));
