@@ -1,0 +1,112 @@
+import {
+  AdminSaveError,
+  AdminValidationError,
+  getAdminBridgeHealth,
+  getAdminTrack,
+  saveAdminTrackMetadata,
+  validateAdminTrackMetadata,
+  type AdminMetadataPatch,
+  type AdminMetadataSaveResponse,
+  type AdminMetadataValidationResponse,
+} from './admin-api';
+import type { AdminAudioEvidence } from './audio-duration-evidence';
+import { studioConfig } from './config';
+
+const METADATA_VALIDATION_INTENT = 'metadata-validate-v1';
+const METADATA_SAVE_INTENT = 'metadata-save-v1';
+
+export type DurationAwareValidationResponse = AdminMetadataValidationResponse & { derivedFields?: string[] };
+
+function baseUrl(): string {
+  return studioConfig.trackManagerUrl.replace(/\/$/, '');
+}
+
+function isJsonResponse(response: Response): boolean {
+  return (response.headers.get('content-type') || '').toLowerCase().includes('application/json');
+}
+
+async function requireDurationEvidenceBridge(): Promise<void> {
+  const health = await getAdminBridgeHealth();
+  if (health.trackManagerVersion !== '5.22' || health.version !== '1.12') {
+    throw new AdminValidationError(`Canonical audio-duration repair requires Track Manager v5.22 / Studio bridge v1.12; active bridge is ${health.trackManagerVersion || 'unknown'} / ${health.version || 'unknown'}.`, 409, 'DURATION_EVIDENCE_BRIDGE_REQUIRED');
+  }
+}
+
+async function postValidationWithEvidence(trackId: string, expectedUpdatedAt: string, metadata: AdminMetadataPatch, evidence: AdminAudioEvidence): Promise<DurationAwareValidationResponse> {
+  await requireDurationEvidenceBridge();
+  const controller = new AbortController();
+  const timeout = globalThis.setTimeout(() => controller.abort(), 7000);
+  try {
+    let response: Response;
+    try {
+      response = await fetch(`${baseUrl()}/api/studio/tracks/${encodeURIComponent(trackId)}/metadata/validate`, {
+        method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'text/plain;charset=UTF-8' },
+        body: JSON.stringify({ intent: METADATA_VALIDATION_INTENT, expectedUpdatedAt, metadata, evidence }), cache: 'no-store', credentials: 'include', mode: 'cors', signal: controller.signal,
+      });
+    } catch (reason) {
+      if (reason instanceof DOMException && reason.name === 'AbortError') throw new AdminValidationError('Track Manager duration-aware metadata validation timed out.');
+      throw new AdminValidationError('Duration-aware metadata validation is unavailable. Authenticate with Track Manager and retry.');
+    }
+    if (!isJsonResponse(response)) throw new AdminValidationError('Cloudflare Access session is unavailable to duration-aware metadata validation.', response.status || null);
+    let payload: DurationAwareValidationResponse;
+    try { payload = await response.json() as DurationAwareValidationResponse; }
+    catch { throw new AdminValidationError('Track Manager returned invalid duration-aware validation JSON.', response.status || null); }
+    if (!response.ok || payload.ok === false) throw new AdminValidationError(payload.error || `Track Manager metadata validation returned HTTP ${response.status}.`, response.status, payload.code || null, payload.currentUpdatedAt || null);
+    if (payload.validationOnly !== true || !payload.proposed) throw new AdminValidationError('Track Manager returned an invalid duration-aware metadata proposal.');
+    return payload;
+  } finally { globalThis.clearTimeout(timeout); }
+}
+
+async function postSaveWithEvidence(trackId: string, expectedUpdatedAt: string, metadata: AdminMetadataPatch, evidence: AdminAudioEvidence): Promise<AdminMetadataSaveResponse> {
+  let health;
+  try { health = await getAdminBridgeHealth(); }
+  catch (reason) { throw new AdminSaveError(reason instanceof Error ? reason.message : String(reason)); }
+  if (health.trackManagerVersion !== '5.22' || health.version !== '1.12') throw new AdminSaveError(`Canonical audio-duration repair requires Track Manager v5.22 / Studio bridge v1.12; active bridge is ${health.trackManagerVersion || 'unknown'} / ${health.version || 'unknown'}.`, 409, 'DURATION_EVIDENCE_BRIDGE_REQUIRED');
+  if (!(health.capabilities?.write ?? []).includes('metadata')) throw new AdminSaveError('Track Manager does not advertise guarded metadata write capability. Save stays locked.');
+
+  const controller = new AbortController();
+  const timeout = globalThis.setTimeout(() => controller.abort(), 12000);
+  try {
+    let response: Response;
+    try {
+      response = await fetch(`${baseUrl()}/api/studio/tracks/${encodeURIComponent(trackId)}/metadata/save`, {
+        method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'text/plain;charset=UTF-8' },
+        body: JSON.stringify({ intent: METADATA_SAVE_INTENT, expectedUpdatedAt, metadata, evidence }), cache: 'no-store', credentials: 'include', mode: 'cors', signal: controller.signal,
+      });
+    } catch (reason) {
+      if (reason instanceof DOMException && reason.name === 'AbortError') throw new AdminSaveError('Duration-aware metadata save timed out. Reload canonical state before retrying.');
+      throw new AdminSaveError('Duration-aware metadata save is unavailable. Reload canonical state before retrying.');
+    }
+    if (!isJsonResponse(response)) throw new AdminSaveError('Cloudflare Access session is unavailable to duration-aware metadata save.', response.status || null);
+    let payload: AdminMetadataSaveResponse;
+    try { payload = await response.json() as AdminMetadataSaveResponse; }
+    catch { throw new AdminSaveError('Track Manager returned invalid duration-aware save JSON.', response.status || null); }
+    if (!response.ok || payload.ok === false) throw new AdminSaveError(payload.error || `Track Manager metadata save returned HTTP ${response.status}.`, response.status, payload.code || null, payload.currentUpdatedAt || null, payload.rollback || null);
+    if (!payload.track || (payload.saved !== true && payload.noChange !== true)) throw new AdminSaveError('Track Manager returned an invalid duration-aware save response. Reload canonical state before retrying.');
+
+    const expectedRevision = payload.updatedAt || payload.track.updatedAt || expectedUpdatedAt;
+    let clientVerified = false;
+    let verificationWarning: string | null = null;
+    try {
+      const reread = await getAdminTrack(trackId);
+      const rereadRevision = reread.track?.manifest?.updatedAt || null;
+      const rereadDuration = reread.track?.manifest?.duration ?? null;
+      const expectedDuration = payload.track.duration ?? null;
+      if (rereadRevision === expectedRevision && (expectedDuration == null || rereadDuration === expectedDuration)) clientVerified = true;
+      else verificationWarning = `Canonical reread returned revision ${rereadRevision || 'none'} / duration ${rereadDuration ?? 'none'} instead of ${expectedRevision} / ${expectedDuration ?? 'none'}. Reload before another edit.`;
+    } catch (reason) {
+      verificationWarning = `Server reported the save as successful, but Studio could not complete its canonical reread (${reason instanceof Error ? reason.message : String(reason)}). Reload before another edit.`;
+    }
+    return { ...payload, clientVerified, verificationWarning };
+  } finally { globalThis.clearTimeout(timeout); }
+}
+
+export async function validateAdminTrackMetadataWithAudioEvidence(trackId: string, expectedUpdatedAt: string, metadata: AdminMetadataPatch, evidence: AdminAudioEvidence | null): Promise<DurationAwareValidationResponse> {
+  if (!evidence) return validateAdminTrackMetadata(trackId, expectedUpdatedAt, metadata);
+  return postValidationWithEvidence(trackId, expectedUpdatedAt, metadata, evidence);
+}
+
+export async function saveAdminTrackMetadataWithAudioEvidence(trackId: string, expectedUpdatedAt: string, metadata: AdminMetadataPatch, evidence: AdminAudioEvidence | null): Promise<AdminMetadataSaveResponse> {
+  if (!evidence) return saveAdminTrackMetadata(trackId, expectedUpdatedAt, metadata);
+  return postSaveWithEvidence(trackId, expectedUpdatedAt, metadata, evidence);
+}
