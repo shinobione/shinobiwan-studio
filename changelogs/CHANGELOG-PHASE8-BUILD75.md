@@ -87,7 +87,20 @@ No Track Manager/Worker deployment is required by this slice.
 
 `check:phase8` preserves the accepted Build74 Content Health guard and adds the Build75 health-drill-down guard.
 
-Exact CI / PR / merge / Pages receipts are intentionally left unset until those events actually occur.
+Discovery / validation receipts:
+
+```text
+PR                       #110
+Initial candidate head   d7af7700c652f11a42c36d6aa0495649e92a9eb1
+Initial CI               31826089546 · FAILURE
+Failure                  historical Phase7 guard required the literal read-only boundary copy
+Corrected runtime head   fa09c903d122c1e33440335e5c1c691c7c7c698d
+Corrected CI             31826190402 · SUCCESS
+```
+
+The initial red run did not expose a runtime/type/backend fault. The Phase7 guard correctly caught removal of its explicit historical read-only sentence. Build75 restored that sentence and appended the Phase8 filtering explanation rather than weakening the inherited guard.
+
+A final exact-head CI is required after this receipt commit before merge.
 
 ## Acceptance gate
 
