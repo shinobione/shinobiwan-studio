@@ -62,7 +62,7 @@ function selectHomeLead(workflow: TrackWorkflowState[], lastTrackId: string | nu
 function ProductionSummary({ health }: { health: CatalogContentHealth }) {
   return (
     <section className="focus-summary" aria-label="Production and publication summary">
-      <article className="panel"><span>PRODUCTION ATTENTION</span><strong>{health.productionAttention}</strong><small>Required production work remains</small></article>
+      <article className="panel"><span>NEEDS ATTENTION</span><strong>{health.productionAttention}</strong><small>Production workflow has a next action</small></article>
       <article className="panel"><span>PRODUCTION COMPLETE</span><strong>{health.productionReady}</strong><small>Identity · media · lyrics · SonicTrace ready</small></article>
       <article className="panel"><span>PUBLISHED</span><strong>{health.published}</strong><small>Visible in the public catalog</small></article>
       <article className="panel"><span>DRAFTS</span><strong>{health.drafts}</strong><small>Publication remains a separate decision</small></article>
