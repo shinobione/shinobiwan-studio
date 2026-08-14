@@ -82,7 +82,8 @@ function identityChecks(track: StudioTrack): boolean[] {
 export function computeContentHealth(track: StudioTrack): ContentHealth {
   const metadataChecks = identityChecks(track);
   const metadataScore = metadataChecks.filter(Boolean).length * 4;
-  const syncedLyricsDetail = track.timestampsAvailable
+  const syncedLyrics = track.timestampsAvailable;
+  const syncedLyricsDetail = syncedLyrics
     ? 'Timestamped lyrics detected in the canonical lyrics source'
     : 'No synchronized timestamp data detected in canonical lyrics.txt';
   const sonicTraceScore = track.audioIntelligence.available ? track.audioIntelligence.outdated ? 10 : 20 : 0;
@@ -99,7 +100,7 @@ export function computeContentHealth(track: StudioTrack): ContentHealth {
     item('cover', 'Cover', track.assets.cover ? 20 : 0, 20, track.assets.cover ? 'Required cover available' : 'Required cover missing'),
     item('metadata', 'Identity', metadataScore, 20, `${metadataChecks.filter(Boolean).length}/5 workflow identity checks complete`),
     item('lyricsTxt', 'Lyrics TXT', track.assets.lyricsTxt ? 10 : 0, 10, track.assets.lyricsTxt ? 'Canonical lyrics source available' : 'Canonical lyrics source missing'),
-    item('syncedLyrics', 'Synced Lyrics', track.timestampsAvailable ? 10 : 0, 10, syncedLyricsDetail),
+    item('syncedLyrics', 'Synced Lyrics', syncedLyrics ? 10 : 0, 10, syncedLyricsDetail),
     item('sonicTrace', 'SonicTrace', sonicTraceScore, 20, sonicTraceDetail),
   ];
 
