@@ -2,7 +2,7 @@
 
 Codename: `studio-focus-slice4-phase8-album-health-cache-drift-human-ux`  
 Date: 2026-08-14  
-Status: **CANDIDATE — BUILD77 UX CORRECTIVE**
+Status: **MERGED + DEPLOYED CANDIDATE — REAL USER SMOKE PENDING**
 
 ## Why Build78 exists
 
@@ -52,15 +52,21 @@ R2 mutation/migration             NONE
 
 A cache mismatch by itself no longer triggers the Album-level `Review Album details` CTA. Genuine Album structural issues (missing cover, empty tracklist, broken member reference) still do.
 
-## Safety
+## Exact receipts
 
 ```text
 Accepted baseline        Build75 REAL USER PASS
 Build76                  functional candidate · NOT RUP
-Build77                  deployed visual candidate · smoke superseded by this corrective
+Build77                  deployed visual candidate · superseded by Build78 comprehension corrective
 Base main                89c425922bd604361356b2d08a950251825d1d41
 Safety pre               safety/pre-build78-cache-drift-human-ux-20260814-2242
 Feature                   agent/build78-cache-drift-human-ux
+PR                        #117
+Final tested head         4b4ecbe99b19977f43c1abb1111c18098ae2091a
+Exact-head CI             31839616909 · SUCCESS
+Runtime merge             77b43de7978f552c948ff0307c23e1ac2b456e56
+Pages                     31839697339 · SUCCESS · exact runtime merge SHA
+Safety post-deploy        safety/post-build78-deployed-candidate-20260814-2252
 Track Manager             v5.22 · unchanged
 Studio bridge             v1.12 · unchanged
 Public Worker             v2.7 · unchanged
@@ -70,11 +76,20 @@ R2 mutation/migration     NONE
 
 ## Acceptance gate
 
+Completed:
+
 ```text
-exact-head CI
-→ anti-drift main
-→ exact tested-head merge
-→ exact merge-SHA Pages
-→ real-user browser smoke
+exact-head CI             ✅
+anti-drift main           ✅
+exact tested-head merge   ✅
+exact merge-SHA Pages     ✅
+```
+
+Still required:
+
+```text
+real-user browser smoke   ⏳
 → only then REAL USER PASS
 ```
+
+**Build75 remains the accepted baseline until Build78 passes browser smoke.**
