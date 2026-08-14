@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { buildCatalogContentHealth, type CatalogContentHealth } from '../content-health';
 import { buildCatalogWorkflow, type TrackWorkflowState } from '../phase7-workflow';
 import { routeHref, trackHref } from '../router';
 import { getCatalogTracks } from '../services/catalog-api';
@@ -22,12 +23,17 @@ function artistSection(section: WorkspaceSection): WorkspaceSection {
 }
 
 function actionLabel(item: TrackWorkflowState): string {
+  if (item.nextAction.label === 'Publish track') return 'Publish track';
+  if (item.nextAction.label === 'Fix Release') return 'Fix release blockers';
+  if (item.nextAction.label === 'Continue Release') return 'Review release';
+  if (item.nextAction.label === 'Fix Identity' || item.nextAction.label === 'Continue Identity') return 'Fix track details';
+
   const section = artistSection(item.nextAction.section);
   if (section === 'assets') return item.track.assets.cover ? 'Continue visuals' : 'Add cover';
   if (section === 'lyrics') return item.track.assets.lyricsTxt ? 'Synchronize lyrics' : 'Add lyrics';
   if (section === 'intelligence') return item.track.audioIntelligence.available ? 'Refresh SonicTrace' : 'Analyze with SonicTrace';
   if (section === 'market') return 'Prepare release';
-  return item.blocked ? 'Fix track details' : 'Continue track';
+  return item.nextAction.label;
 }
 
 function productionStep(track: StudioTrack, step: FocusStep): boolean {
@@ -53,6 +59,44 @@ function selectHomeLead(workflow: TrackWorkflowState[], lastTrackId: string | nu
   return unfinishedLast || workflow.find(item => !item.ready) || null;
 }
 
+function ProductionSummary({ health }: { health: CatalogContentHealth }) {
+  return (
+    <section className="focus-summary" aria-label="Production and publication summary">
+      <article className="panel"><span>NEEDS ATTENTION</span><strong>{health.productionAttention}</strong><small>Production workflow has a next action</small></article>
+      <article className="panel"><span>PRODUCTION COMPLETE</span><strong>{health.productionReady}</strong><small>Identity · media · lyrics · SonicTrace ready</small></article>
+      <article className="panel"><span>PUBLISHED</span><strong>{health.published}</strong><small>Visible in the public catalog</small></article>
+      <article className="panel"><span>DRAFTS</span><strong>{health.drafts}</strong><small>Publication remains a separate decision</small></article>
+    </section>
+  );
+}
+
+function CatalogHealthPanel({ health }: { health: CatalogContentHealth }) {
+  return (
+    <section className="focus-health" aria-label="Catalog content health">
+      <div className="focus-section-heading">
+        <div><span className="eyebrow">PHASE 8 / CONTENT HEALTH</span><h3>Catalog health, without a second workflow</h3></div>
+        <a href={routeHref('workflow')}>Detailed queue ↗</a>
+      </div>
+      <div className="focus-health-grid">
+        {health.signals.map(signal => (
+          <article className={`panel focus-health-signal ${signal.count === 0 ? 'is-clear' : 'is-attention'}`} key={signal.id}>
+            <div><span>{signal.label}</span><strong>{signal.count}</strong></div>
+            <small>{signal.detail}</small>
+            {signal.action
+              ? <a href={trackHref(signal.action.trackId, artistSection(signal.action.section))}><b>{signal.action.trackTitle}</b><span>Open existing Next Action →</span></a>
+              : <span className="focus-health-clear">Clear ✓</span>}
+          </article>
+        ))}
+      </div>
+      <div className="panel focus-health-axes">
+        <div><span>PUBLISHED WITH PRODUCTION GAPS</span><strong>{health.publishedProductionGaps}</strong><small>Public does not mean production-complete.</small></div>
+        <div><span>PRODUCTION-READY DRAFTS</span><strong>{health.productionReadyDrafts}</strong><small>Ready does not mean auto-publish.</small></div>
+        <p>Production health and publication remain separate axes. Every action above reuses the accepted <code>workflow.nextAction</code>; this panel performs no writes.</p>
+      </div>
+    </section>
+  );
+}
+
 export function FocusHome() {
   const [tracks, setTracks] = useState<StudioTrack[]>([]);
   const [loading, setLoading] = useState(true);
@@ -75,11 +119,9 @@ export function FocusHome() {
   useEffect(() => { void load(); }, []);
 
   const workflow = useMemo(() => buildCatalogWorkflow(tracks), [tracks]);
+  const catalogHealth = useMemo(() => buildCatalogContentHealth(tracks), [tracks]);
   const privateRead = tracks.some(track => track.readSource === 'private');
   const attention = workflow.filter(item => !item.ready);
-  const readyCount = workflow.length - attention.length;
-  const publishedCount = tracks.filter(track => track.status === 'published' && track.publishing.catalogVisible).length;
-  const draftCount = tracks.filter(track => track.status !== 'published').length;
   const lastTrackId = (() => {
     try { return globalThis.localStorage?.getItem(LAST_TRACK_KEY) || null; } catch { return null; }
   })();
@@ -116,7 +158,7 @@ export function FocusHome() {
                 <div className="focus-continue-artwork">{artwork(lead.track) ? <img src={artwork(lead.track)!} alt="" /> : <span>{lead.track.title.slice(0, 2).toUpperCase()}</span>}</div>
                 <div><h3>{lead.track.title}</h3><p>{lead.track.album.title} · {lead.track.status}</p></div>
               </div>
-              <div className="focus-step-row" aria-label={`${lead.track.title} production readiness`}>
+              <div className="focus-step-row" aria-label={`${lead.track.title} production and release state`}>
                 {steps.map(step => <span className={productionStep(lead.track, step) ? 'ready' : 'todo'} key={step}><i>{productionStep(lead.track, step) ? '✓' : '•'}</i>{stepLabel(step)}</span>)}
               </div>
             </div>
@@ -128,12 +170,8 @@ export function FocusHome() {
             </div>
           </section>
 
-          <section className="focus-summary" aria-label="Production and catalog summary">
-            <article className="panel"><span>NEEDS ATTENTION</span><strong>{attention.length}</strong><small>Production workflow has a next action</small></article>
-            <article className="panel"><span>PRODUCTION COMPLETE</span><strong>{readyCount}</strong><small>Current production checklist complete</small></article>
-            <article className="panel"><span>PUBLISHED</span><strong>{publishedCount}</strong><small>Visible in the public catalog</small></article>
-            <article className="panel"><span>DRAFTS</span><strong>{draftCount}</strong><small>Not published yet</small></article>
-          </section>
+          <ProductionSummary health={catalogHealth} />
+          <CatalogHealthPanel health={catalogHealth} />
 
           <section className="focus-queue">
             <div className="focus-section-heading"><div><span className="eyebrow">CONTINUE</span><h3>What needs attention</h3></div><a href={routeHref('workflow')}>Detailed queue ↗</a></div>
@@ -171,12 +209,8 @@ export function FocusHome() {
             </div>
           </section>
 
-          <section className="focus-summary" aria-label="Production and catalog summary">
-            <article className="panel"><span>NEEDS ATTENTION</span><strong>0</strong><small>Production workflow has a next action</small></article>
-            <article className="panel"><span>PRODUCTION COMPLETE</span><strong>{readyCount}</strong><small>Current production checklist complete</small></article>
-            <article className="panel"><span>PUBLISHED</span><strong>{publishedCount}</strong><small>Visible in the public catalog</small></article>
-            <article className="panel"><span>DRAFTS</span><strong>{draftCount}</strong><small>Not published yet</small></article>
-          </section>
+          <ProductionSummary health={catalogHealth} />
+          <CatalogHealthPanel health={catalogHealth} />
         </>
       )}
 
