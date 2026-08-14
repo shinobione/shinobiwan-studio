@@ -1,20 +1,19 @@
 # SHINOBIWAN STUDIO — CURRENT ROADMAP
 
-Updated: 2026-08-14 during **Phase 7-C Runtime Slice 1 · Build 69 implementation candidate**.
+Updated: 2026-08-14 after **Studio v0.19.3 · Build 71 REAL USER PASS**.
 
 This file is the **current roadmap authority**. Historical build detail belongs in milestone docs and [`../changelogs/`](../changelogs/README.md).
 
 ## Current state
 
 ```text
-Studio accepted    v0.19.3 · Build 68    Home lead priority fix · REAL USER PASS
-Studio candidate   v0.19.3 · Build 69    Phase 7-C Slice 1 guided metadata · PR #99
+Studio accepted    v0.19.3 · Build 71    Phase 7-C Slice 1 corrective chain · REAL USER PASS
 Phase 7-A          Build 46              REAL USER PASS
 Phase 7-B          Build 51              REAL USER PASS
-Phase 7-C                                STARTED · contract locked
-Phase 7-C Slice 1  Build 69              IMPLEMENTATION CANDIDATE · CI/DEPLOY/SMOKE REQUIRED
-Track Manager      v5.21                 repair scope · REAL USER PASS
-Studio bridge      v1.11
+Phase 7-C          Slice 1               COMPLETE · REAL USER PASS via Build71
+Track Manager      v5.22                 duration evidence corrective · DEPLOYED
+Studio bridge      v1.12
+TM admin Worker    df00e4c7-bfa1-45a3-b3e8-bd2640e0a159
 Public Worker      v2.7                  unchanged
 LaunchPAD          2026.08.12.102        C3-C · REAL USER PASS
 SonicTrace         V2-E Build 08         REAL USER PASS
@@ -24,9 +23,9 @@ LRC Maker          6.3.8
 
 ### Immediate gate
 
-Build 68 has passed its required real-user Home smoke and remains the accepted Studio baseline.
+The Build69→70→71 Phase 7-C Runtime Slice 1 chain is **closed**. Build71 is the accepted Studio baseline.
 
-Build 69 is authorized and implemented as PR #99, but it **must not be accepted** until final exact-head CI, anti-drift, exact tested-head merge, exact merge-SHA Pages deployment and real-user browser smoke all pass.
+Do **not** begin a new Phase 7-C slice merely because Slice 1 is complete. Fresh scope/authorization and a real GitHub/deployment audit are required before the next runtime mutation.
 
 ## Frozen architecture
 
@@ -41,7 +40,7 @@ Build 69 is authorized and implemented as PR #99, but it **must not be accepted*
 - no generic Studio write route and no second R2 owner.
 - public fallback is read-only and never invents private state or verifies a write.
 
-## Accepted foundations / current candidate
+## Accepted foundations
 
 ```text
 Phase 0   architecture/data contracts                         ✅
@@ -57,8 +56,7 @@ Phase 7-B Contextual continuation receipts                    ✅ REAL USER PASS
 Studio Focus Slices 1–4 + program closeout                    ✅ REAL USER PASS
 Foundation Regression Repair · Build 67 + TM5.21              ✅ REAL USER PASS
 Build 68 Home lead priority corrective                        ✅ REAL USER PASS
-Phase 7-C Guided end-to-end actions                           🚧 CONTRACT LOCKED
-Phase 7-C Runtime Slice 1 · Build 69                          🚧 IMPLEMENTATION CANDIDATE
+Phase 7-C Runtime Slice 1 · Builds 69→71                      ✅ REAL USER PASS
 ```
 
 Historical numbering discipline:
@@ -69,9 +67,13 @@ Historical numbering discipline:
 - Build 63 is historical/superseded and must not be reused.
 - Build 64 is deployed **FAILED REAL USER SMOKE** evidence.
 - Builds 65 and 66 are corrective lineage superseded by Build 67.
-- Build 67 is the accepted Foundation Regression Repair baseline underneath Build 68.
-- Build 68 is the current accepted Studio runtime.
-- Build 69 is the first Phase 7-C runtime candidate and is not accepted yet.
+- Build 67 is the accepted Foundation Regression Repair baseline underneath later builds.
+- Build 68 is the accepted Home lead priority corrective predecessor.
+- Build 69 is the first Phase 7-C Runtime Slice 1 implementation candidate.
+- Build 70 is the pre-smoke readiness/publication/Album/New Track corrective candidate.
+- **Build 71 is the accepted cumulative Phase 7-C Runtime Slice 1 runtime.**
+
+Historical candidates are preserved rather than retroactively relabeled as accepted.
 
 ## Daily product model
 
@@ -88,7 +90,7 @@ Advanced ▾
 
 Workflow remains under Advanced. Home owns daily continuation, counters and the abbreviated attention queue; Workflow owns the full detailed searchable/filterable production queue.
 
-### Home lead rule — Build 68 preserved by Build 69
+### Home lead rule — accepted
 
 ```text
 last opened track
@@ -99,8 +101,6 @@ first unfinished workflow item
 ```
 
 A production-complete track must never be promoted as the Home lead merely because it was the last track visited.
-
-Build 69 changes only the destination semantics for an Identity/Metadata Next Action: Home now keeps `metadata` as the direct destination instead of collapsing it to overview.
 
 ## Track Workspace
 
@@ -114,30 +114,14 @@ Track · Visuals · Lyrics · Release
 - **Release** — final checklist + browser-local Release Campaign.
 - full Metadata and SonicTrace diagnostics remain under progressive disclosure / Details / Advanced.
 
-Production and publication remain separate overlapping axes:
+Production and publication are separate axes:
 
 ```text
 Production axis:   Needs attention / Production complete
 Publication axis:  Published / Drafts
 ```
 
-## Build 68 — accepted baseline
-
-Status: **COMPLETE · REAL USER PASS**.
-
-```text
-Safety before change  safety/pre-build68-home-lead-priority-20260813-2228
-Feature branch        agent/build68-home-lead-priority
-PR                     #96
-Tested head            cf5131f489d72ca5fae72544dacd9eaecc78077f
-Validation             31741483430 · SUCCESS
-Runtime merge          5c0428e500b4e6d5c9d1069bb440eac78b79955e
-Pages deployment       31743413418 · SUCCESS
-Real-user smoke        PASS · 2026-08-14
-Post-pass checkpoint   safety/post-build68-home-real-user-pass-20260814-0005
-```
-
-Detailed record: [`../changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md`](../changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md).
+A draft can be **100% production ready**. Publication is not part of readiness scoring.
 
 ## Phase 7-B receipt authority — preserved
 
@@ -174,33 +158,18 @@ Rules:
 
 ## Phase 7-C — Guided end-to-end actions
 
-Status: **STARTED · RUNTIME SLICE 1 BUILD 69 IMPLEMENTATION CANDIDATE**.
-
 Contract: [`PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md`](PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md).
 
-Frozen rules:
+### Runtime Slice 1 — COMPLETE · REAL USER PASS
 
-- Studio guides one truthful Next Action at a time;
-- canonical mutations reuse existing operation-specific protected Track Manager authority;
-- private read + advertised capability are required;
-- fresh revision / ETag / state token protections remain mandatory;
-- explicit human confirmation before canonical mutation;
-- ambiguous write failure → canonical reread before retry decision;
-- apparent success is not VERIFIED until private canonical reread proves it;
-- workflow/Next Action recomputes from canonical reread state, never optimistic local state;
-- Phase 7-B receipts remain authoritative for specialist continuations;
-- Release Campaign remains review-only.
-
-### Runtime Slice 1 — Build 69 Guided Metadata / Identity
-
-Implemented candidate flow:
+Accepted flow:
 
 ```text
 Home / Tracks / Workflow Next Action
 → Track guided Metadata / Identity context
 → edit
 → Validate metadata
-→ review normalized proposal
+→ normalized proposal + exact quality issues
 → explicit confirmation
 → existing guarded metadata save
 → backend + Studio private canonical reread
@@ -208,22 +177,46 @@ Home / Tracks / Workflow Next Action
 → recompute Workflow / Next Action
 ```
 
-Implementation audit result: **no Worker or Track Manager version bump required**. Existing TM v5.21 / bridge v1.11 metadata validate/save authority is reused.
+Cumulative Slice 1 corrective chain:
 
-Build 69 candidate specifics:
+```text
+Build69  guided Metadata / Identity routing + private reread semantics
+Build70  readiness/publication split + Album semantics + New Track safe publish flow
+Build71  derived canonical audio duration evidence + TM5.22/bridge1.12
+```
 
-- version `v0.19.3 · Build 69`;
-- codename `studio-focus-slice4-phase7c-slice1-guided-metadata`;
-- safety `safety/pre-phase7c-slice1-build69-20260814-0013`;
-- feature branch `agent/phase7c-runtime-slice1`;
-- Draft PR #99;
-- initial `v0.20.0 / phase7c-*` candidate CI correctly exposed inherited release-line whitelist collisions and caused no production deployment;
-- the intermediate `v0.19.4 / studio-focus-*` candidate still crossed intentionally pinned Build60→68 lineage guards;
-- final Build69 identity remains on the accepted `v0.19.3 / studio-focus-slice4-*` compatibility line rather than weakening historical C3 / TTME / PHASE UX / Focus proofs;
-- the current private-read integration guard alone is extended for PHASE 7-C / TM5.21 / bridge v1.11;
-- final exact-head CI still required before merge.
+Build71 acceptance evidence:
 
-Candidate record: [`../changelogs/CHANGELOG-PHASE7-C-BUILD69.md`](../changelogs/CHANGELOG-PHASE7-C-BUILD69.md).
+```text
+Studio tested head      4298a07e13983786833240dd69a61a72dc09636e
+Studio CI               31757665434 · SUCCESS
+Studio PR               #101
+Studio merge            0b3c3d452076708c698de71d9c691b5e459f7c17
+Pages deploy            31789774785 · SUCCESS
+Real-user smoke         BUILD71 PASS · 2026-08-14
+Safety pre              safety/pre-build71-duration-evidence-fix-20260814-0216
+Safety post-deploy      safety/post-build71-deployed-candidate-20260814-1152
+
+Track Manager           v5.22
+Studio bridge           v1.12
+Backend tested head     888d29e9b7064346311ed3c959669a327505204d
+Backend merge           be7d970f6577e0e54eade04a5ef764a733baed42
+Admin deploy            31789368122 · SUCCESS · target=admin
+TM Worker Version ID    df00e4c7-bfa1-45a3-b3e8-bd2640e0a159
+Public Worker           v2.7 · unchanged / deployment skipped
+```
+
+Accepted record: [`../changelogs/CHANGELOG-PHASE7-C-BUILD71.md`](../changelogs/CHANGELOG-PHASE7-C-BUILD71.md).
+
+### Phase 7-C next slice
+
+**Not started.** Before any new runtime slice:
+
+1. reread real GitHub/deployment state;
+2. confirm the next scope and build identity;
+3. create a fresh safety checkpoint;
+4. preserve all Slice 1 authority/verification guarantees;
+5. require exact-head CI, anti-drift, exact deployment and real-user smoke again.
 
 ## Later roadmap
 
@@ -268,7 +261,13 @@ albums/<album-id>/cover/<filename>
 albums/<album-id>/thumbnail/thumbnail.webp
 ```
 
-Ordered `album.trackIds` owns membership and artistic order.
+Ordered `album.trackIds` owns membership and artistic order. Track-side Album data remains a compatibility cache only.
+
+### Audio duration
+
+`manifest.duration` is a derived canonical fact from the current master audio. It is not a manual free-form metadata field.
+
+TM v5.22 can accept bounded browser-measured audio evidence through existing guarded operations, under the current track/revision and canonical-audio prerequisites.
 
 ### SonicTrace
 
@@ -282,6 +281,8 @@ Source audio is not persisted in sidecars.
 ## Important checkpoints
 
 ```text
+safety/post-build71-deployed-candidate-20260814-1152
+safety/pre-build71-duration-evidence-fix-20260814-0216
 safety/pre-phase7c-slice1-build69-20260814-0013
 safety/post-build68-home-real-user-pass-20260814-0005
 safety/pre-build68-home-lead-priority-20260813-2228
