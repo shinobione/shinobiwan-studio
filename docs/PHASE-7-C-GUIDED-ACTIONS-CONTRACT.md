@@ -1,8 +1,8 @@
 # PHASE 7-C — Guided end-to-end actions contract
 
-Status: **ACTIVE — SLICE 1 REAL USER PASS / SLICE 2 BUILD72 DEPLOYED CANDIDATE**
+Status: **ACTIVE — SLICE 1 REAL USER PASS / SLICE 2 REAL USER PASS**
 
-Authorization: explicit user `GO PHASE 7-C` on 2026-08-13; runtime authorization renewed after Build68, and broad continuation authorization renewed on 2026-08-14 after Build71 REAL USER PASS.
+Authorization: explicit user `GO PHASE 7-C` on 2026-08-13; runtime authorization renewed after Build68, with broad continuation authorization renewed on 2026-08-14 after Build71 REAL USER PASS.
 
 This document operationalizes the current-roadmap definition of Phase 7-C. It does **not** create a new write authority. It defines how Studio may guide an artist through already-authorized, operation-specific production actions while preserving the accepted Phase 7-A / 7-B and Track Manager safety model.
 
@@ -130,50 +130,31 @@ Studio private canonical reread
 VERIFIED + refreshed workflow / next action
 ```
 
-Slice 1 preserved the existing Metadata validate/save authority, public-fallback lock, exact-track reread and explicit confirmation model.
-
-The accepted Slice 1 runtime is the cumulative Build69→70→71 chain:
+The accepted Slice1 runtime is the cumulative Build69→70→71 chain:
 
 ```text
 Build69  guided Metadata / Identity routing and private reread semantics
 Build70  readiness/publication separation + Album semantics + New Track safe publish flow
-Build71  canonical audio-duration evidence corrective + TM5.22 / bridge1.12
-```
-
-Build71 completed the acceptance chain on 2026-08-14:
-
-```text
-Studio tested head      4298a07e13983786833240dd69a61a72dc09636e
-Studio CI               31757665434 · SUCCESS
-Studio PR               #101
-Studio runtime merge    0b3c3d452076708c698de71d9c691b5e459f7c17
-Studio Pages            31789774785 · SUCCESS
-Real-user verdict       BUILD71 PASS
-Track Manager           v5.22
-Studio bridge           v1.12
-TM backend merge        be7d970f6577e0e54eade04a5ef764a733baed42
-TM admin deploy         31789368122 · SUCCESS · admin only
-TM Worker Version ID    df00e4c7-bfa1-45a3-b3e8-bd2640e0a159
-Public Worker           v2.7 · unchanged
+Build71  canonical audio-duration evidence corrective + TM5.22 / bridge1.12 · REAL USER PASS
 ```
 
 Accepted record: [`../changelogs/CHANGELOG-PHASE7-C-BUILD71.md`](../changelogs/CHANGELOG-PHASE7-C-BUILD71.md).
 
-## Slice 2 — guided Core Media · BUILD72 DEPLOYED CANDIDATE
+## Slice 2 — guided Core Media · ACCEPTED
 
-Slice 2 extends the same guided-action contract to the first unresolved production prerequisite after Identity: **Core Media**.
+Slice2 extends the same guided-action contract to the first unresolved production prerequisite after Identity: **Core Media**.
 
-The canonical stage order remains:
+Canonical stage order:
 
 ```text
 Identity → Core media → Lyrics → Intelligence → Release
 ```
 
-### Slice 2 audit result
+### Existing protected authority reused
 
-The existing Track Manager v5.22 / bridge v1.12 already exposes the production-proven `assets` capability and protected `asset-upload-v1` operation. No new Worker route, Track Manager bump or Worker deployment is required.
+Track Manager v5.22 / bridge v1.12 already exposes the production-proven `assets` capability and protected `asset-upload-v1` operation. No new Worker route, Track Manager bump or Worker deployment was required.
 
-The existing asset client already enforces:
+The existing asset client preserves:
 
 - exact valid `trackId`;
 - advertised `assets` capability;
@@ -186,22 +167,7 @@ The existing asset client already enforces:
 - exact manifest revision + asset presence verification;
 - Build71 audio-duration evidence for audio uploads.
 
-### Slice 2 orchestration correction
-
-Two workflow defects were corrected:
-
-1. missing master audio previously routed to `assets`, but that workspace section is Visuals and contains no audio uploader;
-2. aggregate Track Manager quality error counts were treated as Identity work, allowing media/lyrics errors to hijack stage priority.
-
-Build72 makes stage ownership truthful:
-
-- Identity owns explicit identity prerequisites only;
-- Core Media owns required master audio and cover presence;
-- Lyrics owns canonical lyrics source/timing prerequisites;
-- Intelligence owns SonicTrace availability/freshness;
-- Release retains the aggregate Track Manager quality gate.
-
-Guided flow:
+### Guided Core Media flow
 
 ```text
 master audio missing
@@ -226,27 +192,68 @@ Audio + Cover ready
 → continue to Lyrics
 ```
 
-### Build72 evidence
+### Stage ownership and status truth
+
+Build72 corrected two orchestration defects:
+
+1. missing master audio previously routed to `assets`, but that workspace section is Visuals and contains no audio uploader;
+2. aggregate Track Manager quality error counts were treated as Identity work, allowing media/lyrics errors to hijack stage priority.
+
+Build73 then closed the real-user-smoke presentation mismatch found on Zero-SUM:
 
 ```text
-Accepted baseline       Build71 · REAL USER PASS
-Safety pre              safety/pre-phase7c-slice2-build72-20260814-1221
-Feature branch          agent/phase7c-slice2-guided-core-media-build72
-PR                      #103
-Exact tested head       b79ce03a98fad46e6bf4c488e456af07bba951be
-Studio CI               31792368962 · SUCCESS
-Runtime merge           dceee27dd8f8cdc96f8f88f10c5588e283e56699
-Pages deployment        31792436456 · SUCCESS · exact merge SHA
-Safety post-deploy      safety/post-build72-deployed-candidate-20260814-1230
-Track Manager           v5.22 · unchanged
-Studio bridge           v1.12 · unchanged
-Public Worker           v2.7 · unchanged
-Real-user smoke         PENDING
+Visuals ready = canonical cover present
+Canvas        = optional
+Lyrics ready  = canonical lyrics.txt + recognized timestamps
+TXT only      = attention / Timing needed
 ```
 
-Candidate record: [`../changelogs/CHANGELOG-PHASE7-C-BUILD72.md`](../changelogs/CHANGELOG-PHASE7-C-BUILD72.md).
+Accepted stage ownership:
 
-Build72 remains **unaccepted** until the browser smoke proves the deployed guided routing and canonical recomputation behavior. Slice 3 must not start before this gate closes.
+- Identity owns explicit identity prerequisites only;
+- Core Media owns required master audio and cover presence;
+- Lyrics owns canonical lyrics source/timing prerequisites;
+- Intelligence owns SonicTrace availability/freshness;
+- Release retains the aggregate Track Manager quality gate;
+- Home, Tracks, Workflow and Track Workspace use the same `workflow.nextAction` authority.
+
+### Slice2 acceptance evidence
+
+```text
+Build72 safety pre       safety/pre-phase7c-slice2-build72-20260814-1221
+Build72 PR               #103
+Build72 tested head      b79ce03a98fad46e6bf4c488e456af07bba951be
+Build72 CI               31792368962 · SUCCESS
+Build72 runtime merge    dceee27dd8f8cdc96f8f88f10c5588e283e56699
+Build72 Pages            31792436456 · SUCCESS
+Build72 post-deploy      safety/post-build72-deployed-candidate-20260814-1230
+
+Build73 safety pre       safety/pre-build73-status-truth-corrective-20260814-1312
+Build73 PR               #105
+Build73 tested head      b6dc39e7555aa040740de5efa54bd75b1e78101a
+Build73 CI               31795481278 · SUCCESS
+Build73 runtime merge    4684291f64d12bd514f103ba1c5050d05d0143ac
+Build73 Pages            31795547072 · SUCCESS · exact merge SHA
+Build73 post-deploy      safety/post-build73-deployed-candidate-20260814-1318
+Build73 post-RUP         safety/post-build73-real-user-pass-20260814-1715
+Real-user verdict        BUILD73 PASS
+
+Track Manager            v5.22 · unchanged
+Studio bridge            v1.12 · unchanged
+TM Worker Version ID     df00e4c7-bfa1-45a3-b3e8-bd2640e0a159 · unchanged
+Public Worker            v2.7 · unchanged
+```
+
+Accepted record: [`../changelogs/CHANGELOG-PHASE7-C-BUILD73.md`](../changelogs/CHANGELOG-PHASE7-C-BUILD73.md).
+
+Historical distinction:
+
+```text
+Build72  Slice2 origin · merged/deployed candidate
+Build73  Slice2 corrective · REAL USER PASS
+```
+
+Build72 is not retroactively relabeled as accepted.
 
 ## Runtime acceptance discipline
 
@@ -291,11 +298,18 @@ LaunchPAD: safety/pre-phase7c-guided-actions-20260813-1837
 Current Phase 7-C safety anchors:
 
 ```text
-Slice 1 pre       safety/pre-phase7c-slice1-build69-20260814-0013
-Build71 post-RUP  safety/post-build71-real-user-pass-20260814-1217
-Slice 2 pre       safety/pre-phase7c-slice2-build72-20260814-1221
-Slice 2 deployed  safety/post-build72-deployed-candidate-20260814-1230
+Slice1 pre         safety/pre-phase7c-slice1-build69-20260814-0013
+Build71 post-RUP   safety/post-build71-real-user-pass-20260814-1217
+Slice2 pre         safety/pre-phase7c-slice2-build72-20260814-1221
+Build72 deployed   safety/post-build72-deployed-candidate-20260814-1230
+Build73 pre        safety/pre-build73-status-truth-corrective-20260814-1312
+Build73 deployed   safety/post-build73-deployed-candidate-20260814-1318
+Build73 post-RUP   safety/post-build73-real-user-pass-20260814-1715
 ```
+
+## Next slice
+
+No Slice3 runtime is started by this contract closeout. A new slice requires a fresh GitHub/deployment audit, explicit scope, unused build number, fresh safety checkpoint, exact-head CI, exact deployment proof and a new real-user smoke gate.
 
 ## Stop conditions
 
