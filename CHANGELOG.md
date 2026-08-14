@@ -2,64 +2,73 @@
 
 This file is the **current concise changelog**. Detailed per-build records are organized under [`changelogs/`](changelogs/README.md).
 
-## Current implementation candidate
-
-### v0.19.3 · Build 69 — 2026-08-14
-
-Codename: `studio-focus-slice4-phase7c-slice1-guided-metadata`  
-Status: **IMPLEMENTATION CANDIDATE — PR #99 · EXACT-HEAD CI REQUIRED**
-
-Phase 7-C Runtime Slice 1:
-
-- Home preserves an Identity/Metadata workflow destination and opens the guided Metadata context directly;
-- Tracks and Workflow retain their direct workflow destinations;
-- guided Metadata shows exact `trackId`, private/public lock state and current canonical Next Action;
-- existing Track Manager metadata validate/save authority is reused unchanged;
-- normalized proposal review and explicit human confirmation remain mandatory;
-- post-save Studio reread rejects public fallback or mismatched track identity as verification;
-- workflow / Next Action recomputes only after reread canonical Track state replaces the workspace state;
-- no new Worker route, Track Manager bump, deployment-time R2 mutation, Album mutation or authority expansion.
-
-Candidate evidence:
-
-```text
-Accepted baseline      v0.19.3 · Build 68 · REAL USER PASS
-Safety checkpoint      safety/pre-phase7c-slice1-build69-20260814-0013
-Feature branch         agent/phase7c-runtime-slice1
-PR                     #99 · DRAFT
-Initial CI             31749799202 · FAILED initial successor identity whitelist
-Final identity         v0.19.3 · Build 69 · studio-focus-slice4-phase7c-slice1-guided-metadata
-Historical guards      C3 / TTME / PHASE UX / Focus assertions preserved
-Current guard update   private-read integration only · PHASE 7-C / TM5.21 / bridge1.11
-Final exact-head CI    REQUIRED before merge
-Runtime merge          PENDING
-Pages deploy           PENDING
-Real-user smoke        PENDING
-```
-
-Detailed record: [`changelogs/CHANGELOG-PHASE7-C-BUILD69.md`](changelogs/CHANGELOG-PHASE7-C-BUILD69.md).
-
 ## Current accepted release
 
-### v0.19.3 · Build 68 — 2026-08-13
+### v0.19.3 · Build 71 — 2026-08-14
 
-Codename: `studio-focus-slice4-home-lead-priority`  
-Status: **COMPLETE — REAL USER PASS**  
-Accepted: **2026-08-14**
+Codename: `studio-focus-slice4-phase7c-duration-evidence-corrective`  
+Status: **COMPLETE — REAL USER PASS**
 
-Home lead priority corrective:
+Build71 closes the Phase 7-C Runtime Slice 1 corrective chain started by Build69 and refined by Build70.
 
-- a production-complete track can no longer remain the large Home lead merely because it was the last track opened;
-- Home keeps the last-opened track only while that track is unfinished;
-- otherwise Home selects the first unfinished workflow item;
-- when no track needs attention, Home shows `PRODUCTION QUEUE CLEAR` while retaining the summary counters;
-- no Worker route, R2 mutation, Track Manager authority change or public Worker deployment.
+Accepted cumulative behavior:
+
+- Metadata/Identity Next Actions open the guided Metadata context directly;
+- normalized proposal review and explicit confirmation remain mandatory;
+- private canonical reread is required before a write is VERIFIED;
+- production readiness is independent from publication state;
+- canonical Album membership drives Album-track semantics;
+- exact quality errors/warnings are visible;
+- New Track no longer sends Track-side Album cache through generic create metadata;
+- `Create draft` / guarded `Create & Publish` remain available;
+- canonical audio duration is a derived fact, not manually editable metadata;
+- Studio can measure protected canonical audio duration and submit bounded evidence to TM v5.22;
+- future audio uploads can persist derived duration on the same guarded revision;
+- public fallback remains read-only and public Worker v2.7 was not redeployed.
 
 Exact acceptance evidence:
 
 ```text
+Studio tested head      4298a07e13983786833240dd69a61a72dc09636e
+Studio validation       31757665434 · SUCCESS
+Studio PR               #101
+Studio merge            0b3c3d452076708c698de71d9c691b5e459f7c17
+Pages deploy            31789774785 · SUCCESS
+Real-user smoke         BUILD71 PASS · 2026-08-14
+Safety pre              safety/pre-build71-duration-evidence-fix-20260814-0216
+Safety post-deploy      safety/post-build71-deployed-candidate-20260814-1152
+
+Track Manager           v5.22
+Studio bridge           v1.12
+Backend tested head     888d29e9b7064346311ed3c959669a327505204d
+Backend merge           be7d970f6577e0e54eade04a5ef764a733baed42
+Admin deploy run        31789368122 · SUCCESS · admin only
+TM Worker Version ID    df00e4c7-bfa1-45a3-b3e8-bd2640e0a159
+Public Worker           v2.7 · unchanged
+```
+
+Detailed record: [`changelogs/CHANGELOG-PHASE7-C-BUILD71.md`](changelogs/CHANGELOG-PHASE7-C-BUILD71.md).
+
+## Corrective lineage
+
+### Build 70 — pre-smoke corrective
+
+Merged/deployed candidate, superseded by accepted Build71. It separated readiness from publication, clarified Album-track semantics, exposed exact quality blockers and repaired the New Track generic-Album create bug while adding guarded `Create & Publish` orchestration.
+
+### Build 69 — Phase 7-C Runtime Slice 1 origin
+
+Merged/deployed candidate, superseded by Builds70/71. It introduced guided Metadata/Identity routing, normalized proposal review, explicit confirmation, protected save and private canonical reread workflow recomputation.
+
+Historical candidates are preserved rather than retroactively marked REAL USER PASS.
+
+## Accepted predecessor
+
+### v0.19.3 · Build 68 — 2026-08-14
+
+Home lead priority corrective · **REAL USER PASS**.
+
+```text
 Safety before change  safety/pre-build68-home-lead-priority-20260813-2228
-Feature branch        agent/build68-home-lead-priority
 PR                    #96
 Tested head           cf5131f489d72ca5fae72544dacd9eaecc78077f
 Validation run        31741483430 · SUCCESS
@@ -69,65 +78,27 @@ Real-user smoke       PASS · 2026-08-14
 Post-pass checkpoint  safety/post-build68-home-real-user-pass-20260814-0005
 ```
 
-Detailed record: [`changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md`](changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md).
+## Earlier accepted lineage
 
-## Immediate predecessor
-
-### v0.19.3 · Build 67 — 2026-08-13
-
-Codename: `studio-focus-slice4-lyrics-source-anchor`  
-Status: **COMPLETE — REAL USER PASS**
-
-Foundation Regression Repair closeout:
-
-- private/draft Album artwork renders from protected canonical Album media rather than depending on public projection;
-- generic Track metadata no longer edits the Track-side Album cache;
-- explicit Album membership verification/repair respects authoritative `album.trackIds` and guarded Track Manager operations;
-- Track Manager v5.21 removes `album` from the generic Studio metadata allowlist and adds protected Album media reads;
-- Build 64 is preserved as a deployed candidate that **FAILED REAL USER SMOKE** because of a self-triggering Lyrics `MutationObserver` loop;
-- Build 65 fixed the Track/Lyrics crash without changing backend/write authority;
-- Build 66 made Audio, Cover, Thumbnail, Lyrics TXT and Video/Canvas roles visually distinct and exposed the missing-master-audio synchronization prerequisite;
-- Build 67 moves canonical `LYRICS TXT` into a permanent top-level Lyrics source block before synchronization;
-- public fallback remains read-only and public Worker v2.7 was not redeployed;
-- Phase 7-C foundation-repair gate was cleared before Build 68.
-
-Accepted deployment evidence:
-
-```text
-Studio tested head    6c1d801b14ae8daedfb246da539a42125f7c80d9
-Studio validation     31738652169    SUCCESS
-Studio accepted main  5f061a460f17e27b9c2f06fdcbdda2f34e07e240
-Studio Pages run      31738982707    SUCCESS
-Track Manager         v5.21
-Studio bridge         v1.11
-TM Worker run         31728992790    SUCCESS · admin only
-TM Worker Version ID  0e1b9a3f-eabd-432e-8872-24ff0a9c085f
-Public Worker         v2.7            unchanged
-```
-
-Full acceptance evidence: [`docs/STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md`](docs/STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md).
-
-## Earlier accepted Studio Focus closeout
-
-### v0.19.2 · Build 62 — Studio Focus program closeout REAL USER PASS
-
-Build 62 remains the accepted Studio Focus program closeout. Build 67 is the later foundation-repair closeout; Build 68 is the current accepted Studio runtime.
-
-Historical Build 63 remains superseded and is not reused. Build 64 remains failed-smoke evidence; Builds 65 and 66 are corrective lineage superseded by Build 67.
+- Build 67 — Foundation Regression Repair closeout · REAL USER PASS.
+- Build 62 — Studio Focus program closeout · REAL USER PASS.
+- Build 64 remains deployed **FAILED REAL USER SMOKE** evidence.
+- Builds 65–66 remain corrective lineage superseded by Build67.
+- Build 63 remains historical/superseded and is not reused.
 
 ## Detailed history
 
-- Build 69 candidate: [`changelogs/CHANGELOG-PHASE7-C-BUILD69.md`](changelogs/CHANGELOG-PHASE7-C-BUILD69.md)
-- Build 68 accepted: [`changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md`](changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md)
+- Build71 accepted: [`changelogs/CHANGELOG-PHASE7-C-BUILD71.md`](changelogs/CHANGELOG-PHASE7-C-BUILD71.md)
+- Build69 origin record: [`changelogs/CHANGELOG-PHASE7-C-BUILD69.md`](changelogs/CHANGELOG-PHASE7-C-BUILD69.md)
+- Build68 accepted: [`changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md`](changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md)
 - Foundation repair closeout: [`docs/STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md`](docs/STUDIO-FOUNDATION-REGRESSION-REPAIR-CLOSEOUT-REAL-USER-PASS.md)
-- Build 64 failed-smoke repair record: [`docs/STUDIO-BUILD64-FOUNDATION-REGRESSION-REPAIR.md`](docs/STUDIO-BUILD64-FOUNDATION-REGRESSION-REPAIR.md)
-- Build 67 detailed record: [`changelogs/CHANGELOG-STUDIO-FOCUS-BUILD67.md`](changelogs/CHANGELOG-STUDIO-FOCUS-BUILD67.md)
-- Build 30→61 milestone logs: [`changelogs/README.md`](changelogs/README.md)
-- Build 62 corrective record: [`docs/STUDIO-FOCUS-BUILD62-CLOSEOUT-CORRECTIVE.md`](docs/STUDIO-FOCUS-BUILD62-CLOSEOUT-CORRECTIVE.md)
-- Studio Focus final closeout: [`docs/STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md`](docs/STUDIO-FOCUS-PROGRAM-CLOSEOUT-REAL-USER-PASS.md)
-- Original monolithic history through Build 29: [`changelogs/LEGACY-CHANGELOG-THROUGH-BUILD29.md`](changelogs/LEGACY-CHANGELOG-THROUGH-BUILD29.md)
+- Build64 failed-smoke record: [`docs/STUDIO-BUILD64-FOUNDATION-REGRESSION-REPAIR.md`](docs/STUDIO-BUILD64-FOUNDATION-REGRESSION-REPAIR.md)
+- Build30→61 milestone logs: [`changelogs/README.md`](changelogs/README.md)
 - Current roadmap: [`docs/ROADMAP-CURRENT.md`](docs/ROADMAP-CURRENT.md)
 - Next-session handoff: [`docs/NEXT-SESSION-HANDOFF.md`](docs/NEXT-SESSION-HANDOFF.md)
-- Documentation map: [`docs/README.md`](docs/README.md)
 
-Repository cleanup on 2026-08-13 moved detailed `CHANGELOG-*.md` records out of the repository root **without altering historical contents**. The root keeps only this current changelog entry point.
+## Acceptance policy
+
+**CI GREEN ≠ DEPLOYED CANDIDATE ≠ REAL USER PASS.**
+
+Build71 has completed the full chain and is the current accepted Studio runtime.
