@@ -64,7 +64,7 @@ function albumWriteErrorMessage(payload: AdminAlbumWriteResponse, fallback: stri
   if (payload.verificationDetail) details.push(payload.verificationDetail);
   return details.length ? `${base} ${details.join(' ')}` : base;
 }
-function metadataMismatch(manifest: AdminAlbumManifest | undefined, expected?: AdminAlbumMetadataPatch): string[] {
+function metadataMismatch(manifest: AdminAlbumManifest | undefined, expected?: AdminAlbumMetadataPatch): Array<keyof AdminAlbumMetadataPatch> {
   if (!manifest || !expected) return [];
   return (Object.keys(expected) as Array<keyof AdminAlbumMetadataPatch>).filter(key =>
     JSON.stringify(manifest[key] ?? null) !== JSON.stringify(expected[key] ?? null));
