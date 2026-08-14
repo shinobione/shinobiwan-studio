@@ -4,12 +4,18 @@ import fs from 'node:fs';
 const read = path => fs.readFileSync(path, 'utf8');
 const app = read('src/App.tsx');
 const workspace = read('src/components/AlbumsWorkspace.tsx');
+const healthWrapper = fs.existsSync('src/components/AlbumHealthWorkspace.tsx') ? read('src/components/AlbumHealthWorkspace.tsx') : '';
 const palettePreview = read('src/components/CoverPalettePreview.tsx');
 const publicAlbums = read('src/services/public-albums-api.ts');
 const styles = read('src/c3-albums-ux.css');
 
-assert.ok(app.includes("import { AlbumsWorkspace } from './components/AlbumsWorkspace';"), 'Albums route must use the focused C3 workspace.');
-assert.ok(app.includes("{route === 'albums' && <AlbumsWorkspace />}"), 'Albums route must render only AlbumsWorkspace.');
+const directC3Route = app.includes("import { AlbumsWorkspace } from './components/AlbumsWorkspace';")
+  && app.includes("{route === 'albums' && <AlbumsWorkspace />}");
+const boundedPhase8Wrapper = app.includes("import { AlbumHealthWorkspace } from './components/AlbumHealthWorkspace';")
+  && app.includes("{route === 'albums' && <AlbumHealthWorkspace />}")
+  && healthWrapper.includes("import { AlbumsWorkspace } from './AlbumsWorkspace';")
+  && healthWrapper.includes('<AlbumsWorkspace />');
+assert.ok(directC3Route || boundedPhase8Wrapper, 'Albums route must preserve the focused C3 AlbumsWorkspace, directly or inside the bounded Phase8 read-only wrapper.');
 assert.ok(!app.includes("{route === 'albums' && <><AlbumManager /><AlbumMigrationPanel /></>}"), 'Daily Albums route must not stack the migration cockpit.');
 assert.ok(app.includes('Album migration archive · C2.5 complete'), 'Completed migration tooling must remain archived under System.');
 assert.ok(app.includes('className="panel c3-album-maintenance"'), 'Migration archive must be collapsed maintenance UI.');

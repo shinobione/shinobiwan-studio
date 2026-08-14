@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { resolveAdminMode } from './admin-mode';
 import { AlbumMigrationPanel } from './components/AlbumMigrationPanel';
-import { AlbumsWorkspace } from './components/AlbumsWorkspace';
+import { AlbumHealthWorkspace } from './components/AlbumHealthWorkspace';
 import { CatalogRebuildPanel } from './components/CatalogRebuildPanel';
 import { CatalogView } from './components/CatalogView';
 import { CatalogIntelligenceView } from './components/CatalogIntelligenceView';
@@ -136,7 +136,7 @@ export default function App() {
         {route === 'dashboard' && <FocusHome />}
         {route === 'workflow' && <WorkflowView />}
         {route === 'catalog' && (trackId ? <TrackWorkspace trackId={trackId} section={trackSection} /> : <CatalogView />)}
-        {route === 'albums' && <AlbumsWorkspace />}
+        {route === 'albums' && <AlbumHealthWorkspace />}
         {route === 'intelligence' && <CatalogIntelligenceView />}
 
         {route !== 'dashboard' && route !== 'workflow' && route !== 'catalog' && route !== 'albums' && route !== 'intelligence' && (

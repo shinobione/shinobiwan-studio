@@ -4,6 +4,7 @@ import fs from 'node:fs';
 const albumApi = fs.readFileSync('src/services/album-admin-api.ts', 'utf8');
 const legacyAlbumUi = fs.readFileSync('src/components/AlbumManager.tsx', 'utf8');
 const focusedAlbumUi = fs.readFileSync('src/components/AlbumsWorkspace.tsx', 'utf8');
+const healthWrapper = fs.existsSync('src/components/AlbumHealthWorkspace.tsx') ? fs.readFileSync('src/components/AlbumHealthWorkspace.tsx', 'utf8') : '';
 const embeddedLyrics = fs.readFileSync('src/components/EmbeddedLyricsStudio.tsx', 'utf8');
 const app = fs.readFileSync('src/App.tsx', 'utf8');
 const router = fs.readFileSync('src/router.ts', 'utf8');
@@ -21,7 +22,11 @@ assert.ok(!focusedAlbumUi.includes('Add an unowned track…'), 'Focused Album UX
 assert.ok(!focusedAlbumUi.includes('Delete Album'), 'Focused Album UX must not expose whole-Album deletion.');
 assert.ok(focusedAlbumUi.includes('globalThis.confirm'), 'Production Album mutations must retain explicit confirmation.');
 assert.ok(app.includes("route: 'albums'"), 'Studio navigation must expose Albums.');
-assert.ok(app.includes("{route === 'albums' && <AlbumsWorkspace />}"), 'Albums route must mount the focused workspace while preserving canonical APIs.');
+const directAlbumsRoute = app.includes("{route === 'albums' && <AlbumsWorkspace />}");
+const wrappedAlbumsRoute = app.includes("{route === 'albums' && <AlbumHealthWorkspace />}")
+  && healthWrapper.includes("import { AlbumsWorkspace } from './AlbumsWorkspace';")
+  && healthWrapper.includes('<AlbumsWorkspace />');
+assert.ok(directAlbumsRoute || wrappedAlbumsRoute, 'Albums route must mount the focused workspace while preserving canonical APIs, directly or through the bounded Phase8 read-only wrapper.');
 assert.ok(app.includes('Track Manager v5.19 · bridge v1.11'), 'Studio must retain the validated Track Manager v5.19 / bridge v1.11 diagnostic fallback.');
 assert.ok(embeddedLyrics.includes("const EMBED_VERSION = '6.3.8'"), 'Embedded Lyrics Studio must keep the accepted LRC Maker 6.3.8 integration even when Studio Focus hides infrastructure versions from Home.');
 assert.ok(router.includes("'albums'"), 'Router must recognize Albums.');
