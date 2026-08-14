@@ -4,6 +4,57 @@ This file is the **current concise changelog**. Detailed per-build records are o
 
 ## Current accepted release
 
+### v0.19.3 · Build 75 — 2026-08-14
+
+Codename: `studio-focus-slice4-phase8-health-drilldown`  
+Status: **COMPLETE — PHASE 8 SLICE 2 / REAL USER PASS**
+
+Build75 turns the truthful Build74 Content Health counts into complete read-only drill-downs through the existing Workflow queue.
+
+Accepted behavior:
+
+- every non-zero Home Content Health signal opens Workflow filtered to **all** affected Tracks, not only the first Track;
+- the two cross-axis counts `Published with production gaps` and `Production-ready Drafts` use the same drill-down contract;
+- one shared `catalogHealthDrilldownMatches()` implementation owns all eight predicates;
+- `#/workflow/health/<id>` is strictly allowlisted;
+- health drill-down starts with Queue = All and can still be narrowed by the existing Queue selector/search;
+- clearing the health filter restores the normal Needs Attention queue;
+- every Track row keeps the accepted Phase7 stage rail and existing `workflow.nextAction`;
+- Workflow remains the sole detailed production queue;
+- no second dashboard, queue or action-priority engine exists;
+- stale read-only shell truth was aligned to `PHASE 8` and `Track Manager v5.22 · bridge v1.12`;
+- no new write authority, Worker route, Track Manager deployment or R2 mutation/migration was introduced.
+
+Exact acceptance evidence:
+
+```text
+Safety pre              safety/pre-phase8-health-drilldown-build75-20260814-1946
+Studio PR               #110
+Initial CI              31826089546 · FAILURE · inherited read-only copy guard
+Corrected CI            31826190402 · SUCCESS
+Exact tested head       e0cbc92b7d42de2354201da525852c5efe4c6d20
+Final validation        31826276973 · SUCCESS
+Runtime merge           e6c2649583446087d0d256b48e556e9c6e93ede9
+Pages deploy run        31826452231 · SUCCESS · exact runtime merge SHA
+Safety post-deploy      safety/post-build75-deployed-candidate-20260814-1959
+Candidate docs PR       #111
+Candidate docs CI       31826672166 · SUCCESS
+Candidate docs merge    b2bc1cab42849f12afc58cf3b1abbb8c45fb8a3e
+Candidate docs Pages    31826760916 · SUCCESS
+Real-user smoke         BUILD75 PASS · 2026-08-14
+Safety post-RUP         safety/post-build75-real-user-pass-20260814-2048
+Track Manager           v5.22 · unchanged
+Studio bridge           v1.12 · unchanged
+TM Worker Version ID    df00e4c7-bfa1-45a3-b3e8-bd2640e0a159 · unchanged
+Public Worker           v2.7 · unchanged
+R2 migration            NONE
+```
+
+Detailed accepted record: [`changelogs/CHANGELOG-PHASE8-BUILD75.md`](changelogs/CHANGELOG-PHASE8-BUILD75.md).  
+Scope audit: [`docs/PHASE-8-SLICE2-HEALTH-DRILLDOWN-AUDIT.md`](docs/PHASE-8-SLICE2-HEALTH-DRILLDOWN-AUDIT.md).
+
+## Accepted Phase 8 predecessor
+
 ### v0.19.3 · Build 74 — 2026-08-14
 
 Codename: `studio-focus-slice4-phase8-content-health-truth`  
@@ -20,9 +71,8 @@ Accepted behavior:
 - production and publication remain separate axes;
 - Home keeps `NEEDS ATTENTION / PRODUCTION COMPLETE / PUBLISHED / DRAFTS` terminology with truthful production-only counts;
 - a production-ready Draft may correctly remain Draft with `Publish track` as Next Action;
-- Home gains a compact read-only Content Health surface for missing audio, cover, lyrics source, lyrics timing, SonicTrace gaps and Release blockers;
+- Home exposes read-only Content Health for missing audio, cover, lyrics source, lyrics timing, SonicTrace gaps and Release blockers;
 - Content Health also exposes published-with-production-gaps and production-ready-Drafts cross-axis counts;
-- all health actions reuse the existing Track `workflow.nextAction`; no second priority engine exists;
 - no new write authority, Worker route, Track Manager deployment or R2 migration was introduced.
 
 Exact acceptance evidence:
@@ -56,7 +106,7 @@ After Build73 REAL USER PASS, the accepted runtime was reread before allocating 
 - Release already uses the accepted Slice1 validation/confirmation/protected publication flow while Release Campaign stays review-only;
 - no legitimate Slice3 runtime capability was missing.
 
-Phase7-C therefore remains program-complete on Build73. Build74 subsequently opened Phase8 without altering those authority contracts.
+Phase7-C therefore remains program-complete on Build73. Builds74–75 preserve those authority contracts.
 
 Detailed audit: [`docs/PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md`](docs/PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md).
 
@@ -134,6 +184,8 @@ Detailed record: [`changelogs/CHANGELOG-PHASE7-C-BUILD71.md`](changelogs/CHANGEL
 
 ## Detailed history
 
+- Build75 accepted: [`changelogs/CHANGELOG-PHASE8-BUILD75.md`](changelogs/CHANGELOG-PHASE8-BUILD75.md)
+- Build75 scope audit: [`docs/PHASE-8-SLICE2-HEALTH-DRILLDOWN-AUDIT.md`](docs/PHASE-8-SLICE2-HEALTH-DRILLDOWN-AUDIT.md)
 - Build74 accepted: [`changelogs/CHANGELOG-PHASE8-BUILD74.md`](changelogs/CHANGELOG-PHASE8-BUILD74.md)
 - Phase8 scope audit: [`docs/PHASE-8-SCOPE-AUDIT.md`](docs/PHASE-8-SCOPE-AUDIT.md)
 - Phase7-C program closeout audit: [`docs/PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md`](docs/PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md)
@@ -150,4 +202,4 @@ Detailed record: [`changelogs/CHANGELOG-PHASE7-C-BUILD71.md`](changelogs/CHANGEL
 
 **CI GREEN ≠ DEPLOYED CANDIDATE ≠ REAL USER PASS.**
 
-Build74 completed the full runtime acceptance chain and is the current accepted Studio runtime. Phase8 Slice1 is closed. Build75 is unused until the next bounded Phase8 scope is audited.
+Build75 completed the full runtime acceptance chain and is the current accepted Studio runtime. Phase8 Slice2 is closed. Build76 is unused until a fresh bounded Phase8 scope is audited.

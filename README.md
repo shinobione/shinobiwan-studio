@@ -5,7 +5,7 @@ Private artist production cockpit and orchestrator for the SHINOBIWAN toolchain.
 ## Current state
 
 ```text
-Studio accepted    v0.19.3 · Build 74    Phase 8 Slice 1 · REAL USER PASS
+Studio accepted    v0.19.3 · Build 75    Phase 8 Slice 2 · REAL USER PASS
 LaunchPAD           2026.08.12.102        C3-C · REAL USER PASS
 Track Manager       v5.22                 canonical duration evidence corrective · DEPLOYED
 Studio bridge       v1.12
@@ -16,7 +16,7 @@ Deep Audio          2.0.3-alpha
 LRC Maker           6.3.8
 ```
 
-**Studio v0.19.3 · Build 74 is the current accepted runtime.** Phase 7-C remains program-complete on the accepted Build73 lineage, and Build74 is now the first accepted Phase8 runtime slice: **Content Health Truth**.
+**Studio v0.19.3 · Build 75 is the current accepted runtime.** Phase 7-C remains program-complete on the accepted Build73 lineage. Build74 established Phase8 Content Health Truth; Build75 closes Phase8 Slice2 by making every non-zero health signal drill into the existing Workflow queue for the complete affected Track set.
 
 Phase 7-C runtime lineage:
 
@@ -32,13 +32,14 @@ Phase 8 runtime lineage:
 
 ```text
 Build 74  Content Health Truth · REAL USER PASS / Slice1 closeout
+Build 75  Health Drill-down · REAL USER PASS / Slice2 closeout
 ```
 
 Historical candidates remain historical evidence; they are not retroactively relabeled as accepted.
 
 ## Release terminology
 
-`Studio v0.19.3 · Build 74` is the current accepted **project/runtime release identity**.
+`Studio v0.19.3 · Build 75` is the current accepted **project/runtime release identity**.
 
 This repository currently publishes **no GitHub Release objects and no Git tags**. Formal GitHub Releases/tags remain a separate distribution/versioning decision.
 
@@ -55,7 +56,7 @@ Advanced ▾
   System
 ```
 
-Workflow remains under Advanced. Home owns daily continuation, production/publication counters, the abbreviated attention queue and the Phase8 read-only Content Health surface; Workflow owns the full detailed searchable/filterable production queue.
+Workflow remains under Advanced. Home owns daily continuation, production/publication counters, the abbreviated attention queue and the Phase8 read-only Content Health surface; Workflow owns the full detailed searchable/filterable production queue and now receives bounded Phase8 health drill-down filters for the complete affected Track set.
 
 Home lead rule:
 
@@ -117,9 +118,9 @@ PUBLISHED
 DRAFTS
 ```
 
-but production completion is now computed independently from the Release/publication stage. A production-ready Draft can therefore be both `PRODUCTION COMPLETE` and `DRAFT`, with `Publish track` as its next action.
+but production completion is computed independently from the Release/publication stage. A production-ready Draft can therefore be both `PRODUCTION COMPLETE` and `DRAFT`, with `Publish track` as its next action.
 
-The new read-only Content Health panel reports:
+The read-only Content Health panel reports:
 
 - missing master audio;
 - missing required cover;
@@ -130,7 +131,7 @@ The new read-only Content Health panel reports:
 - published Tracks with production gaps;
 - production-ready Drafts.
 
-Every actionable health signal reuses the affected Track's existing `workflow.nextAction`; Phase8 does **not** create a second priority model or a new write authority.
+Every health signal remains derived from the same canonical production model; Phase8 does **not** create a second priority model or a new write authority.
 
 Exact Build74 acceptance evidence:
 
@@ -138,9 +139,9 @@ Exact Build74 acceptance evidence:
 Safety pre              safety/pre-phase8-content-health-build74-20260814-1810
 Studio PR               #108
 Exact tested head       da7b5498dd8e1f6120c346e07fe1b1e741d40104
-Studio validation       31819203565 · SUCCESS
-Studio runtime merge    c95e33bcb0c33b18fc8e6e9a35a05ec28ad142a9
-Studio Pages run        31819333501 · SUCCESS · exact merge SHA
+Validation run          31819203565 · SUCCESS
+Runtime merge           c95e33bcb0c33b18fc8e6e9a35a05ec28ad142a9
+Pages deploy run        31819333501 · SUCCESS · exact merge SHA
 Safety post-deploy      safety/post-build74-deployed-candidate-20260814-1827
 Real-user smoke         BUILD74 PASS · 2026-08-14
 Safety post-RUP         safety/post-build74-real-user-pass-20260814-1926
@@ -151,6 +152,64 @@ R2 migration            NONE
 ```
 
 Detailed accepted record: [`changelogs/CHANGELOG-PHASE8-BUILD74.md`](changelogs/CHANGELOG-PHASE8-BUILD74.md).
+
+## Phase 8 Slice 2 — Health Drill-down · accepted via Build75
+
+Build75 turns the truthful Build74 aggregate health counts into complete read-only operational drill-downs without adding another dashboard, another queue or another priority engine.
+
+```text
+Home Content Health signal
+→ #/workflow/health/<bounded-id>
+→ existing Workflow queue filtered to every affected Track
+→ existing stages
+→ existing workflow.nextAction
+→ existing guarded Track Workspace
+```
+
+Supported bounded drill-downs:
+
+```text
+audio
+cover
+lyricsTxt
+syncedLyrics
+sonicTrace
+releaseQuality
+publishedProductionGaps
+productionReadyDrafts
+```
+
+The filter starts with Workflow Queue = All, can still be narrowed by the existing Queue selector/search, and can be cleared back to the normal Needs Attention queue. Each row retains the accepted Phase7 stages and its existing `workflow.nextAction`.
+
+Build75 also corrects stale read-only shell truth from `PHASE 7-C / TM5.21 bridge1.11` to the accepted `PHASE 8 / TM5.22 bridge1.12`. No backend behavior changed.
+
+Exact Build75 acceptance evidence:
+
+```text
+Safety pre              safety/pre-phase8-health-drilldown-build75-20260814-1946
+Studio PR               #110
+Initial CI              31826089546 · FAILURE · inherited literal read-only guard caught copy removal
+Corrected CI            31826190402 · SUCCESS
+Exact tested head       e0cbc92b7d42de2354201da525852c5efe4c6d20
+Final validation        31826276973 · SUCCESS
+Runtime merge           e6c2649583446087d0d256b48e556e9c6e93ede9
+Pages deploy run        31826452231 · SUCCESS · exact runtime merge SHA
+Safety post-deploy      safety/post-build75-deployed-candidate-20260814-1959
+Candidate docs PR       #111
+Candidate docs CI       31826672166 · SUCCESS
+Candidate docs merge    b2bc1cab42849f12afc58cf3b1abbb8c45fb8a3e
+Candidate docs Pages    31826760916 · SUCCESS
+Real-user smoke         BUILD75 PASS · 2026-08-14
+Safety post-RUP         safety/post-build75-real-user-pass-20260814-2048
+Track Manager           v5.22 · unchanged
+Studio bridge           v1.12 · unchanged
+TM Worker Version ID    df00e4c7-bfa1-45a3-b3e8-bd2640e0a159 · unchanged
+Public Worker           v2.7 · unchanged
+R2 migration            NONE
+```
+
+Detailed accepted record: [`changelogs/CHANGELOG-PHASE8-BUILD75.md`](changelogs/CHANGELOG-PHASE8-BUILD75.md).  
+Scope audit: [`docs/PHASE-8-SLICE2-HEALTH-DRILLDOWN-AUDIT.md`](docs/PHASE-8-SLICE2-HEALTH-DRILLDOWN-AUDIT.md).
 
 ## Phase 7-C Runtime Slice 1 — accepted
 
@@ -260,7 +319,7 @@ The audit found no legitimate runtime Slice3 gap:
 - **Intelligence** already follows Next Action → canonical sourceVersion → temporary analysis → REVIEW / NOT SAVED → explicit save → Track Manager `STALE_AUDIO` guard → verified latest/history sidecars → `analysis-saved` receipt → Studio private Track reread → workflow recompute.
 - **Release** already uses the guarded Slice1 metadata/publication flow; Release Campaign remains deliberately browser-local and review-only.
 
-Therefore Phase 7-C is **PROGRAM COMPLETE on Build73**. Build74 subsequently opened Phase8 and is now accepted without changing those Phase7 contracts.
+Therefore Phase 7-C is **PROGRAM COMPLETE on Build73**. Build74 opened Phase8 and Builds74→75 preserve those Phase7 contracts unchanged.
 
 Detailed evidence: [`docs/PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md`](docs/PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md).
 
@@ -331,6 +390,8 @@ Start here:
 - [Current roadmap](docs/ROADMAP-CURRENT.md)
 - [Documentation map](docs/README.md)
 - [Next-session handoff](docs/NEXT-SESSION-HANDOFF.md)
+- [Build 75 REAL USER PASS](changelogs/CHANGELOG-PHASE8-BUILD75.md)
+- [Phase 8 Slice2 health drill-down audit](docs/PHASE-8-SLICE2-HEALTH-DRILLDOWN-AUDIT.md)
 - [Build 74 REAL USER PASS](changelogs/CHANGELOG-PHASE8-BUILD74.md)
 - [Phase 8 scope audit](docs/PHASE-8-SCOPE-AUDIT.md)
 - [Phase 7-C program closeout audit](docs/PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md)
@@ -345,4 +406,4 @@ Start here:
 
 **CI GREEN ≠ DEPLOYED CANDIDATE ≠ REAL USER PASS.**
 
-Build74 completed the full acceptance chain and is the current accepted Studio runtime. Phase8 Slice1 is closed. Any next runtime work must begin from this accepted baseline with a fresh bounded scope, safety checkpoint, exact-head CI, exact deployment verification and a new real-user smoke gate.
+Build75 completed the full acceptance chain and is the current accepted Studio runtime. Phase8 Slice2 is closed. **Build76 is unused**: any next runtime work must begin from this accepted baseline with a fresh bounded audit, safety checkpoint, exact-head CI, exact deployment verification and a new real-user smoke gate.

@@ -2,7 +2,7 @@
 
 Codename: `studio-focus-slice4-phase8-health-drilldown`  
 Date: 2026-08-14  
-Status: **MERGED + DEPLOYED CANDIDATE — REAL USER SMOKE PENDING**
+Status: **COMPLETE — PHASE 8 SLICE 2 / REAL USER PASS**
 
 ## Why this build exists
 
@@ -25,7 +25,7 @@ The two production/publication cross-axis counters gain the same drill-down beha
 
 ## Shared health authority
 
-One `catalogHealthDrilldownMatches()` implementation now owns the eight supported issue predicates:
+One `catalogHealthDrilldownMatches()` implementation owns the eight supported issue predicates:
 
 ```text
 audio
@@ -82,7 +82,7 @@ R2 migration           NONE
 New write authority    NONE
 ```
 
-No Track Manager/Worker deployment is required by this slice.
+No Track Manager/Worker deployment occurred for this slice.
 
 ## Validation / deployment receipts
 
@@ -101,26 +101,32 @@ Anti-drift main          2b9fb1fec8da4dc7be467fe647162ab147341799
 Runtime merge            e6c2649583446087d0d256b48e556e9c6e93ede9
 Pages                    31826452231 · SUCCESS · exact runtime merge SHA
 Safety post-deploy       safety/post-build75-deployed-candidate-20260814-1959
+Candidate docs PR        #111
+Candidate docs CI        31826672166 · SUCCESS
+Candidate docs merge     b2bc1cab42849f12afc58cf3b1abbb8c45fb8a3e
+Candidate docs Pages     31826760916 · SUCCESS
+Real-user smoke          BUILD75 PASS · 2026-08-14
+Safety post-RUP          safety/post-build75-real-user-pass-20260814-2048
 ```
 
 The initial red run did not expose a runtime/type/backend fault. The Phase7 guard correctly caught removal of its explicit historical read-only sentence. Build75 restored that sentence and appended the Phase8 filtering explanation rather than weakening the inherited guard.
 
-## Acceptance gate
+## Real-user acceptance
 
-Completed:
+The user exercised the deployed Build75 browser flow and explicitly returned:
+
+```text
+BUILD75 PASS
+```
+
+That closes the runtime acceptance chain:
 
 ```text
 exact-head CI            ✅
 anti-drift main          ✅
 exact tested-head merge  ✅
 exact merge-SHA Pages    ✅
+real-user browser smoke  ✅
 ```
 
-Still required:
-
-```text
-real-user browser smoke  ⏳
-→ only then REAL USER PASS
-```
-
-**Build74 remains the current accepted runtime until the final Build75 browser smoke passes.**
+**Build75 is now the current accepted Studio runtime and Phase 8 Slice 2 is CLOSED / REAL USER PASS.**
