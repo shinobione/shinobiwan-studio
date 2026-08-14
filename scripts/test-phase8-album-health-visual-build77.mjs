@@ -11,16 +11,18 @@ function expect(condition, message) {
   if (!condition) throw new Error(`Build77 guard failed: ${message}`);
 }
 
-expect(/build:\s*(?:77|78|79)/.test(release), 'release identity must remain Build77 or an explicit bounded successor');
+expect(/build:\s*(?:77|78|79|80)/.test(release), 'release identity must remain Build77 or an explicit bounded successor');
 expect(
   release.includes("codename: 'studio-focus-slice4-phase8-album-health-visual-polish'")
   || release.includes("codename: 'studio-focus-slice4-phase8-album-health-cache-drift-human-ux'")
-  || release.includes("codename: 'studio-focus-slice4-phase8-album-publish-truth'"),
+  || release.includes("codename: 'studio-focus-slice4-phase8-album-publish-truth'")
+  || release.includes("codename: 'studio-focus-slice4-phase8-duration-evidence-successor-compat'"),
   'Build77 visual lineage must remain exact',
 );
 expect(release.includes('build76AncestryMarker'), 'Build76 functional ancestry must remain explicit');
-if (/build:\s*(?:78|79)/.test(release)) expect(release.includes('build77AncestryMarker'), 'Build78+ must preserve explicit Build77 ancestry');
-if (/build:\s*79/.test(release)) expect(release.includes('build78AncestryMarker'), 'Build79 must preserve explicit Build78 ancestry');
+if (/build:\s*(?:78|79|80)/.test(release)) expect(release.includes('build77AncestryMarker'), 'Build78+ must preserve explicit Build77 ancestry');
+if (/build:\s*(?:79|80)/.test(release)) expect(release.includes('build78AncestryMarker'), 'Build79+ must preserve explicit Build78 ancestry');
+if (/build:\s*80/.test(release)) expect(release.includes('build79AncestryMarker'), 'Build80 must preserve explicit Build79 ancestry');
 
 expect(view.includes('getPublicAlbumVisuals'), 'Album cards must reuse proven canonical/public artwork projection');
 expect(view.includes('source?.accent || DEFAULT_ACCENT'), 'Album primary palette must drive the visual card');
@@ -46,4 +48,4 @@ expect(health.includes('buildCatalogAlbumHealth'), 'Build76 Album Health truth e
 expect(!health.includes('saveAdminAlbum'), 'truth engine must remain read-only');
 expect(pkg.scripts['check:phase8']?.includes('test-phase8-album-health-visual-build77.mjs'), 'Build77 guard must run in check:phase8');
 
-console.log('Build77 Phase8 Album Health visual corrective guard passed through bounded Build78/79 successors.');
+console.log('Build77 Phase8 Album Health visual corrective guard passed through bounded Build78/79/80 successors.');
