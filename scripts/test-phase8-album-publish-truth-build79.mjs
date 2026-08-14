@@ -10,9 +10,14 @@ function expect(condition, message) {
   if (!condition) throw new Error(`Build79 guard failed: ${message}`);
 }
 
-expect(release.includes('build: 79'), 'release identity must be Build79');
-expect(release.includes("codename: 'studio-focus-slice4-phase8-album-publish-truth'"), 'Build79 codename must be exact');
+expect(/build:\s*(?:79|80)/.test(release), 'release identity must remain Build79 or its explicit Build80 successor');
+expect(
+  release.includes("codename: 'studio-focus-slice4-phase8-album-publish-truth'")
+  || release.includes("codename: 'studio-focus-slice4-phase8-duration-evidence-successor-compat'"),
+  'Build79/80 codename lineage must remain exact',
+);
 expect(release.includes('build78AncestryMarker'), 'Build78 candidate ancestry must remain explicit');
+if (/build:\s*80/.test(release)) expect(release.includes('build79AncestryMarker'), 'Build80 must preserve explicit Build79 ancestry');
 
 expect(api.includes('export interface AdminAlbumQuality'), 'Album quality payload must be typed');
 expect(api.includes('function albumQualityBlockers('), 'backend Album quality blockers must reach a human formatter');
@@ -37,4 +42,4 @@ expect(api.includes("metadata: 'album-metadata-save-v1'"), 'existing scoped Albu
 expect(!api.includes('/publish'), 'Build79 must not introduce a separate Album publish write route');
 expect(pkg.scripts['check:phase8']?.includes('test-phase8-album-publish-truth-build79.mjs'), 'Build79 guard must run in check:phase8');
 
-console.log('Build79 Album publish truth guard passed: blocker feedback + strict status reread + visible failure persistence.');
+console.log('Build79 Album publish truth guard passed through its bounded Build80 successor.');
