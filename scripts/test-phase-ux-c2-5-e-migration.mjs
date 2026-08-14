@@ -5,6 +5,7 @@ const read = path => fs.readFileSync(path, 'utf8');
 const service = read('src/services/album-migration-api.ts');
 const panel = read('src/components/AlbumMigrationPanel.tsx');
 const app = read('src/App.tsx');
+const healthWrapper = fs.existsSync('src/components/AlbumHealthWorkspace.tsx') ? read('src/components/AlbumHealthWorkspace.tsx') : '';
 const main = read('src/main.tsx');
 const release = read('src/release.ts');
 const css = read('src/c2-5-e-migration.css');
@@ -37,7 +38,12 @@ for (const required of [
 ]) assert.ok(panel.includes(required), `C2.5-E migration cockpit missing ${required}`);
 assert.ok(!panel.toLowerCase().includes('migrate all'), 'C2.5-E Studio must not expose a migrate-all operation.');
 assert.ok(app.includes("import { AlbumMigrationPanel } from './components/AlbumMigrationPanel';"), 'Completed migration cockpit must remain available for maintenance/audit.');
-assert.ok(app.includes("{route === 'albums' && <AlbumsWorkspace />}"), 'Daily Albums route must keep canonical management separate from the completed migration cockpit.');
+const directAlbumsRoute = app.includes("{route === 'albums' && <AlbumsWorkspace />}");
+const wrappedAlbumsRoute = app.includes("{route === 'albums' && <AlbumHealthWorkspace />}")
+  && healthWrapper.includes("import { AlbumsWorkspace } from './AlbumsWorkspace';")
+  && healthWrapper.includes('<AlbumsWorkspace />')
+  && !healthWrapper.includes('AlbumMigrationPanel');
+assert.ok(directAlbumsRoute || wrappedAlbumsRoute, 'Daily Albums route must keep canonical management separate from the completed migration cockpit.');
 assert.ok(app.includes('Album migration archive · C2.5 complete'), 'C2.5-E cockpit must live under the collapsed System maintenance archive after migration completion.');
 assert.ok(app.includes('className="panel c3-album-maintenance"'), 'Migration archive must be collapsed maintenance UI, not daily Album content.');
 assert.ok(app.includes('Track Manager v5.19 · bridge v1.11'), 'Studio must retain the current validated migration/backend diagnostic fallback.');
