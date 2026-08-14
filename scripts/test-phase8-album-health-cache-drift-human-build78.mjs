@@ -10,9 +10,14 @@ function expect(condition, message) {
   if (!condition) throw new Error(`Build78 guard failed: ${message}`);
 }
 
-expect(release.includes('build: 78'), 'release identity must be Build78');
-expect(release.includes("codename: 'studio-focus-slice4-phase8-album-health-cache-drift-human-ux'"), 'Build78 codename must be exact');
+expect(/build:\s*(?:78|79)/.test(release), 'release identity must remain Build78 or its explicit Build79 successor');
+expect(
+  release.includes("codename: 'studio-focus-slice4-phase8-album-health-cache-drift-human-ux'")
+  || release.includes("codename: 'studio-focus-slice4-phase8-album-publish-truth'"),
+  'Build78/79 codename lineage must remain exact',
+);
 expect(release.includes('build77AncestryMarker'), 'Build77 visual ancestry must remain explicit');
+if (/build:\s*79/.test(release)) expect(release.includes('build78AncestryMarker'), 'Build79 must preserve explicit Build78 ancestry');
 
 expect(health.includes('cacheDriftTrackIds'), 'Build76 cache-drift truth must remain available internally');
 expect(health.includes('Canonical Album membership authority is album.trackIds'), 'canonical Album membership authority must remain unchanged');
@@ -34,4 +39,4 @@ expect(!view.includes('uploadAdminAlbumAsset'), 'Build78 must not add asset writ
 
 expect(pkg.scripts['check:phase8']?.includes('test-phase8-album-health-cache-drift-human-build78.mjs'), 'Build78 guard must run in check:phase8');
 
-console.log('Build78 Album Health cache-drift human UX guard passed.');
+console.log('Build78 Album Health cache-drift human UX guard passed through its Build79 publish-truth successor.');
