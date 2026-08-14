@@ -2,6 +2,43 @@
 
 This file is the **current concise changelog**. Detailed per-build records are organized under [`changelogs/`](changelogs/README.md).
 
+## Current deployed candidate
+
+### v0.19.3 · Build 72 — 2026-08-14
+
+Codename: `studio-focus-slice4-phase7c-slice2-guided-core-media`  
+Status: **DEPLOYED CANDIDATE — REAL USER SMOKE PENDING**
+
+Phase 7-C Runtime Slice 2:
+
+- Core Media becomes the truthful Next Action after Identity;
+- missing master audio now routes to Track / overview, where the canonical Master audio uploader actually lives;
+- audio ready + cover missing routes to Visuals / assets;
+- aggregate Track Manager quality errors no longer masquerade as Identity work;
+- Identity owns explicit identity prerequisites while final Release retains the aggregate canonical quality gate;
+- existing Track Manager v5.22 / bridge v1.12 `asset-upload-v1` authority is reused unchanged;
+- no new Worker route, Track Manager bump, public Worker deployment or deployment-time R2 mutation.
+
+Exact candidate evidence:
+
+```text
+Accepted baseline       Build71 · REAL USER PASS
+Safety pre              safety/pre-phase7c-slice2-build72-20260814-1221
+Feature branch          agent/phase7c-slice2-guided-core-media-build72
+PR                      #103
+Tested head             b79ce03a98fad46e6bf4c488e456af07bba951be
+Studio CI               31792368962 · SUCCESS
+Runtime merge           dceee27dd8f8cdc96f8f88f10c5588e283e56699
+Pages deploy            31792436456 · SUCCESS · exact merge SHA
+Safety post-deploy      safety/post-build72-deployed-candidate-20260814-1230
+Track Manager           v5.22 · unchanged
+Studio bridge           v1.12 · unchanged
+Public Worker           v2.7 · unchanged
+Real-user smoke         PENDING
+```
+
+Detailed candidate record: [`changelogs/CHANGELOG-PHASE7-C-BUILD72.md`](changelogs/CHANGELOG-PHASE7-C-BUILD72.md).
+
 ## Current accepted release
 
 ### v0.19.3 · Build 71 — 2026-08-14
@@ -37,6 +74,7 @@ Pages deploy            31789774785 · SUCCESS
 Real-user smoke         BUILD71 PASS · 2026-08-14
 Safety pre              safety/pre-build71-duration-evidence-fix-20260814-0216
 Safety post-deploy      safety/post-build71-deployed-candidate-20260814-1152
+Safety post-RUP         safety/post-build71-real-user-pass-20260814-1217
 
 Track Manager           v5.22
 Studio bridge           v1.12
@@ -88,6 +126,7 @@ Post-pass checkpoint  safety/post-build68-home-real-user-pass-20260814-0005
 
 ## Detailed history
 
+- Build72 deployed candidate: [`changelogs/CHANGELOG-PHASE7-C-BUILD72.md`](changelogs/CHANGELOG-PHASE7-C-BUILD72.md)
 - Build71 accepted: [`changelogs/CHANGELOG-PHASE7-C-BUILD71.md`](changelogs/CHANGELOG-PHASE7-C-BUILD71.md)
 - Build69 origin record: [`changelogs/CHANGELOG-PHASE7-C-BUILD69.md`](changelogs/CHANGELOG-PHASE7-C-BUILD69.md)
 - Build68 accepted: [`changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md`](changelogs/CHANGELOG-STUDIO-FOCUS-BUILD68.md)
@@ -101,4 +140,4 @@ Post-pass checkpoint  safety/post-build68-home-real-user-pass-20260814-0005
 
 **CI GREEN ≠ DEPLOYED CANDIDATE ≠ REAL USER PASS.**
 
-Build71 has completed the full chain and is the current accepted Studio runtime.
+Build71 has completed the full chain and remains the current accepted Studio runtime. Build72 is deployed and awaits real-user smoke.

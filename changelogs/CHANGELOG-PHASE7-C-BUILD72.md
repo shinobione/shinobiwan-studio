@@ -2,7 +2,7 @@
 
 Codename: `studio-focus-slice4-phase7c-slice2-guided-core-media`  
 Date: 2026-08-14  
-Status: **CANDIDATE — PHASE 7-C RUNTIME SLICE 2 / CI REQUIRED**
+Status: **DEPLOYED CANDIDATE — REAL USER SMOKE PENDING**
 
 ## Scope
 
@@ -101,6 +101,10 @@ Feature branch:
 
 `agent/phase7c-slice2-guided-core-media-build72`
 
+Post-deploy candidate checkpoint:
+
+`safety/post-build72-deployed-candidate-20260814-1230`
+
 ## Regression guard
 
 Build72 adds `scripts/test-phase7-c-guided-core-media-build72.mjs` and wires it into `check:phase7`.
@@ -116,18 +120,28 @@ The guard proves:
 - existing Track Manager capability, stale, ambiguous-write and reread guards remain present;
 - no generic `saveTrack` path appears.
 
-## Acceptance gate
+## Exact candidate evidence
 
 ```text
-feature exact-head CI
-→ anti-drift main reread
-→ exact tested-head merge
-→ exact merge-SHA Pages deployment
-→ real-user browser smoke
-→ only then REAL USER PASS
+Accepted base          5324922fab4e7493bac69c3046b5f585c25fef07
+Feature tested head    b79ce03a98fad46e6bf4c488e456af07bba951be
+Studio CI              31792368962 · SUCCESS
+PR                     #103 · merged exact tested head
+Runtime merge          dceee27dd8f8cdc96f8f88f10c5588e283e56699
+Pages deployment       31792436456 · SUCCESS · exact merge SHA
+Track Manager          v5.22 · unchanged
+Studio bridge          v1.12 · unchanged
+TM Worker Version ID   df00e4c7-bfa1-45a3-b3e8-bd2640e0a159 · unchanged
+Public Worker          v2.7 · unchanged
+R2 deployment mutation none
+Real-user smoke        PENDING
 ```
 
-Required real-user smoke after deployment:
+## Remaining acceptance gate
+
+Only the real-user browser smoke remains before Build72 can replace Build71 as the accepted Studio baseline.
+
+Required smoke:
 
 - a track missing audio must recommend `Fix Core media` and land on Track / Master audio, not Visuals;
 - a verified master upload must refresh canonical state and advance the Next Action to cover when cover is missing;

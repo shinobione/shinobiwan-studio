@@ -1,6 +1,6 @@
-# NEXT SESSION HANDOFF — Build 71 accepted
+# NEXT SESSION HANDOFF — Build 72 deployed candidate
 
-Updated: 2026-08-14 after **Build 71 REAL USER PASS**.
+Updated: 2026-08-14 after **Phase 7-C Runtime Slice 2 · Build72 deployment**.
 
 ## Start here
 
@@ -18,18 +18,32 @@ validation run        31757665434 · SUCCESS
 runtime merge         0b3c3d452076708c698de71d9c691b5e459f7c17
 Pages deploy run      31789774785 · SUCCESS
 Build71 user smoke    PASS · 2026-08-14
-safety pre            safety/pre-build71-duration-evidence-fix-20260814-0216
-safety post-deploy    safety/post-build71-deployed-candidate-20260814-1152
+safety post-RUP       safety/post-build71-real-user-pass-20260814-1217
+```
+
+Current deployed candidate:
+
+```text
+version               v0.19.3
+build                 72
+codename              studio-focus-slice4-phase7c-slice2-guided-core-media
+Studio PR             #103 · merged exact tested head
+validated head        b79ce03a98fad46e6bf4c488e456af07bba951be
+validation run        31792368962 · SUCCESS
+runtime merge         dceee27dd8f8cdc96f8f88f10c5588e283e56699
+Pages deploy run      31792436456 · SUCCESS · exact merge SHA
+safety pre            safety/pre-phase7c-slice2-build72-20260814-1221
+safety post-deploy    safety/post-build72-deployed-candidate-20260814-1230
+real-user smoke       PENDING
 ```
 
 Cross-stack baseline:
 
 ```text
-Studio Build71       Phase 7-C Runtime Slice 1 corrective chain · REAL USER PASS
+Studio accepted      Build71 · REAL USER PASS
+Studio candidate     Build72 · DEPLOYED / SMOKE PENDING
 Track Manager        v5.22
 Studio bridge        v1.12
-TM backend PR        #232
-TM backend merge     be7d970f6577e0e54eade04a5ef764a733baed42
 TM deploy run        31789368122 · SUCCESS · admin only
 TM Worker Version ID df00e4c7-bfa1-45a3-b3e8-bd2640e0a159
 Public Worker        v2.7 · unchanged
@@ -39,9 +53,7 @@ Deep Audio           2.0.3-alpha
 LRC Maker            6.3.8
 ```
 
-## Build69→71 gate — CLOSED
-
-The real-user acceptance chain is complete.
+## Phase 7-C Slice 1 — CLOSED
 
 Preserve the historical distinction:
 
@@ -51,24 +63,60 @@ Build70  pre-smoke UX/product-model corrective · candidate
 Build71  duration evidence corrective · REAL USER PASS
 ```
 
-Do not retroactively mark Builds69/70 as REAL USER PASS. Build71 is the accepted cumulative runtime.
+Do not retroactively mark Builds69/70 as REAL USER PASS. Build71 is the accepted cumulative Slice1 runtime.
 
-## Accepted Slice 1 behavior
+## Phase 7-C Slice 2 — DEPLOYED CANDIDATE
 
-1. Home / Tracks / Workflow Next Actions preserve their truthful Metadata/Identity destination.
-2. Metadata validation presents a normalized proposal before mutation.
-3. Exact quality errors/warnings are shown to the user.
-4. Explicit human confirmation is required before canonical save/publish.
-5. Public fallback cannot verify a write.
-6. Post-write state becomes VERIFIED only after exact private canonical reread.
-7. Workflow/Next Action recomputes from reread canonical state.
-8. Production readiness excludes publication; a Draft can be 100% production ready.
-9. Canonical Album membership (`album.trackIds`) owns Album-track semantics.
-10. New Track does not send Track-side Album cache through generic create metadata.
-11. `Create draft` / guarded `Create & Publish` preserve a recoverable-draft-first write sequence.
-12. Canonical audio duration is derived evidence, never a manual free-form metadata field.
-13. Existing broken `duration=0` tracks can be repaired from measured canonical audio without unnecessary re-upload.
-14. Future guarded audio uploads may persist the measured duration on the same canonical revision.
+Build72 extends guided continuation to **Core Media** while reusing the existing protected Track Manager asset operation.
+
+Workflow order remains:
+
+```text
+Identity → Core media → Lyrics → Intelligence → Release
+```
+
+Build72 corrected two orchestration bugs:
+
+1. missing master audio used to route to `assets`, but that section is Visuals and contains no audio uploader;
+2. aggregate Track Manager quality errors were assigned to Identity, allowing media/lyrics errors to hijack the workflow priority.
+
+Current intended behavior:
+
+```text
+master audio missing
+→ Fix Core media
+→ Track / overview
+→ Master audio uploader
+→ existing asset-upload-v1
+→ protected canonical verification
+→ workflow recompute
+
+master audio ready + cover missing
+→ Continue Core media
+→ Visuals / assets
+→ Cover uploader
+→ existing asset-upload-v1
+→ protected canonical verification
+→ workflow recompute
+
+Audio + Cover ready
+→ next stage = Lyrics
+```
+
+Identity now owns explicit identity prerequisites only. Aggregate canonical quality remains authoritative at the Release stage.
+
+## Build72 real-user gate
+
+Build72 is **not accepted yet**. Required browser smoke:
+
+1. choose a Track with missing master audio;
+2. Home / Tracks / Workflow must show `Fix Core media` and land on Track / Master audio, not Visuals;
+3. perform a normal guarded audio upload and confirm the operation still requires explicit confirmation and reports canonical reread verification;
+4. if Cover is missing, the recomputed Next Action must become Core Media / Cover and land in Visuals;
+5. after Audio + Cover are ready, Next Action must advance to Lyrics;
+6. public fallback must remain unable to upload.
+
+If this passes, Build72 can become the accepted Studio baseline. Do **not** start Phase 7-C Slice 3 before this gate closes.
 
 ## Frozen architecture
 
@@ -129,21 +177,7 @@ A canonical write is VERIFIED only after exact trackId, allowlisted operation/ef
 - `canonicalWrite: false`.
 - no silent R2 promotion.
 
-## What comes next
-
-Phase 7-C Runtime Slice 1 is complete. **No next runtime slice is started by this handoff.**
-
-Before new implementation:
-
-1. reread current Studio + LaunchPAD/TM GitHub state;
-2. verify current deployed Worker/Pages lineage;
-3. agree the next Phase 7-C slice or explicitly choose a later roadmap phase;
-4. prove the next build number is unused;
-5. create a fresh safety branch from current `main`;
-6. preserve all Build71 authority/verification contracts;
-7. require exact-head CI, anti-drift, exact merge-SHA deployment and real-user smoke again.
-
-Later roadmap remains:
+## Later roadmap
 
 ```text
 Phase 8   Dashboard Intelligence & Content Health
@@ -153,7 +187,7 @@ Phase 10  Progressive extraction
 
 There is no official Phase 11.
 
-Rolling UX backlog includes premium interaction feel: tactile press/release, restrained glow/focus, coherent hover/active states, smooth reduced-motion-safe transitions.
+Rolling UX backlog includes premium interaction feel: tactile press/release, restrained glow/focus, coherent hover/active states and smooth reduced-motion-safe transitions.
 
 ## Historical landmines
 
@@ -166,6 +200,7 @@ Rolling UX backlog includes premium interaction feel: tactile press/release, res
 - Build69 = Phase 7-C Slice1 origin candidate.
 - Build70 = pre-smoke corrective candidate.
 - Build71 = current accepted runtime REAL USER PASS.
+- Build72 = deployed Slice2 candidate / smoke pending.
 - old Studio PR #84 / #87 are closed historical branches; do not revive them.
 
 ## Files to read before working
@@ -173,10 +208,11 @@ Rolling UX backlog includes premium interaction feel: tactile press/release, res
 - `README.md`
 - `docs/ROADMAP-CURRENT.md`
 - `docs/NEXT-SESSION-HANDOFF.md`
+- `changelogs/CHANGELOG-PHASE7-C-BUILD72.md`
 - `changelogs/CHANGELOG-PHASE7-C-BUILD71.md`
 - `docs/PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md`
 - `docs/INTEGRATION_SAFETY.md`
 
 ## Stop line
 
-**Build71 is accepted. Phase 7-C Runtime Slice 1 is closed. No subsequent runtime slice is started by this document.**
+**Build71 is accepted. Build72 is deployed candidate and awaits real-user smoke. Phase 7-C Slice 3 must not start before Build72 acceptance.**

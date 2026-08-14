@@ -4,6 +4,7 @@ Detailed milestone/build records live here. [`../CHANGELOG.md`](../CHANGELOG.md)
 
 ## Current records
 
+- [`CHANGELOG-PHASE7-C-BUILD72.md`](CHANGELOG-PHASE7-C-BUILD72.md) — Build72 Phase 7-C Runtime Slice2 guided Core Media · **DEPLOYED CANDIDATE / REAL USER SMOKE PENDING**.
 - [`CHANGELOG-PHASE7-C-BUILD71.md`](CHANGELOG-PHASE7-C-BUILD71.md) — Build71 Phase 7-C Runtime Slice1 duration corrective · **REAL USER PASS**.
 - [`CHANGELOG-PHASE7-C-BUILD69.md`](CHANGELOG-PHASE7-C-BUILD69.md) — Build69 guided Metadata/Identity Slice1 origin · historical candidate lineage.
 - [`CHANGELOG-STUDIO-FOCUS-BUILD68.md`](CHANGELOG-STUDIO-FOCUS-BUILD68.md) — Build68 Home lead priority corrective · REAL USER PASS.
@@ -22,7 +23,7 @@ Build70 is preserved in Git/PR history as the pre-smoke readiness/publication/Al
 - [`CHANGELOG-BUILD52.md`](CHANGELOG-BUILD52.md) — navigation corrective.
 - `CHANGELOG-STUDIO-FOCUS-BUILD53..61` — Studio Focus slices and closeout lineage.
 
-Historical Build59 was reserved. Build60 was superseded by Build61 for Slice4 acceptance. Build63 is superseded and must not be reused. Build64 remains failed-smoke evidence. Builds65–66 remain corrective lineage superseded by Build67. Builds69–70 remain candidate lineage superseded by Build71 acceptance.
+Historical Build59 was reserved. Build60 was superseded by Build61 for Slice4 acceptance. Build63 is superseded and must not be reused. Build64 remains failed-smoke evidence. Builds65–66 remain corrective lineage superseded by Build67. Builds69–70 remain candidate lineage superseded by Build71 acceptance. Build72 is the active deployed candidate and is not accepted until browser smoke passes.
 
 ## Policy
 
