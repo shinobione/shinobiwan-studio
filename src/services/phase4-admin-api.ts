@@ -7,6 +7,7 @@ import {
   type AdminMetadataPatch,
   type AdminQuality,
 } from './admin-api';
+import { measureAudioFileEvidence } from './audio-duration-evidence';
 import { studioConfig } from './config';
 
 const TRACK_CREATE_INTENT = 'track-create-v1';
@@ -71,6 +72,7 @@ export interface AssetMutationResponse {
   etag?: string | null;
   previousUpdatedAt?: string | null;
   updatedAt?: string | null;
+  duration?: number | null;
   quality?: AdminQuality | null;
   catalogRebuilt?: boolean;
   catalogGeneratedAt?: string | null;
@@ -282,10 +284,15 @@ export async function uploadAdminTrackAsset(
       beforeManifest?.updatedAt || null,
     );
   }
+  const audioEvidence = kind === 'audio' ? await measureAudioFileEvidence(file) : null;
   const formData = new FormData();
   formData.set('intent', ASSET_UPLOAD_INTENT);
   formData.set('expectedUpdatedAt', expectedUpdatedAt);
   formData.set('file', file);
+  if (audioEvidence) {
+    formData.set('audioDuration', String(audioEvidence.audio.duration));
+    formData.set('audioReadable', 'true');
+  }
   let payload: AssetMutationResponse;
   try {
     payload = await uploadViaFetch(`${baseUrl()}/api/studio/tracks/${encodeURIComponent(trackId)}/assets/${kind}/upload`, formData, onProgress);
@@ -314,6 +321,7 @@ export async function uploadAdminTrackAsset(
           etag: asset.etag || null,
           previousUpdatedAt: expectedUpdatedAt,
           updatedAt: manifest?.updatedAt || null,
+          duration: manifest?.duration ?? null,
           quality: reread.track?.quality || null,
           clientVerified: true,
           recoveredAfterTransportFailure: true,
@@ -358,7 +366,8 @@ export async function uploadAdminTrackAsset(
   const reread = await getAdminTrack(trackId);
   const manifest = reread.track?.manifest;
   const asset = reread.track?.assets?.[kind];
-  const clientVerified = manifest?.updatedAt === payload.updatedAt && manifest?.assets?.[kind] === payload.filename && asset?.present === true;
+  const durationVerified = payload.duration == null || manifest?.duration === payload.duration;
+  const clientVerified = manifest?.updatedAt === payload.updatedAt && manifest?.assets?.[kind] === payload.filename && asset?.present === true && durationVerified;
   return { ...payload, clientVerified };
 }
 
