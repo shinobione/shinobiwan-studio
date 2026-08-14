@@ -2,7 +2,7 @@
 
 Codename: `studio-focus-slice4-phase8-album-health-visual-polish`  
 Date: 2026-08-14  
-Status: **CANDIDATE — BUILD76 VISUAL CORRECTIVE**
+Status: **MERGED + DEPLOYED CANDIDATE — REAL USER VISUAL SMOKE PENDING**
 
 ## Why Build77 exists
 
@@ -24,29 +24,18 @@ Build76 is therefore **NOT REAL USER PASS**. Build75 remains the accepted baseli
 
 Build77 preserves the Build76 truth engine and changes only presentation/visual read composition.
 
-### Release identity
+Each Album Health card now reuses existing Album artwork, canonical `accent` / `accent2`, Album type/status metadata, canonical Track count and the same Build76 health state.
 
-Each Album Health card now reuses:
+Presentation changes:
 
-- existing Album artwork projection;
-- canonical `accent` / `accent2` palette;
-- Album type/status metadata;
-- canonical Track count;
-- the same Build76 health state.
-
-### Compact hierarchy
-
-- the giant marketing-style Build76 hero is replaced by a compact `Album Health` heading;
-- generic KPI cards become one compact four-cell summary ribbon;
-- cards use actual release artwork and palette glow;
-- card grid uses `align-items:start` so short cards are no longer stretched to tall siblings;
-- manifest problems become compact issue chips plus details only when needed.
-
-### Production-gap progressive disclosure
-
-Album Health shows at most three Track Next Actions by default.
-
-Additional actions stay inside a native `<details>` disclosure. This keeps large Albums useful without turning the page into a long diagnostic table.
+- compact `Album Health` heading instead of the oversized Build76 hero;
+- one compact four-cell summary ribbon instead of generic KPI cards;
+- release artwork + palette-driven card glow;
+- `align-items:start` prevents short cards stretching to tall row siblings;
+- manifest issues use compact chips and details only when needed;
+- at most three Track Next Actions are visible by default;
+- additional Track actions use native progressive disclosure;
+- hover/action feedback is reduced-motion safe.
 
 The Track action itself remains the existing accepted Next Action (`trackHref(action.trackId, action.section)`). Build77 does not invent another workflow.
 
@@ -65,9 +54,7 @@ Worker/backend change             NONE
 R2 mutation/migration             NONE
 ```
 
-Reduced-motion protection is retained for the new card/action motion.
-
-## Safety receipts
+## Exact receipts
 
 ```text
 Accepted baseline        Build75 REAL USER PASS
@@ -78,21 +65,35 @@ Feature                   agent/build77-album-health-visual-polish
 PR                        #115
 Initial runtime head      1c7131d3b048d5ba7cd05d995abd25f19794f26e
 Initial runtime CI        31837328072 · SUCCESS
+Final tested/doc head     7736f2d8026a9fb50546df0c8bfd44c1372a4ded
+Final exact-head CI       31837502237 · SUCCESS
+Runtime merge             0057305a476ff7ad5e13a80a209d417b0eb0629f
+Pages                     31837587200 · SUCCESS · exact runtime merge SHA
+Safety post-deploy        safety/post-build77-deployed-candidate-20260814-2223
 Track Manager             v5.22 · unchanged
 Studio bridge             v1.12 · unchanged
 TM Worker Version ID      df00e4c7-bfa1-45a3-b3e8-bd2640e0a159 · unchanged
 Public Worker             v2.7 · unchanged
+Worker deploy             NONE
+R2 mutation/migration     NONE
 ```
-
-A fresh exact-head CI is required after this candidate changelog commit before any merge.
 
 ## Acceptance gate
 
+Completed:
+
 ```text
-final exact-head CI
-→ anti-drift main
-→ exact tested-head merge
-→ exact merge-SHA Pages deployment
-→ real-user browser visual smoke
+final exact-head CI       ✅
+anti-drift main           ✅
+exact tested-head merge   ✅
+exact merge-SHA Pages     ✅
+```
+
+Still required:
+
+```text
+real-user visual smoke    ⏳
 → only then REAL USER PASS
 ```
+
+**Build75 remains the accepted baseline until explicit `BUILD77 PASS`.**
