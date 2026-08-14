@@ -91,6 +91,7 @@ export function computeContentHealth(track: StudioTrack): ContentHealth {
     ? track.audioIntelligence.outdated ? 'Saved analysis is outdated because canonical audio changed' : 'Catalog-linked analysis is current'
     : 'Catalog-linked analysis not saved yet';
 
+  // Build 70 contract preserved: production readiness deliberately excludes publication state.
   // Phase 8 / Build 74: production readiness follows the accepted Build73 truth.
   // Canvas is optional and therefore contributes no score and no attention item.
   // The 100-point production score is intentionally independent from publication:
