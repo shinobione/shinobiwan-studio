@@ -11,14 +11,16 @@ function expect(condition, message) {
   if (!condition) throw new Error(`Build76 guard failed: ${message}`);
 }
 
-expect(/build:\s*(?:76|77)/.test(release), 'release identity must remain Build76 or its explicit Build77 visual successor');
+expect(/build:\s*(?:76|77|78)/.test(release), 'release identity must remain Build76 or an explicit bounded successor');
 expect(
   release.includes("studio-focus-slice4-phase8-album-health-truth")
-  || release.includes("studio-focus-slice4-phase8-album-health-visual-polish"),
+  || release.includes("studio-focus-slice4-phase8-album-health-visual-polish")
+  || release.includes("studio-focus-slice4-phase8-album-health-cache-drift-human-ux"),
   'Build76 Album Health lineage must remain exact',
 );
 expect(release.includes('build75AncestryMarker'), 'Build75 accepted ancestry marker must remain explicit');
-if (/build:\s*77/.test(release)) expect(release.includes('build76AncestryMarker'), 'Build77 must preserve explicit Build76 ancestry');
+if (/build:\s*(?:77|78)/.test(release)) expect(release.includes('build76AncestryMarker'), 'visual successors must preserve explicit Build76 ancestry');
+if (/build:\s*78/.test(release)) expect(release.includes('build77AncestryMarker'), 'Build78 must preserve explicit Build77 ancestry');
 
 expect(health.includes('buildCatalogAlbumHealth'), 'shared Album health authority must exist');
 expect(health.includes("tracks.length > 0 && tracks.every(track => track.readSource === 'private')"), 'cross-model integrity must require protected private Track truth');
@@ -42,4 +44,4 @@ expect(pkg.scripts['check:phase8']?.includes('test-phase8-content-health-build74
 expect(pkg.scripts['check:phase8']?.includes('test-phase8-health-drilldown-build75.mjs'), 'Build75 guard must remain');
 expect(pkg.scripts['check:phase8']?.includes('test-phase8-album-health-build76.mjs'), 'Build76 guard must run in check:phase8');
 
-console.log('Build76 Phase8 Album Health truth guard passed through its visual successor.');
+console.log('Build76 Phase8 Album Health truth guard passed through bounded successors.');

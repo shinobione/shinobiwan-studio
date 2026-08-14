@@ -8,17 +8,19 @@ const main = fs.readFileSync('src/main.tsx', 'utf8');
 const css = fs.readFileSync('src/phase8-content-health.css', 'utf8');
 const workflow = fs.readFileSync('src/phase7-workflow.ts', 'utf8');
 
-assert.match(release, /build:\s*(?:74|75|76|77)/);
+assert.match(release, /build:\s*(?:74|75|76|77|78)/);
 assert.ok(
   release.includes("codename: 'studio-focus-slice4-phase8-content-health-truth'")
   || release.includes("codename: 'studio-focus-slice4-phase8-health-drilldown'")
   || release.includes("codename: 'studio-focus-slice4-phase8-album-health-truth'")
-  || release.includes("codename: 'studio-focus-slice4-phase8-album-health-visual-polish'"),
+  || release.includes("codename: 'studio-focus-slice4-phase8-album-health-visual-polish'")
+  || release.includes("codename: 'studio-focus-slice4-phase8-album-health-cache-drift-human-ux'"),
 );
 assert.ok(release.includes('build73AncestryMarker'));
-if (/build:\s*(?:75|76|77)/.test(release)) assert.ok(release.includes('build74AncestryMarker'));
-if (/build:\s*(?:76|77)/.test(release)) assert.ok(release.includes('build75AncestryMarker'));
-if (/build:\s*77/.test(release)) assert.ok(release.includes('build76AncestryMarker'));
+if (/build:\s*(?:75|76|77|78)/.test(release)) assert.ok(release.includes('build74AncestryMarker'));
+if (/build:\s*(?:76|77|78)/.test(release)) assert.ok(release.includes('build75AncestryMarker'));
+if (/build:\s*(?:77|78)/.test(release)) assert.ok(release.includes('build76AncestryMarker'));
+if (/build:\s*78/.test(release)) assert.ok(release.includes('build77AncestryMarker'));
 
 assert.ok(!health.includes("item('video'"));
 assert.ok(!health.includes("'Canvas / Video'"));

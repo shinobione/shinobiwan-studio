@@ -11,9 +11,14 @@ function expect(condition, message) {
   if (!condition) throw new Error(`Build77 guard failed: ${message}`);
 }
 
-expect(release.includes('build: 77'), 'release identity must be Build77');
-expect(release.includes("codename: 'studio-focus-slice4-phase8-album-health-visual-polish'"), 'Build77 codename must be exact');
+expect(/build:\s*(?:77|78)/.test(release), 'release identity must remain Build77 or its bounded Build78 UX successor');
+expect(
+  release.includes("codename: 'studio-focus-slice4-phase8-album-health-visual-polish'")
+  || release.includes("codename: 'studio-focus-slice4-phase8-album-health-cache-drift-human-ux'"),
+  'Build77 visual lineage must remain exact',
+);
 expect(release.includes('build76AncestryMarker'), 'Build76 functional ancestry must remain explicit');
+if (/build:\s*78/.test(release)) expect(release.includes('build77AncestryMarker'), 'Build78 must preserve explicit Build77 ancestry');
 
 expect(view.includes('getPublicAlbumVisuals'), 'Album cards must reuse proven canonical/public artwork projection');
 expect(view.includes('source?.accent || DEFAULT_ACCENT'), 'Album primary palette must drive the visual card');
@@ -39,4 +44,4 @@ expect(health.includes('buildCatalogAlbumHealth'), 'Build76 Album Health truth e
 expect(!health.includes('saveAdminAlbum'), 'truth engine must remain read-only');
 expect(pkg.scripts['check:phase8']?.includes('test-phase8-album-health-visual-build77.mjs'), 'Build77 guard must run in check:phase8');
 
-console.log('Build77 Phase8 Album Health visual corrective guard passed.');
+console.log('Build77 Phase8 Album Health visual corrective guard passed through bounded Build78 UX successor.');
