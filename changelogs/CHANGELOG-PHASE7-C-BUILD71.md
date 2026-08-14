@@ -2,116 +2,116 @@
 
 Codename: `studio-focus-slice4-phase7c-duration-evidence-corrective`
 Date: 2026-08-14
-Status: **CANDIDATE — CI GREEN / NOT MERGED / NOT DEPLOYED / REAL USER PASS PENDING**
+Status: **COMPLETE — REAL USER PASS**
+Accepted: **2026-08-14**
 
 ## Trigger
 
-Build70 real-user smoke on `uNTouCHaBLe` proved a canonical contradiction:
+Build70 real-user smoke on `uNTouCHaBLe` exposed a canonical contradiction:
 
-- canonical master audio is readable in-browser at about 3:55;
-- final canonical lyrics timestamp is 03:48.593;
-- Track Manager quality still reports duration <= 0 and final timestamp beyond audio end.
+- the canonical master audio was readable in-browser at about **3:55**;
+- the final canonical lyrics timestamp was **03:48.593**;
+- Track Manager quality still reported `duration <= 0` and final timestamp beyond audio end.
 
-The root cause is Track Manager v5.21 persisting the audio asset/revision without deriving `manifest.duration`, while metadata quality validation receives no browser duration evidence.
+The user input was valid. The root cause was Track Manager v5.21 persisting the audio asset/revision without deriving `manifest.duration`, while metadata quality validation had no browser audio-duration evidence.
 
-## Dependency
+## Backend corrective
 
-Track Manager v5.22 / Studio bridge v1.12 is the backend corrective.
+Track Manager **v5.22 / Studio bridge v1.12** adds bounded browser-measured audio duration as **derived evidence**, not as a generic editable metadata field.
 
-LaunchPAD / TM PR: `#232`
-Exact backend candidate head: `888d29e9b7064346311ed3c959669a327505204d`
-Backend merge: `be7d970f6577e0e54eade04a5ef764a733baed42`
+Preserved authority:
 
-Successful backend CI before merge:
+- Track Manager remains the protected canonical write authority;
+- Studio remains orchestrator, not a generic R2 writer;
+- `expectedUpdatedAt` stale protection remains mandatory;
+- no new generic mutation route;
+- Album membership/order remains owned by `album.trackIds`;
+- Lyrics authority remains canonical `lyrics.txt`;
+- public Worker remains v2.7 and was not deployed.
 
-- `31757006174` — Validate Cloudflare Workers — SUCCESS
-- `31757006198` — Validate Launchpad — SUCCESS
-- `31757006309` — Validate Horizontal Overflow — SUCCESS
+Backend evidence:
 
-Admin Worker deployment remains a hard gate before Build71 can be merged/deployed. Public Worker v2.7 must remain untouched.
+```text
+LaunchPAD/TM PR       #232
+Backend tested head  888d29e9b7064346311ed3c959669a327505204d
+Cloudflare CI        31757006174 · SUCCESS
+LaunchPAD CI         31757006198 · SUCCESS
+Overflow CI          31757006309 · SUCCESS
+Backend merge        be7d970f6577e0e54eade04a5ef764a733baed42
+Admin deploy run     31789368122 · SUCCESS · target=admin
+TM Worker Version ID df00e4c7-bfa1-45a3-b3e8-bd2640e0a159
+Track Manager        v5.22
+Studio bridge        v1.12
+Public Worker        v2.7 · deploy steps SKIPPED
+```
 
 ## Build71 behavior
 
 ### Existing tracks with broken duration
 
-`Validate metadata` now measures the currently protected canonical master in-browser using credentialed metadata loading.
+`Validate metadata` measures the currently protected canonical master in-browser using credentialed metadata loading.
 
-The measured duration is sent separately as evidence to TM v5.22; it is **not** added to the generic editable metadata allowlist.
+The measurement is sent separately as evidence to TM v5.22. When the manifest duration differs, the normalized proposal reports `duration` as a **derived repair**. The exact reviewed evidence is retained for the subsequent explicit Save/Publish against the same canonical revision.
 
-When the manifest duration differs, the normalized proposal reports `duration` as a derived repair. The exact reviewed evidence is retained for the subsequent explicit Save/Publish against the same `expectedUpdatedAt` revision.
-
-After save, Studio privately rereads the exact current track and verifies both the expected revision and persisted duration before reporting `CANONICAL REREAD · VERIFIED`.
+After save, Studio privately rereads the exact current Track and verifies the persisted duration before reporting `CANONICAL REREAD · VERIFIED`.
 
 ### Future audio uploads / New Track
 
-The existing `asset-upload-v1` multipart path measures a selected audio File before upload and adds:
+The existing guarded `asset-upload-v1` multipart path measures the selected audio File before upload and carries `audioDuration` / `audioReadable=true` without adding custom headers or weakening the existing CORS-simple upload transport.
 
-- `audioDuration`
-- `audioReadable=true`
+TM v5.22 derives `manifest.duration` at the same guarded audio-upload revision. Build70 `Create & Publish` therefore receives canonical duration without a second manual metadata repair step.
 
-No custom request header is added, so the existing CORS-simple multipart transport remains intact.
+If browser metadata cannot be measured, Studio invents nothing and quality remains blocked truthfully.
 
-TM v5.22 derives `manifest.duration` at the same guarded audio-upload revision. This makes Build70 `Create & Publish` capable of passing duration quality without an extra manual metadata repair step.
+## Build69 + Build70 lineage preserved
 
-If browser metadata cannot be measured, Studio does not invent a duration; quality remains truthful and the user sees the blocker.
+Build71 is the accepted end of the Phase 7-C Runtime Slice 1 corrective chain:
 
-## Preserved contracts
+```text
+Build 69  guided Metadata / Identity runtime Slice 1
+Build 70  pre-smoke readiness / publication / Album semantics / New Track corrective
+Build 71  canonical audio-duration evidence corrective · REAL USER PASS
+```
 
-- no generic Studio/R2 writer;
-- no manual editable duration field;
-- exact current trackId;
-- private canonical read required for write verification;
-- expectedUpdatedAt stale guard;
-- explicit human confirmation before save/publish;
-- Build69 Phase7-C guided metadata retained;
-- Build70 production-readiness/publication separation retained;
-- Album membership/order remains owned by `album.trackIds`;
-- Lyrics authority remains canonical `lyrics.txt`;
-- SonicTrace, Release Campaign and Phase7-B receipt authorities unchanged;
-- public fallback remains read-only.
+Build69 introduced the guided flow. Build70 fixed the first real-user UX/product-model findings. Build71 fixed the deeper Track Manager duration contract discovered during Build70 smoke.
 
-## Safety
+Historical candidates are not retroactively marked accepted; **Build71 is the accepted runtime containing the validated cumulative behavior**.
 
-Pre-Build71 checkpoint:
+## Studio evidence
 
-`safety/pre-build71-duration-evidence-fix-20260814-0216`
+```text
+Safety before change  safety/pre-build71-duration-evidence-fix-20260814-0216
+Feature branch        agent/build71-duration-evidence-fix
+PR                    #101
+Exact tested head     4298a07e13983786833240dd69a61a72dc09636e
+Studio validation     31757665434 · SUCCESS
+Runtime merge         0b3c3d452076708c698de71d9c691b5e459f7c17
+Pages deploy run      31789774785 · SUCCESS · exact merge SHA
+Post-deploy checkpoint safety/post-build71-deployed-candidate-20260814-1152
+Real-user smoke       BUILD71 PASS · 2026-08-14
+```
 
-Feature branch:
+## Real-user acceptance
 
-`agent/build71-duration-evidence-fix`
+The deployed Build71 / TM5.22 stack was exercised by the user and explicitly accepted with:
 
-PR:
+`@GitHub BUILD71 PASS`
 
-`#101 — Build 71 — canonical audio duration evidence corrective`
+This closes the smoke gate opened by the Build69 → Build70 → Build71 chain.
 
-## Candidate evidence
+Accepted outcomes include:
 
-Exact tested head before this documentation commit:
+- production readiness remains separate from publication state;
+- canonical Album membership drives Album-track semantics;
+- exact quality errors/warnings are visible rather than summarized only as counts;
+- New Track no longer sends the forbidden Track-side Album cache through generic create metadata;
+- safe `Create draft` / `Create & Publish` orchestration is retained;
+- canonical audio duration can be repaired from measured evidence without manual duration entry or unnecessary re-upload;
+- false `duration <= 0` / lyrics-end-after-audio blockers are removed when the canonical master proves a valid duration;
+- explicit publication remains guarded and canonical reread verified.
 
-`0f527db550a9095acaa6b96c26ee549d64e74007`
+## Acceptance rule
 
-Validation:
+**CI GREEN ≠ DEPLOYED CANDIDATE ≠ REAL USER PASS.**
 
-`31757608331 — Validate SHINOBIWAN Studio — SUCCESS`
-
-This documentation commit requires a fresh exact-head CI before any merge.
-
-## Deployment / acceptance gate
-
-1. deploy TM v5.22 / bridge v1.12 through the **admin-only** Cloudflare workflow;
-2. verify deployed admin Worker/version; public Worker unchanged;
-3. rerun exact-head Studio CI after documentation;
-4. anti-drift check Studio `main`;
-5. merge exact tested Build71 head;
-6. verify Pages deploys the exact merge SHA;
-7. real-user smoke `uNTouCHaBLe`:
-   - canonical master measurement appears around 3:55;
-   - derived duration repair appears in proposal;
-   - false duration and lyrics-end errors disappear;
-   - only genuine warnings remain;
-   - explicit Publish succeeds;
-   - private reread reports VERIFIED;
-   - hard refresh preserves published status and repaired duration;
-8. smoke New Track `Create & Publish` once.
-
-`CI GREEN != DEPLOYED != REAL USER PASS`.
+Build71 has completed all three stages and is therefore the **current accepted Studio runtime**.
