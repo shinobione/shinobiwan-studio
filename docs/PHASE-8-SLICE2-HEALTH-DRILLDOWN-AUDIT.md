@@ -1,13 +1,13 @@
 # PHASE 8 — Slice 2 Health Drill-down audit
 
 Date: 2026-08-14  
-Status: **BUILD75 RUNTIME CANDIDATE — GLOBAL HEALTH → EXISTING WORKFLOW**
+Status: **COMPLETE — BUILD75 REAL USER PASS / GLOBAL HEALTH → EXISTING WORKFLOW**
 
-Accepted base:
+Accepted base for the slice:
 
 ```text
 Studio                 v0.19.3 · Build74 · REAL USER PASS
-main                   2b9fb1fec8da4dc7be467fe647162ab147341799
+base main              2b9fb1fec8da4dc7be467fe647162ab147341799
 Safety pre             safety/pre-phase8-health-drilldown-build75-20260814-1946
 Feature branch         agent/phase8-health-drilldown-build75
 Track Manager          v5.22 · unchanged
@@ -19,20 +19,20 @@ R2 migration           NONE
 
 ## Audit finding
 
-Build74 correctly established global Content Health truth, but its actionable signal model stores only:
+Build74 correctly established global Content Health truth, but its actionable signal model stored only:
 
 ```text
 affected tracks
 → actionFor(affected[0])
 ```
 
-Home therefore exposes the correct aggregate count (`Cover missing = N`, `SonicTrace gap = N`, etc.) while its action opens only the first affected Track.
+Home therefore exposed the correct aggregate count (`Cover missing = N`, `SonicTrace gap = N`, etc.) while its action opened only the first affected Track.
 
-That is a real Phase8 gap: the dashboard knows the global problem but cannot take the artist from that global signal to the complete affected set.
+That was a real Phase8 gap: the dashboard knew the global problem but could not take the artist from that global signal to the complete affected set.
 
-The existing Phase7 Workflow page already owns the detailed searchable/filterable queue and already renders each Track's accepted stages plus `workflow.nextAction`. C3-B already owns sonic-map/catalog-intelligence relationships. Creating another list or another priority engine would duplicate accepted capability.
+The existing Phase7 Workflow page already owned the detailed searchable/filterable queue and already rendered each Track's accepted stages plus `workflow.nextAction`. C3-B already owned sonic-map/catalog-intelligence relationships. Creating another list or another priority engine would have duplicated accepted capability.
 
-## Build75 bounded scope
+## Build75 bounded scope — accepted
 
 ### 1. One shared health predicate authority
 
@@ -70,9 +70,9 @@ Unknown values resolve to no health filter.
 
 ### 3. Home → existing Workflow
 
-Every non-zero Content Health signal now opens the existing Workflow queue filtered to the complete affected set.
+Every non-zero Content Health signal opens the existing Workflow queue filtered to the complete affected set.
 
-The two production/publication cross-axis counters become drill-downs too:
+The two production/publication cross-axis counters use the same drill-down contract:
 
 - published with production gaps;
 - production-ready Drafts.
@@ -88,11 +88,11 @@ The health filter is only an additional read predicate over the existing Workflo
 - the existing `workflow.nextAction`;
 - the existing workspace deep-link.
 
-Search and the existing Queue selector can further narrow the health result. Clearing the health filter returns to the normal attention queue.
+Search and the existing Queue selector can further narrow the health result. Clearing the health filter returns to the normal Needs Attention queue.
 
 ### 5. Shell truth correction discovered by audit
 
-The accepted backend is Track Manager v5.22 / bridge v1.12 and the accepted program is now Phase8, but `App.tsx` still carried fallback presentation text for TM v5.21 / bridge v1.11 and a `PHASE 7-C` sidebar tag.
+The accepted backend is Track Manager v5.22 / bridge v1.12 and the accepted program is Phase8, but `App.tsx` still carried fallback presentation text for TM v5.21 / bridge v1.11 and a `PHASE 7-C` sidebar tag.
 
 Build75 corrects only those read-only labels/fallbacks:
 
@@ -103,7 +103,7 @@ Track Manager v5.22 · bridge v1.12
 
 No backend behavior changes.
 
-## Explicit non-scope
+## Explicit non-scope — preserved
 
 Build75 does **not**:
 
@@ -135,17 +135,43 @@ The Build75 guard proves:
 - Phase8 shell / TM v5.22 bridge v1.12 fallback truth is current;
 - no Phase8 save/write surface is introduced.
 
-## Acceptance gate
+The first candidate CI correctly caught removal of the inherited Phase7 literal read-only sentence. That guard was restored and preserved rather than weakened.
 
-Build74 remains the accepted runtime until Build75 completes:
+## Exact acceptance evidence
 
 ```text
-exact-head CI
-→ anti-drift main
-→ exact tested-head merge
-→ exact merge-SHA Pages deployment
-→ real-user browser smoke
-→ only then REAL USER PASS
+PR                      #110
+Initial candidate head  d7af7700c652f11a42c36d6aa0495649e92a9eb1
+Initial CI              31826089546 · FAILURE · inherited read-only copy guard
+Corrected head          fa09c903d122c1e33440335e5c1c691c7c7c698d
+Corrected CI            31826190402 · SUCCESS
+Final tested head       e0cbc92b7d42de2354201da525852c5efe4c6d20
+Final exact-head CI     31826276973 · SUCCESS
+Anti-drift base main    2b9fb1fec8da4dc7be467fe647162ab147341799
+Runtime merge           e6c2649583446087d0d256b48e556e9c6e93ede9
+Pages                   31826452231 · SUCCESS · exact runtime merge SHA
+Safety post-deploy      safety/post-build75-deployed-candidate-20260814-1959
+Candidate docs PR       #111
+Candidate docs CI       31826672166 · SUCCESS
+Candidate docs merge    b2bc1cab42849f12afc58cf3b1abbb8c45fb8a3e
+Candidate docs Pages    31826760916 · SUCCESS
+Real-user smoke         BUILD75 PASS · 2026-08-14
+Safety post-RUP         safety/post-build75-real-user-pass-20260814-2048
+Track Manager           v5.22 · unchanged
+Studio bridge           v1.12 · unchanged
+TM Worker Version ID    df00e4c7-bfa1-45a3-b3e8-bd2640e0a159 · unchanged
+Public Worker           v2.7 · unchanged
+R2 migration            NONE
 ```
 
-**CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS.**
+## Acceptance gate — complete
+
+```text
+exact-head CI            ✅
+anti-drift main          ✅
+exact tested-head merge  ✅
+exact merge-SHA Pages    ✅
+real-user browser smoke  ✅ BUILD75 PASS
+```
+
+**Build75 is the current accepted Studio runtime. Phase 8 Slice 2 is CLOSED / REAL USER PASS. Build76 remains unused pending a fresh bounded audit.**
