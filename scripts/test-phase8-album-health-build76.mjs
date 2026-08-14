@@ -11,18 +11,20 @@ function expect(condition, message) {
   if (!condition) throw new Error(`Build76 guard failed: ${message}`);
 }
 
-expect(/build:\s*(?:76|77|78|79)/.test(release), 'release identity must remain Build76 or an explicit bounded successor');
+expect(/build:\s*(?:76|77|78|79|80)/.test(release), 'release identity must remain Build76 or an explicit bounded successor');
 expect(
   release.includes("studio-focus-slice4-phase8-album-health-truth")
   || release.includes("studio-focus-slice4-phase8-album-health-visual-polish")
   || release.includes("studio-focus-slice4-phase8-album-health-cache-drift-human-ux")
-  || release.includes("studio-focus-slice4-phase8-album-publish-truth"),
+  || release.includes("studio-focus-slice4-phase8-album-publish-truth")
+  || release.includes("studio-focus-slice4-phase8-duration-evidence-successor-compat"),
   'Build76 Album Health lineage must remain exact',
 );
 expect(release.includes('build75AncestryMarker'), 'Build75 accepted ancestry marker must remain explicit');
-if (/build:\s*(?:77|78|79)/.test(release)) expect(release.includes('build76AncestryMarker'), 'successors must preserve explicit Build76 ancestry');
-if (/build:\s*(?:78|79)/.test(release)) expect(release.includes('build77AncestryMarker'), 'Build78+ must preserve explicit Build77 ancestry');
-if (/build:\s*79/.test(release)) expect(release.includes('build78AncestryMarker'), 'Build79 must preserve explicit Build78 ancestry');
+if (/build:\s*(?:77|78|79|80)/.test(release)) expect(release.includes('build76AncestryMarker'), 'successors must preserve explicit Build76 ancestry');
+if (/build:\s*(?:78|79|80)/.test(release)) expect(release.includes('build77AncestryMarker'), 'Build78+ must preserve explicit Build77 ancestry');
+if (/build:\s*(?:79|80)/.test(release)) expect(release.includes('build78AncestryMarker'), 'Build79+ must preserve explicit Build78 ancestry');
+if (/build:\s*80/.test(release)) expect(release.includes('build79AncestryMarker'), 'Build80 must preserve explicit Build79 ancestry');
 
 expect(health.includes('buildCatalogAlbumHealth'), 'shared Album health authority must exist');
 expect(health.includes("tracks.length > 0 && tracks.every(track => track.readSource === 'private')"), 'cross-model integrity must require protected private Track truth');
@@ -46,4 +48,4 @@ expect(pkg.scripts['check:phase8']?.includes('test-phase8-content-health-build74
 expect(pkg.scripts['check:phase8']?.includes('test-phase8-health-drilldown-build75.mjs'), 'Build75 guard must remain');
 expect(pkg.scripts['check:phase8']?.includes('test-phase8-album-health-build76.mjs'), 'Build76 guard must run in check:phase8');
 
-console.log('Build76 Phase8 Album Health truth guard passed through bounded successors including Build79.');
+console.log('Build76 Phase8 Album Health truth guard passed through bounded successors including Build80.');
