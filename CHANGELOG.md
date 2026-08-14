@@ -2,6 +2,49 @@
 
 This file is the **current concise changelog**. Detailed per-build records are organized under [`changelogs/`](changelogs/README.md).
 
+## Current accepted release
+
+### v0.19.3 · Build 74 — 2026-08-14
+
+Codename: `studio-focus-slice4-phase8-content-health-truth`  
+Status: **COMPLETE — PHASE 8 SLICE 1 / REAL USER PASS**
+
+Build74 is the first accepted Phase8 runtime slice after Phase7-C program closeout.
+
+Accepted behavior:
+
+- legacy Content Health no longer penalizes optional Canvas;
+- production readiness is Identity20 + Audio20 + Cover20 + Lyrics20 + current SonicTrace20;
+- Canvas contributes 0 and creates no attention item;
+- `PRODUCTION COMPLETE` excludes the Release/publication stage;
+- production and publication remain separate axes;
+- Home keeps `NEEDS ATTENTION / PRODUCTION COMPLETE / PUBLISHED / DRAFTS` terminology with truthful production-only counts;
+- a production-ready Draft may correctly remain Draft with `Publish track` as Next Action;
+- Home gains a compact read-only Content Health surface for missing audio, cover, lyrics source, lyrics timing, SonicTrace gaps and Release blockers;
+- Content Health also exposes published-with-production-gaps and production-ready-Drafts cross-axis counts;
+- all health actions reuse the existing Track `workflow.nextAction`; no second priority engine exists;
+- no new write authority, Worker route, Track Manager deployment or R2 migration was introduced.
+
+Exact acceptance evidence:
+
+```text
+Safety pre              safety/pre-phase8-content-health-build74-20260814-1810
+Studio PR               #108
+Exact tested head       da7b5498dd8e1f6120c346e07fe1b1e741d40104
+Validation run          31819203565 · SUCCESS
+Runtime merge           c95e33bcb0c33b18fc8e6e9a35a05ec28ad142a9
+Pages deploy run        31819333501 · SUCCESS · exact merge SHA
+Safety post-deploy      safety/post-build74-deployed-candidate-20260814-1827
+Real-user smoke         BUILD74 PASS · 2026-08-14
+Safety post-RUP         safety/post-build74-real-user-pass-20260814-1926
+Track Manager           v5.22 · unchanged
+Studio bridge           v1.12 · unchanged
+Public Worker           v2.7 · unchanged
+R2 migration            NONE
+```
+
+Detailed accepted record: [`changelogs/CHANGELOG-PHASE8-BUILD74.md`](changelogs/CHANGELOG-PHASE8-BUILD74.md).
+
 ## Phase 7-C program closeout audit — 2026-08-14
 
 Status: **COMPLETE — DOCS-ONLY / NO ADDITIONAL RUNTIME SLICE REQUIRED**
@@ -11,28 +54,20 @@ After Build73 REAL USER PASS, the accepted runtime was reread before allocating 
 - Lyrics already uses protected LRC Maker context, validate/save revision+ETag guards, canonical reread, `lyrics-saved` receipt and Studio private Track reread;
 - Intelligence already uses current canonical audio sourceVersion, REVIEW / NOT SAVED, explicit save, Track Manager `STALE_AUDIO`, verified latest/history sidecars, `analysis-saved` receipt and Studio private Track reread;
 - Release already uses the accepted Slice1 validation/confirmation/protected publication flow while Release Campaign stays review-only;
-- no legitimate Slice3 runtime capability is missing;
-- Build74 was verified unused and remains reserved for the first genuine Phase8 runtime scope;
-- Phase8 `Dashboard Intelligence & Content Health` is now the next roadmap phase.
+- no legitimate Slice3 runtime capability was missing.
 
-Audit safety:
-
-```text
-safety/pre-phase7c-program-closeout-audit-20260814-1747
-```
+Phase7-C therefore remains program-complete on Build73. Build74 subsequently opened Phase8 without altering those authority contracts.
 
 Detailed audit: [`docs/PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md`](docs/PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md).
 
-No Studio runtime code, Track Manager, Worker, LRC Maker, SonicTrace or R2 mutation is part of this closeout.
-
-## Current accepted release
+## Accepted Phase 7-C baseline
 
 ### v0.19.3 · Build 73 — 2026-08-14
 
 Codename: `studio-focus-slice4-phase7c-slice2-status-truth-corrective`  
 Status: **COMPLETE — REAL USER PASS / PHASE 7-C PROGRAM BASELINE**
 
-Build73 closes the Phase 7-C Runtime Slice 2 corrective chain started by Build72.
+Build73 closed the Phase 7-C Runtime Slice 2 corrective chain started by Build72.
 
 Accepted Slice2 behavior:
 
@@ -44,8 +79,7 @@ Accepted Slice2 behavior:
 - TXT without timestamps remains `Timing needed` / attention everywhere;
 - Home, Tracks, Workflow and Track Workspace use the same Phase 7 Next Action authority;
 - aggregate Track Manager quality remains authoritative at Release and no longer masquerades as Identity work;
-- existing Track Manager v5.22 / bridge v1.12 `asset-upload-v1` authority is reused unchanged;
-- no new Worker route, Track Manager bump, public Worker deployment or deployment-time R2 mutation.
+- existing Track Manager v5.22 / bridge v1.12 `asset-upload-v1` authority is reused unchanged.
 
 Exact acceptance evidence:
 
@@ -65,9 +99,6 @@ Build73 Pages           31795547072 · SUCCESS · exact merge SHA
 Safety post-deploy      safety/post-build73-deployed-candidate-20260814-1318
 Safety post-RUP         safety/post-build73-real-user-pass-20260814-1715
 Real-user smoke         BUILD73 PASS · 2026-08-14
-Track Manager           v5.22 · unchanged
-Studio bridge           v1.12 · unchanged
-Public Worker           v2.7 · unchanged
 ```
 
 Detailed accepted record: [`changelogs/CHANGELOG-PHASE7-C-BUILD73.md`](changelogs/CHANGELOG-PHASE7-C-BUILD73.md).
@@ -103,6 +134,8 @@ Detailed record: [`changelogs/CHANGELOG-PHASE7-C-BUILD71.md`](changelogs/CHANGEL
 
 ## Detailed history
 
+- Build74 accepted: [`changelogs/CHANGELOG-PHASE8-BUILD74.md`](changelogs/CHANGELOG-PHASE8-BUILD74.md)
+- Phase8 scope audit: [`docs/PHASE-8-SCOPE-AUDIT.md`](docs/PHASE-8-SCOPE-AUDIT.md)
 - Phase7-C program closeout audit: [`docs/PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md`](docs/PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md)
 - Build73 accepted: [`changelogs/CHANGELOG-PHASE7-C-BUILD73.md`](changelogs/CHANGELOG-PHASE7-C-BUILD73.md)
 - Build72 origin candidate: [`changelogs/CHANGELOG-PHASE7-C-BUILD72.md`](changelogs/CHANGELOG-PHASE7-C-BUILD72.md)
@@ -117,4 +150,4 @@ Detailed record: [`changelogs/CHANGELOG-PHASE7-C-BUILD71.md`](changelogs/CHANGEL
 
 **CI GREEN ≠ DEPLOYED CANDIDATE ≠ REAL USER PASS.**
 
-Build73 completed the full runtime acceptance chain and remains the current accepted Studio runtime. Phase 7-C is program-complete through a docs-only audit; no extra runtime build was minted. Build74 remains unused for Phase8.
+Build74 completed the full runtime acceptance chain and is the current accepted Studio runtime. Phase8 Slice1 is closed. Build75 is unused until the next bounded Phase8 scope is audited.
