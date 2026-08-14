@@ -1,6 +1,6 @@
-# NEXT SESSION HANDOFF — Phase 7-C complete / Build 73 accepted
+# NEXT SESSION HANDOFF — Phase 8 Slice 1 / Build 74 accepted
 
-Updated: 2026-08-14 after **Phase 7-C program closeout audit**.
+Updated: 2026-08-14 after **BUILD74 REAL USER PASS**.
 
 ## Start here
 
@@ -10,31 +10,23 @@ Current accepted Studio runtime:
 
 ```text
 version               v0.19.3
-build                 73
-codename              studio-focus-slice4-phase7c-slice2-status-truth-corrective
-Studio PR             #105 · merged exact tested head
-validated head        b6dc39e7555aa040740de5efa54bd75b1e78101a
-validation run        31795481278 · SUCCESS
-runtime merge         4684291f64d12bd514f103ba1c5050d05d0143ac
-Pages deploy run      31795547072 · SUCCESS · exact merge SHA
-Build73 user smoke    PASS · 2026-08-14
-safety pre            safety/pre-build73-status-truth-corrective-20260814-1312
-safety post-deploy    safety/post-build73-deployed-candidate-20260814-1318
-safety post-RUP       safety/post-build73-real-user-pass-20260814-1715
-```
-
-Current docs/main baseline before the Phase7-C program-closeout PR:
-
-```text
-main                  d0771c5a83cf749d5d9167abcad5600a087ba44f
-post-Build73 docs     safety/post-build73-rup-docs-closeout-20260814-1726
-Phase7-C audit safety safety/pre-phase7c-program-closeout-audit-20260814-1747
+build                 74
+codename              studio-focus-slice4-phase8-content-health-truth
+Studio PR             #108 · merged exact tested head
+validated head        da7b5498dd8e1f6120c346e07fe1b1e741d40104
+validation run        31819203565 · SUCCESS
+runtime merge         c95e33bcb0c33b18fc8e6e9a35a05ec28ad142a9
+Pages deploy run      31819333501 · SUCCESS · exact merge SHA
+Build74 user smoke    PASS · 2026-08-14
+safety pre            safety/pre-phase8-content-health-build74-20260814-1810
+safety post-deploy    safety/post-build74-deployed-candidate-20260814-1827
+safety post-RUP       safety/post-build74-real-user-pass-20260814-1926
 ```
 
 Cross-stack baseline:
 
 ```text
-Studio Build73       Phase 7-C PROGRAM COMPLETE · REAL USER PASS
+Studio Build74       Phase 8 Slice 1 · REAL USER PASS
 Track Manager        v5.22
 Studio bridge        v1.12
 TM deploy run        31789368122 · SUCCESS · admin only
@@ -46,59 +38,95 @@ Deep Audio           2.0.3-alpha
 LRC Maker            6.3.8
 ```
 
-## Phase 7-C Slice 1 — CLOSED
+Build74 did **not** deploy or modify Track Manager, either Worker, SonicTrace, LRC Maker or R2.
 
-Historical distinction:
+## Phase 8 Slice 1 — CLOSED / REAL USER PASS
+
+Build74 is **Content Health Truth**.
+
+It fixed the real model mismatch discovered after Phase7-C closeout:
 
 ```text
-Build69  guided Metadata/Identity Slice1 origin · candidate
-Build70  pre-smoke UX/product-model corrective · candidate
+legacy Content Health
+Cover          10
+Canvas         10   ← wrong: Canvas was already optional
+
+Build74
+Identity       20
+Master audio   20
+Cover          20
+Lyrics TXT     10
+Lyrics timing  10
+SonicTrace     20
+Canvas          0   ← optional
+```
+
+Production completion also now excludes the Release/publication stage.
+
+Accepted Home truth:
+
+```text
+NEEDS ATTENTION      = production gaps only
+PRODUCTION COMPLETE  = Identity + media + lyrics + current SonicTrace complete
+PUBLISHED            = publication axis
+DRAFTS               = publication axis
+```
+
+A Track may legitimately be:
+
+```text
+Production complete  YES
+Draft                YES
+Next Action          Publish track
+```
+
+### Content Health panel
+
+Home exposes read-only signals for:
+
+- missing master audio;
+- missing required cover;
+- missing canonical lyrics source;
+- lyrics timing needed;
+- SonicTrace missing/outdated;
+- Release quality blockers;
+- published Tracks with production gaps;
+- production-ready Drafts.
+
+Every action routes to the Track's existing `workflow.nextAction`. **Do not create a second workflow priority model.**
+
+## Phase 7-C — CLOSED
+
+### Slice 1
+
+```text
+Build69  guided Metadata/Identity origin · candidate
+Build70  pre-smoke readiness/publication/Album/New Track corrective · candidate
 Build71  duration evidence corrective · REAL USER PASS
 ```
 
 Build71 is the accepted cumulative Slice1 runtime.
 
-## Phase 7-C Slice 2 — CLOSED
-
-Historical distinction:
+### Slice 2
 
 ```text
-Build72  guided Core Media origin · merged/deployed candidate
+Build72  guided Core Media origin · deployed candidate
 Build73  status-truth corrective · REAL USER PASS
 ```
 
-Build72 is not retroactively marked REAL USER PASS. Build73 is the accepted cumulative Slice2 runtime.
+Build73 is the accepted cumulative Slice2 runtime and Phase7-C program baseline.
 
-### Accepted workflow
+### Program closeout
+
+A real-code audit after Build73 proved Lyrics, Intelligence and Release already satisfied the guided-action contract, so there is **no Phase7-C Slice3 runtime**.
+
+Accepted workflow remains:
 
 ```text
 Identity → Core media → Lyrics → Intelligence → Release
 ```
 
-Core Media guidance:
-
-```text
-master audio missing
-→ Fix Core media
-→ Track / overview
-→ Master audio uploader
-→ existing asset-upload-v1
-→ protected canonical verification
-→ workflow recompute
-
-master audio ready + cover missing
-→ Continue Core media
-→ Visuals / assets
-→ Cover uploader
-→ existing asset-upload-v1
-→ protected canonical verification
-→ workflow recompute
-
-Audio + Cover ready
-→ next stage = Lyrics
-```
-
-Status truth accepted through Build73:
+Status truth remains:
 
 ```text
 Visuals ready = canonical cover present
@@ -107,62 +135,7 @@ Lyrics ready  = canonical lyrics.txt + recognized timestamps
 TXT only      = attention / Timing needed
 ```
 
-Home, Tracks, Workflow and Track Workspace must use the same Phase 7 Next Action authority. Track Workspace `Continue` must not derive from a separate content-health ordering.
-
-## Phase 7-C program closeout — CLOSED WITHOUT SLICE3
-
-A fresh post-Build73 audit checked the remaining workflow stages before allocating Build74.
-
-### Lyrics already satisfies the guided-action contract
-
-```text
-Next Action → Lyrics
-→ canonical lyrics.txt source control
-→ embedded LRC Maker 6.3.8
-→ exact protected trackId context
-→ lyrics-sync-validate-v1
-→ expectedUpdatedAt + expectedLyricsEtag + observed audio duration
-→ lyrics-sync-save-v1
-→ LRC Maker protected canonical reread
-→ lyrics-saved canonical-write receipt
-→ Studio private Track Manager reread
-→ timestampsAvailable/workflow recompute
-```
-
-### Intelligence already satisfies the guided-action contract
-
-```text
-Next Action → Intelligence
-→ current canonical audio sourceVersion
-→ temporary audio analysis
-→ REVIEW / NOT SAVED
-→ explicit Save analysis confirmation
-→ sonictrace-analysis-save-v1
-→ Track Manager exact sourceVersion / STALE_AUDIO guard
-→ latest.json + append-only history
-→ backend sidecar reread verification / rollback on failure
-→ analysis-saved canonical-write receipt
-→ Studio private Track reread
-→ audioIntelligence/workflow recompute
-```
-
-### Release already satisfies the guided-action contract
-
-The accepted Slice1 metadata/publication flow owns protected publication: validation, normalized proposal, exact quality blockers, explicit confirmation, guarded save and private canonical reread. Release Campaign remains browser-local/review-only and never becomes a canonical write.
-
-Therefore **there is no honest Phase7-C Slice3 runtime gap**. Creating one would duplicate accepted behavior rather than add capability.
-
-Audit record: `docs/PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md`.
-
-## Build74 status
-
-`Build74` was explicitly checked before the program-closeout decision:
-
-- no `Build 74` repository occurrence;
-- no Build74 PR found in current PR history;
-- no Build74 feature/safety branch; branch query `74` only matched an unrelated historical timestamp containing `1748`.
-
-**Build74 is UNUSED.** Reserve it for the first genuine Phase8 runtime implementation only.
+Home, Tracks, Workflow, Track Workspace and Phase8 Content Health must reuse the same Phase7 Next Action authority.
 
 ## Frozen architecture
 
@@ -223,31 +196,31 @@ A canonical write is VERIFIED only after exact trackId, allowlisted operation/ef
 - `canonicalWrite: false`.
 - no silent R2 promotion.
 
-## What comes next — Phase 8
+## What comes next
 
 ```text
-Phase 8   Dashboard Intelligence & Content Health   NEXT
+Phase 8   next bounded intelligence/content-health sub-scope   NEXT AUDIT
 Phase 9   Security / reliability / PWA
 Phase 10  Progressive extraction
 ```
 
 There is no official Phase 11.
 
-The first Phase8 scope must be audited before opening Build74. The intended direction is a **read-only global actionable content-health layer** using existing canonical Track/Album/SonicTrace reads and existing `workflow.nextAction`, not a duplicate of the C3-B sonic map and not a new write authority.
+**Build75 is unused.** Do not allocate it until a fresh real-code audit proves a new Phase8 capability that is not already covered by:
 
-Likely signals to unify:
+- Build74 global Content Health;
+- C3-B SonicTrace catalog map/intelligence;
+- Phase7 `workflow.nextAction`;
+- existing Home counters/queue.
 
-- missing audio / required cover;
-- missing lyrics source / timing missing;
-- SonicTrace missing or outdated;
-- canonical release quality blockers;
-- published but production-incomplete tracks;
-- production-ready Drafts;
-- exact links to the existing Track next action.
+Likely next work should remain read-only unless a concrete capability proves a guarded write is required.
 
-Preserve production/publication separation. Do not create a second workflow priority model.
+Rolling UX backlog remains:
 
-Rolling UX backlog remains: tactile press/release feedback, restrained glow/focus, coherent hover/active states and smooth reduced-motion-safe transitions.
+- tactile press/release feedback;
+- restrained glow/focus;
+- coherent hover/active states;
+- smooth reduced-motion-safe transitions.
 
 ## Historical landmines
 
@@ -257,12 +230,13 @@ Rolling UX backlog remains: tactile press/release feedback, restrained glow/focu
 - Builds65–66 = corrective lineage superseded by Build67.
 - Build67 = Foundation Regression Repair REAL USER PASS.
 - Build68 = Home lead priority REAL USER PASS.
-- Build69 = Phase 7-C Slice1 origin candidate.
+- Build69 = Phase7-C Slice1 origin candidate.
 - Build70 = pre-smoke corrective candidate.
 - Build71 = Slice1 accepted runtime REAL USER PASS.
 - Build72 = Slice2 origin deployed candidate.
-- Build73 = current accepted runtime / Phase7-C program baseline REAL USER PASS.
-- Build74 = unused; first eligible Phase8 build.
+- Build73 = Slice2 accepted / Phase7-C program baseline REAL USER PASS.
+- Build74 = Phase8 Slice1 accepted REAL USER PASS.
+- Build75 = unused.
 - old Studio PR #84 / #87 are closed historical branches; do not revive them.
 
 ## Files to read before working
@@ -270,13 +244,13 @@ Rolling UX backlog remains: tactile press/release feedback, restrained glow/focu
 - `README.md`
 - `docs/ROADMAP-CURRENT.md`
 - `docs/NEXT-SESSION-HANDOFF.md`
+- `changelogs/CHANGELOG-PHASE8-BUILD74.md`
+- `docs/PHASE-8-SCOPE-AUDIT.md`
 - `docs/PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md`
 - `changelogs/CHANGELOG-PHASE7-C-BUILD73.md`
-- `changelogs/CHANGELOG-PHASE7-C-BUILD72.md`
-- `changelogs/CHANGELOG-PHASE7-C-BUILD71.md`
 - `docs/PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md`
 - `docs/INTEGRATION_SAFETY.md`
 
 ## Stop line
 
-**Build73 is accepted. Phase 7-C is PROGRAM COMPLETE. There is no Slice3 runtime to invent. Build74 remains unused and may start only under a fresh, bounded Phase8 scope.**
+**Build74 is accepted REAL USER PASS and is the current runtime baseline. Phase8 Slice1 is closed. Build75 is unused: audit first, then scope, then safety branch, then runtime.**
