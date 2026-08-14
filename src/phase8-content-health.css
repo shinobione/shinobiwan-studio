@@ -1,0 +1,24 @@
+.focus-summary{grid-template-columns:repeat(4,minmax(0,1fr))}
+.focus-health{display:grid;gap:12px}
+.focus-health-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.focus-health-signal{padding:16px 17px;display:grid;gap:9px;min-width:0}
+.focus-health-signal>div{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.focus-health-signal>div>span{font-size:.68rem;font-weight:900;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.focus-health-signal>div>strong{font-size:1.55rem;line-height:1}
+.focus-health-signal>small{color:var(--muted);line-height:1.42;min-height:2.8em}
+.focus-health-signal>a{display:grid;gap:2px;padding-top:9px;border-top:1px solid var(--border);color:inherit;text-decoration:none;min-width:0}
+.focus-health-signal>a b{font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.focus-health-signal>a span{font-size:.7rem;color:var(--muted)}
+.focus-health-signal>a:hover span{color:var(--text)}
+.focus-health-signal.is-attention{border-color:rgba(232,185,85,.18);background:linear-gradient(145deg,rgba(232,185,85,.045),rgba(255,255,255,.015))}
+.focus-health-signal.is-clear{border-color:rgba(90,229,180,.14);background:linear-gradient(145deg,rgba(49,168,125,.035),rgba(255,255,255,.012))}
+.focus-health-clear{font-size:.72rem;font-weight:800;color:#8de9c5;padding-top:9px;border-top:1px solid var(--border)}
+.focus-health-axes{display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,.7fr) minmax(260px,1.6fr);gap:18px;align-items:center;padding:17px 19px}
+.focus-health-axes>div{display:grid;gap:3px}
+.focus-health-axes>div>span{font-size:.61rem;font-weight:900;letter-spacing:.08em;color:var(--muted)}
+.focus-health-axes>div>strong{font-size:1.45rem}
+.focus-health-axes>div>small,.focus-health-axes>p{margin:0;color:var(--muted);font-size:.72rem;line-height:1.45}
+.focus-health-axes>p{padding-left:18px;border-left:1px solid var(--border)}
+.focus-health-axes code{font-size:.7rem;color:var(--text)}
+@media(max-width:980px){.focus-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.focus-health-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.focus-health-axes{grid-template-columns:1fr 1fr}.focus-health-axes>p{grid-column:1/-1;padding-left:0;padding-top:13px;border-left:0;border-top:1px solid var(--border)}}
+@media(max-width:720px){.focus-summary,.focus-health-grid,.focus-health-axes{grid-template-columns:1fr}.focus-health-axes>p{grid-column:auto}.focus-health-signal>small{min-height:0}}
