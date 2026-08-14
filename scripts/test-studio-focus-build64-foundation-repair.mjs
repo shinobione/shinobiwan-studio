@@ -35,8 +35,10 @@ for (const required of [
   '/api/studio/albums/${encodeURIComponent(albumId)}/media/${kind}',
   'getAdminTrack(input.trackId)',
   'trackCacheMatches',
-  'Track Manager v5.21 / bridge v1.11 only',
-]) assert.ok(albumApi.includes(required), `Build 64 Album API contract is missing ${required}.`);
+  'Track Manager v5.23 / bridge v1.13 only',
+]) assert.ok(albumApi.includes(required), `Build 64 Album API contract is missing current bounded successor ${required}.`);
+// Historical Build64 transport was Track Manager v5.21 / bridge v1.11 only.
+// The authority boundary is preserved while the current verified successor advances to v5.23 / bridge v1.13.
 
 const albumVisuals = read('src/services/public-albums-api.ts');
 for (const required of [
@@ -60,4 +62,4 @@ for (const required of [
   "summary.textContent = 'Add lyrics.txt / plain-text editor'",
 ]) assert.ok(presentation.includes(required), `Build 64 visible Lyrics source control is missing ${required}.`);
 
-console.log('Studio v0.19.3 Build 64 foundation regression repair contract verified.');
+console.log('Studio v0.19.3 Build 64 foundation regression repair contract verified through the v5.23 / bridge v1.13 successor.');
