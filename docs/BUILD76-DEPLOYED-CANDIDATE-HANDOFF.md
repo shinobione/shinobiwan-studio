@@ -1,11 +1,13 @@
 # Build76 deployed-candidate handoff
 
 Date: 2026-08-14  
-Status: **DEPLOYED CANDIDATE — REAL USER SMOKE PENDING**
+Status: **SUPERSEDED — FUNCTIONAL CANDIDATE / NOT REAL USER PASS**
 
-Build75 remains the current accepted Studio runtime until the browser smoke passes.
+Build76 proved the Phase8 Album Health functional contract, merged and deployed successfully, but the real-user browser smoke rejected its presentation as **not visually convincing**. Build77 is the bounded visual corrective.
 
-## Exact runtime receipts
+**Build75 remains the accepted Studio baseline until Build77 passes real-user browser smoke.**
+
+## Exact Build76 receipts
 
 ```text
 Studio                 v0.19.3 · Build76
@@ -17,6 +19,7 @@ Final CI               31832490701 · SUCCESS
 Runtime merge          5ee012089bea479261dd396f24afc9d667cadbd9
 Pages                  31832578739 · SUCCESS · exact merge SHA
 Safety post-deploy     safety/post-build76-deployed-candidate-20260814-2118
+Docs merge             39924cc4f176f2cd70254166bd16f6f9db6f5865
 ```
 
 Historical discovery runs:
@@ -28,9 +31,9 @@ Historical discovery runs:
 31832367787 · SUCCESS · corrected runtime before final candidate docs
 ```
 
-The failed runs did not expose a runtime/type/backend defect. They exposed old presentation assertions that required the canonical Albums editor to be mounted directly in `App.tsx`. The guards were made successor-aware while preserving the real contracts: the same `AlbumsWorkspace` remains the canonical editor, Track Manager remains the Album write authority, and the migration cockpit remains System/archive-only.
+Those failures were presentation-guard debt, not runtime/backend defects. The canonical Albums editor, Track Manager Album authority and System-only migration cockpit were all preserved.
 
-## What Build76 changes
+## Functional contract proven by Build76
 
 ```text
 Albums
@@ -38,56 +41,41 @@ Albums
 → canonical Album-local facts
 → protected Album ↔ Track cross-check when private Track truth exists
 → existing Track Next Action links for member production gaps
-→ existing AlbumsWorkspace editor underneath
+→ existing AlbumsWorkspace editor remains the write surface
 ```
 
-Album Health can report:
+Album Health can truthfully report:
 
 - missing Album cover;
 - empty authoritative `album.trackIds`;
-- broken canonical member references, only from protected Track truth;
-- canonical members with production gaps, using the accepted Track workflow model;
+- broken canonical member references only from protected Track truth;
+- canonical members with production gaps using the accepted Track workflow model;
 - compatibility-cache drift between authoritative `album.trackIds` and track-side `track.album`.
 
-It does not add an Album readiness score, a new Workflow, automatic repair, a batch action or a new writer.
+It does not add an Album readiness score, new Workflow, automatic repair, batch action or new writer.
 
-## Trust boundary to verify
+## Browser rejection
 
-Cross-model checks are valid only with protected/private Track truth.
+The 2026-08-14 real-user smoke confirmed the feature appeared functional, but the presentation failed acceptance because:
 
-If Studio falls back to the public Track projection, Build76 must show **UNVERIFIED** for Album ↔ Track integrity rather than invent missing references, production gaps or cache drift from an incomplete public set.
+- cards stretched to the tallest sibling in each grid row;
+- short-issue Albums contained large empty areas;
+- Album covers/palette were absent from the health surface;
+- the KPI/header hierarchy looked generic and administrative;
+- long production-gap lists visually dominated the release cards;
+- repeated per-track actions made the surface feel like a raw diagnostic table.
 
-Album-local facts such as missing cover or an empty canonical tracklist may still be shown because the Album manifest read remains canonical/protected.
+Therefore there is **no `BUILD76 PASS`**.
 
-## Cross-stack unchanged
+## Successor
+
+Continue from:
 
 ```text
-Track Manager          v5.22
-Studio bridge          v1.12
-TM Worker Version ID   df00e4c7-bfa1-45a3-b3e8-bd2640e0a159
-Public Worker          v2.7
-LaunchPAD              2026.08.12.102 · REAL USER PASS
-SonicTrace             V2-E Build 08 · REAL USER PASS
-LRC Maker              6.3.8
-Worker deploy          NONE
-R2 mutation/migration  NONE
+Build77
+studio-focus-slice4-phase8-album-health-visual-polish
+PR #115
+safety/pre-build77-album-health-visual-polish-20260814-2211
 ```
 
-## Real-user smoke
-
-After a hard refresh:
-
-1. Confirm the sidebar still shows `PHASE 8` and **Build 76**.
-2. Open **Albums**.
-3. Confirm the new **`PHASE 8 / ALBUM HEALTH`** layer appears above the existing Albums / Projects editor.
-4. Confirm the four summary counters render and the Album cards are readable.
-5. Pick at least one existing Album and verify its canonical track count and status look coherent.
-6. If a card lists **Members with production gaps**, click one and confirm it opens the normal existing Track Workspace / Next Action context.
-7. Return to Albums and confirm the existing Albums / Projects editor is still present and behaves normally underneath the health layer.
-8. If an Album shows cover missing, empty tracklist, broken reference or cache drift, confirm it is presented as a review issue and **nothing is repaired automatically**. The `Review in Albums editor ↓` affordance should only move to the existing editor.
-9. Check System status: when Catalog is `private read`, cross-model Album checks may be verified. If Catalog is on public fallback, Album Health must say **UNVERIFIED** instead of claiming private-state integrity failures.
-10. Simply loading or browsing Album Health must not save or mutate anything.
-
-Not every issue type needs to exist in the current catalog. The smoke is about truthful presentation, safe routing and the absence of automatic writes.
-
-If this browser behavior passes, record `BUILD76 PASS`; only then promote Build76 to REAL USER PASS and perform the normal README/roadmap/handoff/changelog closeout.
+Build77 must preserve the Build76 truth/authority contract and improve only the presentation/read composition.
