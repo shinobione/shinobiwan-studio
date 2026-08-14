@@ -26,6 +26,11 @@ export type CatalogHealthSignalId =
   | 'sonicTrace'
   | 'releaseQuality';
 
+export type CatalogHealthDrilldownId =
+  | CatalogHealthSignalId
+  | 'publishedProductionGaps'
+  | 'productionReadyDrafts';
+
 export interface CatalogHealthAction {
   trackId: string;
   trackTitle: string;
@@ -118,6 +123,30 @@ export function isProductionWorkflowReady(item: TrackWorkflowState): boolean {
     .every(stage => stage.state === 'ready');
 }
 
+export function catalogHealthDrilldownMatches(item: TrackWorkflowState, drilldown: CatalogHealthDrilldownId): boolean {
+  if (drilldown === 'audio') return !item.track.assets.audio;
+  if (drilldown === 'cover') return !item.track.assets.cover;
+  if (drilldown === 'lyricsTxt') return !item.track.assets.lyricsTxt;
+  if (drilldown === 'syncedLyrics') return Boolean(item.track.assets.lyricsTxt) && !item.track.timestampsAvailable;
+  if (drilldown === 'sonicTrace') return !item.track.audioIntelligence.available || item.track.audioIntelligence.outdated;
+  if (drilldown === 'releaseQuality') return (item.track.quality?.counts?.error || 0) > 0 || item.track.publishing.publishable === false;
+  if (drilldown === 'publishedProductionGaps') {
+    return item.track.status === 'published' && item.track.publishing.catalogVisible && !isProductionWorkflowReady(item);
+  }
+  return item.track.status !== 'published' && isProductionWorkflowReady(item);
+}
+
+export function catalogHealthDrilldownLabel(drilldown: CatalogHealthDrilldownId): string {
+  if (drilldown === 'audio') return 'Master audio missing';
+  if (drilldown === 'cover') return 'Cover missing';
+  if (drilldown === 'lyricsTxt') return 'Lyrics source missing';
+  if (drilldown === 'syncedLyrics') return 'Lyrics timing needed';
+  if (drilldown === 'sonicTrace') return 'SonicTrace gap';
+  if (drilldown === 'releaseQuality') return 'Release blockers';
+  if (drilldown === 'publishedProductionGaps') return 'Published with production gaps';
+  return 'Production-ready drafts';
+}
+
 function actionFor(item: TrackWorkflowState | undefined): CatalogHealthAction | null {
   if (!item) return null;
   return {
@@ -133,9 +162,8 @@ function signal(
   label: string,
   detail: string,
   items: TrackWorkflowState[],
-  matches: (item: TrackWorkflowState) => boolean,
 ): CatalogHealthSignal {
-  const affected = items.filter(matches);
+  const affected = items.filter(item => catalogHealthDrilldownMatches(item, id));
   return {
     id,
     label,
@@ -158,15 +186,15 @@ export function buildCatalogContentHealth(tracks: StudioTrack[]): CatalogContent
     productionAttention: productionAttentionItems.length,
     published: publishedItems.length,
     drafts: draftItems.length,
-    publishedProductionGaps: publishedItems.filter(item => !isProductionWorkflowReady(item)).length,
-    productionReadyDrafts: draftItems.filter(isProductionWorkflowReady).length,
+    publishedProductionGaps: publishedItems.filter(item => catalogHealthDrilldownMatches(item, 'publishedProductionGaps')).length,
+    productionReadyDrafts: draftItems.filter(item => catalogHealthDrilldownMatches(item, 'productionReadyDrafts')).length,
     signals: [
-      signal('audio', 'Master audio missing', 'Canonical master audio is required.', workflow, item => !item.track.assets.audio),
-      signal('cover', 'Cover missing', 'Canonical Cover is required; Canvas remains optional.', workflow, item => !item.track.assets.cover),
-      signal('lyricsTxt', 'Lyrics source missing', 'Canonical lyrics.txt has not been added yet.', workflow, item => !item.track.assets.lyricsTxt),
-      signal('syncedLyrics', 'Lyrics timing needed', 'lyrics.txt exists but recognized timestamps are missing.', workflow, item => Boolean(item.track.assets.lyricsTxt) && !item.track.timestampsAvailable),
-      signal('sonicTrace', 'SonicTrace gap', 'Analysis is missing or outdated against the current canonical audio.', workflow, item => !item.track.audioIntelligence.available || item.track.audioIntelligence.outdated),
-      signal('releaseQuality', 'Release blockers', 'Track Manager quality currently blocks the Release stage.', workflow, item => (item.track.quality?.counts?.error || 0) > 0 || item.track.publishing.publishable === false),
+      signal('audio', 'Master audio missing', 'Canonical master audio is required.', workflow),
+      signal('cover', 'Cover missing', 'Canonical Cover is required; Canvas remains optional.', workflow),
+      signal('lyricsTxt', 'Lyrics source missing', 'Canonical lyrics.txt has not been added yet.', workflow),
+      signal('syncedLyrics', 'Lyrics timing needed', 'lyrics.txt exists but recognized timestamps are missing.', workflow),
+      signal('sonicTrace', 'SonicTrace gap', 'Analysis is missing or outdated against the current canonical audio.', workflow),
+      signal('releaseQuality', 'Release blockers', 'Track Manager quality currently blocks the Release stage.', workflow),
     ],
   };
 }
