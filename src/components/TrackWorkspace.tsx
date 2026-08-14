@@ -115,7 +115,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
   const artistStages = [
     { label: 'Audio', ready: Boolean(track.assets.audio), detail: track.assets.audio ? 'Master ready' : 'Master missing', href: trackHref(track.id, 'overview') },
     { label: 'Visuals', ready: Boolean(track.assets.cover), detail: track.assets.video ? 'Cover + Canvas ready' : track.assets.cover ? 'Cover ready · Canvas optional' : 'Cover missing', href: trackHref(track.id, 'assets') },
-    { label: 'Lyrics', ready: Boolean(track.assets.lyricsTxt), detail: syncedLyrics ? 'Synchronized' : track.assets.lyricsTxt ? 'Timing needed' : 'Missing', href: trackHref(track.id, 'lyrics') },
+    { label: 'Lyrics', ready: Boolean(track.assets.lyricsTxt && syncedLyrics), detail: syncedLyrics ? 'Synchronized' : track.assets.lyricsTxt ? 'Timing needed' : 'Missing', href: trackHref(track.id, 'lyrics') },
     { label: 'Sound', ready: track.audioIntelligence.available && !track.audioIntelligence.outdated, detail: track.audioIntelligence.available ? track.audioIntelligence.outdated ? 'Update analysis' : 'Analysis ready' : 'Not analyzed', href: trackHref(track.id, 'intelligence') },
     { label: 'Release', ready: track.publishing.catalogVisible, detail: track.publishing.catalogVisible ? 'Released' : metadataReady ? 'Review release' : 'Metadata needs attention', href: trackHref(track.id, 'market') },
   ];
@@ -172,7 +172,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
           </section>
 
           <section className="panel workspace-focus-stages">
-            <div className="workspace-focus-section-head"><div><span className="eyebrow">PRODUCTION</span><h3>What matters next</h3></div>{attention[0] && <a href={trackHref(track.id, healthDestination(attention[0].id))}>Continue →</a>}</div>
+            <div className="workspace-focus-section-head"><div><span className="eyebrow">PRODUCTION</span><h3>What matters next</h3></div>{!workflow.ready && <a href={trackHref(track.id, workflow.nextAction.section)}>Continue →</a>}</div>
             <div className="workspace-focus-stage-grid">{artistStages.map(stage => <a href={stage.href} key={stage.label} className={stage.ready ? 'ready' : 'attention'}><span>{stage.ready ? '✓' : '•'}</span><div><strong>{stage.label}</strong><small>{stage.detail}</small></div></a>)}</div>
           </section>
 
@@ -296,7 +296,7 @@ export function TrackWorkspace({ trackId, section }: { trackId: string; section:
             <div className="workspace-focus-release-grid">
               <div className={track.assets.audio ? 'ready' : 'attention'}><span>Audio</span><strong>{track.assets.audio ? 'Ready' : 'Missing'}</strong></div>
               <div className={track.assets.cover ? 'ready' : 'attention'}><span>Cover</span><strong>{track.assets.cover ? 'Ready' : 'Missing'}</strong></div>
-              <div className={track.assets.lyricsTxt ? 'ready' : 'attention'}><span>Lyrics</span><strong>{syncedLyrics ? 'Synced' : track.assets.lyricsTxt ? 'TXT ready' : 'Missing'}</strong></div>
+              <div className={track.assets.lyricsTxt && syncedLyrics ? 'ready' : 'attention'}><span>Lyrics</span><strong>{syncedLyrics ? 'Synced' : track.assets.lyricsTxt ? 'Timing needed' : 'Missing'}</strong></div>
               <div className={track.assets.video ? 'ready' : 'optional'}><span>Canvas</span><strong>{track.assets.video ? 'Ready' : 'Optional'}</strong></div>
               <div className={metadataReady ? 'ready' : 'attention'}><span>Metadata</span><strong>{metadataReady ? 'Ready' : 'Review'}</strong></div>
             </div>
