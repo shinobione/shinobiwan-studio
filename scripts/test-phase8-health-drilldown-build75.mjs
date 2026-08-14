@@ -9,15 +9,17 @@ const router = fs.readFileSync('src/router.ts', 'utf8');
 const app = fs.readFileSync('src/App.tsx', 'utf8');
 const css = fs.readFileSync('src/phase8-content-health.css', 'utf8');
 
-assert.match(release, /build:\s*(?:75|76|77)/);
+assert.match(release, /build:\s*(?:75|76|77|78)/);
 assert.ok(
   release.includes("codename: 'studio-focus-slice4-phase8-health-drilldown'")
   || release.includes("codename: 'studio-focus-slice4-phase8-album-health-truth'")
-  || release.includes("codename: 'studio-focus-slice4-phase8-album-health-visual-polish'"),
+  || release.includes("codename: 'studio-focus-slice4-phase8-album-health-visual-polish'")
+  || release.includes("codename: 'studio-focus-slice4-phase8-album-health-cache-drift-human-ux'"),
 );
 assert.ok(release.includes('build74AncestryMarker'));
-if (/build:\s*(?:76|77)/.test(release)) assert.ok(release.includes('build75AncestryMarker'));
-if (/build:\s*77/.test(release)) assert.ok(release.includes('build76AncestryMarker'));
+if (/build:\s*(?:76|77|78)/.test(release)) assert.ok(release.includes('build75AncestryMarker'));
+if (/build:\s*(?:77|78)/.test(release)) assert.ok(release.includes('build76AncestryMarker'));
+if (/build:\s*78/.test(release)) assert.ok(release.includes('build77AncestryMarker'));
 
 assert.ok(health.includes('export type CatalogHealthDrilldownId'));
 assert.ok(health.includes('export function catalogHealthDrilldownMatches'));
