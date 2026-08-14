@@ -1,10 +1,12 @@
 # PHASE 7-C — Guided end-to-end actions contract
 
-Status: **ACTIVE — SLICE 1 REAL USER PASS / SLICE 2 REAL USER PASS**
+Status: **COMPLETE — SLICE 1 REAL USER PASS / SLICE 2 REAL USER PASS / PROGRAM CLOSEOUT AUDITED**
 
 Authorization: explicit user `GO PHASE 7-C` on 2026-08-13; runtime authorization renewed after Build68, with broad continuation authorization renewed on 2026-08-14 after Build71 REAL USER PASS.
 
-This document operationalizes the current-roadmap definition of Phase 7-C. It does **not** create a new write authority. It defines how Studio may guide an artist through already-authorized, operation-specific production actions while preserving the accepted Phase 7-A / 7-B and Track Manager safety model.
+This document operationalizes the Phase 7-C guided-action safety model. It does **not** create a new write authority. The accepted program is now closed on Studio Build73 after a post-RUP audit proved that the remaining Lyrics, Intelligence and Release paths already satisfy this contract without another runtime slice.
+
+Program closeout evidence: [`PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md`](PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md).
 
 ## Purpose
 
@@ -255,9 +257,60 @@ Build73  Slice2 corrective · REAL USER PASS
 
 Build72 is not retroactively relabeled as accepted.
 
-## Runtime acceptance discipline
+## Program closeout audit — COMPLETE WITHOUT SLICE3
 
-For every Phase 7-C runtime slice:
+After Build73 REAL USER PASS, the accepted runtime was audited again before allocating the next build number.
+
+### Lyrics is already guided end-to-end
+
+```text
+Next Action → Lyrics
+→ canonical lyrics.txt + protected embedded LRC Maker context
+→ lyrics-sync-validate-v1
+→ expectedUpdatedAt + expectedLyricsEtag + observed canonical audio duration
+→ lyrics-sync-save-v1
+→ LRC Maker protected canonical reread / exact text verification
+→ lyrics-saved canonical-write receipt
+→ Studio private Track Manager reread
+→ timestampsAvailable / workflow recompute
+```
+
+### Intelligence is already guided end-to-end
+
+```text
+Next Action → Intelligence
+→ current canonical audio sourceVersion
+→ temporary analysis
+→ REVIEW / NOT SAVED
+→ explicit Save analysis confirmation
+→ sonictrace-analysis-save-v1
+→ Track Manager exact sourceVersion / STALE_AUDIO protection
+→ latest.json + append-only history write
+→ backend reread verification / rollback on failure
+→ analysis-saved canonical-write receipt
+→ Studio private Track reread
+→ audioIntelligence / workflow recompute
+```
+
+### Release is already guided end-to-end
+
+The Slice1 protected metadata/publication flow already provides normalized proposal review, quality blockers, explicit human confirmation, guarded canonical save and private canonical reread. Release Campaign remains review-only and cannot silently publish or persist campaign artwork.
+
+Therefore **there is no legitimate Phase7-C Slice3 runtime gap**. The program is complete on Build73.
+
+Audit evidence:
+
+```text
+Accepted audit base      d0771c5a83cf749d5d9167abcad5600a087ba44f
+Safety pre               safety/pre-phase7c-program-closeout-audit-20260814-1747
+Build74                  UNUSED / reserved for Phase8
+```
+
+Detailed closeout: [`PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md`](PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md).
+
+## Runtime acceptance discipline — preserved for Phase8+
+
+For every future runtime phase/slice:
 
 ```text
 safety checkpoint
@@ -295,7 +348,7 @@ Studio:    safety/pre-phase7c-guided-actions-20260813-1837
 LaunchPAD: safety/pre-phase7c-guided-actions-20260813-1837
 ```
 
-Current Phase 7-C safety anchors:
+Final Phase 7-C safety anchors:
 
 ```text
 Slice1 pre         safety/pre-phase7c-slice1-build69-20260814-0013
@@ -305,12 +358,20 @@ Build72 deployed   safety/post-build72-deployed-candidate-20260814-1230
 Build73 pre        safety/pre-build73-status-truth-corrective-20260814-1312
 Build73 deployed   safety/post-build73-deployed-candidate-20260814-1318
 Build73 post-RUP   safety/post-build73-real-user-pass-20260814-1715
+Program audit pre  safety/pre-phase7c-program-closeout-audit-20260814-1747
 ```
 
-## Next slice
+## Next phase
 
-No Slice3 runtime is started by this contract closeout. A new slice requires a fresh GitHub/deployment audit, explicit scope, unused build number, fresh safety checkpoint, exact-head CI, exact deployment proof and a new real-user smoke gate.
+Phase 7-C is closed. The next runtime phase is:
+
+```text
+Phase 8 — Dashboard Intelligence & Content Health
+Build74  — currently unused
+```
+
+Phase8 must begin with a fresh scope audit and safety checkpoint. This closed Phase7-C contract remains a frozen safety dependency; it must not be weakened merely to simplify later dashboard work.
 
 ## Stop conditions
 
-Stop the slice and do not merge/accept if any implementation requires one of the forbidden authority expansions above, if a write cannot be canonically reread, if public fallback can trigger/verify it, or if the exact runtime candidate fails CI/deployment/real-user smoke.
+For any future phase, stop and do not merge/accept if an implementation requires one of the forbidden authority expansions above, if a write cannot be canonically reread, if public fallback can trigger/verify it, or if the exact runtime candidate fails CI/deployment/real-user smoke.
