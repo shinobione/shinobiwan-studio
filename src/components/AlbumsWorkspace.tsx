@@ -200,8 +200,9 @@ function AlbumEditor({ albumId, albums, tracks, visual, onChanged, onClose }: {
       await load();
       await onChanged();
     } catch (reason) {
-      setError(errorMessage(reason));
+      const message = errorMessage(reason);
       await load().catch(() => {});
+      setError(message);
     } finally {
       setBusy(false);
     }
@@ -209,10 +210,15 @@ function AlbumEditor({ albumId, albums, tracks, visual, onChanged, onClose }: {
 
   async function saveMetadata() {
     if (!album?.updatedAt) return;
+    const previousStatus = album.status;
+    const requestedStatus = form.status;
     await mutate(async () => {
-      const result = await saveAdminAlbumMetadata(album.id, album.updatedAt!, metadataPatch(form));
+      const patch = metadataPatch(form);
+      const result = await saveAdminAlbumMetadata(album.id, album.updatedAt!, patch);
       if (!result.clientVerified) throw new AlbumAdminError(result.verificationWarning || 'Album metadata reread failed.');
-      setNotice('Album metadata saved and canonically reread.');
+      setNotice(requestedStatus !== previousStatus
+        ? `Album status ${requestedStatus.toUpperCase()} saved and canonically verified.`
+        : 'Album metadata saved and canonically verified.');
     });
   }
 
