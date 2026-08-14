@@ -8,9 +8,13 @@ const main = fs.readFileSync('src/main.tsx', 'utf8');
 const css = fs.readFileSync('src/phase8-content-health.css', 'utf8');
 const workflow = fs.readFileSync('src/phase7-workflow.ts', 'utf8');
 
-assert.match(release, /build:\s*74/);
-assert.match(release, /codename:\s*'studio-focus-slice4-phase8-content-health-truth'/);
+assert.match(release, /build:\s*(?:74|75)/);
+assert.ok(
+  release.includes("codename: 'studio-focus-slice4-phase8-content-health-truth'")
+  || release.includes("codename: 'studio-focus-slice4-phase8-health-drilldown'"),
+);
 assert.ok(release.includes('build73AncestryMarker'));
+if (/build:\s*75/.test(release)) assert.ok(release.includes('build74AncestryMarker'));
 
 assert.ok(!health.includes("item('video'"));
 assert.ok(!health.includes("'Canvas / Video'"));
@@ -49,7 +53,7 @@ assert.ok(home.includes('Production workflow has a next action'));
 assert.ok(home.includes('PRODUCTION COMPLETE'));
 assert.ok(home.includes('Publication remains a separate decision'));
 assert.ok(home.includes('Catalog health, without a second workflow'));
-assert.ok(home.includes('Open existing Next Action →'));
+assert.ok(home.includes('Review affected track →') || home.includes('Open existing Next Action →'));
 assert.ok(home.includes('PUBLISHED WITH PRODUCTION GAPS'));
 assert.ok(home.includes('PRODUCTION-READY DRAFTS'));
 assert.ok(home.includes('workflow.nextAction'));

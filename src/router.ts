@@ -1,3 +1,4 @@
+import type { CatalogHealthDrilldownId } from './content-health';
 import type { StudioRoute, WorkspaceSection } from './types/studio';
 
 const ROUTES = new Set<StudioRoute>([
@@ -21,6 +22,17 @@ const WORKSPACE_SECTIONS = new Set<WorkspaceSection>([
   'versions',
   'metadata',
   'publishing',
+]);
+
+const WORKFLOW_HEALTH_DRILLDOWNS = new Set<CatalogHealthDrilldownId>([
+  'audio',
+  'cover',
+  'lyricsTxt',
+  'syncedLyrics',
+  'sonicTrace',
+  'releaseQuality',
+  'publishedProductionGaps',
+  'productionReadyDrafts',
 ]);
 
 function hashParts(): string[] {
@@ -51,8 +63,19 @@ export function readTrackSection(): WorkspaceSection {
   return WORKSPACE_SECTIONS.has(section) ? section : 'overview';
 }
 
+export function readWorkflowHealthDrilldown(): CatalogHealthDrilldownId | null {
+  const [first, second, third] = hashParts();
+  if (first !== 'workflow' || second !== 'health' || !third) return null;
+  const drilldown = third as CatalogHealthDrilldownId;
+  return WORKFLOW_HEALTH_DRILLDOWNS.has(drilldown) ? drilldown : null;
+}
+
 export function routeHref(route: StudioRoute): string {
   return `#/${route}`;
+}
+
+export function workflowHref(drilldown?: CatalogHealthDrilldownId | null): string {
+  return drilldown ? `#/workflow/health/${drilldown}` : routeHref('workflow');
 }
 
 export function trackHref(trackId: string, section: WorkspaceSection = 'overview'): string {

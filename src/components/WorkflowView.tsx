@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
+import { catalogHealthDrilldownLabel, catalogHealthDrilldownMatches, type CatalogHealthDrilldownId } from '../content-health';
 import { buildCatalogWorkflow, type TrackWorkflowState, type WorkflowStageState } from '../phase7-workflow';
-import { trackHref } from '../router';
+import { readWorkflowHealthDrilldown, trackHref, workflowHref } from '../router';
 import { getCatalogTracks } from '../services/catalog-api';
 import type { StudioTrack } from '../types/studio';
 
@@ -29,7 +30,18 @@ export function WorkflowView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
-  const [filter, setFilter] = useState<WorkflowFilter>('attention');
+  const [healthDrilldown, setHealthDrilldown] = useState<CatalogHealthDrilldownId | null>(() => readWorkflowHealthDrilldown());
+  const [filter, setFilter] = useState<WorkflowFilter>(() => readWorkflowHealthDrilldown() ? 'all' : 'attention');
+
+  useEffect(() => {
+    const syncHealthDrilldown = () => {
+      const next = readWorkflowHealthDrilldown();
+      setHealthDrilldown(next);
+      setFilter(next ? 'all' : 'attention');
+    };
+    globalThis.addEventListener('hashchange', syncHealthDrilldown);
+    return () => globalThis.removeEventListener('hashchange', syncHealthDrilldown);
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -51,10 +63,14 @@ export function WorkflowView() {
   const blockedCount = workflow.filter(item => item.blocked).length;
   const attentionCount = workflow.filter(item => !item.ready).length;
   const missingAnalysis = workflow.filter(item => item.track.audioIntelligence.available === false || item.track.audioIntelligence.outdated).length;
+  const healthDrilldownCount = healthDrilldown
+    ? workflow.filter(item => catalogHealthDrilldownMatches(item, healthDrilldown)).length
+    : 0;
 
   const visible = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     return workflow
+      .filter(item => !healthDrilldown || catalogHealthDrilldownMatches(item, healthDrilldown))
       .filter(item => workflowMatches(item, filter))
       .filter(item => {
         if (!normalized) return true;
@@ -64,7 +80,7 @@ export function WorkflowView() {
           .toLowerCase()
           .includes(normalized);
       });
-  }, [filter, query, workflow]);
+  }, [filter, healthDrilldown, query, workflow]);
 
   return (
     <section className="phase7-workflow">
@@ -72,7 +88,7 @@ export function WorkflowView() {
         <div>
           <span className="eyebrow">PHASE 7 / END-TO-END WORKFLOW</span>
           <h2>One production queue. Clear next actions.</h2>
-          <p>Studio reads the existing canonical Track, Lyrics, SonicTrace and publishing state and turns it into a single production workflow. This first Phase 7 slice is read-only: every action deep-links to the existing guarded workspace that already owns that operation.</p>
+          <p>This first Phase 7 slice is read-only: every action deep-links to the existing guarded workspace that already owns that operation. Phase8 health drill-downs only filter this accepted queue; they never create another priority engine or write path.</p>
         </div>
         <div className="phase7-readonly-badge"><strong>READ ONLY</strong><span>{privateRead ? 'Private canonical read' : 'Public fallback read'}</span></div>
       </header>
@@ -85,6 +101,13 @@ export function WorkflowView() {
         <article className="panel"><span>SONICTRACE GAP</span><strong>{missingAnalysis}</strong><small>Missing or outdated analysis</small></article>
       </div>
 
+      {healthDrilldown && (
+        <div className="phase8-health-drilldown panel" role="status">
+          <div><span className="eyebrow">PHASE 8 / HEALTH DRILL-DOWN</span><strong>{catalogHealthDrilldownLabel(healthDrilldown)}</strong><small>{healthDrilldownCount} affected track{healthDrilldownCount === 1 ? '' : 's'} · same Workflow stages and accepted Next Actions</small></div>
+          <a className="ghost-btn" href={workflowHref()}>Clear health filter ×</a>
+        </div>
+      )}
+
       <div className="phase7-workflow-toolbar panel">
         <label className="phase7-search"><span>Search</span><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Track, album, genre, mood…" /></label>
         <label><span>Queue</span><select value={filter} onChange={event => setFilter(event.target.value as WorkflowFilter)}><option value="attention">Needs attention</option><option value="blocked">Blocked</option><option value="drafts">Draft / unpublished</option><option value="ready">Workflow ready</option><option value="all">All tracks</option></select></label>
@@ -96,8 +119,8 @@ export function WorkflowView() {
 
       {!loading && !error && (
         <>
-          <div className="phase7-resultline"><span>{visible.length} of {workflow.length} tracks · {privateRead ? 'private canonical' : 'public fallback'} · no writes</span></div>
-          {visible.length === 0 ? <div className="phase7-workflow-message panel">No track matches this workflow queue.</div> : (
+          <div className="phase7-resultline"><span>{visible.length} of {workflow.length} tracks · {healthDrilldown ? `${catalogHealthDrilldownLabel(healthDrilldown)} · ` : ''}{privateRead ? 'private canonical' : 'public fallback'} · no writes</span></div>
+          {visible.length === 0 ? <div className="phase7-workflow-message panel">No track matches this health drill-down and queue filter.</div> : (
             <div className="phase7-workflow-list">
               {visible.map(item => {
                 const track = item.track;

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { buildCatalogContentHealth, type CatalogContentHealth } from '../content-health';
 import { buildCatalogWorkflow, type TrackWorkflowState } from '../phase7-workflow';
-import { routeHref, trackHref } from '../router';
+import { routeHref, trackHref, workflowHref } from '../router';
 import { getCatalogTracks } from '../services/catalog-api';
 import type { StudioTrack, WorkspaceSection } from '../types/studio';
 import { TrackCreatePanel } from './TrackCreatePanel';
@@ -59,6 +59,10 @@ function selectHomeLead(workflow: TrackWorkflowState[], lastTrackId: string | nu
   return unfinishedLast || workflow.find(item => !item.ready) || null;
 }
 
+function drilldownActionLabel(count: number): string {
+  return count === 1 ? 'Review affected track →' : `Review all ${count} affected tracks →`;
+}
+
 function ProductionSummary({ health }: { health: CatalogContentHealth }) {
   return (
     <section className="focus-summary" aria-label="Production and publication summary">
@@ -75,23 +79,35 @@ function CatalogHealthPanel({ health }: { health: CatalogContentHealth }) {
     <section className="focus-health" aria-label="Catalog content health">
       <div className="focus-section-heading">
         <div><span className="eyebrow">PHASE 8 / CONTENT HEALTH</span><h3>Catalog health, without a second workflow</h3></div>
-        <a href={routeHref('workflow')}>Detailed queue ↗</a>
+        <a href={workflowHref()}>Detailed queue ↗</a>
       </div>
       <div className="focus-health-grid">
         {health.signals.map(signal => (
           <article className={`panel focus-health-signal ${signal.count === 0 ? 'is-clear' : 'is-attention'}`} key={signal.id}>
             <div><span>{signal.label}</span><strong>{signal.count}</strong></div>
             <small>{signal.detail}</small>
-            {signal.action
-              ? <a href={trackHref(signal.action.trackId, artistSection(signal.action.section))}><b>{signal.action.trackTitle}</b><span>Open existing Next Action →</span></a>
+            {signal.count > 0
+              ? <a href={workflowHref(signal.id)}><b>{signal.count === 1 && signal.action ? signal.action.trackTitle : `${signal.count} affected tracks`}</b><span>{drilldownActionLabel(signal.count)}</span></a>
               : <span className="focus-health-clear">Clear ✓</span>}
           </article>
         ))}
       </div>
       <div className="panel focus-health-axes">
-        <div><span>PUBLISHED WITH PRODUCTION GAPS</span><strong>{health.publishedProductionGaps}</strong><small>Public does not mean production-complete.</small></div>
-        <div><span>PRODUCTION-READY DRAFTS</span><strong>{health.productionReadyDrafts}</strong><small>Ready does not mean auto-publish.</small></div>
-        <p>Production health and publication remain separate axes. Every action above reuses the accepted <code>workflow.nextAction</code>; this panel performs no writes.</p>
+        {health.publishedProductionGaps > 0 ? (
+          <a className="focus-health-axis-link" href={workflowHref('publishedProductionGaps')}>
+            <span>PUBLISHED WITH PRODUCTION GAPS</span><strong>{health.publishedProductionGaps}</strong><small>Public does not mean production-complete.</small><em>Review affected tracks →</em>
+          </a>
+        ) : (
+          <div><span>PUBLISHED WITH PRODUCTION GAPS</span><strong>0</strong><small>Public does not mean production-complete.</small><em>Clear ✓</em></div>
+        )}
+        {health.productionReadyDrafts > 0 ? (
+          <a className="focus-health-axis-link" href={workflowHref('productionReadyDrafts')}>
+            <span>PRODUCTION-READY DRAFTS</span><strong>{health.productionReadyDrafts}</strong><small>Ready does not mean auto-publish.</small><em>Review affected tracks →</em>
+          </a>
+        ) : (
+          <div><span>PRODUCTION-READY DRAFTS</span><strong>0</strong><small>Ready does not mean auto-publish.</small><em>Clear ✓</em></div>
+        )}
+        <p>Production health and publication remain separate axes. Each Phase8 drill-down opens the existing Workflow queue; every affected Track keeps its accepted <code>workflow.nextAction</code>. This panel performs no writes.</p>
       </div>
     </section>
   );
@@ -174,7 +190,7 @@ export function FocusHome() {
           <CatalogHealthPanel health={catalogHealth} />
 
           <section className="focus-queue">
-            <div className="focus-section-heading"><div><span className="eyebrow">CONTINUE</span><h3>What needs attention</h3></div><a href={routeHref('workflow')}>Detailed queue ↗</a></div>
+            <div className="focus-section-heading"><div><span className="eyebrow">CONTINUE</span><h3>What needs attention</h3></div><a href={workflowHref()}>Detailed queue ↗</a></div>
             {queue.length ? <div className="focus-queue-list">{queue.map(item => {
               const image = artwork(item.track);
               return <article className="focus-queue-item panel" key={item.track.id}>
