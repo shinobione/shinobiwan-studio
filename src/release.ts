@@ -1,7 +1,7 @@
 export const studioRelease = {
   version: '0.19.3',
-  build: 73,
-  codename: 'studio-focus-slice4-phase7c-slice2-status-truth-corrective',
+  build: 74,
+  codename: 'studio-focus-phase8-content-health-truth',
   releasedAt: '2026-08-14',
 } as const;
 
@@ -15,3 +15,4 @@ export const build69AncestryMarker = "build: 69 · codename: 'studio-focus-slice
 export const build70AncestryMarker = "build: 70 · codename: 'studio-focus-slice4-phase7c-presmoke-publication-intake-fix'";
 export const build71AncestryMarker = "build: 71 · codename: 'studio-focus-slice4-phase7c-duration-evidence-corrective'";
 export const build72AncestryMarker = "build: 72 · codename: 'studio-focus-slice4-phase7c-slice2-guided-core-media'";
+export const build73AncestryMarker = "build: 73 · codename: 'studio-focus-slice4-phase7c-slice2-status-truth-corrective'";
