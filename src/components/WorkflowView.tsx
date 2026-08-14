@@ -88,7 +88,7 @@ export function WorkflowView() {
         <div>
           <span className="eyebrow">PHASE 7 / END-TO-END WORKFLOW</span>
           <h2>One production queue. Clear next actions.</h2>
-          <p>Studio reads the existing canonical Track, Lyrics, SonicTrace and publishing state and turns it into a single production workflow. Phase8 health drill-downs only filter this accepted queue; they never create another priority engine or write path.</p>
+          <p>This first Phase 7 slice is read-only: every action deep-links to the existing guarded workspace that already owns that operation. Phase8 health drill-downs only filter this accepted queue; they never create another priority engine or write path.</p>
         </div>
         <div className="phase7-readonly-badge"><strong>READ ONLY</strong><span>{privateRead ? 'Private canonical read' : 'Public fallback read'}</span></div>
       </header>
