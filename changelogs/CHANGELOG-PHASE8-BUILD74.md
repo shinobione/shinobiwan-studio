@@ -1,6 +1,6 @@
 # SHINOBIWAN Studio v0.19.3 · Build 74
 
-Codename: `studio-focus-phase8-content-health-truth`  
+Codename: `studio-focus-slice4-phase8-content-health-truth`  
 Date: 2026-08-14  
 Status: **CANDIDATE — PHASE 8 SLICE 1 / CONTENT HEALTH TRUTH**
 
