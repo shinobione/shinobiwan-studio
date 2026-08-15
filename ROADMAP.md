@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-15 after **Build84 deployment candidate** publication.
+Updated: 2026-08-15 after **Build84 REAL USER PASS**.
 
 This file is the durable roadmap summary. Historical implementation detail belongs in `docs/` and `changelogs/`; do not copy it here unless it changes what is done, active, next or backlogged.
 
@@ -57,11 +57,9 @@ Build81  Sonic/provider semantic truth cleanup        REAL USER PASS / Phase8 cl
 - lost response classified through private canonical Lyrics + Track reread;
 - normal success retains exact canonical revision + ETag + text verification.
 
-## In progress
-
 ### Phase 9 Slice3 — SonicTrace save response-loss truth
 
-**Build84 · v0.19.6 · DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+**Build84 · v0.19.6 · REAL USER PASS**
 
 The post-Build83 bounded audit proved SonicTrace persistence as the smallest coherent remaining gap:
 
@@ -70,11 +68,12 @@ The post-Build83 bounded audit proved SonicTrace persistence as the smallest coh
 - deployed Track Manager already writes history → latest → rereads both → attempts rollback on verification failure;
 - no Track Manager or Worker change was required.
 
-Build84 now provides:
+Accepted evidence and behavior:
 
 - exact-head CI `31858911420` SUCCESS;
 - runtime PR #132 merged at `b7cf745e11adee1eb77900a32b9b6ca8ea80e000`;
 - Pages `31858977765` SUCCESS on that exact merge;
+- explicit real-user verdict `BUILD84 PASS` on 2026-08-15;
 - dedicated SonicTrace save transport classification;
 - pre-save canonical `analysisId` / source-version guard;
 - no blind automatic retry after lost response;
@@ -85,31 +84,25 @@ Build84 now provides:
 - normal success also requires canonical latest + history verification;
 - no Worker/backend/R2 schema migration.
 
+## In progress
+
+### Phase 9 — fresh reliability audit
+
+Phase9 remains active, but **Build85 is not allocated**.
+
+The current task is a fresh read-only audit to identify the smallest remaining reliability gap without duplicating existing recovery logic or turning Phase9 into a generic refactor bucket.
+
 ## Next
 
-Complete the bounded **Build84 normal-browser SonicTrace regression smoke** before any successor audit or build allocation.
+Audit these remaining candidates by proven risk / bounded scope, without assuming a build number:
 
-Required smoke boundary:
+1. broader guarded Album write response-loss truth;
+2. Access/CORS hardening;
+3. bounded read retries/timeouts;
+4. degraded/offline UX;
+5. PWA update and resilience behavior.
 
-1. hard refresh and verify `v0.19.6 · Build84`;
-2. open a private Track with canonical master audio;
-3. verify SonicTrace latest/history loads normally;
-4. run a normal scan on a safe Track;
-5. save one intentional analysis if the history entry is acceptable;
-6. verify the normal receipt **`Analysis saved and canonically verified in latest + history.`**;
-7. sanity-check normal Track / Visuals / Lyrics / Albums navigation.
-
-Do **not** deliberately interrupt network/Access during the save merely to force response-loss branches.
-
-After explicit Build84 PASS, close the slice as REAL USER PASS and run a fresh Phase9 audit. Remaining candidates include:
-
-- broader guarded Album write response-loss truth;
-- Access/CORS hardening;
-- bounded read retries/timeouts;
-- degraded/offline UX;
-- PWA update and resilience behavior.
-
-No successor build is pre-allocated.
+Pick **one** coherent slice only after the audit proves the gap and confirms it does not duplicate existing recovery logic.
 
 ## Backlog
 
@@ -137,8 +130,8 @@ There is currently **no official Phase 11**.
 - Do not use a new phase/build as a bucket for opportunistic refactors.
 - Do not treat a candidate as accepted until real-user validation exists where required.
 - Do not deliberately damage or interrupt a production write merely to prove an ambiguity guard.
-- Do not allocate a successor build while Build84 acceptance is pending.
+- Do not allocate Build85 before a fresh bounded audit selects its scope.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build84 acceptance gap.
+See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build84 real-user PASS.
