@@ -6,12 +6,8 @@ const release = read('src/release.ts');
 const sonic = read('src/services/sonictrace-api.ts');
 const pkg = JSON.parse(read('package.json'));
 
-assert.match(release, /version:\s*'0\.19\.13'/);
-assert.match(release, /build:\s*91/);
-assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-sonictrace-private-read-transient-retry-truth'"));
-assert.ok(release.includes('build90AncestryMarker'), 'Build91 must preserve accepted Build90 ancestry.');
-assert.ok(release.includes("version: 0.19.12 · build: 90 · codename: 'studio-focus-slice4-phase9-lyrics-private-read-transient-retry-truth'"));
-assert.equal(pkg.version, '0.19.13', 'package version must match Build91 runtime version.');
+assert.ok(release.includes('build91AncestryMarker'), 'Build92+ must preserve accepted Build91 ancestry.');
+assert.ok(release.includes("version: 0.19.13 · build: 91 · codename: 'studio-focus-slice4-phase9-sonictrace-private-read-transient-retry-truth'"));
 
 assert.ok(sonic.includes('const TRANSIENT_SONICTRACE_READ_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);'), 'SonicTrace transient HTTP allowlist must stay explicit and bounded.');
 assert.ok(sonic.includes('async function fetchAdminJsonOnce<T>(path: string, timeoutMs: number): Promise<T>'), 'Build91 must isolate one private SonicTrace GET attempt.');
@@ -57,4 +53,4 @@ for (const inherited of [
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must include ${inherited}`);
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Phase9 guards must remain in the full build gate.');
 
-console.log('Phase9 Build91 SonicTrace private-read retry guard passed: canonical latest/history + catalog GETs retry once only for transient timeout/transport/HTTP failures while Access/CORS, deterministic 4xx and invalid JSON remain non-retry; Build84 SonicTrace save recovery stays no-blind-retry.');
+console.log('Phase9 Build91 SonicTrace private-read retry guard passed as inherited ancestry: canonical latest/history + catalog GETs retry once only for transient timeout/transport/HTTP failures while Access/CORS, deterministic 4xx and invalid JSON remain non-retry; Build84 SonicTrace save recovery stays no-blind-retry.');
