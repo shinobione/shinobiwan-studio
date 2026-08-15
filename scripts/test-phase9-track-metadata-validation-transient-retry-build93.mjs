@@ -10,7 +10,8 @@ const pkg = JSON.parse(read('package.json'));
 
 assert.ok(release.includes('build93AncestryMarker'), 'Build94+ must preserve accepted Build93 ancestry.');
 assert.ok(release.includes("version: 0.19.15 · build: 93 · codename: 'studio-focus-slice4-phase9-track-metadata-validation-transient-retry-truth'"));
-assert.ok(['0.19.15', '0.19.16'].includes(pkg.version), 'Build93 guard accepts only Build93 and its bounded Build94 successor.');
+assert.ok(['0.19.15', '0.19.16', '0.19.17'].includes(pkg.version), 'Build93 guard accepts Build93 and its bounded Build94/Build95 successors.');
+if (pkg.version === '0.19.17') assert.ok(release.includes('build94AncestryMarker'), 'Build95 must preserve accepted Build94 ancestry while inheriting Build93 validation truth.');
 
 assert.ok(duration.includes("const METADATA_VALIDATION_INTENT = 'metadata-validate-v1';"), 'Build93 must preserve the canonical non-mutating metadata validation intent.');
 assert.ok(duration.includes('const TRANSIENT_METADATA_VALIDATION_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);'), 'Validation transient HTTP allowlist must stay explicit and bounded.');
