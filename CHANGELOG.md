@@ -2,16 +2,16 @@
 
 This file is the **current concise changelog**. Detailed per-build records live under [`changelogs/`](changelogs/README.md).
 
-## Current deployed candidate
+## Current accepted release
 
 ### v0.19.7 · Build85 — 2026-08-15
 
 Codename: `studio-focus-slice4-phase9-album-metadata-response-loss-truth`  
-Status: **DEPLOYED CANDIDATE — REAL USER SMOKE PENDING**
+Status: **REAL USER PASS — ACCEPTED**
 
 Build85 extends Phase9 reliability to Studio-side canonical **Album metadata save** only.
 
-Candidate behavior:
+Accepted behavior:
 
 - private canonical pre-read requires the exact expected Album revision;
 - timeout / transport loss is **never blindly retried**;
@@ -24,7 +24,7 @@ Candidate behavior:
 - Album create, membership, move and upload remain separate operation-specific audit families;
 - no Track Manager, Worker, public Worker, R2 schema/data migration, LaunchPAD, LRC Maker or SonicTrace Deep Audio change was required.
 
-Exact candidate evidence:
+Exact acceptance evidence:
 
 ```text
 Safety pre               safety/pre-phase9-album-metadata-response-loss-build85-20260815-0555
@@ -34,18 +34,22 @@ Validation               31863267911 · SUCCESS · first run
 Runtime merge            1199f6a0e26da88e54f64a369985c2a72267e5a5
 Runtime Pages            31863313848 · SUCCESS · exact runtime merge SHA
 Safety post-deploy       safety/post-build85-deployed-candidate-20260815-0602
+Candidate docs PR        #136
+Candidate docs merge     40917edc6a341ca7d19907d8afe59123f44c8d03
+Candidate docs Pages     31863566190 · SUCCESS
+Safety post-acceptance   safety/post-build85-real-user-pass-20260815-0748
 Track Manager            v5.23 · unchanged
 Studio bridge            v1.13 · unchanged
 TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
 Public Worker            v2.7 · unchanged
 Worker deploy            NONE
 R2 migration/write       NONE caused by deployment
-Real-user smoke          PENDING
+Real-user smoke          BUILD85 PASS · 2026-08-15
 ```
 
-Detailed candidate record: [`changelogs/CHANGELOG-BUILD85.md`](changelogs/CHANGELOG-BUILD85.md).
+Detailed accepted record: [`changelogs/CHANGELOG-BUILD85.md`](changelogs/CHANGELOG-BUILD85.md).
 
-## Current accepted release
+## Accepted predecessor
 
 ### v0.19.6 · Build84 — 2026-08-15
 
@@ -214,8 +218,8 @@ All Phase8/9 health and guidance surfaces continue to preserve the same canonica
 
 ## Next bounded action
 
-Complete the **Build85 normal-browser Album metadata regression smoke**. Do not deliberately interrupt a production save merely to prove the response-loss guard.
+**Build86 is unallocated.**
 
-Only after explicit Build85 PASS should a fresh Phase9 audit select the next reliability scope. **Build86 is unallocated.**
+Run a fresh Phase9 reliability audit before selecting another runtime slice. Remaining candidate areas are Album membership/move/upload/create response-loss truth, Access/CORS hardening, bounded read retries/timeouts, and degraded/offline/PWA resilience.
 
 `CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS` remains mandatory.

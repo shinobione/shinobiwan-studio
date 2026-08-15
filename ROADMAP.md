@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-15 after **Build85 deployment candidate** publication.
+Updated: 2026-08-15 after **Build85 REAL USER PASS**.
 
 This file is the durable roadmap summary. Historical implementation detail belongs in `docs/` and `changelogs/`; do not copy it here unless it changes what is done, active, next or backlogged.
 
@@ -67,19 +67,18 @@ Build81  Sonic/provider semantic truth cleanup        REAL USER PASS / Phase8 cl
 - exact requested `analysisId` across canonical latest + history classifies response-loss truth;
 - no Track Manager / Worker / R2 schema migration.
 
-## In progress
-
 ### Phase 9 Slice4 — Album metadata save response-loss truth
 
-**Build85 · v0.19.7 · DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+**Build85 · v0.19.7 · REAL USER PASS**
 
 The fresh post-Build84 audit proved **Album metadata save only** as the smallest coherent remaining write-truth gap.
 
-Build85 provides:
+Accepted evidence and behavior:
 
 - exact-head CI `31863267911` SUCCESS on first run;
 - runtime PR #135 merged at `1199f6a0e26da88e54f64a369985c2a72267e5a5`;
 - Pages `31863313848` SUCCESS on that exact merge;
+- explicit real-user verdict `BUILD85 PASS` on 2026-08-15;
 - canonical pre-read requiring exact `expectedUpdatedAt`;
 - dedicated 30s metadata save transport classification;
 - no blind automatic retry after lost response;
@@ -92,33 +91,27 @@ Build85 provides:
 
 Build85 intentionally does **not** bundle Album create, membership, move or upload. Each has distinct canonical postconditions and remains a separate audit candidate.
 
+## In progress
+
+### Phase 9 — fresh reliability audit
+
+Phase9 remains active, but **Build86 is not allocated**.
+
+The current task is a fresh read-only audit to identify the smallest remaining reliability gap without duplicating existing recovery logic or turning Phase9 into a generic refactor bucket.
+
 ## Next
 
-Complete the bounded **Build85 normal-browser Album metadata regression smoke** before any successor audit or build allocation.
+Audit these remaining candidates by proven risk / bounded scope, without assuming a build number:
 
-Required smoke boundary:
+1. Album membership response-loss truth;
+2. Album move response-loss truth;
+3. Album asset upload response-loss truth;
+4. Album create response-loss truth;
+5. Access/CORS hardening;
+6. bounded read retries/timeouts;
+7. degraded/offline/PWA resilience.
 
-1. hard refresh and verify `v0.19.7 · Build85`;
-2. open a safe existing canonical Album;
-3. edit one harmless metadata field;
-4. save normally;
-5. verify **`Album metadata saved and canonically verified.`**;
-6. confirm revision advance + saved value after canonical reload;
-7. sanity-check Albums / Track / Lyrics / SonicTrace navigation.
-
-Do **not** deliberately interrupt network/Access during the save merely to force response-loss branches.
-
-After explicit Build85 PASS, close Slice4 as REAL USER PASS and run a new bounded Phase9 audit. Possible later candidates include:
-
-- Album membership response-loss truth;
-- Album move response-loss truth;
-- Album asset upload response-loss truth;
-- Album create response-loss truth;
-- Access/CORS hardening;
-- bounded read retries/timeouts;
-- degraded/offline/PWA resilience.
-
-**Build86 is unallocated.**
+Pick **one** coherent slice only after the audit proves the gap and confirms it does not duplicate existing recovery logic.
 
 ## Backlog
 
@@ -147,8 +140,8 @@ There is currently **no official Phase 11**.
 - Do not treat a candidate as accepted until real-user validation exists where required.
 - Do not deliberately damage or interrupt a production write merely to prove an ambiguity guard.
 - Do not generalize one write family's recovery postcondition into another operation family.
-- Do not allocate Build86 while Build85 acceptance is pending.
+- Do not allocate Build86 before a fresh bounded audit selects its scope.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build85 acceptance gap.
+See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build85 real-user PASS.
