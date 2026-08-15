@@ -2,16 +2,16 @@
 
 This file is the **current concise changelog**. Detailed per-build records live under [`changelogs/`](changelogs/README.md).
 
-## Current deployed candidate
+## Current accepted release
 
 ### v0.19.15 · Build93 — 2026-08-15
 
 Codename: `studio-focus-slice4-phase9-track-metadata-validation-transient-retry-truth`  
-Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+Status: **REAL USER PASS — ACCEPTED**
 
 Build93 hardens canonical Track **metadata validation only**. `metadata-validate-v1` is non-mutating, so the visible Validate flow and Build92 fresh pre-save validation may receive one bounded retry after a transient failure without changing write semantics.
 
-Candidate behavior:
+Accepted behavior:
 
 - plain and duration-aware metadata validation use the same bounded policy;
 - timeout / browser transport interruption / HTTP `408/425/429/500/502/503/504` may receive exactly one retry;
@@ -24,9 +24,11 @@ Candidate behavior:
 - Build92 `metadata-save-v1` remains zero automatic write retries;
 - Build92 committed / not-committed / ambiguous / unverified response-loss recovery is unchanged;
 - Track create/assets, Album operations, Lyrics/SonicTrace operations and PWA/offline remain out of scope;
-- no Track Manager, Worker, public Worker, R2 schema/data migration, LaunchPAD or LRC Maker change was required.
+- no Track Manager, Worker, public Worker, R2 schema/data migration, LaunchPAD or LRC Maker change was required;
+- normal-browser acceptance received explicit **`BUILD93 PASS MADAFAKA`** on 2026-08-15;
+- acceptance did not deliberately cut network or invalidate Cloudflare Access to manufacture a transient retry; automated guards own that failure-path proof.
 
-Exact candidate evidence:
+Exact acceptance evidence:
 
 ```text
 Safety pre               safety/pre-phase9-track-metadata-validation-retry-build93-20260815-1914
@@ -41,23 +43,30 @@ Validation               31898542379 · SUCCESS
 Runtime merge            6c1ceb7d59971ec6c7e251532054392f02c08157
 Runtime Pages            31898639778 · SUCCESS · exact runtime merge SHA
 Safety post-deploy       safety/post-build93-deployed-candidate-20260815-1936
+Candidate docs PR        #163
+Candidate docs CI        31899284370 · SUCCESS
+Candidate docs merge     6464659428e34a679c8acfeb481bfaca78e05bc7
+Candidate docs Pages     31899342536 · SUCCESS
+Safety post-acceptance   safety/post-build93-real-user-pass-20260815-2010
+Acceptance docs PR       PENDING
+Acceptance docs CI       PENDING
+Acceptance docs merge    PENDING
+Acceptance docs Pages    PENDING
 Track Manager            v5.23 · unchanged
 Studio bridge            v1.13 · unchanged
 TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
 Public Worker            v2.7 · unchanged
 Worker deploy            NONE
 R2 migration/write       NONE caused by deployment
-Real-user smoke          PENDING
+Real-user smoke          BUILD93 PASS MADAFAKA · 2026-08-15
 Build94                  UNALLOCATED
 ```
 
 Historical CI `31898251689` was red only because inherited Phase7-C Build69 stopped at `0.19.14 / Build92`. Historical CI `31898329621` then passed Phase7-C, Phase8 and Phase9 Build82→93 — including the new Build93 guard — and stopped only at the inherited Focus Build64 successor cap. Focus64–67 were widened only for `v0.19.15 / Build93`; functional assertions remain intact. Neither red head was merged.
 
-Required acceptance is a normal-browser Track metadata validation regression only; no deliberate network/Access interruption is required.
+Detailed accepted record: [`changelogs/CHANGELOG-BUILD93.md`](changelogs/CHANGELOG-BUILD93.md).
 
-Detailed candidate record: [`changelogs/CHANGELOG-BUILD93.md`](changelogs/CHANGELOG-BUILD93.md).
-
-## Current accepted release
+## Accepted predecessor
 
 ### v0.19.14 · Build92 — 2026-08-15
 
@@ -646,6 +655,6 @@ All Phase8/9 health and guidance surfaces continue to preserve the same canonica
 
 ## Next bounded action
 
-Run the bounded normal-browser Build93 Track metadata validation regression smoke. Build94 remains **UNALLOCATED** until Build93 is explicitly accepted and a fresh post-Build93 audit proves the next smallest coherent scope.
+Finish the Build93 acceptance-docs closeout, then run a fresh read-only post-Build93 Phase9 reliability audit. Build94 remains **UNALLOCATED** until that audit proves the smallest coherent next scope.
 
 `CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS` remains mandatory.
