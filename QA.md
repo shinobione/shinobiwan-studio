@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-08-15 after explicit **Build88 REAL USER PASS**.
+Updated: 2026-08-15 after **Build89 DEPLOYED CANDIDATE** publication. Build88 remains REAL USER PASS.
 
 This file records what has actually been validated, what automated guards cover, and what remains unproven. It is not a full test-history dump.
 
@@ -18,10 +18,100 @@ Pages                   31872073050 · SUCCESS · exact runtime merge SHA
 Candidate docs PR       #145
 Candidate docs merge    316ad1b0784d72fb7d29d92c5deaedb56d262e49
 Candidate docs Pages    31872540118 · SUCCESS
+Acceptance docs PR      #146
+Acceptance docs merge   aebb168883c1f291b97e1d309b4028bb1d78861c
+Acceptance docs Pages   31881075352 · SUCCESS
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
 Real-user verdict       BUILD88 PASS MADAFAKA · 2026-08-15
+```
+
+## Current deployed candidate
+
+```text
+Version                 v0.19.11
+Build                   Build89
+Status                  DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Runtime PR              #147
+Exact tested head       8b73d19d8fced35642ee243cff0ac19d983fd0de
+Final CI                31881635973 · SUCCESS
+Runtime merge           b7ae769c66e9adccef79c80467cc8fd0a8534820
+Pages                   31881682269 · SUCCESS · exact runtime merge SHA
+Worker deploy           NONE
+Track Manager change    NONE
+R2 migration/write      NONE caused by deployment
+Real-user verdict       PENDING
+```
+
+## Build89 automated coverage — GREEN
+
+Final validation run `31881635973` passed the complete repository-native chain on the exact runtime head, including:
+
+- private-read contract;
+- Phase5 algorithms;
+- Phase6 Lyrics contract;
+- C3 / Deep Audio / Album / parity guards;
+- PHASE UX guards;
+- Phase7 and Phase8 guards;
+- inherited Phase9 Build82 destructive-write ambiguity guard;
+- inherited Phase9 Build83 canonical Lyrics response-loss guard;
+- inherited Phase9 Build84 SonicTrace response-loss guard;
+- inherited Phase9 Build85 Album metadata response-loss guard;
+- inherited Phase9 Build86 Album move response-loss guard;
+- inherited Phase9 Build87 Album membership response-loss guard;
+- inherited Phase9 Build88 core private-read transient retry guard;
+- new Phase9 Build89 Album private-read transient retry guard;
+- Studio Focus inherited regression guards through bounded Build89 successor compatibility;
+- TypeScript typecheck;
+- Vite production build.
+
+Historical runs `31881467538` and `31881538488` were red only because inherited Phase7-C / Studio Focus successor allowlists stopped at `0.19.10 / Build88`. Those heads were never merged. The final exact head `8b73d19d8fced35642ee243cff0ac19d983fd0de` passed the full chain.
+
+Build89 specifically guards canonical Album collection/detail private GETs:
+
+```text
+timeout                         → one retry max
+transport/fetch interruption     → one retry max
+HTTP 408/425/429/500/502/503/504 → one retry max
+401/403                         → Access/CORS · NO RETRY
+other deterministic 4xx          → HTTP · NO RETRY
+non-JSON Access/gating response  → Access/CORS · NO RETRY
+invalid JSON                     → invalid-response · NO RETRY
+```
+
+Additional Build89 guarantees:
+
+- non-timeout Album browser `fetch()` rejection is typed as `transport`, not falsely presented as `access-or-cors`;
+- maximum attempts are exactly two total;
+- a second failure surfaces immediately rather than starting a loop/backoff framework;
+- `getAdminAlbums()` and `getAdminAlbum()` both use the bounded helper;
+- private Album visual discovery inherits `getAdminAlbums()`;
+- existing canonical Album rereads used by guarded verification/recovery inherit the same GET helper;
+- every Album POST/write transport remains unchanged;
+- no automatic Album write retry exists;
+- Album create/upload response-loss semantics remain unchanged;
+- Lyrics and SonicTrace private-read transports remain separate future audit families;
+- no Worker, Track Manager or R2 schema/data mutation was required.
+
+## Build89 real-user smoke — PENDING
+
+The required acceptance smoke is intentionally a **normal-browser regression**, not a manufactured network-failure test.
+
+Required boundary:
+
+- hard refresh to deployed `v0.19.11 · Build89`;
+- Albums loads the normal private canonical Album inventory;
+- open at least one canonical Album detail;
+- private artwork / metadata load normally;
+- surrounding Track / Lyrics / SonicTrace navigation sanity.
+
+Do **not** cut network, expire Cloudflare Access or manufacture timeout/transport/transient-HTTP branches merely to prove the retry path. Those branches are covered by automated classification/attempt-bound guards.
+
+Until explicit user verdict:
+
+```text
+Build89 = DEPLOYED CANDIDATE
 ```
 
 ## Build88 automated coverage — GREEN
@@ -409,18 +499,20 @@ Deep Audio              2.0.3-alpha
 LRC Maker               6.3.8
 ```
 
-Build88 does not supersede those products' independent validation histories.
+Build89 does not supersede those products' independent validation histories.
 
 ## Core contracts that must remain guarded
 
 ### Private reads
 
-- bridge health, Track inventory and Track detail remain private-first;
-- timeout/transport/selected transient HTTP failures may receive one retry only;
+- bridge health, Track inventory and Track detail remain private-first with Build88 bounded retry;
+- canonical Album collection/detail remain private-first with Build89 bounded retry;
+- timeout/transport/selected transient HTTP failures may receive one retry only in those bounded helpers;
 - Access/CORS, deterministic ordinary 4xx and invalid-response failures receive no retry;
 - maximum attempts are two total;
-- public fallback remains read-only and happens only after private reads ultimately fail;
-- private GET retry must never become automatic POST/write retry.
+- public fallback remains read-only and happens only where explicitly designed after private reads ultimately fail;
+- private GET retry must never become automatic POST/write retry;
+- Lyrics and SonicTrace private reads remain separate audit families until explicitly hardened.
 
 ### Lyrics
 
@@ -447,7 +539,8 @@ Build88 does not supersede those products' independent validation histories.
 - Build85 response-loss recovery applies to **Album metadata save only**;
 - Build86 response-loss recovery applies to **`album-track-move-v1` only**;
 - Build87 response-loss recovery applies to **bulk membership / ordered tracklist save only**;
-- create and binary upload require their own operation-specific audits before similar recovery can be added.
+- Build89 changes **GET reads only** and does not alter those write contracts;
+- create and binary upload require their own operation-specific backend/causality audits before similar recovery can be added.
 
 ### Writes / ambiguity
 
@@ -455,7 +548,7 @@ Build88 does not supersede those products' independent validation histories.
 - a lost response is never automatic failure or automatic success;
 - no blind retry after response loss;
 - canonical reread must prove exact operation-specific postconditions;
-- Build88 does not alter any write retry rule.
+- Build88 and Build89 do not alter any write retry rule.
 
 ### Release Campaign
 
@@ -473,11 +566,11 @@ Git history shows the public-cover credential/fetch path was corrected in Build6
 
 ## Known open QA gaps / next audits
 
-No Build88 acceptance blocker remains.
+**Build89 real-user smoke is the active acceptance gap.**
 
-Before any successor runtime work, perform a fresh bounded Phase9 audit. Candidate areas include Album asset upload response-loss truth, Album create response-loss truth, broader private-read resilience and degraded/offline/PWA behavior.
+After acceptance, a fresh bounded audit may compare Album create/upload backend-contract work, Lyrics private-read resilience, SonicTrace private-read resilience and degraded/offline/PWA behavior.
 
-**Build89 is unallocated** until a fresh bounded audit proves a concrete scope.
+**Build90 is unallocated** while Build89 acceptance is pending.
 
 ## Standard validation commands
 

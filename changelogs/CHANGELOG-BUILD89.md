@@ -1,6 +1,6 @@
 # Studio v0.19.11 · Build89 — Phase9 Album private-read transient retry truth
 
-Status: **IMPLEMENTATION CANDIDATE · CI PENDING**.
+Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**.
 
 ## Fresh audit proof
 
@@ -12,7 +12,7 @@ The audit confirmed:
 - Album binary upload still lacks a client-side exact digest/ETag contract able to prove the selected bytes after a lost response without backend/API work;
 - degraded/offline/PWA resilience remains cross-cutting rather than a bounded Phase9 fix;
 - Lyrics and SonicTrace private reads still have separate historical transports and remain separate future audit families;
-- the **Album collection/detail private GET helper** remains a bounded Studio-only gap: non-timeout browser fetch rejection is currently mislabeled `access-or-cors` and receives no retry.
+- the **Album collection/detail private GET helper** remained a bounded Studio-only gap: non-timeout browser fetch rejection was mislabeled `access-or-cors` and received no retry.
 
 Album reads are a coherent family because the same helper owns:
 
@@ -61,7 +61,7 @@ Build89 does **not** change:
 - R2 schema/data;
 - LaunchPAD, LRC Maker or SonicTrace Deep Audio.
 
-## Validation target
+## Validation evidence
 
 Build89 adds `scripts/test-phase9-album-private-read-transient-retry-build89.mjs` and keeps Build88 as immutable accepted ancestry.
 
@@ -78,20 +78,39 @@ The guard requires:
 - Lyrics and SonicTrace remain untouched separate audit families;
 - Build82→Build89 remain in the full Phase9 gate.
 
+Historical CI:
+
+- `31881467538` — red only because the inherited Phase7-C successor allowlist stopped at Build88;
+- `31881538488` — Phase7/8/9 including the new Build89 guard passed, then inherited Studio Focus Build64 successor compatibility stopped at Build88.
+
+Those heads were never merged. The old guards were widened only for bounded Build89 successor compatibility while preserving their functional assertions.
+
+Final exact-head validation:
+
+```text
+Runtime PR              #147
+Exact tested head       8b73d19d8fced35642ee243cff0ac19d983fd0de
+Final CI                31881635973 · SUCCESS
+Runtime merge           b7ae769c66e9adccef79c80467cc8fd0a8534820
+Runtime Pages           31881682269 · SUCCESS · exact runtime merge SHA
+```
+
 ## Safety
 
 ```text
 Safety pre              safety/pre-phase9-album-private-read-retry-build89-20260815-1307
+Safety pre-PR           safety/post-build89-prepr-20260815-1310
+Safety post-deploy      safety/post-build89-deployed-candidate-20260815-1319
 Feature branch          phase9/build89-album-private-read-retry
-Worker deploy           NONE planned
-Track Manager change    NONE planned
+Worker deploy           NONE
+Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
 Build90                 UNALLOCATED
 ```
 
 ## Real-user acceptance boundary
 
-After deployment, use a normal browser regression only:
+Use a normal browser regression only:
 
 - hard refresh and verify `v0.19.11 · Build89`;
 - open Albums and verify the normal private Album inventory;
@@ -100,6 +119,8 @@ After deployment, use a normal browser regression only:
 - quick Track / Lyrics / SonicTrace navigation sanity.
 
 Do **not** deliberately cut network or invalidate Cloudflare Access merely to manufacture the retry branch. Automated guards own the failure-path classification proof.
+
+Until explicit real-user verdict, Build89 remains **DEPLOYED CANDIDATE**.
 
 ## Stop line
 

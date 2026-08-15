@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-15 after **Build88 REAL USER PASS**.
+Updated: 2026-08-15 after **Build89 deployment candidate**. Build88 remains the accepted baseline.
 
 This file is the durable roadmap summary. Historical implementation detail belongs in `docs/` and `changelogs/`; do not copy it here unless it changes what is done, active, next or backlogged.
 
@@ -163,6 +163,8 @@ Accepted evidence and behavior:
 - Pages `31872073050` SUCCESS on that exact merge;
 - candidate docs PR #145 merged at `316ad1b0784d72fb7d29d92c5deaedb56d262e49`;
 - candidate docs Pages `31872540118` SUCCESS;
+- acceptance docs PR #146 merged at `aebb168883c1f291b97e1d309b4028bb1d78861c`;
+- acceptance docs Pages `31881075352` SUCCESS;
 - explicit real-user verdict `BUILD88 PASS MADAFAKA` on 2026-08-15;
 - non-timeout fetch interruption is now `transport`, not fake `access-or-cors`;
 - timeout / transport / HTTP `408/425/429/500/502/503/504` may receive one bounded retry;
@@ -180,22 +182,51 @@ Build88 intentionally does **not** bundle Album create/upload or PWA/service-wor
 
 ## In progress
 
-### Phase 9 — fresh post-Build88 reliability audit
+### Phase 9 Slice8 — Album private-read transient retry truth
 
-Phase9 remains active, but **Build89 is not allocated**.
+**Build89 · v0.19.11 · DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
 
-The current task is a fresh read-only audit to identify the smallest remaining reliability gap without duplicating existing recovery logic or turning Phase9 into a generic refactor bucket.
+The fresh post-Build88 audit selected canonical Album collection/detail private GETs as the smallest coherent remaining reliability gap.
+
+Candidate evidence and behavior:
+
+- runtime PR #147;
+- exact tested head `8b73d19d8fced35642ee243cff0ac19d983fd0de`;
+- final runtime CI `31881635973` SUCCESS;
+- runtime merge `b7ae769c66e9adccef79c80467cc8fd0a8534820`;
+- Pages `31881682269` SUCCESS on that exact merge;
+- Album `fetch()` transport interruption is now typed `transport`, not fake Access/CORS;
+- timeout / transport / HTTP `408/425/429/500/502/503/504` may receive one bounded retry;
+- Access/CORS, deterministic ordinary 4xx and invalid JSON are never retried;
+- maximum two total attempts;
+- Album inventory/detail, private visual discovery and existing canonical Album rereads inherit the helper;
+- every Album POST/write path remains unchanged;
+- Lyrics and SonicTrace private reads remain out of scope;
+- no Track Manager, Worker, R2 schema/data migration or cross-product runtime change.
+
+Historical runs `31881467538` and `31881538488` were red only because inherited successor allowlists stopped at Build88; neither head was merged. Final exact-head CI passed Phase7, Phase8, Phase9 Build82→89, Focus, TypeScript and Vite.
 
 ## Next
 
-Audit these remaining candidates by proven risk / bounded scope, without assuming a build number:
+Perform the bounded Build89 normal-browser smoke:
 
-1. Album asset upload response-loss truth;
-2. Album create response-loss truth;
-3. broader private-read resilience outside the Build88 core GETs;
-4. degraded/offline/PWA resilience.
+1. hard refresh and verify `v0.19.11 · Build89`;
+2. open Albums and verify private inventory loads;
+3. open at least one canonical Album;
+4. verify private artwork/metadata loads normally;
+5. quick Track / Lyrics / SonicTrace navigation sanity.
 
-Pick **one** coherent slice only after the audit proves the gap and confirms it does not duplicate existing recovery logic.
+Do not deliberately cut network or invalidate Cloudflare Access to manufacture the retry path.
+
+**Build90 stays UNALLOCATED until Build89 receives explicit acceptance and a fresh bounded audit proves the next scope.**
+
+Remaining future audit families include:
+
+- Album create response-loss truth — likely backend causality contract required;
+- Album binary upload response-loss truth — likely digest/ETag contract required;
+- Lyrics private-read resilience;
+- SonicTrace private-read resilience;
+- degraded/offline/PWA resilience.
 
 ## Backlog
 
@@ -225,8 +256,8 @@ There is currently **no official Phase 11**.
 - Do not deliberately damage or interrupt production merely to prove a retry/ambiguity guard.
 - Do not generalize GET retry into write retry.
 - Do not generalize one write family's recovery postcondition into another operation family.
-- Do not allocate Build89 before a fresh bounded audit selects its scope.
+- Do not allocate Build90 while Build89 acceptance is pending.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build88 real-user PASS.
+See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build89 pending real-user smoke boundary.

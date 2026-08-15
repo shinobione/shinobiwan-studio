@@ -29,6 +29,9 @@ Runtime Pages         31872073050 · SUCCESS
 Candidate docs PR     #145
 Candidate docs merge  316ad1b0784d72fb7d29d92c5deaedb56d262e49
 Candidate docs Pages  31872540118 · SUCCESS
+Acceptance docs PR    #146
+Acceptance docs merge aebb168883c1f291b97e1d309b4028bb1d78861c
+Acceptance docs Pages 31881075352 · SUCCESS
 Real-user smoke       BUILD88 PASS MADAFAKA · 2026-08-15
 Track Manager         v5.23 · DEPLOYED
 Studio bridge         v1.13
@@ -40,7 +43,25 @@ Deep Audio            2.0.3-alpha
 LRC Maker             6.3.8
 ```
 
-**Studio v0.19.10 · Build88 is the current accepted runtime.** Build88 changes only the core private **GET** transport used by Track Manager bridge health, Track inventory and Track detail. Timeout, transport interruption, and HTTP `408/425/429/500/502/503/504` may receive **one** bounded retry; Access/CORS, deterministic ordinary 4xx and invalid JSON are never retried. Public fallback is unchanged and is only reached after the private helper ultimately fails. **No write retry was introduced.** The bounded normal-browser regression received explicit **`BUILD88 PASS MADAFAKA`** on 2026-08-15.
+**Studio v0.19.10 · Build88 remains the current accepted runtime.** Build88 changes only the core private **GET** transport used by Track Manager bridge health, Track inventory and Track detail. Timeout, transport interruption, and HTTP `408/425/429/500/502/503/504` may receive **one** bounded retry; Access/CORS, deterministic ordinary 4xx and invalid JSON are never retried. Public fallback is unchanged and is only reached after the private helper ultimately fails. **No write retry was introduced.** The bounded normal-browser regression received explicit **`BUILD88 PASS MADAFAKA`** on 2026-08-15.
+
+## Current deployed candidate
+
+```text
+Studio                v0.19.11 · Build89 · DEPLOYED CANDIDATE
+Codename              studio-focus-slice4-phase9-album-private-read-transient-retry-truth
+Runtime PR            #147
+Exact tested head     8b73d19d8fced35642ee243cff0ac19d983fd0de
+Validation            31881635973 · SUCCESS
+Runtime merge         b7ae769c66e9adccef79c80467cc8fd0a8534820
+Runtime Pages         31881682269 · SUCCESS
+Real-user smoke       PENDING
+Worker deploy         NONE
+Track Manager change  NONE
+R2 migration/write    NONE caused by deployment
+```
+
+Build89 applies the same bounded GET-only retry truth to canonical Album collection/detail reads. The same helper also powers private Album visual discovery and existing canonical Album rereads used by guarded verification/recovery. **Every Album POST/write transport remains unchanged.** Lyrics and SonicTrace private reads remain separate future audit families.
 
 The repository currently publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
@@ -100,11 +121,12 @@ Phase 9 Slice4      Build85 · REAL USER PASS
 Phase 9 Slice5      Build86 · REAL USER PASS
 Phase 9 Slice6      Build87 · REAL USER PASS
 Phase 9 Slice7      Build88 · REAL USER PASS
-Build89             UNALLOCATED
+Phase 9 Slice8      Build89 · DEPLOYED CANDIDATE · smoke pending
+Build90             UNALLOCATED
 Phase 10            FUTURE
 ```
 
-The immediate next action is a **fresh bounded post-Build88 Phase9 reliability audit**. No successor is allocated before that audit proves a concrete smallest coherent gap.
+The immediate next action is the bounded normal-browser **Build89 Album private-read smoke**. Build90 remains unallocated while Build89 acceptance is pending.
 
 ## Frozen authority model
 
@@ -122,7 +144,7 @@ The immediate next action is a **fresh bounded post-Build88 Phase9 reliability a
 
 ### Private reads
 
-Build88 accepted core-read contract:
+Build88 accepted core-read contract and Build89 candidate Album-read contract use the same bounded classification:
 
 ```text
 timeout                         → retry once max
@@ -134,7 +156,7 @@ non-JSON Access/gating response  → Access/CORS · NO RETRY
 invalid JSON                     → invalid-response · NO RETRY
 ```
 
-The contract is GET-only and capped at two total attempts. It does not change POST/write recovery or public fallback authority.
+The contract is GET-only and capped at two total attempts. Build88 applies it to bridge health / Track inventory / Track detail; Build89 applies it to canonical Album collection/detail reads. Neither build authorizes POST/write retry.
 
 ### Albums
 
@@ -196,6 +218,8 @@ membership response unavailable
 
 Requested Tracks must exist. A historically missing prior Track can still be removed. Removed Tracks whose cache claimed the Album converge to transitional `Singles`; unrelated cache claims remain unchanged. Build87 does not generalize this contract to Album create or binary upload.
 
+Build89 changes only canonical Album **GET** behavior. It does not alter the Build85/86/87 write contracts. Album create and binary upload remain separate operation-specific audit families requiring stronger causality/digest proof before lost-response recovery can be safely added.
+
 ### Lyrics
 
 ```text
@@ -249,6 +273,25 @@ MASTER FINAL 16:9
 
 Release Campaign is provider-agnostic. Google Flow is a convenience shortcut. Campaign drafts remain browser-local and ZIP export remains review-only.
 
+## Build89 candidate receipts
+
+```text
+Safety pre              safety/pre-phase9-album-private-read-retry-build89-20260815-1307
+Safety pre-PR           safety/post-build89-prepr-20260815-1310
+Runtime PR              #147
+Exact tested head       8b73d19d8fced35642ee243cff0ac19d983fd0de
+Validation              31881635973 · SUCCESS
+Runtime merge           b7ae769c66e9adccef79c80467cc8fd0a8534820
+Runtime Pages           31881682269 · SUCCESS · exact runtime merge SHA
+Safety post-deploy      safety/post-build89-deployed-candidate-20260815-1319
+Worker deploy           NONE
+Track Manager change    NONE
+R2 migration/write      NONE caused by deployment
+Real-user smoke         PENDING
+```
+
+Detailed candidate record: [`changelogs/CHANGELOG-BUILD89.md`](changelogs/CHANGELOG-BUILD89.md).
+
 ## Build88 acceptance receipts
 
 ```text
@@ -263,6 +306,9 @@ Candidate docs PR       #145
 Candidate docs merge    316ad1b0784d72fb7d29d92c5deaedb56d262e49
 Candidate docs Pages    31872540118 · SUCCESS
 Safety post-acceptance  safety/post-build88-real-user-pass-20260815-1253
+Acceptance docs PR      #146
+Acceptance docs merge   aebb168883c1f291b97e1d309b4028bb1d78861c
+Acceptance docs Pages   31881075352 · SUCCESS
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
