@@ -3,7 +3,8 @@
 Date established: 2026-08-08  
 Hardened: 2026-08-09  
 Current-state overlay refreshed: 2026-08-15  
-Current accepted Studio release: `v0.19.10` / Build `88` / REAL USER PASS
+Current accepted Studio release: `v0.19.10` / Build `88` / REAL USER PASS  
+Current deployed candidate: `v0.19.11` / Build `89` / REAL USER SMOKE PENDING
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -28,7 +29,19 @@ Studio accepted
   runtime Pages 31872073050 / SUCCESS
   candidate docs merge 316ad1b0784d72fb7d29d92c5deaedb56d262e49
   candidate docs Pages 31872540118 / SUCCESS
+  acceptance docs merge aebb168883c1f291b97e1d309b4028bb1d78861c
+  acceptance docs Pages 31881075352 / SUCCESS
   browser smoke BUILD88 PASS MADAFAKA / 2026-08-15
+  Worker deploy NONE
+  Track Manager change NONE
+  R2 migration/write NONE caused by deployment
+
+Studio deployed candidate
+  v0.19.11 / Build89 / REAL USER SMOKE PENDING
+  exact tested head 8b73d19d8fced35642ee243cff0ac19d983fd0de
+  runtime CI 31881635973 / SUCCESS
+  runtime merge b7ae769c66e9adccef79c80467cc8fd0a8534820
+  runtime Pages 31881682269 / SUCCESS
   Worker deploy NONE
   Track Manager change NONE
   R2 migration/write NONE caused by deployment
@@ -50,7 +63,7 @@ LRC Maker
   6.3.8
 ```
 
-Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable history; this overlay states current accepted production truth only.
+Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable history; this overlay distinguishes accepted production truth from the current deployed candidate.
 
 ## Restoration checkpoints
 
@@ -130,6 +143,16 @@ After Build88 deployment candidate:
 
 After Build88 real-user acceptance:
   safety/post-build88-real-user-pass-20260815-1253
+  safety/post-build88-rup-docs-closeout-20260815-1304
+
+Before Phase9 Build89:
+  safety/pre-phase9-album-private-read-retry-build89-20260815-1307
+
+After Build89 implementation before PR:
+  safety/post-build89-prepr-20260815-1310
+
+After Build89 deployment candidate:
+  safety/post-build89-deployed-candidate-20260815-1319
 ```
 
 Earlier accepted safety branches remain preserved in Git history.
@@ -189,6 +212,8 @@ Build86 changes only client-side canonical **Album move** response-loss classifi
 Build87 changes only client-side canonical **Album bulk membership / ordered tracklist save** response-loss classification and complete Album + affected Track-cache verification. It does not alter Album create, binary upload/delete, Track Manager, Workers or R2 schema/data.
 
 Build88 changes only the core private Track Manager **GET** transport for bridge health, Track inventory and Track detail. It adds one bounded retry for timeout/transport/selected transient HTTP failures and changes no POST/write retry behavior, Track Manager route, Worker or R2 data/schema.
+
+Build89 changes only canonical Album collection/detail private **GET** behavior. The same helper also serves private Album visual discovery and existing canonical Album rereads. Build89 changes no Album POST/write transport, no Track Manager route, no Worker and no R2 data/schema.
 
 ### SonicTrace
 
@@ -293,87 +318,37 @@ Build85 is **REAL USER PASS** after the explicit 2026-08-15 normal-browser Album
 
 ### Build86 Album-move boundary — ACCEPTED
 
-The deployed Track Manager move route already owns:
-
-```text
-target/source stale guards
-→ deterministic target insert/source removal
-→ write target/source Albums
-→ update one Track compatibility cache when required
-→ rebuild catalog
-→ reread target + source? + Track
-→ verify membership/cache
-→ rollback touched state on failure
-```
-
-Build86 changes no backend transaction. It adds Studio-side truth if the HTTP response becomes unavailable:
-
-```text
-Album move response unavailable
-→ NEVER blind automatic retry
-→ private canonical target + source? + Track reread
-   ├─ exact new target revision/order
-   │  + exact source revision/removal when source exists
-   │  + Track cache points to target
-   │  + stable non-membership shapes
-   │    → COMMITTED / VERIFIED
-   ├─ exact pre-write target/source/Track state unchanged
-   │    → NOT COMMITTED / explicit retry may be safe after fresh reload
-   ├─ partial/mixed changed state
-   │    → AMBIGUOUS / DO NOT RETRY
-   └─ reread unavailable
-        → UNVERIFIED / DO NOT RETRY
-```
-
-Normal success also requires exact response revisions, exact target/source tracklists and Track cache verification. Build86 covers **only** `album-track-move-v1`; bulk membership save, create and upload remain separate operation-specific audit families.
-
-Build86 is **REAL USER PASS** after explicit 2026-08-15 normal-browser Album move regression acceptance.
+The deployed Track Manager move route already owns target/source stale guards, deterministic membership, Track cache updates, catalog rebuild, canonical rereads and rollback. Build86 adds Studio-side lost-response truth only for `album-track-move-v1` and is **REAL USER PASS**.
 
 ### Build87 Album-membership boundary — ACCEPTED
 
-The deployed Track Manager membership route already owns:
+The deployed Track Manager membership route owns Album stale guard, ownership-conflict validation, deterministic ordered membership/cache updates, catalog rebuild and rollback. Build87 verifies the Album plus every affected Track compatibility cache after response loss and is **REAL USER PASS**.
+
+### Build89 Album private-read boundary — DEPLOYED CANDIDATE
+
+Build89 changes no Album backend transaction. It changes only canonical Album GET classification:
 
 ```text
-Album stale guard
-→ ownership-conflict validation
-→ deterministic ordered membership
-→ deterministic affected Track-cache updates
-→ write Album + affected Track caches
-→ rebuild catalog
-→ Album reread / verification
-→ rollback touched Album + Track caches + catalog on failure
+timeout                         → one retry max
+transport/fetch interruption     → one retry max
+HTTP 408/425/429/500/502/503/504 → one retry max
+401/403                         → Access/CORS · NO RETRY
+other deterministic 4xx          → HTTP · NO RETRY
+non-JSON Access/gating response  → Access/CORS · NO RETRY
+invalid JSON                     → invalid-response · NO RETRY
 ```
 
-Build87 changes no backend transaction. It adds Studio-side pre-write and post-write truth across the Album plus every Track in the union of previous/requested `album.trackIds`:
+Rules:
 
-```text
-Album membership response unavailable
-→ NEVER blind automatic retry
-→ private canonical Album + affected Track-cache reread
-   ├─ new Album revision + exact requested ordered trackIds
-   │  + stable Album non-membership shape
-   │  + every Track cache equals its exact expected postcondition
-   │  + stable Track non-album shapes
-   │    → COMMITTED / VERIFIED
-   ├─ exact pre-write Album + Track state unchanged
-   │    → NOT COMMITTED / explicit retry may be safe after fresh reload
-   ├─ partial/mixed changed state
-   │    → AMBIGUOUS / DO NOT RETRY
-   └─ reread unavailable
-        → UNVERIFIED / DO NOT RETRY
-```
+- maximum two total attempts;
+- canonical Album collection/detail use the bounded helper;
+- private Album visual discovery inherits the collection read;
+- existing guarded Album write verification/recovery rereads inherit the canonical detail GET;
+- no Album POST/write is retried by Build89;
+- Album create and binary upload remain unchanged future audit families;
+- Lyrics and SonicTrace private reads remain separate audit families.
 
-Operation-specific compatibility-cache semantics:
-
-- requested Track → cache points to the canonical Album;
-- removed Track whose cache claimed that Album → transitional `Singles` cache;
-- removed Track whose cache did not claim that Album → cache remains unchanged;
-- historically missing prior Track may be removed and remains absent;
-- missing Track may never be newly requested.
-
-Normal success also requires exact response revision/order, exact canonical Album order, every affected Track cache and `trackCachesUpdated` agreement when the server supplies it. Build87 is deliberately limited to **bulk membership / ordered tracklist save**; Album create and binary upload remain separate audit families.
-
-Build87 is **REAL USER PASS** after explicit 2026-08-15 normal-browser Album tracklist regression acceptance.
+Build89 requires a normal-browser Album regression before promotion to REAL USER PASS. Do not deliberately break network or Access merely to force the retry branch.
 
 ## Studio write boundary
 
@@ -485,6 +460,10 @@ Core private **GET retry only**. One retry is allowed only after timeout, transp
 
 Build88 is **REAL USER PASS** after the explicit 2026-08-15 normal-browser private-read regression verdict. Acceptance did not manufacture a failure branch.
 
+### Build89 candidate scope
+
+Canonical Album collection/detail **GET retry only**. One retry is allowed only after timeout, transport interruption or the explicit transient HTTP allowlist. It changes no Album write retry rule and does not generalize to Lyrics/SonicTrace private reads.
+
 ## Destructive/media verification policy
 
 Do not mutate a real production WAV, cover, video, Album cover or lyrics object merely to prove destructive/media code can mutate it.
@@ -506,6 +485,8 @@ Build87 acceptance likewise did **not** require deliberately cutting network/Acc
 
 Build88 acceptance likewise did **not** require deliberately cutting network or invalidating Access merely to prove the transient GET retry branch. Automated guards own that failure-path proof; browser acceptance was a normal private-read regression.
 
+Build89 acceptance likewise must remain a normal Album private-read regression; automated guards own the transient failure-path proof.
+
 ## Version / deployment discipline
 
 Treat separately:
@@ -518,7 +499,7 @@ Treat separately:
 
 For private Track Manager-only Worker changes, prefer `target=admin` and `confirm=DEPLOY`.
 
-Build82, Build83, Build84, Build85, Build86, Build87 and Build88 required no Worker deployment. Build88 Pages deployment caused no intentional R2 schema/data migration.
+Build82, Build83, Build84, Build85, Build86, Build87, Build88 and Build89 required no Worker deployment. Build89 Pages deployment caused no intentional R2 schema/data migration.
 
 Docs-only governance/closeout work does not create a new Studio build.
 
@@ -535,4 +516,4 @@ If a regression appears:
 
 ## Stop line
 
-**Build88 is the accepted Studio REAL USER PASS baseline. Build89 is UNALLOCATED pending a fresh bounded post-Build88 audit. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**
+**Build88 is the accepted Studio REAL USER PASS baseline. Build89 is the deployed candidate pending normal-browser Album smoke. Build90 is UNALLOCATED. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**
