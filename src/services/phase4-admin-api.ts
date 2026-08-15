@@ -17,6 +17,13 @@ const CATALOG_REBUILD_INTENT = 'catalog-rebuild-v1';
 
 export type Phase4ManageCapability = 'track-create' | 'assets' | 'catalog-rebuild';
 
+type SimpleTransportFailure = {
+  timeoutCode: string;
+  transportCode: string;
+  timeoutMessage: string;
+  transportMessage: string;
+};
+
 export class Phase4AdminError extends Error {
   readonly status: number | null;
   readonly code: string | null;
@@ -117,7 +124,12 @@ async function requireManage(capability: Phase4ManageCapability): Promise<void> 
   if (!manage.includes(capability)) throw new Phase4AdminError(`Track Manager does not advertise ${capability}. This operation stays locked until the required bridge capability is active.`);
 }
 
-async function postSimple<T>(path: string, body: unknown, timeoutMs = 15000): Promise<T> {
+async function postSimple<T>(
+  path: string,
+  body: unknown,
+  timeoutMs = 15000,
+  transportFailure?: SimpleTransportFailure,
+): Promise<T> {
   const controller = new AbortController();
   const timeout = globalThis.setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -136,7 +148,19 @@ async function postSimple<T>(path: string, body: unknown, timeoutMs = 15000): Pr
         signal: controller.signal,
       });
     } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') throw new Phase4AdminError('Track Manager operation timed out. Reload canonical state before retrying.');
+      const timedOut = error instanceof DOMException && error.name === 'AbortError';
+      if (transportFailure) {
+        throw new Phase4AdminError(
+          timedOut ? transportFailure.timeoutMessage : transportFailure.transportMessage,
+          null,
+          timedOut ? transportFailure.timeoutCode : transportFailure.transportCode,
+          null,
+          null,
+          false,
+          error instanceof Error ? error.message : String(error),
+        );
+      }
+      if (timedOut) throw new Phase4AdminError('Track Manager operation timed out. Reload canonical state before retrying.');
       throw new Phase4AdminError('Track Manager operation is unavailable. Authenticate with Cloudflare Access and reload before retrying.');
     }
     if (!isJsonResponse(response)) throw new Phase4AdminError('Cloudflare Access session is not available to this Studio operation.', response.status || null);
@@ -242,6 +266,8 @@ export function phase4ErrorPresentation(reason: unknown): Phase4ErrorPresentatio
   if (code === 'ACCESS_SESSION_REQUIRED') return { title: 'Track Manager sign-in required', message: reason.message, nextAction: 'Open Track Manager, complete Cloudflare Access sign-in, then reload Studio.', retrySafe: false, technicalDetails: code };
   if (code === 'ASSET_UPLOAD_NOT_COMMITTED') return { title: 'Upload not committed', message: reason.message, nextAction: 'The canonical revision is unchanged. You may use Retry after restoring connectivity or Access.', retrySafe: true, technicalDetails: [code, reason.technicalDetails].filter(Boolean).join(' · ') };
   if (code === 'ASSET_UPLOAD_AMBIGUOUS' || code === 'ASSET_UPLOAD_UNVERIFIED') return { title: 'Upload state needs inspection', message: reason.message, nextAction: 'Do not retry. Reload the track and inspect the canonical asset in Track Manager first.', retrySafe: false, technicalDetails: [code, reason.currentUpdatedAt, reason.technicalDetails].filter(Boolean).join(' · ') };
+  if (code === 'ASSET_DELETE_NOT_COMMITTED') return { title: 'Delete not committed', message: reason.message, nextAction: 'Canonical reread proves the asset is still present at the same revision. An explicit retry is safe after connectivity or Access is restored.', retrySafe: true, technicalDetails: [code, reason.technicalDetails].filter(Boolean).join(' · ') };
+  if (code === 'ASSET_DELETE_AMBIGUOUS' || code === 'ASSET_DELETE_UNVERIFIED') return { title: 'Delete state needs inspection', message: reason.message, nextAction: 'Do not retry. Reload the track and inspect the canonical asset in Track Manager first.', retrySafe: false, technicalDetails: [code, reason.currentUpdatedAt, reason.technicalDetails].filter(Boolean).join(' · ') };
   if (reason.status === 409 || /STALE|CONFLICT/i.test(code)) return { title: 'Track changed elsewhere', message: reason.message, nextAction: 'Reload the workspace to obtain the latest canonical revision before deciding whether to retry.', retrySafe: false, technicalDetails: [code, reason.currentUpdatedAt].filter(Boolean).join(' · ') };
   if (reason.status === 413 || /TOO_LARGE/i.test(code)) return { title: 'File exceeds the allowed size', message: reason.message, nextAction: 'Choose a smaller valid file; do not repeatedly retry the same upload.', retrySafe: false, technicalDetails: code };
   if (reason.status === 400 || reason.status === 415 || /INVALID|UNSUPPORTED/i.test(code)) return { title: 'File or request rejected', message: reason.message, nextAction: 'Review the file type and Track Manager validation details, then choose a compliant file.', retrySafe: false, technicalDetails: code };
@@ -379,16 +405,120 @@ export async function deleteAdminTrackAsset(
   if (!validTrackId(trackId)) throw new Phase4AdminError('Invalid trackId.');
   if (!expectedUpdatedAt.trim()) throw new Phase4AdminError('Canonical updatedAt is required for asset deletion.');
   await requireManage('assets');
-  const payload = await postSimple<AssetMutationResponse>(`/api/studio/tracks/${encodeURIComponent(trackId)}/assets/${kind}/delete`, {
-    intent: ASSET_DELETE_INTENT,
-    expectedUpdatedAt,
-  });
+
+  const before = await getAdminTrack(trackId);
+  const beforeManifest = before.track?.manifest;
+  const beforeAsset = before.track?.assets?.[kind];
+  if (!beforeManifest?.updatedAt || beforeManifest.updatedAt !== expectedUpdatedAt) {
+    throw new Phase4AdminError(
+      'The track changed before this deletion began. Reload the workspace before another write.',
+      409,
+      'STALE_MANIFEST',
+      beforeManifest?.updatedAt || null,
+    );
+  }
+  if (!beforeAsset?.present && !beforeManifest.assets?.[kind]) {
+    throw new Phase4AdminError('The canonical asset is already missing. Reload the workspace instead of issuing another destructive write.', 409, 'ASSET_ALREADY_MISSING', expectedUpdatedAt);
+  }
+
+  let payload: AssetMutationResponse;
+  try {
+    payload = await postSimple<AssetMutationResponse>(
+      `/api/studio/tracks/${encodeURIComponent(trackId)}/assets/${kind}/delete`,
+      { intent: ASSET_DELETE_INTENT, expectedUpdatedAt },
+      30000,
+      {
+        timeoutCode: 'ASSET_DELETE_TIMEOUT',
+        transportCode: 'ASSET_DELETE_TRANSPORT',
+        timeoutMessage: 'Asset deletion timed out. Studio will reread canonical state before any retry.',
+        transportMessage: 'Asset deletion transport was interrupted. Studio will reread canonical state before any retry.',
+      },
+    );
+  } catch (reason) {
+    if (!(reason instanceof Phase4AdminError) || !['ASSET_DELETE_TIMEOUT', 'ASSET_DELETE_TRANSPORT'].includes(reason.code || '')) throw reason;
+    try {
+      const reread = await getAdminTrack(trackId);
+      const manifest = reread.track?.manifest;
+      const asset = reread.track?.assets?.[kind];
+      const changed = Boolean(manifest?.updatedAt && manifest.updatedAt !== expectedUpdatedAt);
+      const missing = !manifest?.assets?.[kind] && asset?.present !== true;
+      if (changed && missing) {
+        return {
+          ok: true,
+          deleted: true,
+          trackId,
+          kind,
+          filename: beforeAsset?.filename || beforeManifest.assets?.[kind] || null,
+          previousUpdatedAt: expectedUpdatedAt,
+          updatedAt: manifest?.updatedAt || null,
+          quality: reread.track?.quality || null,
+          clientVerified: true,
+          recoveredAfterTransportFailure: true,
+          retrySafe: false,
+          technicalDetails: `${reason.code}: response lost; canonical reread verified a new manifest revision and the asset is absent.`,
+        };
+      }
+      if (!changed && !missing) {
+        throw new Phase4AdminError(
+          'Canonical reread proves the delete did not commit. The asset is still present at the original revision.',
+          null,
+          'ASSET_DELETE_NOT_COMMITTED',
+          manifest?.updatedAt || expectedUpdatedAt,
+          null,
+          true,
+          reason.technicalDetails,
+        );
+      }
+      throw new Phase4AdminError(
+        'Canonical state changed while the delete response was unavailable, but Studio cannot prove this deletion caused it. Do not retry.',
+        null,
+        'ASSET_DELETE_AMBIGUOUS',
+        manifest?.updatedAt || null,
+        null,
+        false,
+        reason.technicalDetails,
+      );
+    } catch (rereadReason) {
+      if (rereadReason instanceof Phase4AdminError) throw rereadReason;
+      throw new Phase4AdminError(
+        'The delete response and canonical reread are both unavailable. Do not retry until Track Manager access is restored and the track is reloaded.',
+        null,
+        'ASSET_DELETE_UNVERIFIED',
+        null,
+        null,
+        false,
+        rereadReason instanceof Error ? rereadReason.message : String(rereadReason),
+      );
+    }
+  }
+
   if (!payload.deleted || !payload.updatedAt) throw new Phase4AdminError('Track Manager returned an invalid asset delete response.');
-  const reread = await getAdminTrack(trackId);
-  const manifest = reread.track?.manifest;
-  const asset = reread.track?.assets?.[kind];
-  const clientVerified = manifest?.updatedAt === payload.updatedAt && !manifest?.assets?.[kind] && !asset?.present;
-  return { ...payload, clientVerified };
+  try {
+    const reread = await getAdminTrack(trackId);
+    const manifest = reread.track?.manifest;
+    const asset = reread.track?.assets?.[kind];
+    const clientVerified = manifest?.updatedAt === payload.updatedAt && !manifest?.assets?.[kind] && !asset?.present;
+    if (!clientVerified) {
+      throw new Phase4AdminError(
+        'Track Manager reported asset deletion success, but the canonical reread did not verify the exact new revision plus asset absence. Do not retry.',
+        null,
+        'ASSET_DELETE_AMBIGUOUS',
+        manifest?.updatedAt || null,
+      );
+    }
+    return { ...payload, clientVerified: true, retrySafe: false };
+  } catch (reason) {
+    if (reason instanceof Phase4AdminError) throw reason;
+    throw new Phase4AdminError(
+      'Track Manager reported asset deletion success, but Studio could not complete the canonical reread. Do not retry until the track is reloaded.',
+      null,
+      'ASSET_DELETE_UNVERIFIED',
+      null,
+      null,
+      false,
+      reason instanceof Error ? reason.message : String(reason),
+    );
+  }
 }
 
 export async function rebuildAdminCatalog(): Promise<CatalogRebuildResponse> {

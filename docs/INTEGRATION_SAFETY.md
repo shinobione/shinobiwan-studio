@@ -2,8 +2,8 @@
 
 Date established: 2026-08-08  
 Hardened: 2026-08-09  
-Current-state overlay refreshed: 2026-08-14  
-Current accepted Studio release: `v0.19.3` / Build `68` / codename `studio-focus-slice4-home-lead-priority`
+Current-state overlay refreshed: 2026-08-15  
+Current accepted Studio release before Build82: `v0.19.3` / Build `81` / REAL USER PASS
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -15,106 +15,47 @@ This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace
 - `shinobione/lrc-maker` (`master`)
 - `shinobione/shinobiwan-studio` (`main`)
 
-## Frozen Phase 6 baseline
-
-Phase 6 was production-validated before this hardening milestone.
-
-```text
-Studio
-  0.9.5 / Build 20
-  closeout SHA 00b4504779ec6220d97564965309ef7a9ef20887
-
-LRC Maker
-  6.3.4 validated baseline
-  SHA 8bd3f3fd52acc1217a65216541c0b7e40fcab5ba
-
-Track Manager / LaunchPAD backend
-  Track Manager v5.15 / Studio bridge v1.7
-  Phase 6 backend SHA 23a7b494b89d4958f573f0889057b53a44aa23b6
-  deployment run 31288949405
-  target admin
-
-Final Phase 6 checkpoint
-  safety/phase6-complete-20260809-0513
-```
-
-Post-Phase-6 hardening may advance documentation/tests/public UI versions, but it must not rewrite what constituted the validated Phase 6 checkpoint.
-
-## Historical public LaunchPAD maintenance baseline
-
-The Track DNA release-date maintenance hotfix was delivered separately before hardening:
-
-```text
-LaunchPAD Build 2026.08.09.67
-release post-phase6-track-dna-release-date-20260809
-merge 20674c774e172b85c1468e480621391057d70754
-GitHub Pages run 31311437062
-public media Worker remains v2.6
-```
-
-This public hotfix did not deploy either Worker and did not mutate R2. This subsection is preserved as historical evidence, not as the current cross-stack state.
-
 ## Current production overlay
 
-The frozen Phase 6 baseline above remains an immutable historical checkpoint. The current accepted integration has advanced through PHASE UX, Phase 7-A, Phase 7-B, Studio Focus, Foundation Regression Repair and Build 68.
-
 ```text
 Studio
-  v0.19.3 / Build 68
-  Home lead priority corrective · REAL USER PASS
-  runtime merge 5c0428e500b4e6d5c9d1069bb440eac78b79955e
-  validated head cf5131f489d72ca5fae72544dacd9eaecc78077f
-  validation run 31741483430 · SUCCESS
-  Pages run 31743413418 · SUCCESS
-  post-pass checkpoint safety/post-build68-home-real-user-pass-20260814-0005
+  v0.19.3 / Build81 / REAL USER PASS
+  runtime merge 20d587fe1b1d1a5405cd346571c8d5a0eb1d2fa4
+  closeout main d4487fe2eb33ba6f78c4941b5ef2fafe9646d4a1
 
 LaunchPAD
-  2026.08.12.102 · C3-C · REAL USER PASS
+  2026.08.12.102 / REAL USER PASS
+
+Track Manager / LaunchPAD backend
+  Track Manager v5.23 / Studio bridge v1.13
+  deployment run 31842482166 / SUCCESS / target admin
+  Worker Version ID 439a1ce4-e458-427d-9fd6-61e888efd269
+  public Worker v2.7 unchanged
+
+SonicTrace
+  V2-E Build08 / REAL USER PASS
+  Deep Audio 2.0.3-alpha
 
 LRC Maker
   6.3.8
-
-Track Manager / LaunchPAD backend
-  Track Manager v5.21 / Studio bridge v1.11
-  source 813eb845b563b9a176c23f490d7fc044d4a0abc3
-  deployment run 31728992790 · SUCCESS
-  Worker Version ID 0e1b9a3f-eabd-432e-8872-24ff0a9c085f
-  target admin
-  public Worker unchanged v2.7
-
-SonicTrace
-  V2-E Build 08 · REAL USER PASS
-  Deep Audio 2.0.3-alpha
 ```
 
-Build 68 real-user Home smoke passed on 2026-08-14. Phase 7-C is started at contract level only; Runtime Slice 1 remains **NOT STARTED** until fresh explicit authorization.
+Historical Phase6/Phase7 checkpoints remain immutable history; this overlay states current production truth only.
 
 ## Restoration checkpoints
-
-Rollback references are immutable snapshots and never development branches.
 
 Most relevant current references:
 
 ```text
-Accepted Build 68:
-  safety/post-build68-home-real-user-pass-20260814-0005
+Accepted Build81 runtime/docs:
+  safety/post-build81-real-user-pass-20260815-0159
+  safety/post-build81-rup-docs-closeout-20260815-0208
 
-Before Build 68:
-  safety/pre-build68-home-lead-priority-20260813-2228
-
-Accepted Build 67 repair closeout:
-  safety/post-build67-lyrics-source-anchor-20260813-2205
-
-Final Phase 6:
-  safety/phase6-complete-20260809-0513
-
-Historical post-Phase-6 hardening anchors:
-  safety/pre-post-phase6-hardening-20260809-1331
-  safety/pre-post-phase6-hardening-build67-20260809-1342
-  safety/pre-post-phase6-hardening-20260809-1342
+Before Phase9 Build82:
+  safety/pre-phase9-destructive-ambiguity-build82-20260815-0216
 ```
 
-Earlier Phase 4/5 snapshots remain preserved in Git history for historical rollback only.
+Earlier accepted safety branches remain preserved in Git history.
 
 ## Mandatory sequence
 
@@ -133,80 +74,58 @@ For every risky integration step:
 11. keep source merge, web deployment, Worker deployment and R2/catalog mutation as distinct states;
 12. verify a deployed dependency before enabling its consumer.
 
+`CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS`.
+
 ## Product boundaries
 
 ### LaunchPAD
 
 LaunchPAD remains the public listening/PWA product. Public UI maintenance may advance its Build without implying a Worker deployment.
 
-Current accepted public product baseline is `2026.08.12.102 · C3-C · REAL USER PASS`. Public Worker remains v2.7 unless a separately verified deployment explicitly changes it.
-
 ### Track Manager
 
 Track Manager remains the protected production R2 write/admin authority and standalone fallback.
 
-Current deployed private backend:
+Current private backend:
 
 ```text
-Track Manager v5.21
-Studio bridge v1.11
-source SHA 813eb845b563b9a176c23f490d7fc044d4a0abc3
-workflow run 31728992790 · SUCCESS
-Worker Version ID 0e1b9a3f-eabd-432e-8872-24ff0a9c085f
-deployment target admin
-public Worker unchanged v2.7
+Track Manager v5.23
+Studio bridge v1.13
+workflow run 31842482166 / SUCCESS / admin only
+Worker Version ID 439a1ce4-e458-427d-9fd6-61e888efd269
+public Worker v2.7 unchanged
 ```
 
 ### SonicTrace
 
 SonicTrace remains the audio-intelligence compute engine. R2 sidecars hold durable catalog-linked analysis. No duplicate canonical WAV is stored in analysis persistence.
 
-Current accepted SonicTrace baseline is `V2-E Build 08 · REAL USER PASS`, with Deep Audio `2.0.3-alpha`.
-
 ### LRC Maker
 
-LRC Maker `6.3.8` is integrated as the real Lyrics engine and remains available standalone. It operates against the canonical Lyrics contract through guarded Track Manager authority while preserving its validated native interaction.
+LRC Maker remains the lyrics synchronization engine against the canonical TXT authority.
 
 ## Canonical lyrics boundary
-
-This rule is non-negotiable:
 
 ```text
 tracks/<slug>/lyrics.txt = only canonical lyrics source
 recognized timestamps     = synchronized lyrics
-.lrc                      = optional export/compatibility only
+.lrc                       = optional export/compatibility only
 ```
 
-Consequences:
-
-- a missing `.lrc` does not mean lyrics are unsynchronized;
-- `.lrc` never contributes to Content Health;
-- canonical save writes `lyrics.txt` through Track Manager only;
-- synchronization save uses manifest revision + lyrics ETag stale guards;
-- post-save canonical reread remains mandatory;
-- client/backend text normalization is limited to optional BOM removal and line endings `CRLF`/`CR` → `LF`;
-- real lyric differences remain blocking.
-
-Final LRC interaction:
-
-- simple click = selection only;
-- double-click = explicit seek to existing timestamp;
-- Space = timestamp selected line then select next line.
+Canonical save uses Track Manager only, with manifest revision + lyrics ETag stale guards and private reread verification.
 
 ## Album authority boundary
-
-This rule is also non-negotiable:
 
 ```text
 albums/<album-id>/manifest.json
 ordered album.trackIds = sole membership + artistic-order authority
 ```
 
-Track-side `album` metadata is a compatibility cache only. Generic Track metadata writes must never mutate Album membership independently of guarded Album operations.
+Track-side `album` metadata is compatibility cache only. Generic Track metadata writes must never mutate Album membership independently of guarded Album operations.
 
 ## Studio write boundary
 
-Studio uses specialized, domain-scoped routes. Do not create a generic arbitrary cross-origin `saveTrack()` replacement.
+Studio uses specialized, domain-scoped routes. Never create a generic arbitrary cross-origin `saveTrack()` or generic R2 writer.
 
 Existing families include:
 
@@ -217,13 +136,10 @@ track create
 per-asset upload/delete
 explicit catalog rebuild
 SonicTrace sidecar save/read
-Lyrics context + synchronization validate/save
-Album membership/media guarded operations
+Album metadata/membership/media guarded operations
 ```
 
 Whole-track deletion remains outside the Studio bridge.
-
-Phase 7-C guided actions must reuse existing operation-specific protected Track Manager authority. Studio must not become a second canonical write owner.
 
 ## Cloudflare Access / CORS safety
 
@@ -231,56 +147,65 @@ Phase 7-C guided actions must reuse existing operation-specific protected Track 
 - no R2 credential in GitHub Pages;
 - exact Studio origin remains `https://shinobione.github.io`;
 - credentialed CORS never uses `*`;
-- browser JSON-like control POSTs use the established simple-request `text/plain;charset=UTF-8` transport where required;
-- multipart uploads use browser-generated `FormData` without custom headers;
-- every private operation is gated behind the deployed capability/Access boundary;
-- unrelated legacy Track Manager writes retain same-origin enforcement;
-- no PUT/PATCH/DELETE client is added to Studio merely for convenience.
+- browser JSON-like control POSTs use established `text/plain;charset=UTF-8` simple-request transport where required;
+- multipart uploads use browser-generated `FormData` without forced `Content-Type`;
+- every private operation is capability/Access gated;
+- public fallback is read-only and never verifies a write;
+- no PUT/PATCH/DELETE browser method is introduced merely for convenience.
 
-## Protected media safety
+## Ambiguous-write policy — Phase9 authority
 
-Private canonical media reads used by Studio retain Cloudflare Access and exact-origin CORS while supporting single byte ranges (`206` / `416`) for reliable HTML media seeking.
+A lost HTTP response does **not** prove whether a write committed.
 
-Range support is a transport capability. It must not reintroduce the retired LRC Maker simple-click seek behavior.
+For any write hardened under Phase9:
+
+```text
+write response lost / timeout
+→ NEVER automatic retry
+→ private canonical reread
+→ classify committed / not committed / ambiguous / unverified
+```
+
+A retry may be presented as safe only when canonical reread proves the pre-write revision/state is unchanged.
+
+A lost-response write may be recovered as success only when the operation-specific canonical postcondition is positively verified.
+
+Public fallback can never perform this verification.
+
+### Build82 scope
+
+Build82 applies this policy only to destructive asset deletion:
+
+- Track asset delete;
+- Album asset delete.
+
+For both, recovery requires exact private canonical reread and asset absence; ambiguous/unverified states explicitly forbid blind retry.
+
+Do not silently generalize Build82 into retries for metadata, lyrics, SonicTrace or other Album writes. Those require separate bounded audits.
 
 ## Destructive/media verification policy
 
-Do not mutate a real production WAV, cover, video or lyrics object merely to prove destructive/media code can mutate it.
+Do not mutate a real production WAV, cover, video, Album cover or lyrics object merely to prove destructive/media code can mutate it.
 
-Preferred proof before any deliberate production mutation:
+Preferred proof:
 
 - source-scope guard;
-- Worker assembly/syntax validation;
-- generated bundle verification;
-- Wrangler dry-run;
-- Cloudflare Access verification;
-- LaunchPAD regression CI;
-- Studio/LRC builds and behavioral guards;
+- typecheck/build;
 - stale checks;
-- transaction compensation;
-- explicit UI confirmation.
-
-Use an intentionally disposable draft if deeper destructive media smoke testing is required later.
+- canonical reread logic;
+- explicit UI confirmation;
+- disposable Draft asset only if a deliberate destructive browser smoke is truly required.
 
 ## Version / deployment discipline
 
-Treat as separate facts:
+Treat separately:
 
 1. code merged;
-2. GitHub Pages/static host deployed;
+2. GitHub Pages deployed;
 3. Worker deployed;
 4. R2/catalog data changed.
 
-For private Track Manager-only Worker changes, prefer:
-
-```text
-target = admin
-confirm = DEPLOY
-```
-
-Never use `both` without an explicit reason that both Worker surfaces changed.
-
-A public LaunchPAD UI build does not imply Worker redeployment. A private Worker version does not require an artificial public LaunchPAD build bump.
+For private Track Manager-only Worker changes, prefer `target=admin` and `confirm=DEPLOY`. Build82 requires no Worker deployment.
 
 ## Rollback principle
 
@@ -289,14 +214,10 @@ If a regression appears:
 1. stop the next integration step;
 2. do not compensate with unrelated media/catalog edits;
 3. revert the responsible PR first where possible;
-4. redeploy only the affected Worker from a known-good source if backend-only;
-5. use the relevant immutable safety branch only when a normal revert is insufficient;
+4. redeploy only the affected Worker from known-good source if backend-only;
+5. use immutable safety branches only when normal revert is insufficient;
 6. independently verify LaunchPAD, Track Manager, SonicTrace, LRC Maker and Studio before resuming.
 
 ## Stop line
 
-**Build 68 is the accepted Studio baseline. Phase 7-A and Phase 7-B are REAL USER PASS. Phase 7-C is contract-locked only; Runtime Slice 1 is NOT STARTED.**
-
-Phase 7-C Runtime Slice 1 must not be implemented, scaffolded, branched or deployed without fresh explicit user authorization.
-
-The objective remains simple: integration may fail locally or in CI, but a maintenance change must never take LaunchPAD, Track Manager, SonicTrace or LRC Maker down with it.
+**Build81 is the accepted Studio baseline. Build82 is Phase9 Slice1 candidate only until exact CI/deployment and explicit browser acceptance. Track Manager v5.23 / bridge1.13 remains the sole deployed write authority.**

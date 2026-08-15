@@ -17,7 +17,13 @@ export interface AdminAlbumMetadataPatch { title?: string; type?: AdminAlbumType
 export interface AdminAlbumQualityCheck { id?: string; ok?: boolean; message?: string; }
 export interface AdminAlbumQualityTrack { trackId?: string; exists?: boolean; status?: string | null; title?: string | null; }
 export interface AdminAlbumQuality { publishable?: boolean; checks?: AdminAlbumQualityCheck[]; tracks?: AdminAlbumQualityTrack[]; assets?: Partial<Record<AdminAlbumAssetKind, AdminAlbumAssetState | null>>; }
-export interface AdminAlbumWriteResponse { ok?: boolean; created?: boolean; saved?: boolean; moved?: boolean; deleted?: boolean; albumId?: string; album?: AdminAlbumManifest; trackIds?: string[]; targetTrackIds?: string[]; sourceTrackIds?: string[] | null; previousUpdatedAt?: string | null; updatedAt?: string | null; targetUpdatedAt?: string | null; sourceUpdatedAt?: string | null; code?: string; currentUpdatedAt?: string | null; error?: string; quality?: AdminAlbumQuality | null; verificationDetail?: string | null; rollback?: Record<string, unknown> | null; clientVerified?: boolean; verificationWarning?: string | null; }
+export interface AdminAlbumWriteResponse {
+  ok?: boolean; created?: boolean; saved?: boolean; moved?: boolean; deleted?: boolean; albumId?: string; album?: AdminAlbumManifest;
+  trackIds?: string[]; targetTrackIds?: string[]; sourceTrackIds?: string[] | null; previousUpdatedAt?: string | null; updatedAt?: string | null;
+  targetUpdatedAt?: string | null; sourceUpdatedAt?: string | null; code?: string; currentUpdatedAt?: string | null; error?: string;
+  quality?: AdminAlbumQuality | null; verificationDetail?: string | null; rollback?: Record<string, unknown> | null; clientVerified?: boolean;
+  verificationWarning?: string | null; recoveredAfterTransportFailure?: boolean; retrySafe?: boolean; technicalDetails?: string | null;
+}
 
 export class AlbumAdminError extends Error {
   constructor(
@@ -28,6 +34,8 @@ export class AlbumAdminError extends Error {
     readonly rollback: Record<string, unknown> | null = null,
     readonly quality: AdminAlbumQuality | null = null,
     readonly verificationDetail: string | null = null,
+    readonly retrySafe = false,
+    readonly technicalDetails: string | null = null,
   ) { super(message); this.name = 'AlbumAdminError'; }
 }
 function baseUrl() { return studioConfig.trackManagerUrl.replace(/\/$/, ''); }
@@ -69,13 +77,25 @@ function metadataMismatch(manifest: AdminAlbumManifest | undefined, expected?: A
   return (Object.keys(expected) as Array<keyof AdminAlbumMetadataPatch>).filter(key =>
     JSON.stringify(manifest[key] ?? null) !== JSON.stringify(expected[key] ?? null));
 }
-async function readJson<T>(path: string): Promise<T> {
-  let response: Response;
-  try { response = await fetch(`${baseUrl()}${path}`, { headers: { Accept: 'application/json' }, cache: 'no-store', credentials: 'include', mode: 'cors' }); }
-  catch { throw new AdminReadError('access-or-cors', 'Canonical Album read is unavailable. Authenticate with Cloudflare Access and retry.'); }
-  if (!isJson(response)) throw new AdminReadError('access-or-cors', 'Cloudflare Access session is not available to Studio Album Management.', response.status || null);
-  if (!response.ok) throw new AdminReadError(response.status === 401 || response.status === 403 ? 'access-or-cors' : 'http', `Track Manager Album read returned HTTP ${response.status}.`, response.status);
-  try { return await response.json() as T; } catch { throw new AdminReadError('invalid-response', 'Track Manager Album read returned invalid JSON.', response.status); }
+async function readJson<T>(path: string, timeoutMs = 7000): Promise<T> {
+  const controller = new AbortController();
+  const timeout = globalThis.setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    let response: Response;
+    try {
+      response = await fetch(`${baseUrl()}${path}`, {
+        headers: { Accept: 'application/json' }, cache: 'no-store', credentials: 'include', mode: 'cors', signal: controller.signal,
+      });
+    } catch (reason) {
+      if (reason instanceof DOMException && reason.name === 'AbortError') throw new AdminReadError('timeout', 'Canonical Album read timed out.');
+      throw new AdminReadError('access-or-cors', 'Canonical Album read is unavailable. Authenticate with Cloudflare Access and retry.');
+    }
+    if (!isJson(response)) throw new AdminReadError('access-or-cors', 'Cloudflare Access session is not available to Studio Album Management.', response.status || null);
+    if (!response.ok) throw new AdminReadError(response.status === 401 || response.status === 403 ? 'access-or-cors' : 'http', `Track Manager Album read returned HTTP ${response.status}.`, response.status);
+    try { return await response.json() as T; } catch { throw new AdminReadError('invalid-response', 'Track Manager Album read returned invalid JSON.', response.status); }
+  } finally {
+    globalThis.clearTimeout(timeout);
+  }
 }
 async function writeJson(path: string, body: unknown): Promise<AdminAlbumWriteResponse> {
   let response: Response;
@@ -94,6 +114,52 @@ async function writeJson(path: string, body: unknown): Promise<AdminAlbumWriteRe
     payload.verificationDetail || null,
   );
   return payload;
+}
+async function deleteAlbumAssetRequest(albumId: string, kind: AdminAlbumAssetKind, expectedUpdatedAt: string): Promise<AdminAlbumWriteResponse> {
+  const controller = new AbortController();
+  const timeout = globalThis.setTimeout(() => controller.abort(), 30000);
+  try {
+    let response: Response;
+    try {
+      response = await fetch(`${baseUrl()}/api/studio/albums/${encodeURIComponent(albumId)}/assets/${kind}/delete`, {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'text/plain;charset=UTF-8' },
+        body: JSON.stringify({ intent: INTENT.deleteAsset, expectedUpdatedAt }),
+        cache: 'no-store', credentials: 'include', mode: 'cors', signal: controller.signal,
+      });
+    } catch (reason) {
+      const timedOut = reason instanceof DOMException && reason.name === 'AbortError';
+      throw new AlbumAdminError(
+        timedOut
+          ? 'Album asset deletion timed out. Studio will reread canonical Album state before any retry.'
+          : 'Album asset deletion transport was interrupted. Studio will reread canonical Album state before any retry.',
+        null,
+        timedOut ? 'ALBUM_ASSET_DELETE_TIMEOUT' : 'ALBUM_ASSET_DELETE_TRANSPORT',
+        null,
+        null,
+        null,
+        null,
+        false,
+        reason instanceof Error ? reason.message : String(reason),
+      );
+    }
+    if (!isJson(response)) throw new AlbumAdminError('Cloudflare Access session is not available to Album asset deletion.', response.status || null, 'ALBUM_ACCESS_SESSION_REQUIRED');
+    let payload: AdminAlbumWriteResponse;
+    try { payload = await response.json() as AdminAlbumWriteResponse; }
+    catch { throw new AlbumAdminError('Track Manager Album asset deletion returned invalid JSON.', response.status || null, 'ALBUM_ASSET_DELETE_INVALID_RESPONSE'); }
+    if (!response.ok || payload.ok === false) throw new AlbumAdminError(
+      albumWriteErrorMessage(payload, `Album asset deletion returned HTTP ${response.status}.`),
+      response.status,
+      payload.code || 'ALBUM_ASSET_DELETE_REJECTED',
+      payload.currentUpdatedAt || null,
+      payload.rollback || null,
+      payload.quality || null,
+      payload.verificationDetail || null,
+    );
+    return payload;
+  } finally {
+    globalThis.clearTimeout(timeout);
+  }
 }
 async function requireManage(capability: string) { const health = await getAdminBridgeHealth(); if (!(health.capabilities?.manage || []).includes(capability)) throw new AlbumAdminError(`Track Manager does not advertise ${capability}. The Album write stays locked.`); }
 async function verify(albumId: string, payload: AdminAlbumWriteResponse, options: { expectedTrackIds?: string[]; expectedMetadata?: AdminAlbumMetadataPatch } = {}): Promise<AdminAlbumWriteResponse> {
@@ -152,6 +218,116 @@ export async function uploadAdminAlbumAsset(albumId: string, kind: AdminAlbumAss
   let response: Response; try { response = await fetch(`${baseUrl()}/api/studio/albums/${encodeURIComponent(albumId)}/assets/${kind}/upload`, { method: 'POST', headers: { Accept: 'application/json' }, body: form, cache: 'no-store', credentials: 'include', mode: 'cors' }); } catch { throw new AlbumAdminError('Album asset upload failed before Track Manager returned a response. Reload canonical Album state before retrying.', null, 'ALBUM_ASSET_TRANSPORT'); }
   if (!isJson(response)) throw new AlbumAdminError('Cloudflare Access session is not available to Album asset upload.', response.status || null, 'ALBUM_ACCESS_SESSION_REQUIRED'); const payload = await response.json() as AdminAlbumWriteResponse; if (!response.ok) throw new AlbumAdminError(albumWriteErrorMessage(payload, `Album asset upload returned HTTP ${response.status}.`), response.status, payload.code || null, payload.currentUpdatedAt || null, payload.rollback || null, payload.quality || null, payload.verificationDetail || null); if (!payload.saved || !payload.updatedAt) throw new AlbumAdminError('Track Manager returned an invalid Album asset upload response.'); return verify(albumId, payload);
 }
-export async function deleteAdminAlbumAsset(albumId: string, kind: AdminAlbumAssetKind, expectedUpdatedAt: string) { assertId(albumId); if (!expectedUpdatedAt) throw new AlbumAdminError('Canonical Album revision is required.'); await requireManage('album-assets'); const payload = await writeJson(`/api/studio/albums/${encodeURIComponent(albumId)}/assets/${kind}/delete`, { intent: INTENT.deleteAsset, expectedUpdatedAt }); if (!payload.deleted || !payload.updatedAt) throw new AlbumAdminError('Track Manager returned an invalid Album asset delete response.'); return verify(albumId, payload); }
+export async function deleteAdminAlbumAsset(albumId: string, kind: AdminAlbumAssetKind, expectedUpdatedAt: string): Promise<AdminAlbumWriteResponse> {
+  assertId(albumId);
+  if (!expectedUpdatedAt) throw new AlbumAdminError('Canonical Album revision is required.');
+  await requireManage('album-assets');
+
+  const before = await getAdminAlbum(albumId);
+  const beforeManifest = before.album?.manifest;
+  const beforeAsset = before.album?.assets?.[kind];
+  if (!beforeManifest?.updatedAt || beforeManifest.updatedAt !== expectedUpdatedAt) {
+    throw new AlbumAdminError('The Album changed before this deletion began. Reload before another write.', 409, 'ALBUM_STALE_MANIFEST', beforeManifest?.updatedAt || null);
+  }
+  if (!beforeAsset?.present && !beforeManifest.assets?.[kind]) {
+    throw new AlbumAdminError('The canonical Album asset is already missing. Reload instead of issuing another destructive write.', 409, 'ALBUM_ASSET_ALREADY_MISSING', expectedUpdatedAt);
+  }
+
+  let payload: AdminAlbumWriteResponse;
+  try {
+    payload = await deleteAlbumAssetRequest(albumId, kind, expectedUpdatedAt);
+  } catch (reason) {
+    if (!(reason instanceof AlbumAdminError) || !['ALBUM_ASSET_DELETE_TIMEOUT', 'ALBUM_ASSET_DELETE_TRANSPORT'].includes(reason.code || '')) throw reason;
+    try {
+      const reread = await getAdminAlbum(albumId);
+      const manifest = reread.album?.manifest;
+      const asset = reread.album?.assets?.[kind];
+      const changed = Boolean(manifest?.updatedAt && manifest.updatedAt !== expectedUpdatedAt);
+      const missing = !manifest?.assets?.[kind] && asset?.present !== true;
+      if (changed && missing) {
+        return {
+          ok: true,
+          deleted: true,
+          albumId,
+          previousUpdatedAt: expectedUpdatedAt,
+          updatedAt: manifest?.updatedAt || null,
+          album: manifest,
+          clientVerified: true,
+          verificationWarning: null,
+          recoveredAfterTransportFailure: true,
+          retrySafe: false,
+          technicalDetails: `${reason.code}: response lost; canonical reread verified a new Album revision and the asset is absent.`,
+        };
+      }
+      if (!changed && !missing) {
+        throw new AlbumAdminError(
+          'Canonical Album reread proves the delete did not commit. The asset is still present at the original revision; an explicit retry is safe after connectivity or Access is restored.',
+          null,
+          'ALBUM_ASSET_DELETE_NOT_COMMITTED',
+          manifest?.updatedAt || expectedUpdatedAt,
+          null,
+          null,
+          null,
+          true,
+          reason.technicalDetails,
+        );
+      }
+      throw new AlbumAdminError(
+        'Canonical Album state changed while the delete response was unavailable, but Studio cannot prove this deletion caused it. Do not retry.',
+        null,
+        'ALBUM_ASSET_DELETE_AMBIGUOUS',
+        manifest?.updatedAt || null,
+        null,
+        null,
+        null,
+        false,
+        reason.technicalDetails,
+      );
+    } catch (rereadReason) {
+      if (rereadReason instanceof AlbumAdminError) throw rereadReason;
+      throw new AlbumAdminError(
+        'The Album delete response and canonical reread are both unavailable. Do not retry until Track Manager access is restored and the Album is reloaded.',
+        null,
+        'ALBUM_ASSET_DELETE_UNVERIFIED',
+        null,
+        null,
+        null,
+        null,
+        false,
+        rereadReason instanceof Error ? rereadReason.message : String(rereadReason),
+      );
+    }
+  }
+
+  if (!payload.deleted || !payload.updatedAt) throw new AlbumAdminError('Track Manager returned an invalid Album asset delete response.');
+  try {
+    const reread = await getAdminAlbum(albumId);
+    const manifest = reread.album?.manifest;
+    const asset = reread.album?.assets?.[kind];
+    const clientVerified = manifest?.updatedAt === payload.updatedAt && !manifest?.assets?.[kind] && asset?.present !== true;
+    if (!clientVerified) {
+      throw new AlbumAdminError(
+        'Track Manager reported Album asset deletion success, but the canonical reread did not verify the exact new revision plus asset absence. Do not retry.',
+        null,
+        'ALBUM_ASSET_DELETE_AMBIGUOUS',
+        manifest?.updatedAt || null,
+      );
+    }
+    return { ...payload, album: manifest, clientVerified: true, retrySafe: false };
+  } catch (reason) {
+    if (reason instanceof AlbumAdminError) throw reason;
+    throw new AlbumAdminError(
+      'Track Manager reported Album asset deletion success, but Studio could not complete the canonical reread. Do not retry until the Album is reloaded.',
+      null,
+      'ALBUM_ASSET_DELETE_UNVERIFIED',
+      null,
+      null,
+      null,
+      null,
+      false,
+      reason instanceof Error ? reason.message : String(reason),
+    );
+  }
+}
 
 export const albumAdminService = Object.freeze({ intents: INTENT, transport: 'Track Manager v5.23 / bridge v1.13 only' });
