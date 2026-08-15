@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-08-15 after explicit **Build92 REAL USER PASS**.
+Updated: 2026-08-15 after **Build93 DEPLOYED CANDIDATE** publication. Build92 remains REAL USER PASS.
 
 This file records what has actually been validated, what automated guards cover, and what remains unproven. It is not a full test-history dump.
 
@@ -20,13 +20,115 @@ Candidate docs PR       #159
 Candidate docs CI       31894353160 · SUCCESS
 Candidate docs merge    f46b846841e6ef9ce705b2fa3817baecd0aecefa
 Candidate docs Pages    31894411652 · SUCCESS
-Acceptance docs PR      PENDING
-Acceptance docs merge   PENDING
-Acceptance docs Pages   PENDING
+Acceptance docs PR      #160
+Acceptance docs CI      31896013803 · SUCCESS
+Acceptance docs merge   a26c8c0540607c99147c0b6d30b5d3c7ccf6efc9
+Acceptance docs Pages   31896073093 · SUCCESS
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
 Real-user verdict       BUILD92 PASS MADAFAKA · 2026-08-15
+```
+
+## Current deployed candidate
+
+```text
+Version                 v0.19.15
+Build                   Build93
+Status                  DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Runtime PR              #162
+Exact tested head       fcbe4c59a3a364d9665eba2ed432f37475116364
+Final CI                31898542379 · SUCCESS
+Historical CI #457      31898251689 · FAILURE · Phase7-C successor cap only · never merged
+Historical CI #458      31898329621 · FAILURE · Focus Build64 successor cap only · never merged
+Runtime merge           6c1ceb7d59971ec6c7e251532054392f02c08157
+Pages                   31898639778 · SUCCESS · exact runtime merge SHA
+Worker deploy           NONE
+Track Manager change    NONE
+R2 migration/write      NONE caused by deployment
+Real-user verdict       PENDING
+```
+
+## Build93 automated coverage — GREEN
+
+Final validation run `31898542379` passed the complete repository-native chain on exact head `fcbe4c59a3a364d9665eba2ed432f37475116364`, including:
+
+- private-read contract;
+- Phase5 algorithms;
+- Phase6 Lyrics contract;
+- C3 / Deep Audio / Album / parity guards;
+- PHASE UX guards;
+- Phase7 and Phase8 guards;
+- inherited Phase9 Build82 destructive-write ambiguity guard;
+- inherited Phase9 Build83 canonical Lyrics save response-loss guard;
+- inherited Phase9 Build84 SonicTrace save response-loss guard;
+- inherited Phase9 Build85 Album metadata response-loss guard;
+- inherited Phase9 Build86 Album move response-loss guard;
+- inherited Phase9 Build87 Album membership response-loss guard;
+- inherited Phase9 Build88 core private-read transient retry guard;
+- inherited Phase9 Build89 Album private-read transient retry guard;
+- inherited Phase9 Build90 Lyrics private-read transient retry guard;
+- inherited Phase9 Build91 SonicTrace private-read transient retry guard;
+- inherited Phase9 Build92 Track metadata response-loss guard;
+- new Phase9 Build93 Track metadata validation transient retry guard;
+- Studio Focus inherited regression guards through bounded Build93 successor compatibility;
+- TypeScript typecheck;
+- Vite production build.
+
+Historical run `31898251689` was red only because the inherited Phase7-C Build69 successor allowlist stopped at `0.19.14 / Build92`. No Build93 runtime behavior was changed to repair that run and the red head was never merged.
+
+Historical run `31898329621` then passed Phase7-C, Phase8 and the complete Phase9 Build82→Build93 chain — including the new Build93 guard — and failed only because inherited Studio Focus Build64 still stopped at `0.19.14 / Build92`. Focus Build64–67 were widened only to recognize `v0.19.15 / Build93` and preserve Build92 ancestry; their functional assertions remain intact. That red head was never merged.
+
+Build93 specifically guards the non-mutating Track metadata validation path:
+
+```text
+metadata-validate-v1 attempt 1
+├─ timeout                            → one retry max
+├─ transport/fetch interruption       → one retry max
+├─ HTTP 408/425/429/500/502/503/504  → one retry max
+├─ Access / deterministic ordinary 4xx → NO RETRY
+├─ invalid JSON / invalid proposal    → NO RETRY
+└─ success                            → return reviewed proposal
+
+attempt 2 failure → surface immediately
+```
+
+Additional Build93 guarantees:
+
+- maximum attempts are exactly two total;
+- the existing finite 7-second timeout remains per validation attempt;
+- visible **Validate** uses the hardened wrapper;
+- Build92's fresh validation immediately before explicit Save uses the same hardened wrapper;
+- plain and duration-aware `metadata-validate-v1` converge on the same bounded policy;
+- duration remains derived canonical evidence and is not made editable;
+- browser transport interruption is typed separately from Access in the duration-aware path;
+- Access/session gating does not enter transient retry;
+- invalid JSON/proposal shape does not enter transient retry;
+- no generic retry/backoff framework is introduced;
+- Build92 `metadata-save-v1` remains at zero automatic write retries;
+- Build92 committed / not-committed / ambiguous / unverified response-loss recovery remains unchanged;
+- no Track Manager, Worker or R2 schema/data mutation was required.
+
+## Build93 real-user smoke — PENDING
+
+The required acceptance smoke is intentionally a **normal-browser metadata validation regression**, not a manufactured transient-failure test.
+
+Required boundary:
+
+- hard refresh to deployed `v0.19.15 · Build93`;
+- open one safe existing private canonical Track;
+- choose one harmless reversible metadata edit;
+- click **Validate** and confirm the normalized proposal appears normally without a phantom Access error;
+- optionally perform one normal explicit **Save** to traverse the existing Build92 path;
+- if saved, confirm `CANONICAL REREAD · VERIFIED` and persistence after reload;
+- surrounding Track / Albums / Lyrics / SonicTrace navigation sanity.
+
+Do **not** cut network, expire Cloudflare Access or manufacture timeout/transport/transient-HTTP branches. Automated guards own retry classification and attempt-bound proof.
+
+Until explicit user verdict:
+
+```text
+Build93 = DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
 ```
 
 ## Build92 automated coverage — GREEN
@@ -746,7 +848,7 @@ Deep Audio              2.0.3-alpha
 LRC Maker               6.3.8
 ```
 
-Build92 does not supersede those products' independent validation histories.
+Build93 does not supersede those products' independent validation histories.
 
 ## Core contracts that must remain guarded
 
@@ -765,6 +867,10 @@ Build92 does not supersede those products' independent validation histories.
 ### Track metadata
 
 - `metadata-validate-v1` remains non-mutating;
+- Build93 allows that non-mutating validation one bounded retry only for timeout, transport interruption and HTTP `408/425/429/500/502/503/504`;
+- Build93 validation maximum is two total attempts;
+- Access/deterministic ordinary 4xx and invalid JSON/proposal do not retry;
+- visible Validate and Build92 fresh pre-save validation use the same bounded validation wrapper;
 - `metadata-save-v1` remains guarded by exact `expectedUpdatedAt`;
 - Build92 repeats validation immediately before save to obtain the exact normalized proposal;
 - derived `duration` may be included from canonical audio evidence but remains non-editable;
@@ -773,7 +879,8 @@ Build92 does not supersede those products' independent validation histories.
 - unchanged revision proves not committed / explicit retry safe after reconnect;
 - changed but non-matching revision is ambiguous;
 - reread unavailable is unverified;
-- recovered canonical Track truth does not fabricate an independently unobservable catalog rebuild receipt.
+- recovered canonical Track truth does not fabricate an independently unobservable catalog rebuild receipt;
+- Build93 does not authorize any automatic write retry.
 
 ### Lyrics
 
@@ -813,7 +920,8 @@ Build92 does not supersede those products' independent validation histories.
 - no blind retry after response loss;
 - canonical reread must prove exact operation-specific postconditions;
 - Build88, Build89, Build90 and Build91 do not alter any write retry rule;
-- Build92 adds operation-specific Track metadata recovery only and must not be generalized to create/upload or another write family.
+- Build92 adds operation-specific Track metadata recovery only and must not be generalized to create/upload or another write family;
+- Build93 adds bounded retry only to a non-mutating validation operation and must not be generalized into write retry.
 
 ### Release Campaign
 
@@ -831,11 +939,11 @@ Git history shows the public-cover credential/fetch path was corrected in Build6
 
 ## Known open QA gaps / next audits
 
-No Build92 acceptance blocker remains.
+Build93 real-user smoke is the current blocker.
 
-Before any successor runtime work, perform a fresh bounded post-Build92 Phase9 audit. Candidate areas include Album asset upload response-loss truth, Album create response-loss truth, degraded/offline/PWA behavior, or another smaller reliability gap only if fresh evidence proves it.
+After Build93 acceptance, perform a fresh bounded Phase9 audit before any successor allocation. Album asset upload and Album create remain known heavier candidates; degraded/offline/PWA remains cross-cutting. A smaller gap may win only if fresh evidence proves it.
 
-**Build93 is unallocated** until that fresh bounded audit proves a concrete scope.
+**Build94 is unallocated** until Build93 acceptance plus a fresh bounded audit proves a concrete scope.
 
 ## Standard validation commands
 
