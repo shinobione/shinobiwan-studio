@@ -4,7 +4,7 @@ Date: 2026-08-16
 Version: `v0.19.18`  
 Build: `96`  
 Codename: `studio-focus-slice4-phase9-album-create-success-verification-truth`  
-Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+Status: **REAL USER PASS · ACCEPTED**
 
 ## Fresh-audit decision
 
@@ -77,15 +77,25 @@ Track Manager change    NONE
 R2 migration/write      NONE caused by implementation/deployment
 ```
 
-## Human acceptance boundary
+## Human acceptance — PASS
 
-Build96 is **deployed candidate only** until an explicit real-user verdict is received.
-
-A throwaway canonical Album must **not** be created merely to manufacture smoke evidence: Album IDs are immutable and Studio intentionally exposes no whole-Album deletion. Human verification of the changed create path should therefore use a **real Album / EP / collection the artist genuinely intends to create**. Until such a real create is available and succeeds with the requested metadata preserved canonically, Build96 remains pending human acceptance.
-
-No network cut, Cloudflare invalidation or lost-response failure needs to be manufactured. Build96 concerns normal successful create verification only; lost-response recovery remains explicitly out of scope.
+Build96 received explicit real-user acceptance on 2026-08-16:
 
 ```text
-Build96 = DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
-Build97 = UNALLOCATED
+Build 96 SMOKED 💨
+```
+
+The changed path was verified using a **real Album / EP / collection the artist genuinely intended to create**, avoiding a throwaway immutable canonical Album ID. The normal successful create completed and the requested create metadata remained canonical after reload.
+
+No network cut, Cloudflare invalidation or lost-response failure was manufactured. Build96 concerns normal successful create verification only; create lost-response recovery remains explicitly out of scope, with zero automatic create retries.
+
+```text
+Build96 = REAL USER PASS · ACCEPTED
+Build97 = UNALLOCATED pending acceptance-docs closeout + fresh audit
+```
+
+Acceptance closeout safety checkpoint:
+
+```text
+safety/post-build96-real-user-pass-20260816
 ```

@@ -1,38 +1,35 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-16 after **Build95 REAL USER PASS** and completed seven-document acceptance closeout; final receipts synchronized.
+Updated: 2026-08-16 after **Build96 REAL USER PASS**; seven-document acceptance closeout in progress.
 
 This file is the short current checkpoint. It is the first project-state document to read after `AGENTS.md`.
 
 ## Current accepted runtime
 
 ```text
-Studio version          v0.19.17
-Studio build            Build95
-Codename                studio-focus-slice4-phase9-albums-daily-resilient-service-convergence
+Studio version          v0.19.18
+Studio build            Build96
+Codename                studio-focus-slice4-phase9-album-create-success-verification-truth
 Acceptance              REAL USER PASS
-Runtime PR              #171
-Exact tested head       f7d4ccfbfdebf7dba6cf419ca9eca1c862a16d4b
-Final runtime CI        31911514334 · SUCCESS
-Runtime merge SHA       0ad5e48f17c658c6b85c2ae405d32e874d2306d6
-Runtime Pages           31911568069 · SUCCESS · exact runtime merge SHA
-Candidate docs PR       #172
-Candidate docs CI       31911702567 · SUCCESS
-Candidate docs merge    1bff0a18588b274a6cb0200cb6bd90b377b0c1af
-Candidate docs Pages    31911746874 · SUCCESS
-Acceptance docs PR      #173
-Acceptance docs CI      31912389047 · SUCCESS
-Acceptance docs merge   f6738d56eddcadc2810c7d5413700e14b20f71a3
-Acceptance docs Pages   31912432617 · SUCCESS
-Real-user smoke         BUILD95 PASS MADAFAKA · 2026-08-16
-Safety post-deploy      safety/post-build95-deployed-candidate-20260815
-Safety post-acceptance  safety/post-build95-real-user-pass-20260816
+Runtime PR              #175
+Exact tested head       8ee5711d57f3a3986bf1e054b637f8ee3d5f7efe
+Final runtime CI        31912951430 · SUCCESS
+Runtime merge SHA       1cb14c3ad96087cd9f8fc7de62119b8b5be0ee94
+Runtime Pages           31913006240 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #176
+Candidate docs CI       31913104842 · SUCCESS
+Candidate docs merge    dbb8bab680ab3cad5ef8f11fa276f3e9bb3dd43a
+Candidate docs Pages    31913138348 · SUCCESS
+Acceptance docs         IN PROGRESS
+Real-user smoke         Build 96 SMOKED 💨 · 2026-08-16
+Safety post-deploy      safety/post-build96-deployed-candidate-20260816
+Safety post-acceptance  safety/post-build96-real-user-pass-20260816
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by implementation/deployment
 ```
 
-Build95 is the latest **accepted** Studio runtime. Build94 remains its accepted predecessor. The seven-document acceptance closeout passed CI `31912389047`, merged at `f6738d56eddcadc2810c7d5413700e14b20f71a3`, and Pages `31912432617` succeeded on that exact merge.
+Build96 is the latest **accepted** Studio runtime. Build95 remains its accepted predecessor. Acceptance-docs closeout is now the only remaining Build96 administrative step before the next fresh read-only audit.
 
 ## Current ecosystem baseline
 
@@ -63,6 +60,8 @@ Build94 changes only the Studio-side non-mutating canonical Lyrics **validation*
 
 Build95 changes only the **daily Albums UI wiring**. `AlbumsWorkspace` now routes metadata save through Build85 resilient truth, Album move through Build86 resilient truth, and ordered membership save through Build87 resilient truth. The underlying resilient algorithms are unchanged; create/upload/delete remain outside scope.
 
+Build96 changes only **normal successful Album create verification**. The shared create service now rereads canonical Album state and compares the exact response/canonical revision plus every metadata key supplied to create before reporting `clientVerified=true`. Create response-loss recovery, operation IDs, automatic create retry and binary-upload digest proof remain explicitly out of scope.
+
 ## Program position
 
 ```text
@@ -86,10 +85,26 @@ Phase 9 Slice11         COMPLETE · Build92 REAL USER PASS
 Phase 9 Slice12         COMPLETE · Build93 REAL USER PASS
 Phase 9 Slice13         COMPLETE · Build94 REAL USER PASS
 Phase 9 Slice14         COMPLETE · Build95 REAL USER PASS
-Build96                 UNALLOCATED pending fresh read-only audit
+Phase 9 Slice15         COMPLETE · Build96 REAL USER PASS
+Build97                 UNALLOCATED pending fresh read-only audit
 Phase 10                FUTURE
 Official Phase 11       NONE
 ```
+
+## Build96 accepted behavior
+
+The fresh post-Build95 audit selected **normal successful Album create canonical verification** as the smallest coherent gap. Build96 does not attempt lost-response causality.
+
+```text
+album-create-v1 HTTP success
+→ private canonical Album reread
+→ exact response/canonical revision
+→ exact match for every requested create metadata key
+   ├─ exact → clientVerified=true
+   └─ mismatch / reread unavailable → clientVerified=false + warning
+```
+
+Real-user verification used a genuine intended Album/EP/collection rather than a throwaway canonical ID and returned explicit verdict **`Build 96 SMOKED 💨`** on 2026-08-16. No network/Access failure was manufactured. Create lost-response recovery remains `not-covered-no-operation-id-no-blind-retry`, with zero automatic create retries.
 
 ## Build95 accepted behavior
 
