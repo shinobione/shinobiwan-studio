@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-15 after **Build93 deployed candidate** publication. Build92 remains REAL USER PASS.
+Updated: 2026-08-15 after **Build93 REAL USER PASS**.
 
 This file is the durable roadmap summary. Historical implementation detail belongs in `docs/` and `changelogs/`; do not copy it here unless it changes what is done, active, next or backlogged.
 
@@ -127,7 +127,7 @@ The fresh post-Build86 audit selected Album bulk membership / ordered tracklist 
 Accepted evidence and behavior:
 
 - exact-head CI `31870328730` SUCCESS on first run;
-- runtime PR #141 merged at `b9e1f121c7dc11102ed994717b50f6d8189b0d`;
+- runtime PR #141 merged at `b9e1f121c7dc111ee6db06fd4d00227426d96ce7`;
 - Pages `31870370403` SUCCESS on that exact merge;
 - candidate docs PR #142 merged at `453be9e9d72c9d90cd97ad5f57be02821efec12a`;
 - candidate docs Pages `31870838391` SUCCESS;
@@ -308,37 +308,49 @@ Accepted evidence and behavior:
 - acceptance did not manufacture a network/Access/response-loss branch;
 - no Track create, asset upload/delete, Album create/upload, Lyrics/SonicTrace write, PWA/offline, Track Manager/Worker or R2 schema/data change.
 
-## In progress
-
 ### Phase 9 Slice12 — Track metadata validation transient retry truth
 
-**Build93 · v0.19.15 · DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+**Build93 · v0.19.15 · REAL USER PASS**
 
 The fresh post-Build92 audit selected non-mutating Track metadata validation as the smallest coherent remaining reliability gap. Album upload/create still require stronger causality contracts; degraded/offline/PWA remains cross-cutting.
 
-Candidate evidence and behavior:
+Accepted evidence and behavior:
 
 - runtime PR #162;
 - exact tested head `fcbe4c59a3a364d9665eba2ed432f37475116364`;
 - final runtime CI `31898542379` SUCCESS;
-- historical CI `31898251689` failed only at the inherited Phase7-C Build69 successor cap;
-- historical CI `31898329621` then passed Phase7-C, Phase8 and Phase9 Build82→93 and failed only at the inherited Focus Build64 successor cap;
+- historical CI `31898251689` failed only at the inherited Phase7-C Build69 successor cap and was never merged;
+- historical CI `31898329621` then passed Phase7-C, Phase8 and Phase9 Build82→93 and failed only at the inherited Focus Build64 successor cap; it was never merged;
 - Focus64–67 were widened only to recognize v0.19.15/Build93 while retaining functional assertions;
 - runtime merge `6c1ceb7d59971ec6c7e251532054392f02c08157`;
 - Pages `31898639778` SUCCESS on that exact merge;
+- candidate docs PR #163 passed CI `31899284370`, merged at `6464659428e34a679c8acfeb481bfaca78e05bc7`, and candidate docs Pages `31899342536` SUCCESS;
 - visible Track metadata **Validate** and Build92 fresh pre-save validation share the hardened wrapper;
 - plain and duration-aware `metadata-validate-v1` both get at most one bounded retry;
 - timeout / transport / HTTP `408/425/429/500/502/503/504` may retry once;
 - Access/deterministic ordinary 4xx and invalid JSON/proposal never retry;
 - maximum two total attempts;
 - Build92 `metadata-save-v1` stays zero automatic write retries;
+- explicit real-user verdict **`BUILD93 PASS MADAFAKA`** on 2026-08-15;
+- acceptance used normal browser regression and did **not** deliberately cut network or invalidate Cloudflare Access to manufacture a transient retry;
 - no Track Manager, Worker, R2 schema/data migration or cross-product runtime change.
+
+## In progress
+
+### Build93 acceptance-docs closeout
+
+Build93 is accepted. The remaining action is governance-only: merge/deploy the exact seven-document acceptance closeout and then freeze a final post-closeout checkpoint. This creates no new Studio build.
 
 ## Next
 
-Run the bounded normal-browser Build93 metadata validation regression smoke. Do not deliberately cut network/Access to manufacture a transient failure. If accepted, run a fresh read-only post-Build93 audit before allocating any successor.
+After acceptance-docs closeout, run a fresh read-only post-Build93 Phase9 reliability audit. Audit candidates include:
 
-**Build94 remains UNALLOCATED.**
+1. Album asset upload response-loss truth;
+2. Album create response-loss truth;
+3. degraded/offline/PWA resilience;
+4. any newly proven smaller bounded reliability gap.
+
+Pick **one** coherent slice only after fresh proof. **Build94 remains UNALLOCATED.**
 
 ## Backlog
 
@@ -369,8 +381,8 @@ There is currently **no official Phase 11**.
 - Do not generalize GET retry into write retry.
 - Do not generalize non-mutating validation retry into write retry.
 - Do not generalize one write family's recovery postcondition into another operation family.
-- Do not allocate Build94 before Build93 acceptance plus a fresh bounded post-Build93 audit.
+- Do not allocate Build94 before a fresh bounded post-Build93 audit selects its scope.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build93 candidate smoke boundary.
+See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build93 REAL USER PASS boundary.
