@@ -1,27 +1,88 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-08-15 after explicit **Build94 REAL USER PASS**; acceptance-docs closeout is in progress.
+Updated: 2026-08-16 after explicit **Build95 REAL USER PASS**; acceptance-docs closeout is in progress.
 
 This file records what has actually been validated, what automated guards cover, and what remains unproven. It is not a full test-history dump.
 
 ## Current accepted Studio runtime
 
 ```text
-Version                 v0.19.16
-Build                   Build94
+Version                 v0.19.17
+Build                   Build95
 Status                  REAL USER PASS
-Runtime PR              #169
-Exact tested head       81298582163505a11378fe1094f800f1f3d437b5
-Final CI                31907745153 · SUCCESS
-Runtime merge           fe636560de9ca5f3f33aae76dddc5474ba990f17
-Pages                   31907784289 · SUCCESS · exact runtime merge SHA
-Safety post-deploy      safety/post-build94-deployed-candidate-20260815-2338
-Safety post-acceptance  safety/post-build94-real-user-pass-20260815-2346
+Runtime PR              #171
+Exact tested head       f7d4ccfbfdebf7dba6cf419ca9eca1c862a16d4b
+Final CI                31911514334 · SUCCESS
+Runtime merge           0ad5e48f17c658c6b85c2ae405d32e874d2306d6
+Pages                   31911568069 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #172
+Candidate docs CI       31911702567 · SUCCESS
+Candidate docs merge    1bff0a18588b274a6cb0200cb6bd90b377b0c1af
+Candidate docs Pages    31911746874 · SUCCESS
+Safety post-deploy      safety/post-build95-deployed-candidate-20260815
+Safety post-acceptance  safety/post-build95-real-user-pass-20260816
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by implementation/deployment
-Real-user verdict       BUILD94 PASS MADAFAKA · 2026-08-15
+Real-user verdict       BUILD95 PASS MADAFAKA · 2026-08-16
 ```
+
+## Build95 automated coverage — GREEN
+
+Final validation run `31911514334` passed the complete repository-native chain on exact head `f7d4ccfbfdebf7dba6cf419ca9eca1c862a16d4b`, including private-read, Phase5/6, C3, UX, Phase7, Phase8, Phase9 Build82→Build95, Studio Focus successor guards, TypeScript typecheck and Vite production build.
+
+Two historical red Build95 runs remain explicit and were never merged:
+
+```text
+31911328839  FAILURE · inherited Phase7-C Build69 successor cap only
+31911459367  FAILURE · inherited Build93 successor cap only
+```
+
+Only stale successor allowlists/ancestry assertions were widened. No Build95 product semantics were changed to repair those red runs.
+
+Build95 specifically guards the **real daily Albums route**:
+
+```text
+App → AlbumHealthWorkspace → AlbumsWorkspace
+  metadata save   → saveAdminAlbumMetadataResilient()   / Build85
+  Album move      → moveAdminAlbumTrackResilient()      / Build86
+  tracklist save  → saveAdminAlbumMembershipResilient() / Build87
+```
+
+Additional Build95 guarantees:
+
+- older generic metadata/membership/move mutations are absent from the daily workspace;
+- recovered-after-lost-response UI truth explicitly states Studio did not retry the write;
+- Build85/86/87 operation-specific postconditions and no-blind-retry policies remain inherited unchanged;
+- `createAdminAlbum`, Album binary upload and Album asset delete remain outside Build95 scope;
+- no Track Manager, Worker or R2 schema/data mutation was required.
+
+## Build95 real-user smoke — PASS
+
+The user completed the bounded normal-browser smoke and returned the explicit verdict:
+
+```text
+BUILD95 PASS MADAFAKA
+```
+
+The accepted smoke boundary covered:
+
+- hard refresh to deployed `v0.19.17 · Build95`;
+- opening an existing safe Album from the normal Albums surface;
+- one harmless/reversible metadata save and persistence after reload;
+- one ordered tracklist save and persistence after reload;
+- coherent `Move to…` control presence without forcing an unnecessary destructive move merely to manufacture evidence;
+- surrounding `Albums → Track → Lyrics → SonicTrace → Albums` navigation sanity.
+
+Acceptance intentionally did **not** cut network, invalidate Cloudflare Access or manufacture lost-response branches. Automated guards own the failure-path classification and daily-route wiring proof.
+
+Result:
+
+```text
+Build95 = REAL USER PASS
+```
+
+No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration or cross-repository runtime change was required to reach acceptance.
 
 ## Build94 automated coverage — GREEN
 

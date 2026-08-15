@@ -1,30 +1,34 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-15 after explicit **`BUILD94 PASS MADAFAKA`** real-user browser acceptance; acceptance-docs closeout is in progress on an isolated docs branch.
+Updated: 2026-08-16 after explicit **`BUILD95 PASS MADAFAKA`** real-user browser acceptance; acceptance-docs closeout is in progress on an isolated docs branch.
 
 This file is the short current checkpoint. It is the first project-state document to read after `AGENTS.md`.
 
 ## Current accepted runtime
 
 ```text
-Studio version          v0.19.16
-Studio build            Build94
-Codename                studio-focus-slice4-phase9-lyrics-validation-transient-retry-truth
+Studio version          v0.19.17
+Studio build            Build95
+Codename                studio-focus-slice4-phase9-albums-daily-resilient-service-convergence
 Acceptance              REAL USER PASS
-Runtime PR              #169
-Exact tested head       81298582163505a11378fe1094f800f1f3d437b5
-Final runtime CI        31907745153 · SUCCESS
-Runtime merge SHA       fe636560de9ca5f3f33aae76dddc5474ba990f17
-Runtime Pages           31907784289 · SUCCESS · exact runtime merge SHA
-Real-user smoke         BUILD94 PASS MADAFAKA · 2026-08-15
-Safety post-deploy      safety/post-build94-deployed-candidate-20260815-2338
-Safety post-acceptance  safety/post-build94-real-user-pass-20260815-2346
+Runtime PR              #171
+Exact tested head       f7d4ccfbfdebf7dba6cf419ca9eca1c862a16d4b
+Final runtime CI        31911514334 · SUCCESS
+Runtime merge SHA       0ad5e48f17c658c6b85c2ae405d32e874d2306d6
+Runtime Pages           31911568069 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #172
+Candidate docs CI       31911702567 · SUCCESS
+Candidate docs merge    1bff0a18588b274a6cb0200cb6bd90b377b0c1af
+Candidate docs Pages    31911746874 · SUCCESS
+Real-user smoke         BUILD95 PASS MADAFAKA · 2026-08-16
+Safety post-deploy      safety/post-build95-deployed-candidate-20260815
+Safety post-acceptance  safety/post-build95-real-user-pass-20260816
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by implementation/deployment
 ```
 
-Build94 is the latest **accepted** Studio runtime. Build93 remains its accepted predecessor. Acceptance-docs CI/merge/Pages receipts are intentionally not fabricated before this docs branch passes its own gate.
+Build95 is the latest **accepted** Studio runtime. Build94 remains its accepted predecessor. Acceptance-docs CI/merge/Pages receipts are intentionally not fabricated before this docs branch passes its own gate.
 
 ## Current ecosystem baseline
 
@@ -53,6 +57,8 @@ Build93 changes only the Studio-side non-mutating Track **metadata validation** 
 
 Build94 changes only the Studio-side non-mutating canonical Lyrics **validation** transport. Visible Lyrics Validate may receive one bounded retry after timeout, browser transport interruption or HTTP `408/425/429/500/502/503/504`; maximum attempts are two with a finite 9-second timeout per attempt. Access/session gating, deterministic ordinary 4xx and invalid JSON/proposal remain non-retry. `lyrics-save-v1` remains zero automatic retries and Build83 save response-loss reread truth is unchanged.
 
+Build95 changes only the **daily Albums UI wiring**. `AlbumsWorkspace` now routes metadata save through Build85 resilient truth, Album move through Build86 resilient truth, and ordered membership save through Build87 resilient truth. The underlying resilient algorithms are unchanged; create/upload/delete remain outside scope.
+
 ## Program position
 
 ```text
@@ -75,9 +81,25 @@ Phase 9 Slice10         COMPLETE · Build91 REAL USER PASS
 Phase 9 Slice11         COMPLETE · Build92 REAL USER PASS
 Phase 9 Slice12         COMPLETE · Build93 REAL USER PASS
 Phase 9 Slice13         COMPLETE · Build94 REAL USER PASS
+Phase 9 Slice14         COMPLETE · Build95 REAL USER PASS
+Build96                 UNALLOCATED pending fresh read-only audit
 Phase 10                FUTURE
 Official Phase 11       NONE
 ```
+
+## Build95 accepted behavior
+
+The fresh post-Build94 audit found a daily Albums wiring gap: accepted Build85/86/87 resilient services existed, but the normal `AlbumsWorkspace` still used older generic metadata / membership / move mutations.
+
+Build95 converges the real daily route onto those accepted engines without changing their algorithms:
+
+```text
+Album metadata save   → Build85 resilient service
+Album move            → Build86 resilient service
+Album tracklist save  → Build87 resilient service
+```
+
+The bounded browser smoke received explicit **`BUILD95 PASS MADAFAKA`** on 2026-08-16 after normal metadata persistence, ordered tracklist persistence, coherent Move UI presence and surrounding navigation regression. No failure branch was deliberately manufactured. Album create, binary upload and asset delete remain separate audit families.
 
 ## Build82–84 accepted behavior
 

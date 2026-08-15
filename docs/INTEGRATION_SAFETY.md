@@ -2,8 +2,8 @@
 
 Date established: 2026-08-08  
 Hardened: 2026-08-09  
-Current-state overlay refreshed: 2026-08-15  
-Current accepted Studio release: `v0.19.16` / Build `94` / REAL USER PASS
+Current-state overlay refreshed: 2026-08-16  
+Current accepted Studio release: `v0.19.17` / Build `95` / REAL USER PASS
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -21,14 +21,15 @@ For short current state, read root `PROJECT_STATE.md` first. This file contains 
 
 ```text
 Studio accepted
-  v0.19.16 / Build94 / REAL USER PASS
-  exact tested head 81298582163505a11378fe1094f800f1f3d437b5
-  final runtime CI 31907745153 / SUCCESS
-  runtime merge fe636560de9ca5f3f33aae76dddc5474ba990f17
-  runtime Pages 31907784289 / SUCCESS
-  browser smoke BUILD94 PASS MADAFAKA / 2026-08-15
-  safety post-deploy safety/post-build94-deployed-candidate-20260815-2338
-  safety post-acceptance safety/post-build94-real-user-pass-20260815-2346
+  v0.19.17 / Build95 / REAL USER PASS
+  exact tested head f7d4ccfbfdebf7dba6cf419ca9eca1c862a16d4b
+  final runtime CI 31911514334 / SUCCESS
+  runtime merge 0ad5e48f17c658c6b85c2ae405d32e874d2306d6
+  runtime Pages 31911568069 / SUCCESS
+  candidate docs PR #172 / CI 31911702567 / merge 1bff0a18588b274a6cb0200cb6bd90b377b0c1af / Pages 31911746874 SUCCESS
+  browser smoke BUILD95 PASS MADAFAKA / 2026-08-16
+  safety post-deploy safety/post-build95-deployed-candidate-20260815
+  safety post-acceptance safety/post-build95-real-user-pass-20260816
   Worker deploy NONE
   Track Manager change NONE
   R2 migration/write NONE caused by implementation/deployment
@@ -226,6 +227,22 @@ Build94 deployed-candidate checkpoint:
 
 Build94 explicit real-user acceptance checkpoint:
   safety/post-build94-real-user-pass-20260815-2346
+
+Before Phase9 Build95:
+  safety/pre-phase9-albums-daily-resilient-convergence-build95-20260815
+
+After Build95 implementation before PR:
+  safety/post-build95-prepr-20260815
+
+After Build95 green exact-head validation:
+  safety/post-build95-green-premerge-20260815
+
+After Build95 deployment candidate:
+  safety/post-build95-deployed-candidate-20260815
+  safety/post-build95-candidate-docs-closeout-20260815
+
+After Build95 explicit real-user acceptance:
+  safety/post-build95-real-user-pass-20260816
 ```
 
 Earlier accepted safety branches remain preserved in Git history.
@@ -297,6 +314,8 @@ Build92 changes only Studio-side canonical Track **metadata save response-loss t
 Build93 changes only Studio-side non-mutating Track **metadata validation transient retry truth**. It permits at most one retry for timeout/transport/selected transient HTTP failures in `metadata-validate-v1`, including visible Validate and Build92 fresh pre-save validation. It does not change `metadata-save-v1`, Track Manager, Workers, R2 schema/data or any other operation family. Build93 is **REAL USER PASS** after explicit normal-browser acceptance.
 
 Build94 changes only Studio-side non-mutating canonical Lyrics **validation transient retry truth**. It permits at most one retry for timeout/transport/selected transient HTTP failures in `lyrics-validate-v1`, with maximum two total attempts and finite 9-second timeout per attempt. It does **not** change `lyrics-save-v1`, Build83 save response-loss recovery, Track Manager, Workers, R2 schema/data or any other operation family. Build94 is **REAL USER PASS** after explicit normal-browser acceptance.
+
+Build95 changes only the **daily Albums UI wiring**. The normal `AlbumsWorkspace` now consumes the already accepted Build85 metadata, Build86 move and Build87 membership resilient services. Their recovery algorithms, Track Manager authority and no-blind-retry boundaries remain unchanged. Album create, binary upload and asset delete remain outside Build95 scope. Build95 is **REAL USER PASS** after explicit normal-browser acceptance.
 
 ### SonicTrace
 
