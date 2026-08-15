@@ -1,38 +1,30 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-15 after explicit **`BUILD93 PASS MADAFAKA`** real-user browser acceptance and published acceptance-docs closeout.
+Updated: 2026-08-15 after explicit **`BUILD94 PASS MADAFAKA`** real-user browser acceptance; acceptance-docs closeout is in progress on an isolated docs branch.
 
 This file is the short current checkpoint. It is the first project-state document to read after `AGENTS.md`.
 
 ## Current accepted runtime
 
 ```text
-Studio version          v0.19.15
-Studio build            Build93
-Codename                studio-focus-slice4-phase9-track-metadata-validation-transient-retry-truth
+Studio version          v0.19.16
+Studio build            Build94
+Codename                studio-focus-slice4-phase9-lyrics-validation-transient-retry-truth
 Acceptance              REAL USER PASS
-Runtime PR              #162
-Exact tested head       fcbe4c59a3a364d9665eba2ed432f37475116364
-Final runtime CI        31898542379 · SUCCESS
-Historical CI #457      31898251689 · FAILURE · Phase7-C successor cap only · never merged
-Historical CI #458      31898329621 · FAILURE · Focus Build64 successor cap only · never merged
-Runtime merge SHA       6c1ceb7d59971ec6c7e251532054392f02c08157
-Runtime Pages           31898639778 · SUCCESS · exact runtime merge SHA
-Candidate docs PR       #163
-Candidate docs CI       31899284370 · SUCCESS
-Candidate docs merge    6464659428e34a679c8acfeb481bfaca78e05bc7
-Candidate docs Pages    31899342536 · SUCCESS · exact docs merge SHA
-Acceptance docs PR      #164
-Acceptance docs CI      31901050237 · SUCCESS
-Acceptance docs merge   8df0417ee4d96de1e1b386c0fb15af60dcdbc661
-Acceptance docs Pages   31901109789 · SUCCESS · exact docs merge SHA
-Real-user smoke         BUILD93 PASS MADAFAKA · 2026-08-15
+Runtime PR              #169
+Exact tested head       81298582163505a11378fe1094f800f1f3d437b5
+Final runtime CI        31907745153 · SUCCESS
+Runtime merge SHA       fe636560de9ca5f3f33aae76dddc5474ba990f17
+Runtime Pages           31907784289 · SUCCESS · exact runtime merge SHA
+Real-user smoke         BUILD94 PASS MADAFAKA · 2026-08-15
+Safety post-deploy      safety/post-build94-deployed-candidate-20260815-2338
+Safety post-acceptance  safety/post-build94-real-user-pass-20260815-2346
 Worker deploy           NONE
 Track Manager change    NONE
-R2 migration/write      NONE caused by deployment
+R2 migration/write      NONE caused by implementation/deployment
 ```
 
-Build93 is the latest **accepted** Studio runtime. Build92 remains its accepted predecessor.
+Build94 is the latest **accepted** Studio runtime. Build93 remains its accepted predecessor. Acceptance-docs CI/merge/Pages receipts are intentionally not fabricated before this docs branch passes its own gate.
 
 ## Current ecosystem baseline
 
@@ -59,6 +51,8 @@ Build92 changes only the Studio-side canonical Track **metadata save** truth. It
 
 Build93 changes only the Studio-side non-mutating Track **metadata validation** transport. Visible Validate and Build92 fresh pre-save validation may receive one bounded retry after timeout, browser transport interruption or HTTP `408/425/429/500/502/503/504`. Access/deterministic ordinary 4xx and invalid JSON/proposal remain non-retry. Build92 `metadata-save-v1` remains zero automatic write retries.
 
+Build94 changes only the Studio-side non-mutating canonical Lyrics **validation** transport. Visible Lyrics Validate may receive one bounded retry after timeout, browser transport interruption or HTTP `408/425/429/500/502/503/504`; maximum attempts are two with a finite 9-second timeout per attempt. Access/session gating, deterministic ordinary 4xx and invalid JSON/proposal remain non-retry. `lyrics-save-v1` remains zero automatic retries and Build83 save response-loss reread truth is unchanged.
+
 ## Program position
 
 ```text
@@ -80,6 +74,7 @@ Phase 9 Slice9          COMPLETE · Build90 REAL USER PASS
 Phase 9 Slice10         COMPLETE · Build91 REAL USER PASS
 Phase 9 Slice11         COMPLETE · Build92 REAL USER PASS
 Phase 9 Slice12         COMPLETE · Build93 REAL USER PASS
+Phase 9 Slice13         COMPLETE · Build94 REAL USER PASS
 Phase 10                FUTURE
 Official Phase 11       NONE
 ```
@@ -232,7 +227,7 @@ invalid JSON                     → invalid-response · NO RETRY
 
 There are at most **two total attempts**. A second transient failure surfaces immediately.
 
-Build83 write truth remains unchanged: `lyrics-validate-v1` / `lyrics-save-v1` POSTs are not retried, `LYRICS_SAVE_TIMEOUT` / `LYRICS_SAVE_TRANSPORT` remain intact, and lost saves still classify committed / not committed / ambiguous / unverified through private canonical Lyrics + Track reread. The only improvement is that the Lyrics side of that reread may survive one transient GET failure.
+Build83 write truth remains unchanged: `lyrics-validate-v1` / `lyrics-save-v1` POSTs are not retried by Build90, `LYRICS_SAVE_TIMEOUT` / `LYRICS_SAVE_TRANSPORT` remain intact, and lost saves still classify committed / not committed / ambiguous / unverified through private canonical Lyrics + Track reread. The only improvement is that the Lyrics side of that reread may survive one transient GET failure.
 
 The bounded normal-browser smoke received explicit **`BUILD90 PASS MADAFAKA`** on 2026-08-15 after deployed version verification, canonical `lyrics.txt` loading on an existing Track, and surrounding Track / Albums / SonicTrace / Lyrics navigation sanity. Acceptance intentionally did **not** cut network, invalidate Cloudflare Access or manufacture transient failure branches.
 
@@ -258,7 +253,7 @@ There are at most **two total attempts**. A second transient failure surfaces im
 
 Build84 write truth remains unchanged: `sonictrace-analysis-save-v1` POSTs are not retried, `SONICTRACE_SAVE_TIMEOUT` / `SONICTRACE_SAVE_TRANSPORT` remain intact, and lost saves still classify committed / not committed / ambiguous / unverified through private canonical latest/history reread. The only improvement is that those canonical readbacks may survive one transient GET failure.
 
-The bounded normal-browser smoke received explicit **`BUILD91 PASS MADAFAKA`** on 2026-08-15 after deployed version verification, normal canonical SonicTrace latest/history loading on an existing Track, a normal SonicTrace catalog/Intelligence read, and surrounding Track / Albums / Lyrics / SonicTrace navigation sanity. Acceptance intentionally did **not** cut network, invalidate Cloudflare Access or manufacture transient failure branches.
+The bounded normal-browser smoke received explicit **`BUILD91 PASS MADAFAKA`** on 2026-08-15 after deployed version verification, normal canonical SonicTrace latest/history loading on an existing Track, a normal SonicTrace catalog/Intelligence read, and surrounding Track / Albums / Lyrics / SonicTrace navigation sanity. Acceptance intentionally did **not** cut network, invalidate Cloudflare Access or manufacture timeout/transport/transient-HTTP branches.
 
 SonicTrace Deep Audio health/analysis XHR, canonical audio download, Album create/upload semantics, Track Manager, Workers and R2 schema/data remain unchanged.
 
@@ -320,17 +315,45 @@ Runtime PR #162 merged that exact tested head at `6c1ceb7d59971ec6c7e25153205439
 
 The bounded normal-browser regression received the explicit verdict **`BUILD93 PASS MADAFAKA`** on 2026-08-15. Acceptance did **not** deliberately cut network or invalidate Cloudflare Access merely to manufacture a transient retry; automated guards own the timeout/transport/transient-HTTP failure-path proof and two-attempt bound.
 
+## Build94 accepted behavior
+
+The fresh post-Build93 audit compared Album asset upload response-loss truth, Album create response-loss truth, degraded/offline/PWA resilience, Deep Audio compute transport, Track create/assets and remaining smaller non-mutating seams. Album create/upload still require stronger causality/digest contracts and Deep Audio retry can duplicate expensive work. The smallest coherent gap was canonical Lyrics validation.
+
+Build94 applies one bounded retry to `lyrics-validate-v1` only:
+
+```text
+lyrics-validate-v1 attempt 1
+├─ timeout                            → retry once max
+├─ transport interruption             → retry once max
+├─ HTTP 408/425/429/500/502/503/504  → retry once max
+├─ Access / deterministic ordinary 4xx → NO RETRY
+├─ invalid JSON / invalid proposal    → NO RETRY
+└─ success                            → return validation result
+
+attempt 2 failure → surface immediately
+```
+
+Maximum total attempts are two and the timeout remains finite at 9 seconds per attempt. `lyrics-save-v1` remains at zero automatic retries; Build83 timeout/transport response-loss truth still uses private canonical Lyrics + Track reread and never blindly retries a write.
+
+The first Build94 candidate (PR #166) was rolled back after Pages `31902471804` exposed inherited guard incompatibility. Main was restored at `6c9c677b2f6299d13949642b712f2bf39b48b676`, byte-identical to the accepted Build93 tree, and rollback Pages `31907580912` passed. Hotfix PR #167 was closed as superseded.
+
+Build94 v2 was rebuilt cleanly from restored Build93 with inherited private-read, Phase7-C Build69, Build90 and Focus64–67 successor guards aligned before merge. Runtime PR #169 exact head `81298582163505a11378fe1094f800f1f3d437b5` passed full CI `31907745153`; it merged at `fe636560de9ca5f3f33aae76dddc5474ba990f17`; Pages `31907784289` passed build + deploy on that exact merge.
+
+The bounded normal-browser regression received the explicit verdict **`BUILD94 PASS MADAFAKA`** on 2026-08-15. The smoke confirmed the deployed release, canonical `lyrics.txt` loading, visible non-mutating Lyrics Validate, canonical lyrics unchanged after reload and surrounding Track / Albums / SonicTrace / Lyrics navigation. Acceptance did **not** deliberately cut network or invalidate Cloudflare Access merely to manufacture a transient retry; automated guards own that failure-path proof.
+
 ## Current blockers
 
-**No active code / CI / deploy / acceptance blocker after Build93 closeout.**
+**No active code / CI / deploy / real-user acceptance blocker for the Build94 runtime.**
+
+Acceptance-docs CI/merge/Pages closeout remains the only administrative gate before the post-Build94 fresh audit can allocate anything new.
 
 The historical `Magnetic Midnight` public-cover palette `Failed to fetch` issue remains resolved since Build62 and covered by regression guards.
 
 ## Exact next action
 
-Run a fresh, read-only post-Build93 Phase9 reliability audit. Allocate Build94 **only if** that audit proves a smallest coherent gap.
+Complete this Build94 acceptance-docs branch through exact-head CI, merge and Pages. Then run a fresh, read-only post-Build94 Phase9 reliability audit. Allocate Build95 **only if** that audit proves a smallest coherent gap.
 
-Remaining audit candidates include Album asset upload response-loss truth, Album create response-loss truth, degraded/offline/PWA resilience, and any newly proven smaller bounded reliability gap. None is pre-selected.
+Remaining audit candidates include Album asset upload response-loss truth, Album create response-loss truth, degraded/offline/PWA resilience, Deep Audio transport/compute behavior, and any newly proven smaller bounded reliability gap. None is pre-selected.
 
 ## Frozen stop lines
 
@@ -418,6 +441,8 @@ safety/post-build93-candidate-docs-closeout-20260815-1949
 safety/post-build93-real-user-pass-20260815-2010
 safety/post-build93-rup-docs-prepr-20260815-2010
 safety/post-build93-rup-docs-closeout-20260815-2010
+safety/post-build94-deployed-candidate-20260815-2338
+safety/post-build94-real-user-pass-20260815-2346
 ```
 
 ## Acceptance vocabulary
@@ -426,4 +451,4 @@ safety/post-build93-rup-docs-closeout-20260815-2010
 CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS
 ```
 
-Build93 is **REAL USER PASS / ACCEPTED**. Build94 is **UNALLOCATED**.
+Build94 is **REAL USER PASS / ACCEPTED**. Build95 is **UNALLOCATED** pending acceptance-docs closeout and fresh post-Build94 audit.
