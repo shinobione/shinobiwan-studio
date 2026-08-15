@@ -318,11 +318,87 @@ Build85 is **REAL USER PASS** after the explicit 2026-08-15 normal-browser Album
 
 ### Build86 Album-move boundary — ACCEPTED
 
-The deployed Track Manager move route already owns target/source stale guards, deterministic membership, Track cache updates, catalog rebuild, canonical rereads and rollback. Build86 adds Studio-side lost-response truth only for `album-track-move-v1` and is **REAL USER PASS**.
+The deployed Track Manager move route already owns:
+
+```text
+target/source stale guards
+→ deterministic target insert/source removal
+→ write target/source Albums
+→ update one Track compatibility cache when required
+→ rebuild catalog
+→ reread target + source? + Track
+→ verify membership/cache
+→ rollback touched state on failure
+```
+
+Build86 changes no backend transaction. It adds Studio-side truth if the HTTP response becomes unavailable:
+
+```text
+Album move response unavailable
+→ NEVER blind automatic retry
+→ private canonical target + source? + Track reread
+   ├─ exact new target revision/order
+   │  + exact source revision/removal when source exists
+   │  + Track cache points to target
+   │  + stable non-membership shapes
+   │    → COMMITTED / VERIFIED
+   ├─ exact pre-write target/source/Track state unchanged
+   │    → NOT COMMITTED / explicit retry may be safe after fresh reload
+   ├─ partial/mixed changed state
+   │    → AMBIGUOUS / DO NOT RETRY
+   └─ reread unavailable
+        → UNVERIFIED / DO NOT RETRY
+```
+
+Normal success also requires exact response revisions, exact target/source tracklists and Track cache verification. Build86 covers **only** `album-track-move-v1`; bulk membership save, create and upload remain separate operation-specific audit families.
+
+Build86 is **REAL USER PASS** after explicit 2026-08-15 normal-browser Album move regression acceptance.
 
 ### Build87 Album-membership boundary — ACCEPTED
 
-The deployed Track Manager membership route owns Album stale guard, ownership-conflict validation, deterministic ordered membership/cache updates, catalog rebuild and rollback. Build87 verifies the Album plus every affected Track compatibility cache after response loss and is **REAL USER PASS**.
+The deployed Track Manager membership route already owns:
+
+```text
+Album stale guard
+→ ownership-conflict validation
+→ deterministic ordered membership
+→ deterministic affected Track-cache updates
+→ write Album + affected Track caches
+→ rebuild catalog
+→ Album reread / verification
+→ rollback touched Album + Track caches + catalog on failure
+```
+
+Build87 changes no backend transaction. It adds Studio-side pre-write and post-write truth across the Album plus every Track in the union of previous/requested `album.trackIds`:
+
+```text
+Album membership response unavailable
+→ NEVER blind automatic retry
+→ private canonical Album + affected Track-cache reread
+   ├─ new Album revision + exact requested ordered trackIds
+   │  + stable Album non-membership shape
+   │  + every Track cache equals its exact expected postcondition
+   │  + stable Track non-album shapes
+   │    → COMMITTED / VERIFIED
+   ├─ exact pre-write Album + Track state unchanged
+   │    → NOT COMMITTED / explicit retry may be safe after fresh reload
+   ├─ partial/mixed changed state
+   │    → AMBIGUOUS / DO NOT RETRY
+   └─ reread unavailable
+        → UNVERIFIED / DO NOT RETRY
+```
+
+Operation-specific compatibility-cache semantics:
+
+- requested Track → cache points to the canonical Album;
+- removed Track whose cache claimed that Album → transitional `Singles` cache;
+- removed Track whose cache did not claim that Album → cache remains unchanged;
+- historically missing prior Track may be removed and remains absent;
+- missing Track may never be newly requested.
+
+Normal success also requires exact response revision/order, exact canonical Album order, every affected Track cache and `trackCachesUpdated` agreement when the server supplies it. Build87 is deliberately limited to **bulk membership / ordered tracklist save**; Album create and binary upload remain separate audit families.
+
+Build87 is **REAL USER PASS** after explicit 2026-08-15 normal-browser Album tracklist regression acceptance.
 
 ### Build89 Album private-read boundary — DEPLOYED CANDIDATE
 
