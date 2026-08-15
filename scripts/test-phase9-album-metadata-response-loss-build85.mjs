@@ -7,11 +7,12 @@ const metadata = read('src/services/album-metadata-admin-api.ts');
 const ui = read('src/components/AlbumManager.tsx');
 const pkg = JSON.parse(read('package.json'));
 
-assert.match(release, /version:\s*'0\.19\.7'/);
-assert.match(release, /build:\s*85/);
-assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-album-metadata-response-loss-truth'"));
-assert.ok(release.includes('build84AncestryMarker'), 'Build85 must inherit accepted Build84 ancestry.');
-assert.equal(pkg.version, '0.19.7', 'package version must match Build85 runtime version.');
+assert.ok(release.includes('build85AncestryMarker'), 'Successor builds must preserve accepted Build85 ancestry.');
+assert.ok(
+  release.includes("version: 0.19.7 · build: 85 · codename: 'studio-focus-slice4-phase9-album-metadata-response-loss-truth'"),
+  'Build85 accepted runtime identity must remain immutable in ancestry.',
+);
+assert.ok(release.includes('build84AncestryMarker'), 'Build85 ancestry must preserve accepted Build84 ancestry.');
 
 for (const marker of [
   'ALBUM_METADATA_SAVE_TIMEOUT',
@@ -37,8 +38,8 @@ assert.ok(!metadata.includes('retryAlbumMetadataSave'), 'Build85 must not introd
 assert.ok(metadata.includes('const revisionMatches = manifest?.updatedAt === payload.updatedAt;'), 'Normal success must verify the exact server-returned revision.');
 assert.ok(metadata.includes("commitState: clientVerified ? 'committed' : 'unverified'"), 'Normal success must remain unverified if canonical reread cannot prove the write.');
 
-assert.ok(ui.includes('saveAdminAlbumMetadataResilient'), 'AlbumManager must use the Build85 resilient metadata service.');
-assert.ok(ui.includes('RECOVERED AFTER LOST RESPONSE'), 'Album metadata UI must distinguish recovered verified success.');
+assert.ok(ui.includes('saveAdminAlbumMetadataResilient'), 'AlbumManager must retain the Build85 resilient metadata service.');
+assert.ok(ui.includes('RECOVERED AFTER LOST RESPONSE'), 'Album metadata UI must retain recovered verified success truth.');
 assert.ok(ui.includes('Studio did not retry the write.'), 'Recovered metadata success must state that no blind retry occurred.');
 assert.ok(metadata.includes('RETRY SAFE AFTER RECONNECT'), 'Metadata service must expose the narrow retry-safe outcome.');
 assert.ok(metadata.includes('DO NOT RETRY'), 'Metadata service must expose ambiguous/unverified outcomes as unsafe to retry.');
@@ -49,7 +50,7 @@ for (const inherited of [
   'test-phase9-lyrics-response-loss-build83.mjs',
   'test-phase9-sonictrace-response-loss-build84.mjs',
   'test-phase9-album-metadata-response-loss-build85.mjs',
-]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must include ${inherited}`);
+]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must retain ${inherited}`);
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Phase9 guards must remain in the full build gate.');
 
-console.log('Phase9 Build85 Album metadata response-loss guard passed: canonical pre-revision + exact requested metadata + stable non-metadata shape classify committed/not-committed/ambiguous/unverified without blind retry.');
+console.log('Phase9 Build85 Album metadata response-loss guard passed as inherited ancestry: canonical pre-revision + requested metadata + stable non-metadata shape still classify committed/not-committed/ambiguous/unverified without blind retry.');
