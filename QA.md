@@ -310,7 +310,7 @@ Album move response unavailable
    │  + Track cache points to target
    │  + stable non-membership Album/Track shapes
    │    → COMMITTED / VERIFIED
-   ├─ exact target/source/Track state unchanged
+   ├─ exact target/source/Track pre-write state unchanged
    │    → NOT COMMITTED / explicit retry may be safe after fresh reload
    ├─ partial/mixed/changed state
    │    → AMBIGUOUS / DO NOT RETRY
@@ -318,33 +318,131 @@ Album move response unavailable
         → UNVERIFIED / DO NOT RETRY
 ```
 
+Additional Build86 guarantees:
+
+- exact target revision is checked before POST;
+- exact source revision is checked when a source Album exists;
+- exact expected target artistic order and source removal are computed before POST;
+- target/source non-membership shapes and Track non-Album shape must remain stable;
+- normal HTTP success verifies exact returned target/source revisions and exact returned target/source tracklists;
+- Album Manager cross-release move and Metadata `sourceAlbumId:null` authority repair use the same resilient service;
+- recovered success explicitly states that Studio did not retry the write.
+
 The deployed Track Manager backend was audited read-only and already owns stale guards, deterministic target/source membership, Track compatibility-cache update, catalog rebuild, canonical target/source/Track reread and rollback. No backend mutation was needed for Build86.
 
 ## Build86 real-user smoke — PASS
 
-The user completed the bounded normal-browser move smoke and returned:
+The required acceptance smoke was intentionally a **normal-browser regression**, not a manufactured failure test.
+
+The user completed the bounded smoke and returned the explicit verdict:
 
 ```text
 BUILD86 PASS
 ```
 
-No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration or cross-repository runtime change was required.
+The accepted smoke boundary covered:
+
+- hard refresh to the deployed `v0.19.8 · Build86` runtime;
+- one genuine safe canonical Album → Album move;
+- normal verified receipt **`Track moved and canonically verified across target, source and Track cache.`**;
+- canonical source removal;
+- expected target insertion/order;
+- persistence after source/target reload;
+- moved Track compatibility cache pointing to the target Album;
+- surrounding Track / Visuals / Lyrics / SonicTrace / Albums navigation regression sanity.
+
+Acceptance intentionally did **not** require cutting network, invalidating Access or sabotaging a production move merely to force timeout/partial-write branches. Those failure paths remain protected by typed classification, stale guards and private canonical target/source/Track reread logic.
+
+Result:
+
+```text
+Build86 = REAL USER PASS
+```
+
+No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration or cross-repository runtime change was required to reach acceptance.
 
 ## Build85 automated coverage — GREEN
 
-Final validation run `31863267911` passed the complete repository-native chain on the exact runtime head on the first run. Build85 guards Album metadata save response-loss classification and exact canonical metadata/stable-shape verification without blind retry.
+Final validation run `31863267911` passed the complete repository-native chain on the exact runtime head **on the first run**, including:
+
+- private-read contract;
+- Phase5 algorithms;
+- Phase6 Lyrics contract;
+- C3 / Deep Audio / Album / parity guards;
+- PHASE UX guards;
+- Phase7 and Phase8 guards;
+- inherited Phase9 Build82 destructive-write ambiguity guard;
+- inherited Phase9 Build83 canonical Lyrics response-loss guard;
+- inherited Phase9 Build84 SonicTrace response-loss guard;
+- new Phase9 Build85 Album metadata response-loss guard;
+- Studio Focus inherited regression guards;
+- TypeScript typecheck;
+- Vite production build.
+
+No red intermediary Build85 CI run was merged or required.
+
+Build85 specifically guards:
+
+```text
+Album metadata save response lost / timeout
+→ NEVER blind automatic retry
+→ private canonical Album reread
+   ├─ new revision + exact requested metadata + stable non-metadata shape
+   │    → COMMITTED / VERIFIED
+   ├─ original revision unchanged
+   │    → NOT COMMITTED / explicit retry may be safe
+   ├─ revision changed but exact metadata-only postcondition not proven
+   │    → AMBIGUOUS / DO NOT RETRY
+   └─ private reread unavailable
+        → UNVERIFIED / DO NOT RETRY
+```
+
+Additional Build85 guarantees:
+
+- before POST, Studio privately rereads the canonical Album;
+- exact `expectedUpdatedAt` is required and stale pre-write state is rejected;
+- only timeout/transport-loss failures enter recovery;
+- stable non-metadata shape checks canonical identity, ordered `trackIds`, assets and `createdAt`;
+- normal HTTP success is not called verified unless the reread has the exact server-returned revision, requested metadata and stable non-metadata shape;
+- recovered success explicitly states that Studio did not retry the write;
+- existing Album mutation UI reloads canonical state after errors before another operator decision.
+
+The deployed Track Manager backend was audited read-only and already stale-guards, writes the proposed Album manifest, updates title-dependent Track compatibility caches when needed, rebuilds catalog, rereads/verifies and rolls back touched state on failure. No backend mutation was needed for Build85.
 
 ## Build85 real-user smoke — PASS
 
-The user completed the bounded normal-browser Album metadata smoke and returned:
+The required acceptance smoke was intentionally a **normal-browser regression**, not a manufactured failure test.
+
+The user completed the bounded smoke and returned the explicit verdict:
 
 ```text
 BUILD85 PASS
 ```
 
-No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration or cross-repository runtime change was required.
+The accepted smoke boundary covered:
+
+- hard refresh to the deployed `v0.19.7 · Build85` runtime;
+- opening an existing safe canonical Album;
+- editing one harmless metadata field;
+- one normal **Save metadata**;
+- verified receipt **`Album metadata saved and canonically verified.`**;
+- canonical revision advance;
+- saved metadata persistence after canonical reload;
+- surrounding Albums / Track / Lyrics / SonicTrace navigation regression sanity.
+
+Acceptance intentionally did **not** require cutting network, invalidating Access or sabotaging a production save merely to force timeout/partial-write branches. Those failure paths remain protected by typed classification, stale guards and private canonical reread logic.
+
+Result:
+
+```text
+Build85 = REAL USER PASS
+```
+
+No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration or cross-repository runtime change was required to reach acceptance.
 
 ## Build84 real-user smoke — PASS
+
+Accepted predecessor:
 
 ```text
 Version                 v0.19.6
@@ -358,6 +456,8 @@ Pages                   31858977765 · SUCCESS
 Real-user verdict       BUILD84 PASS · 2026-08-15
 ```
 
+The accepted smoke covered normal SonicTrace latest/history loading, normal scan/save with canonical verification and surrounding Track / Visuals / Lyrics / Albums navigation. Acceptance did not require manufactured network failure.
+
 ## Build83 real-user smoke — PASS
 
 ```text
@@ -370,6 +470,8 @@ Pages                   31856698097 · SUCCESS
 Real-user verdict       BUILD83 PASS · 2026-08-15
 ```
 
+Build83 protects canonical `lyrics.txt` response-loss truth through private Lyrics + Track reread and exact revision + ETag + normalized-text postconditions.
+
 ## Build82 real-user smoke — PASS
 
 ```text
@@ -381,6 +483,8 @@ Runtime merge           7a0d52fcc0bf862478c459f0648afc1c6690b34f
 Pages                   31854528438 · SUCCESS
 Real-user verdict       BUILD82 PASS · 2026-08-15
 ```
+
+Build82 protects Track/Album asset deletion response-loss truth without requiring destructive production smoke.
 
 ## Current ecosystem validation baseline
 
