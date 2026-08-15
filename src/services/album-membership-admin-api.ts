@@ -1,4 +1,4 @@
-import { getAdminBridgeHealth, getAdminTrack, type AdminManifest } from './admin-api';
+import { AdminReadError, getAdminBridgeHealth, getAdminTrack, type AdminManifest } from './admin-api';
 import {
   AlbumAdminError,
   getAdminAlbum,
@@ -39,7 +39,7 @@ export interface AlbumMembershipResponse {
 
 type TrackExpectation = {
   trackId: string;
-  before: AdminManifest;
+  before: AdminManifest | null;
   expectedAlbum: { id?: string; title?: string } | null;
   shouldChange: boolean;
 };
@@ -52,7 +52,7 @@ type MembershipSnapshot = {
 
 type MembershipState = {
   album: AdminAlbumManifest;
-  tracks: Map<string, AdminManifest>;
+  tracks: Map<string, AdminManifest | null>;
 };
 
 function baseUrl(): string {
@@ -97,11 +97,10 @@ function albumStableShape(manifest: AdminAlbumManifest): string {
 }
 
 function trackStableShape(manifest: AdminManifest): string {
-  const {
-    album: _album,
-    updatedAt: _updatedAt,
-    ...stable
-  } = manifest;
+  const stable = { ...(manifest as AdminManifest & Record<string, unknown>) } as Record<string, unknown>;
+  delete stable.album;
+  delete stable.updatedAt;
+  delete stable.updatedBy;
   return JSON.stringify(stable);
 }
 
@@ -113,8 +112,8 @@ function trackShapeMatches(before: AdminManifest, after: AdminManifest): boolean
   return trackStableShape(before) === trackStableShape(after);
 }
 
-function albumCacheShape(manifest: AdminManifest): string {
-  return JSON.stringify(manifest.album ?? null);
+function albumCacheShape(manifest: AdminManifest | null): string {
+  return manifest ? JSON.stringify(manifest.album ?? null) : '__MISSING_TRACK__';
 }
 
 function expectedAlbumCache(album: AdminAlbumManifest, track: AdminManifest, requested: Set<string>, previous: Set<string>, trackId: string): { id?: string; title?: string } | null {
@@ -130,15 +129,23 @@ async function requireMembershipCapability(): Promise<void> {
   }
 }
 
+async function getAdminTrackOrNull(trackId: string): Promise<AdminManifest | null> {
+  try {
+    const payload = await getAdminTrack(trackId);
+    return payload.track?.manifest || null;
+  } catch (reason) {
+    if (reason instanceof AdminReadError && reason.status === 404) return null;
+    throw reason;
+  }
+}
+
 async function readMembershipState(albumId: string, trackIds: string[]): Promise<MembershipState> {
   const albumPayload = await getAdminAlbum(albumId);
   const album = albumPayload.album?.manifest;
   if (!album) throw new AlbumAdminError('Canonical Album membership state is incomplete.');
 
   const entries = await Promise.all(trackIds.map(async trackId => {
-    const payload = await getAdminTrack(trackId);
-    const manifest = payload.track?.manifest;
-    if (!manifest) throw new AlbumAdminError(`Canonical Track state is unavailable for ${trackId}.`);
+    const manifest = await getAdminTrackOrNull(trackId);
     return [trackId, manifest] as const;
   }));
   return { album, tracks: new Map(entries) };
@@ -167,8 +174,13 @@ async function captureMembershipSnapshot(albumId: string, expectedUpdatedAt: str
   const requested = new Set(expectedTrackIds);
   const previous = new Set(album.trackIds);
   const tracks = unionTrackIds.map(trackId => {
-    const before = state.tracks.get(trackId);
-    if (!before) throw new AlbumAdminError(`Canonical Track state is unavailable for ${trackId}.`);
+    const before = state.tracks.get(trackId) ?? null;
+    if (!before) {
+      if (requested.has(trackId)) {
+        throw new AlbumAdminError(`Requested Track ${trackId} is missing. The canonical Album membership write stays locked.`, 409, 'ALBUM_TRACK_MISSING');
+      }
+      return { trackId, before: null, expectedAlbum: null, shouldChange: false };
+    }
     const expectedAlbum = expectedAlbumCache(album, before, requested, previous, trackId);
     return {
       trackId,
@@ -257,7 +269,11 @@ function committedPostcondition(before: MembershipSnapshot, after: MembershipSta
   if (!albumChanged || !albumMatches) return false;
 
   for (const expected of before.tracks) {
-    const afterTrack = after.tracks.get(expected.trackId);
+    const afterTrack = after.tracks.get(expected.trackId) ?? null;
+    if (!expected.before) {
+      if (afterTrack) return false;
+      continue;
+    }
     if (!afterTrack || !trackShapeMatches(expected.before, afterTrack)) return false;
     if (albumCacheShape(afterTrack) !== JSON.stringify(expected.expectedAlbum)) return false;
     if (expected.shouldChange) {
@@ -276,7 +292,11 @@ function notCommittedPostcondition(before: MembershipSnapshot, after: Membership
   if (!albumSame) return false;
 
   for (const expected of before.tracks) {
-    const afterTrack = after.tracks.get(expected.trackId);
+    const afterTrack = after.tracks.get(expected.trackId) ?? null;
+    if (!expected.before) {
+      if (afterTrack) return false;
+      continue;
+    }
     if (!afterTrack) return false;
     if (afterTrack.updatedAt !== expected.before.updatedAt) return false;
     if (albumCacheShape(afterTrack) !== albumCacheShape(expected.before)) return false;
@@ -289,10 +309,16 @@ function canonicalMembershipDetails(before: MembershipSnapshot, after: Membershi
   let expectedCacheMatches = 0;
   let unchangedCacheMatches = 0;
   for (const expected of before.tracks) {
-    const afterTrack = after.tracks.get(expected.trackId);
-    if (!afterTrack) continue;
-    if (albumCacheShape(afterTrack) === JSON.stringify(expected.expectedAlbum)) expectedCacheMatches += 1;
-    if (afterTrack.updatedAt === expected.before.updatedAt && albumCacheShape(afterTrack) === albumCacheShape(expected.before)) unchangedCacheMatches += 1;
+    const afterTrack = after.tracks.get(expected.trackId) ?? null;
+    if (!expected.before) {
+      if (!afterTrack) {
+        expectedCacheMatches += 1;
+        unchangedCacheMatches += 1;
+      }
+      continue;
+    }
+    if (afterTrack && albumCacheShape(afterTrack) === JSON.stringify(expected.expectedAlbum)) expectedCacheMatches += 1;
+    if (afterTrack && afterTrack.updatedAt === expected.before.updatedAt && albumCacheShape(afterTrack) === albumCacheShape(expected.before)) unchangedCacheMatches += 1;
   }
   return [
     `albumRevision=${after.album.updatedAt || 'none'} (before ${before.album.updatedAt || 'none'})`,
