@@ -20,7 +20,10 @@ Candidate docs PR       #176
 Candidate docs CI       31913104842 · SUCCESS
 Candidate docs merge    dbb8bab680ab3cad5ef8f11fa276f3e9bb3dd43a
 Candidate docs Pages    31913138348 · SUCCESS
-Acceptance docs         IN PROGRESS
+Acceptance docs PR      #177
+Acceptance docs CI      31914122068 · SUCCESS
+Acceptance docs merge   b5448ebbd1ab3aa27c21804d06a78ec4beffa669
+Acceptance docs Pages   31914188650 · SUCCESS
 Real-user smoke         Build 96 SMOKED 💨 · 2026-08-16
 Safety post-deploy      safety/post-build96-deployed-candidate-20260816
 Safety post-acceptance  safety/post-build96-real-user-pass-20260816
@@ -29,7 +32,7 @@ Track Manager change    NONE
 R2 migration/write      NONE caused by implementation/deployment
 ```
 
-Build96 is the latest **accepted** Studio runtime. Build95 remains its accepted predecessor. Acceptance-docs closeout is now the only remaining Build96 administrative step before the next fresh read-only audit.
+Build96 is the latest **accepted** Studio runtime. Build95 remains its accepted predecessor. The Build96 acceptance-docs closeout is complete; the next action is a fresh read-only post-Build96 Phase9 reliability audit.
 
 ## Current ecosystem baseline
 
@@ -86,7 +89,7 @@ Phase 9 Slice12         COMPLETE · Build93 REAL USER PASS
 Phase 9 Slice13         COMPLETE · Build94 REAL USER PASS
 Phase 9 Slice14         COMPLETE · Build95 REAL USER PASS
 Phase 9 Slice15         COMPLETE · Build96 REAL USER PASS
-Build97                 UNALLOCATED pending fresh read-only audit
+Build97                 UNALLOCATED pending fresh read-only post-Build96 audit
 Phase 10                FUTURE
 Official Phase 11       NONE
 ```

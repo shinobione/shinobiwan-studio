@@ -27,7 +27,7 @@ Studio accepted
   runtime merge 1cb14c3ad96087cd9f8fc7de62119b8b5be0ee94
   runtime Pages 31913006240 / SUCCESS
   candidate docs PR #176 / CI 31913104842 / merge dbb8bab680ab3cad5ef8f11fa276f3e9bb3dd43a / Pages 31913138348 SUCCESS
-  acceptance docs IN PROGRESS
+  acceptance docs PR #177 / CI 31914122068 / merge b5448ebbd1ab3aa27c21804d06a78ec4beffa669 / Pages 31914188650 SUCCESS
   browser smoke Build 96 SMOKED 💨 / 2026-08-16
   safety post-deploy safety/post-build96-deployed-candidate-20260816
   safety post-acceptance safety/post-build96-real-user-pass-20260816
@@ -78,6 +78,7 @@ After Build96 deployment candidate:
 
 After Build96 real-user acceptance:
   safety/post-build96-real-user-pass-20260816
+  safety/post-build96-rup-docs-closeout-20260816
 
 Accepted Build81 runtime/docs:
   safety/post-build81-real-user-pass-20260815-0159

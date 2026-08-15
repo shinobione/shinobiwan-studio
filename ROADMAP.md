@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-16 after **Build96 REAL USER PASS**; acceptance-docs closeout in progress.
+Updated: 2026-08-16 after **Build96 REAL USER PASS** and completed acceptance-docs closeout.
 
 This file is the durable roadmap summary. Historical implementation detail belongs in `docs/` and `changelogs/`; do not copy it here unless it changes what is done, active, next or backlogged.
 
@@ -419,15 +419,15 @@ Accepted evidence and behavior:
 
 ## In progress
 
-### Build96 acceptance-docs closeout
+### Post-Build96 fresh reliability audit
 
-Build96 runtime, candidate docs and real-user acceptance are complete. Seven-document acceptance closeout is the only active administrative step.
+Build96 runtime, candidate docs, explicit real-user acceptance and seven-document acceptance closeout are complete. No new implementation slice is allocated yet.
 
 **Build97 remains UNALLOCATED.**
 
 ## Next
 
-After Build96 acceptance-docs closeout, run a fresh read-only post-Build96 Phase9 reliability audit. Re-evaluate remaining candidates by proven risk and bounded scope, including Album asset upload response-loss/digest truth, Album create lost-response causality with operation identity, degraded/offline/PWA resilience, Deep Audio duplicate-compute safety, and any newly proven smaller gap.
+Run a fresh read-only post-Build96 Phase9 reliability audit. Re-evaluate remaining candidates by proven risk and bounded scope, including Album asset upload response-loss/digest truth, Album create lost-response causality with operation identity, degraded/offline/PWA resilience, Deep Audio duplicate-compute safety, and any newly proven smaller gap.
 
 Pick **one** coherent slice only after the audit proves it.
 

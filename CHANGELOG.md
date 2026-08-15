@@ -38,6 +38,10 @@ Candidate docs PR        #176
 Candidate docs CI        31913104842 · SUCCESS
 Candidate docs merge     dbb8bab680ab3cad5ef8f11fa276f3e9bb3dd43a
 Candidate docs Pages     31913138348 · SUCCESS
+Acceptance docs PR       #177
+Acceptance docs CI       31914122068 · SUCCESS
+Acceptance docs merge    b5448ebbd1ab3aa27c21804d06a78ec4beffa669
+Acceptance docs Pages    31914188650 · SUCCESS
 Safety post-deploy       safety/post-build96-deployed-candidate-20260816
 Safety post-acceptance   safety/post-build96-real-user-pass-20260816
 Track Manager            v5.23 · unchanged
@@ -47,7 +51,7 @@ Public Worker            v2.7 · unchanged
 Worker deploy            NONE
 R2 migration/write       NONE caused by implementation/deployment
 Real-user smoke          Build 96 SMOKED 💨 · 2026-08-16
-Build97                  UNALLOCATED pending acceptance-docs closeout + fresh audit
+Build97                  UNALLOCATED pending fresh read-only post-Build96 audit
 ```
 
 Detailed accepted record: [`changelogs/CHANGELOG-BUILD96.md`](changelogs/CHANGELOG-BUILD96.md).
