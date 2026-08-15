@@ -4,6 +4,7 @@ import {
   getAdminTrack,
   type AdminManifest,
   type AdminMetadataPatch,
+  type AdminMetadataRollback,
   type AdminMetadataSaveResponse,
 } from './admin-api';
 import type { AdminAudioEvidence } from './audio-duration-evidence';
@@ -31,7 +32,7 @@ export class TrackMetadataSaveError extends AdminSaveError {
     status: number | null = null,
     code: string | null = null,
     currentUpdatedAt: string | null = null,
-    rollback: Record<string, boolean> | null = null,
+    rollback: AdminMetadataRollback | null = null,
     retrySafe = false,
     technicalDetails: string | null = null,
     commitState: TrackMetadataCommitState | null = null,
@@ -228,9 +229,9 @@ export async function saveAdminTrackMetadataResilient(
           updatedAt: manifest.updatedAt,
           track: manifest,
           quality: reread.track?.quality || null,
-          catalogRebuilt: true,
+          catalogRebuilt: false,
           clientVerified: true,
-          verificationWarning: null,
+          verificationWarning: 'RECOVERED AFTER LOST RESPONSE · Canonical Track metadata/duration is verified. Catalog rebuild was part of the server transaction but cannot be independently proven from the private Track reread, so Studio does not claim that derived receipt after response loss.',
           recoveredAfterTransportFailure: true,
           retrySafe: false,
           commitState: 'committed',
@@ -347,5 +348,6 @@ export const trackMetadataSavePolicy = Object.freeze({
   lostResponsePolicy: 'private-canonical-revision-reviewed-proposal-reread-no-blind-retry',
   reviewedProposalIncludesDerivedDuration: true,
   validationRemainsNonMutating: true,
+  recoveredCatalogReceiptPolicy: 'do-not-claim-derived-catalog-rebuild-after-lost-response',
   maxAutomaticWriteRetries: 0,
 });
