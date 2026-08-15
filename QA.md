@@ -1,47 +1,28 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-08-15 after **Build90 DEPLOYED CANDIDATE** publication. Build89 remains REAL USER PASS.
+Updated: 2026-08-15 after explicit **Build90 REAL USER PASS**.
 
 This file records what has actually been validated, what automated guards cover, and what remains unproven. It is not a full test-history dump.
 
 ## Current accepted Studio runtime
 
 ```text
-Version                 v0.19.11
-Build                   Build89
-Status                  REAL USER PASS
-Runtime PR              #147
-Exact tested head       8b73d19d8fced35642ee243cff0ac19d983fd0de
-Final CI                31881635973 · SUCCESS
-Runtime merge           b7ae769c66e9adccef79c80467cc8fd0a8534820
-Pages                   31881682269 · SUCCESS · exact runtime merge SHA
-Candidate docs PR       #148
-Candidate docs merge    a7894dad8f4b4015ca1cba47b12781bab417fdcf
-Candidate docs Pages    31882384329 · SUCCESS
-Acceptance docs PR      #149
-Acceptance docs merge   07bfd3c6b4fa19ccea0656b9ce194f239b7f7c65
-Acceptance docs Pages   31884092117 · SUCCESS
-Worker deploy           NONE
-Track Manager change    NONE
-R2 migration/write      NONE caused by deployment
-Real-user verdict       BUILD89 PASS MADAFAKA · 2026-08-15
-```
-
-## Current deployed candidate
-
-```text
 Version                 v0.19.12
 Build                   Build90
-Status                  DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Status                  REAL USER PASS
 Runtime PR              #150
 Exact tested head       48ca1dc25951d65ead05c4f80bd1f9e6bf8c5d01
 Final CI                31884568681 · SUCCESS · first run
 Runtime merge           8a851a7d53d3b4f45359c7036011684441bb25bb
 Pages                   31884614863 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #151
+Candidate docs merge    442b488511d77da15592a37d6e8d2dca0ed30fb8
+Candidate docs Pages    31885123431 · SUCCESS
+Acceptance docs PR      #152
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
-Real-user verdict       PENDING
+Real-user verdict       BUILD90 PASS MADAFAKA · 2026-08-15
 ```
 
 ## Build90 automated coverage — GREEN
@@ -96,25 +77,33 @@ Additional Build90 guarantees:
 - SonicTrace private reads remain a separate future audit family;
 - no Worker, Track Manager or R2 schema/data mutation was required.
 
-## Build90 real-user smoke — PENDING
+## Build90 real-user smoke — PASS
 
-The required acceptance smoke is intentionally a **normal-browser read regression**, not a manufactured transient-failure test.
+The required acceptance smoke was intentionally a **normal-browser read regression**, not a manufactured transient-failure test.
 
-Required boundary:
-
-- hard refresh to deployed `v0.19.12 · Build90`;
-- open a Track that already has canonical `lyrics.txt`;
-- open Lyrics and verify the canonical text loads normally;
-- no write is required because Build90 changes read behavior only;
-- surrounding Track / Albums / SonicTrace navigation sanity.
-
-Do **not** cut network, expire Cloudflare Access or manufacture timeout/transport/transient-HTTP branches. Automated guards own those failure-path assertions.
-
-Until explicit user verdict:
+The user completed the bounded smoke and returned the explicit verdict:
 
 ```text
-Build90 = DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+BUILD90 PASS MADAFAKA
 ```
+
+The accepted smoke boundary covered:
+
+- hard refresh to deployed `v0.19.12 · Build90`;
+- opening a Track that already has canonical `lyrics.txt`;
+- opening Lyrics and confirming canonical lyrics load normally;
+- surrounding Track / Albums / SonicTrace / Lyrics navigation sanity;
+- no canonical write required because Build90 changes read behavior only.
+
+Acceptance intentionally did **not** cut network, expire Cloudflare Access or manufacture timeout/transport/transient-HTTP branches. Those failure paths remain protected by automated classification and attempt-bound guards.
+
+Result:
+
+```text
+Build90 = REAL USER PASS
+```
+
+No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration or cross-repository runtime change was required to reach acceptance.
 
 ## Build89 automated coverage — GREEN
 
@@ -648,11 +637,11 @@ Git history shows the public-cover credential/fetch path was corrected in Build6
 
 ## Known open QA gaps / next audits
 
-Build90 real-user smoke is the current blocker.
+No Build90 acceptance blocker remains.
 
-After Build90 acceptance, perform a fresh bounded Phase9 audit. Candidate areas include SonicTrace private-read resilience, Album asset upload response-loss truth, Album create response-loss truth and degraded/offline/PWA behavior.
+Before any successor runtime work, perform a fresh bounded post-Build90 Phase9 audit. Candidate areas include SonicTrace private-read resilience, Album asset upload response-loss truth, Album create response-loss truth and degraded/offline/PWA behavior.
 
-**Build91 is unallocated** until Build90 acceptance plus a fresh bounded audit proves a concrete scope.
+**Build91 is unallocated** until a fresh bounded audit proves a concrete scope.
 
 ## Standard validation commands
 
