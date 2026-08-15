@@ -2,16 +2,16 @@
 
 This file is the **current concise changelog**. Detailed per-build records live under [`changelogs/`](changelogs/README.md).
 
-## Current deployed candidate
+## Current accepted release
 
 ### v0.19.5 · Build83 — 2026-08-15
 
 Codename: `studio-focus-slice4-phase9-lyrics-save-response-loss-truth`  
-Status: **DEPLOYED CANDIDATE — REAL USER SMOKE PENDING**
+Status: **REAL USER PASS — ACCEPTED**
 
 Build83 extends Phase9 reliability to the native canonical `lyrics.txt` save path.
 
-Candidate behavior:
+Accepted behavior:
 
 - Lyrics save timeout / transport loss is classified separately from ordinary server errors;
 - the write is **never blindly retried** after response loss;
@@ -23,7 +23,7 @@ Candidate behavior:
 - normal HTTP success still requires exact canonical revision + ETag + normalized-text verification;
 - no Track Manager, Worker, public Worker, R2 migration, SonicTrace, LRC Maker or LaunchPAD change was required.
 
-Exact candidate evidence:
+Exact acceptance evidence:
 
 ```text
 Safety pre               safety/pre-phase9-lyrics-response-loss-build83-20260815-0319
@@ -33,17 +33,22 @@ Validation               31856653579 · SUCCESS
 Runtime merge            b168d8cda805e5c50480a3e26c5d52e490fb7ac6
 Runtime Pages            31856698097 · SUCCESS · exact runtime merge SHA
 Safety post-deploy       safety/post-build83-deployed-candidate
-Real-user smoke          PENDING
+Candidate docs PR        #130
+Candidate docs merge     afc526a59e5a2715929d200a32abbd49195b50bf
+Candidate docs Pages     31856972224 · SUCCESS
+Safety post-acceptance   safety/post-build83-real-user-pass-20260815-0406
+Real-user smoke          BUILD83 PASS · 2026-08-15
 Track Manager            v5.23 · unchanged
 Studio bridge            v1.13 · unchanged
+TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
 Public Worker            v2.7 · unchanged
 Worker deploy            NONE
 R2 migration/write       NONE caused by deployment
 ```
 
-Detailed candidate record: [`changelogs/CHANGELOG-BUILD83.md`](changelogs/CHANGELOG-BUILD83.md).
+Detailed accepted record: [`changelogs/CHANGELOG-BUILD83.md`](changelogs/CHANGELOG-BUILD83.md).
 
-## Current accepted release
+## Accepted predecessor
 
 ### v0.19.4 · Build82 — 2026-08-15
 
@@ -62,44 +67,7 @@ Accepted behavior:
 - no generic retry framework or second write authority was introduced;
 - no Track Manager, Worker, public Worker or R2 migration change was required.
 
-Exact acceptance evidence:
-
-```text
-Safety pre               safety/pre-phase9-destructive-ambiguity-build82-20260815-0216
-Studio PR                #126
-Exact tested head        07fbcb4efdcd57e79614825d7c45bccd4ab2d860
-Validation               31854468795 · SUCCESS
-Runtime merge            7a0d52fcc0bf862478c459f0648afc1c6690b34f
-Runtime Pages            31854528438 · SUCCESS · exact runtime merge SHA
-Safety post-deploy       safety/post-build82-deployed-candidate-20260815-0248
-Candidate docs PR        #127
-Candidate docs CI        31854668980 · SUCCESS
-Candidate docs merge     077ef8bb19920c439971325604a2d30e015e41c1
-Candidate docs Pages     31854709308 · SUCCESS
-Real-user smoke          BUILD82 PASS · 2026-08-15
-Track Manager            v5.23 · unchanged
-Studio bridge            v1.13 · unchanged
-TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
-Public Worker            v2.7 · unchanged
-Worker deploy            NONE
-R2 migration/write       NONE
-```
-
 Detailed accepted record: [`changelogs/CHANGELOG-PHASE9-BUILD82.md`](changelogs/CHANGELOG-PHASE9-BUILD82.md).
-
-## Accepted predecessor
-
-### v0.19.3 · Build81 — 2026-08-15
-
-Status: **REAL USER PASS — Phase8 closeout**
-
-Build81 closed the Phase8 semantic-truth cleanup:
-
-- Track production/intelligence wording `Sound` → `Sonic`;
-- decorative Release Campaign `Premium provider` selector removed because provider choice never changed prompt builders;
-- Release Campaign remains provider-agnostic and browser-local/review-only.
-
-Detailed record: [`changelogs/CHANGELOG-PHASE8-BUILD81.md`](changelogs/CHANGELOG-PHASE8-BUILD81.md).
 
 ## Accepted Phase8 lineage
 
@@ -128,10 +96,8 @@ All Phase8/9 health and guidance surfaces continue to preserve the same canonica
 
 ## Next bounded action
 
-**Do not allocate Build84 yet.**
+**Build84 is unallocated.**
 
-Complete the normal Build83 real-user browser Lyrics regression smoke first. Do not deliberately interrupt a production write to manufacture a lost-response condition.
-
-After explicit Build83 PASS, run a fresh Phase9 audit. Current leading candidates are SonicTrace analysis save response-loss truth, broader guarded Album-write response-loss truth, then Access/CORS and degraded/offline/PWA resilience.
+Run a fresh Phase9 reliability audit before selecting another runtime slice. Current leading candidates are SonicTrace analysis save response-loss truth, broader guarded Album-write response-loss truth, Access/CORS hardening, and degraded/offline/PWA resilience.
 
 `CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS` remains mandatory.
