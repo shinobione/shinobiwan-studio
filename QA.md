@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-08-16 after explicit **Build95 REAL USER PASS**; acceptance-docs closeout is in progress.
+Updated: 2026-08-16 after explicit **Build95 REAL USER PASS** and completed acceptance-docs CI/merge/Pages closeout.
 
 This file records what has actually been validated, what automated guards cover, and what remains unproven. It is not a full test-history dump.
 
@@ -19,6 +19,10 @@ Candidate docs PR       #172
 Candidate docs CI       31911702567 · SUCCESS
 Candidate docs merge    1bff0a18588b274a6cb0200cb6bd90b377b0c1af
 Candidate docs Pages    31911746874 · SUCCESS
+Acceptance docs PR      #173
+Acceptance docs CI      31912389047 · SUCCESS
+Acceptance docs merge   f6738d56eddcadc2810c7d5413700e14b20f71a3
+Acceptance docs Pages   31912432617 · SUCCESS
 Safety post-deploy      safety/post-build95-deployed-candidate-20260815
 Safety post-acceptance  safety/post-build95-real-user-pass-20260816
 Worker deploy           NONE

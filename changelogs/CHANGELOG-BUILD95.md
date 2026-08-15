@@ -109,6 +109,10 @@ Candidate docs PR       #172
 Candidate docs CI       31911702567 · SUCCESS
 Candidate docs merge    1bff0a18588b274a6cb0200cb6bd90b377b0c1af
 Candidate docs Pages    31911746874 · SUCCESS · build + deploy on exact docs merge SHA
+Acceptance docs PR      #173
+Acceptance docs CI      31912389047 · SUCCESS
+Acceptance docs merge   f6738d56eddcadc2810c7d5413700e14b20f71a3
+Acceptance docs Pages   31912432617 · SUCCESS · build + deploy on exact docs merge SHA
 Safety pre              safety/pre-phase9-albums-daily-resilient-convergence-build95-20260815
 Safety pre-PR           safety/post-build95-prepr-20260815
 Safety green pre-merge  safety/post-build95-green-premerge-20260815
@@ -143,7 +147,7 @@ No network cut, Cloudflare invalidation or fabricated lost-response failure was 
 ## Accepted boundary
 
 ```text
-Build95 = REAL USER PASS / ACCEPTED
+Build95 = REAL USER PASS / ACCEPTED · seven-document closeout complete
 Build96 = UNALLOCATED pending fresh read-only audit
 ```
 

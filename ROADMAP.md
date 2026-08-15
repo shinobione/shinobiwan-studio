@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-16 after **Build95 REAL USER PASS**; acceptance-docs closeout is in progress.
+Updated: 2026-08-16 after **Build95 REAL USER PASS** and completed acceptance-docs closeout.
 
 This file is the durable roadmap summary. Historical implementation detail belongs in `docs/` and `changelogs/`; do not copy it here unless it changes what is done, active, next or backlogged.
 
@@ -382,6 +382,7 @@ Accepted evidence and behavior:
 - runtime merge `0ad5e48f17c658c6b85c2ae405d32e874d2306d6`;
 - runtime Pages `31911568069` SUCCESS;
 - candidate docs PR #172 / CI `31911702567` / merge `1bff0a18588b274a6cb0200cb6bd90b377b0c1af` / Pages `31911746874` SUCCESS;
+- acceptance docs PR #173 / CI `31912389047` / merge `f6738d56eddcadc2810c7d5413700e14b20f71a3` / Pages `31912432617` SUCCESS;
 - daily metadata save now consumes Build85 resilient service;
 - daily Album move now consumes Build86 resilient service;
 - daily ordered membership save now consumes Build87 resilient service;
@@ -394,9 +395,9 @@ Accepted evidence and behavior:
 
 ## In progress
 
-### Build95 acceptance-docs closeout
+### Post-Build95 fresh reliability audit
 
-Runtime CI, runtime merge, Pages, candidate-docs checkpoint and explicit real-user acceptance are complete. This isolated seven-document acceptance branch must still pass its own exact-head CI, merge and Pages before the administrative closeout is final.
+Build95 runtime, candidate-docs and seven-document acceptance closeouts are complete. No new implementation slice is allocated yet.
 
 **Build96 remains UNALLOCATED.**
 

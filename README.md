@@ -30,6 +30,10 @@ Candidate docs PR     #172
 Candidate docs CI     31911702567 · SUCCESS
 Candidate docs merge  1bff0a18588b274a6cb0200cb6bd90b377b0c1af
 Candidate docs Pages  31911746874 · SUCCESS
+Acceptance docs PR    #173
+Acceptance docs CI    31912389047 · SUCCESS
+Acceptance docs merge f6738d56eddcadc2810c7d5413700e14b20f71a3
+Acceptance docs Pages 31912432617 · SUCCESS
 Real-user smoke       BUILD95 PASS MADAFAKA · 2026-08-16
 Track Manager         v5.23 · DEPLOYED
 Studio bridge         v1.13
@@ -351,8 +355,15 @@ Candidate docs PR        #172
 Candidate docs CI        31911702567 · SUCCESS
 Candidate docs merge     1bff0a18588b274a6cb0200cb6bd90b377b0c1af
 Candidate docs Pages     31911746874 · SUCCESS
+Acceptance docs PR       #173
+Acceptance docs CI       31912389047 · SUCCESS
+Acceptance docs merge    f6738d56eddcadc2810c7d5413700e14b20f71a3
+Acceptance docs Pages    31912432617 · SUCCESS
 Safety candidate docs    safety/post-build95-candidate-docs-closeout-20260815
 Safety post-acceptance   safety/post-build95-real-user-pass-20260816
+Safety docs pre-PR       safety/post-build95-rup-docs-prepr-20260816
+Safety docs green        safety/post-build95-rup-docs-green-premerge-20260816
+Safety docs closeout     safety/post-build95-rup-docs-closeout-20260816
 Worker deploy            NONE
 Track Manager change     NONE
 R2 migration/write       NONE caused by implementation/deployment
