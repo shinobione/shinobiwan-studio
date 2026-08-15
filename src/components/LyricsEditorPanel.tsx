@@ -20,8 +20,14 @@ function countLines(value: string): number {
 
 function displayError(error: unknown): string {
   if (error instanceof AdminLyricsError) {
-    const suffix = error.code ? ` · ${error.code}` : '';
-    return `${error.message}${suffix}`;
+    const code = error.code || '';
+    const state = error.retrySafe
+      ? 'RETRY SAFE AFTER RECONNECT'
+      : ['LYRICS_SAVE_AMBIGUOUS', 'LYRICS_SAVE_UNVERIFIED'].includes(code)
+        ? 'DO NOT RETRY'
+        : null;
+    const suffix = code ? ` · ${code}` : '';
+    return `${state ? `${state} · ` : ''}${error.message}${suffix}`;
   }
   return error instanceof Error ? error.message : String(error);
 }
@@ -231,16 +237,21 @@ export function LyricsEditorPanel({ track, onSaved }: { track: StudioTrackDetail
             {saved && (
               <section className={`lyrics-editor-result ${saved.clientVerified ? 'ok' : 'blocked'}`}>
                 <div className="lyrics-editor-result-head">
-                  <div><span>LYRICS SAVED</span><strong>{saved.saved ? 'Canonical text persisted' : 'No change required'}</strong></div>
+                  <div>
+                    <span>{saved.recoveredAfterTransportFailure ? 'RECOVERED AFTER LOST RESPONSE' : 'LYRICS SAVED'}</span>
+                    <strong>{saved.saved ? 'Canonical text persisted' : 'No change required'}</strong>
+                  </div>
                   <b>{saved.clientVerified ? 'CANONICAL REREAD · VERIFIED' : 'REREAD WARNING'}</b>
                 </div>
                 <div className="lyrics-editor-result-grid">
                   <div><span>New revision</span><strong>{saved.updatedAt || '—'}</strong></div>
                   <div><span>New ETag</span><strong>{saved.lyricsEtag || '—'}</strong></div>
-                  <div><span>Catalog rebuilt</span><strong>{saved.catalogRebuilt ? 'Yes' : 'No change'}</strong></div>
+                  <div><span>Catalog rebuilt</span><strong>{saved.recoveredAfterTransportFailure ? 'Response lost · state not asserted' : saved.catalogRebuilt ? 'Yes' : 'No change'}</strong></div>
                   <div><span>Browser reread</span><strong>{saved.clientVerified ? 'Verified' : 'Check required'}</strong></div>
                 </div>
+                {saved.recoveredAfterTransportFailure && <p>The HTTP response was lost, but private canonical reread proved the exact requested lyrics text at a new manifest revision and a new lyrics ETag. Studio did not retry the write.</p>}
                 {saved.verificationWarning && <p>{saved.verificationWarning}</p>}
+                {saved.technicalDetails && <p className="workspace-footnote">{saved.technicalDetails}</p>}
               </section>
             )}
           </>
