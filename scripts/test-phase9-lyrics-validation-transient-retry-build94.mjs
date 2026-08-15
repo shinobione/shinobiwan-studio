@@ -7,12 +7,9 @@ const lyrics = read('src/services/lyrics-admin-api.ts');
 const ui = read('src/components/LyricsEditorPanel.tsx');
 const pkg = JSON.parse(read('package.json'));
 
-assert.match(release, /version:\s*'0\.19\.16'/);
-assert.match(release, /build:\s*94/);
-assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-lyrics-validation-transient-retry-truth'"));
-assert.ok(release.includes('build93AncestryMarker'), 'Build94 must preserve accepted Build93 ancestry.');
-assert.ok(release.includes("version: 0.19.15 · build: 93 · codename: 'studio-focus-slice4-phase9-track-metadata-validation-transient-retry-truth'"));
-assert.equal(pkg.version, '0.19.16', 'package version must match Build94 runtime version.');
+assert.ok(release.includes('build94AncestryMarker'), 'Build95+ must preserve accepted Build94 ancestry.');
+assert.ok(release.includes("version: 0.19.16 · build: 94 · codename: 'studio-focus-slice4-phase9-lyrics-validation-transient-retry-truth'"));
+assert.ok(['0.19.16', '0.19.17'].includes(pkg.version), 'Build94 guard accepts Build94 and its bounded Build95 successor.');
 
 assert.ok(lyrics.includes("const LYRICS_VALIDATION_INTENT = 'lyrics-validate-v1';"), 'Build94 must preserve the canonical non-mutating Lyrics validation intent.');
 assert.ok(lyrics.includes('const TRANSIENT_LYRICS_VALIDATION_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);'), 'Lyrics validation transient HTTP allowlist must stay explicit and bounded.');
@@ -62,4 +59,4 @@ for (const inherited of [
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must include ${inherited}`);
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Phase9 guards must remain in the full build gate.');
 
-console.log('Phase9 Build94 Lyrics validation retry guard passed: non-mutating lyrics-validate-v1 retries once only for transient timeout/transport/HTTP failures, while Access/invalid responses remain non-retry and Build83 save stays at zero automatic write retries.');
+console.log(`Phase9 Build94 Lyrics validation retry guard passed as accepted ancestry under ${pkg.version}: non-mutating lyrics-validate-v1 retries once only for transient timeout/transport/HTTP failures, while Access/invalid responses remain non-retry and Build83 save stays at zero automatic write retries.`);
