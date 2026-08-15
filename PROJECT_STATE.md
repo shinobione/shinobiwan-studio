@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-16 after explicit **`BUILD95 PASS MADAFAKA`** real-user browser acceptance; acceptance-docs closeout is in progress on an isolated docs branch.
+Updated: 2026-08-16 after **Build95 REAL USER PASS** and completed seven-document acceptance closeout; final receipts synchronized.
 
 This file is the short current checkpoint. It is the first project-state document to read after `AGENTS.md`.
 
@@ -20,6 +20,10 @@ Candidate docs PR       #172
 Candidate docs CI       31911702567 · SUCCESS
 Candidate docs merge    1bff0a18588b274a6cb0200cb6bd90b377b0c1af
 Candidate docs Pages    31911746874 · SUCCESS
+Acceptance docs PR      #173
+Acceptance docs CI      31912389047 · SUCCESS
+Acceptance docs merge   f6738d56eddcadc2810c7d5413700e14b20f71a3
+Acceptance docs Pages   31912432617 · SUCCESS
 Real-user smoke         BUILD95 PASS MADAFAKA · 2026-08-16
 Safety post-deploy      safety/post-build95-deployed-candidate-20260815
 Safety post-acceptance  safety/post-build95-real-user-pass-20260816
@@ -28,7 +32,7 @@ Track Manager change    NONE
 R2 migration/write      NONE caused by implementation/deployment
 ```
 
-Build95 is the latest **accepted** Studio runtime. Build94 remains its accepted predecessor. Acceptance-docs CI/merge/Pages receipts are intentionally not fabricated before this docs branch passes its own gate.
+Build95 is the latest **accepted** Studio runtime. Build94 remains its accepted predecessor. The seven-document acceptance closeout passed CI `31912389047`, merged at `f6738d56eddcadc2810c7d5413700e14b20f71a3`, and Pages `31912432617` succeeded on that exact merge.
 
 ## Current ecosystem baseline
 

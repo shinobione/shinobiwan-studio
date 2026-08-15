@@ -27,6 +27,7 @@ Studio accepted
   runtime merge 0ad5e48f17c658c6b85c2ae405d32e874d2306d6
   runtime Pages 31911568069 / SUCCESS
   candidate docs PR #172 / CI 31911702567 / merge 1bff0a18588b274a6cb0200cb6bd90b377b0c1af / Pages 31911746874 SUCCESS
+  acceptance docs PR #173 / CI 31912389047 / merge f6738d56eddcadc2810c7d5413700e14b20f71a3 / Pages 31912432617 SUCCESS
   browser smoke BUILD95 PASS MADAFAKA / 2026-08-16
   safety post-deploy safety/post-build95-deployed-candidate-20260815
   safety post-acceptance safety/post-build95-real-user-pass-20260816
@@ -243,6 +244,11 @@ After Build95 deployment candidate:
 
 After Build95 explicit real-user acceptance:
   safety/post-build95-real-user-pass-20260816
+
+After Build95 acceptance-docs closeout:
+  safety/post-build95-rup-docs-prepr-20260816
+  safety/post-build95-rup-docs-green-premerge-20260816
+  safety/post-build95-rup-docs-closeout-20260816
 ```
 
 Earlier accepted safety branches remain preserved in Git history.
