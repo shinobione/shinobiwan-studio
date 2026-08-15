@@ -164,7 +164,9 @@ for (const selector of [
 assert.ok(readability.includes('--studio-micro-readable: 11px'), 'Studio readability floor must remain 11px.');
 
 assert.equal((admin.match(/method:\s*'POST'/g) || []).length, 2, 'Metadata client must keep validate + save POSTs only.');
-assert.equal((lyricsApi.match(/method:\s*'POST'/g) || []).length, 1, 'Lyrics service must keep one generic POST transport.');
+assert.equal((lyricsApi.match(/method:\s*'POST'/g) || []).length, 2, 'Lyrics service must keep one dedicated validation POST transport plus one generic save POST transport.');
+assert.ok(lyricsApi.includes("postLyrics<AdminLyricsSaveResponse>(trackId, 'save'"), 'Lyrics generic POST transport must remain save-only after Build94 validation retry split.');
+assert.ok(lyricsApi.includes('validateLyricsWithOneTransientRetry(trackId'), 'Lyrics validation must use the dedicated bounded retry transport introduced by Build94.');
 assert.equal((phase4Api.match(/method:\s*'POST'/g) || []).length, 2, 'Phase 4 service must keep one simple JSON POST transport and one CORS-simple fetch/FormData upload transport.');
 for (const forbiddenWholeTrack of [
   '/api/studio/tracks/${encodeURIComponent(trackId)}/delete',

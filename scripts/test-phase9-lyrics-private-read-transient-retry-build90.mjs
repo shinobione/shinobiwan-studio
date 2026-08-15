@@ -29,13 +29,17 @@ assert.ok(!lyrics.includes("reason.code === 'LYRICS_READ_INVALID_RESPONSE'\n    
 
 assert.ok(lyrics.includes('const payload = await getLyricsJson(trackId);'), 'Canonical user-facing Lyrics read must use the bounded helper.');
 assert.ok(lyrics.includes('Promise.all([getLyricsJson(trackId), getAdminTrack(trackId)])'), 'Build83 save verification/recovery must keep using canonical Lyrics reread plus Track reread.');
-assert.equal((lyrics.match(/method:\s*'POST'/g) || []).length, 1, 'Build90 ancestry must not add or duplicate Lyrics POST transports.');
-assert.ok(lyrics.includes('async function postLyrics<T extends AdminLyricsValidationResponse | AdminLyricsSaveResponse>('), 'Existing Lyrics validate/save POST transport must remain separate.');
+assert.equal((lyrics.match(/method:\s*'POST'/g) || []).length, 2, 'Build90 ancestry permits Build94 to add one dedicated non-mutating validation POST while keeping exactly one save POST.');
+assert.ok(lyrics.includes('async function postLyricsValidationOnce('), 'Build94 validation must use its dedicated non-mutating POST transport.');
+assert.ok(lyrics.includes('validateLyricsWithOneTransientRetry(trackId'), 'Build94 validation must traverse the bounded validation retry transport.');
+assert.ok(lyrics.includes("postLyrics<AdminLyricsSaveResponse>(trackId, 'save'"), 'Existing generic Lyrics POST transport must remain save-only after the Build94 validation split.');
+assert.ok(lyrics.includes('async function postLyrics<T extends AdminLyricsValidationResponse | AdminLyricsSaveResponse>('), 'Existing generic Lyrics POST helper must remain available for the save transport.');
 assert.ok(lyrics.includes("timeoutCode: 'LYRICS_SAVE_TIMEOUT'"), 'Build83 save timeout classification must remain inherited.');
 assert.ok(lyrics.includes("transportCode: 'LYRICS_SAVE_TRANSPORT'"), 'Build83 save transport classification must remain inherited.');
 assert.ok(lyrics.includes("lostResponsePolicy: 'private-canonical-reread-no-blind-retry'"), 'Build83 no-blind-write-retry contract must remain explicit.');
+assert.ok(lyrics.includes('maxAutomaticSaveRetries: 0'), 'Build94 must keep automatic Lyrics save retries explicitly disabled.');
 assert.ok(!lyrics.includes('retryLyricsSave'), 'Build90 ancestry must never introduce automatic Lyrics save retry.');
-assert.ok(!lyrics.includes('retryLyricsValidation'), 'Build90 ancestry must never introduce automatic Lyrics validation retry.');
+assert.ok(!lyrics.includes('retryLyricsValidation'), 'Build90 ancestry must never introduce an unbounded automatic Lyrics validation retry helper.');
 
 for (const inherited of [
   'test-phase9-destructive-write-ambiguity-build82.mjs',
@@ -50,4 +54,4 @@ for (const inherited of [
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must include ${inherited}`);
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Phase9 guards must remain in the full build gate.');
 
-console.log('Phase9 Build90 Lyrics private-read retry guard passed as inherited ancestry: canonical Lyrics GET still retries once only for transient timeout/transport/HTTP failures while Access/CORS, deterministic 4xx and invalid JSON remain non-retry and Build83 write recovery stays no-blind-retry.');
+console.log('Phase9 Build90 Lyrics private-read retry guard passed as inherited ancestry: canonical Lyrics GET still retries once only for transient timeout/transport/HTTP failures while Access/CORS, deterministic 4xx and invalid JSON remain non-retry; Build94 adds one bounded non-mutating validation POST while Build83 save recovery stays single-transport and no-blind-retry.');
