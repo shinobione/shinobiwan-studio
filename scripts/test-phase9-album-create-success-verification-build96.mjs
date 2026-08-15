@@ -8,12 +8,18 @@ const focused = read('src/components/AlbumsWorkspace.tsx');
 const legacy = read('src/components/AlbumManager.tsx');
 const pkg = JSON.parse(read('package.json'));
 
-assert.equal(pkg.version, '0.19.18', 'Build96 package version must be v0.19.18.');
-assert.ok(release.includes("version: '0.19.18'"), 'Build96 release version mismatch.');
-assert.ok(release.includes('build: 96'), 'Build96 release identity is missing.');
-assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-album-create-success-verification-truth'"), 'Build96 codename mismatch.');
-assert.ok(release.includes('build95AncestryMarker'), 'Build96 must preserve accepted Build95 ancestry.');
+assert.ok(['0.19.18', '0.19.19'].includes(pkg.version), 'Build96 guard accepts Build96 and its bounded Build97 successor.');
+assert.ok(release.includes('build95AncestryMarker'), 'Build96+ must preserve accepted Build95 ancestry.');
 assert.ok(release.includes("version: 0.19.17 · build: 95 · codename: 'studio-focus-slice4-phase9-albums-daily-resilient-service-convergence'"), 'Accepted Build95 identity must remain immutable in ancestry.');
+if (pkg.version === '0.19.18') {
+  assert.ok(release.includes("version: '0.19.18'"), 'Build96 release version mismatch.');
+  assert.ok(release.includes('build: 96'), 'Build96 release identity is missing.');
+  assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-album-create-success-verification-truth'"), 'Build96 codename mismatch.');
+}
+if (pkg.version === '0.19.19') {
+  assert.ok(release.includes('build96AncestryMarker'), 'Build97 must preserve accepted Build96 ancestry.');
+  assert.ok(release.includes("version: 0.19.18 · build: 96 · codename: 'studio-focus-slice4-phase9-album-create-success-verification-truth'"), 'Accepted Build96 identity must remain immutable in ancestry.');
+}
 
 // Build96 tightens only normal-success canonical verification for Album create.
 assert.ok(albumApi.includes("const payload = await writeJson('/api/studio/albums', { intent: INTENT.create, album });"), 'Album create must retain the existing Track Manager write intent and transport.');
@@ -52,6 +58,7 @@ for (const inherited of [
   'test-phase9-lyrics-validation-transient-retry-build94.mjs',
   'test-phase9-albums-daily-resilient-convergence-build95.mjs',
   'test-phase9-album-create-success-verification-build96.mjs',
+  'test-phase9-track-create-success-verification-build97.mjs',
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must retain ${inherited}`);
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Build96 must remain inside the repository-native full build gate.');
 
