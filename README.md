@@ -31,9 +31,10 @@ Candidate docs PR     #159
 Candidate docs CI     31894353160 · SUCCESS
 Candidate docs merge  f46b846841e6ef9ce705b2fa3817baecd0aecefa
 Candidate docs Pages  31894411652 · SUCCESS
-Acceptance docs PR    PENDING
-Acceptance docs merge PENDING
-Acceptance docs Pages PENDING
+Acceptance docs PR    #160
+Acceptance docs CI    31896013803 · SUCCESS
+Acceptance docs merge a26c8c0540607c99147c0b6d30b5d3c7ccf6efc9
+Acceptance docs Pages 31896073093 · SUCCESS
 Real-user smoke       BUILD92 PASS MADAFAKA · 2026-08-15
 Track Manager         v5.23 · DEPLOYED
 Studio bridge         v1.13
@@ -45,7 +46,27 @@ Deep Audio            2.0.3-alpha
 LRC Maker             6.3.8
 ```
 
-**Studio v0.19.14 · Build92 is the current accepted runtime.** Build92 protects canonical Track metadata save truth without changing Track Manager authority. Immediately before POST, Studio repeats the same non-mutating validation and anchors the write to the exact normalized reviewed proposal and expected Track revision, including already-supported derived audio duration when present. Timeout/transport response loss is never blindly retried: a private canonical Track reread classifies committed / not committed / ambiguous / unverified. Normal `saved` and `noChange` responses are also canonically verified. A recovered-after-lost-response result deliberately does **not** fabricate an independently unobservable `catalogRebuilt:true` receipt. The bounded normal-browser regression received explicit **`BUILD92 PASS MADAFAKA`** on 2026-08-15.
+**Studio v0.19.14 · Build92 remains the current accepted runtime.** Build92 protects canonical Track metadata save truth without changing Track Manager authority. Immediately before POST, Studio repeats the same non-mutating validation and anchors the write to the exact normalized reviewed proposal and expected Track revision, including already-supported derived audio duration when present. Timeout/transport response loss is never blindly retried: a private canonical Track reread classifies committed / not committed / ambiguous / unverified. Normal `saved` and `noChange` responses are also canonically verified. A recovered-after-lost-response result deliberately does **not** fabricate an independently unobservable `catalogRebuilt:true` receipt. The bounded normal-browser regression received explicit **`BUILD92 PASS MADAFAKA`** on 2026-08-15.
+
+## Current deployed candidate
+
+```text
+Studio                v0.19.15 · Build93 · DEPLOYED CANDIDATE
+Codename              studio-focus-slice4-phase9-track-metadata-validation-transient-retry-truth
+Runtime PR            #162
+Exact tested head     fcbe4c59a3a364d9665eba2ed432f37475116364
+Validation            31898542379 · SUCCESS
+Historical CI #457    31898251689 · FAILURE · Phase7-C successor cap only · never merged
+Historical CI #458    31898329621 · FAILURE · Focus Build64 successor cap only · never merged
+Runtime merge         6c1ceb7d59971ec6c7e251532054392f02c08157
+Runtime Pages         31898639778 · SUCCESS · exact merge SHA
+Real-user smoke       PENDING
+Worker deploy         NONE
+Track Manager change  NONE
+R2 migration/write    NONE caused by deployment
+```
+
+**Build93 changes only non-mutating Track metadata validation truth.** The visible **Validate** action and Build92's fresh pre-save `metadata-validate-v1` may receive one bounded retry after timeout, browser transport interruption or HTTP `408/425/429/500/502/503/504`. Access/deterministic ordinary 4xx and invalid JSON/proposal responses are never retried. Maximum attempts are two. Build92 `metadata-save-v1` remains at **zero automatic write retries**.
 
 The repository currently publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
@@ -109,11 +130,12 @@ Phase 9 Slice8      Build89 · REAL USER PASS
 Phase 9 Slice9      Build90 · REAL USER PASS
 Phase 9 Slice10     Build91 · REAL USER PASS
 Phase 9 Slice11     Build92 · REAL USER PASS
-Build93             UNALLOCATED
+Phase 9 Slice12     Build93 · DEPLOYED CANDIDATE · smoke pending
+Build94             UNALLOCATED
 Phase 10            FUTURE
 ```
 
-The immediate next action is a **fresh bounded post-Build92 Phase9 reliability audit**. No Build93 is allocated before that audit proves a concrete smallest coherent gap.
+The immediate next action is a **bounded normal-browser Build93 Track metadata validation regression smoke**. No Build94 is allocated before Build93 acceptance plus a fresh post-Build93 audit.
 
 ## Frozen authority model
 
@@ -168,6 +190,22 @@ Immediately before POST, Studio repeats the same non-mutating validation and anc
 Track Manager rebuilds the derived catalog inside its transaction. Because the private Track reread proves manifest state rather than independently reading `catalog/index.json`, a recovered lost-response result does not fabricate a catalog-rebuilt receipt. Normal HTTP success retains the server's real receipt.
 
 The accepted Build92 browser smoke covered one harmless reversible metadata edit, Validate → one normal Save, `CANONICAL REREAD · VERIFIED`, persistence after reload, and surrounding Track / Albums / Lyrics / SonicTrace navigation. Acceptance did not manufacture a response-loss branch.
+
+Build93 hardens the **non-mutating validation seam only**:
+
+```text
+metadata-validate-v1 attempt 1
+├─ timeout                            → retry once max
+├─ transport interruption             → retry once max
+├─ HTTP 408/425/429/500/502/503/504  → retry once max
+├─ Access / deterministic ordinary 4xx → NO RETRY
+├─ invalid JSON / invalid proposal    → NO RETRY
+└─ success                            → return proposal
+
+attempt 2 failure → surface immediately
+```
+
+Plain and duration-aware validation use the same policy, including the visible Validate action and Build92's fresh pre-save validation. This non-mutating retry does not authorize retrying `metadata-save-v1` or any other write.
 
 ### Albums
 
@@ -256,7 +294,7 @@ The bounded normal-browser Build90 smoke confirmed the deployed version, normal 
 
 ### Audio duration
 
-`manifest.duration` is a derived canonical fact from the current master audio, never a free-form metadata field. Build92 includes that derived value in the exact reviewed proposal when duration evidence is present; it does not make duration editable.
+`manifest.duration` is a derived canonical fact from the current master audio, never a free-form metadata field. Build92 includes that derived value in the exact reviewed proposal when duration evidence is present; it does not make duration editable. Build93 only makes the non-mutating duration-aware proposal validation resilient to one bounded transient retry.
 
 ### SonicTrace
 
@@ -292,6 +330,30 @@ MASTER FINAL 16:9
 
 Release Campaign is provider-agnostic. Google Flow is a convenience shortcut. Campaign drafts remain browser-local and ZIP export remains review-only.
 
+## Build93 candidate receipts
+
+```text
+Safety pre              safety/pre-phase9-track-metadata-validation-retry-build93-20260815-1914
+Safety pre-PR           safety/post-build93-prepr-20260815-1921
+Safety pre-PR final     safety/post-build93-prepr-final-20260815-1923
+Safety green pre-merge  safety/post-build93-green-premerge-20260815-1931
+Runtime PR              #162
+Exact tested head       fcbe4c59a3a364d9665eba2ed432f37475116364
+Historical CI #457      31898251689 · FAILURE · Phase7-C successor cap only · never merged
+Historical CI #458      31898329621 · FAILURE · Focus Build64 successor cap only · never merged
+Validation              31898542379 · SUCCESS
+Runtime merge           6c1ceb7d59971ec6c7e251532054392f02c08157
+Runtime Pages           31898639778 · SUCCESS · exact runtime merge SHA
+Safety post-deploy      safety/post-build93-deployed-candidate-20260815-1936
+Worker deploy           NONE
+Track Manager change    NONE
+R2 migration/write      NONE caused by deployment
+Real-user smoke         PENDING
+Build94                 UNALLOCATED
+```
+
+Detailed candidate record: [`changelogs/CHANGELOG-BUILD93.md`](changelogs/CHANGELOG-BUILD93.md).
+
 ## Build92 acceptance receipts
 
 ```text
@@ -309,14 +371,14 @@ Candidate docs CI       31894353160 · SUCCESS
 Candidate docs merge    f46b846841e6ef9ce705b2fa3817baecd0aecefa
 Candidate docs Pages    31894411652 · SUCCESS
 Safety post-acceptance  safety/post-build92-real-user-pass-20260815-1819
-Acceptance docs PR      PENDING
-Acceptance docs merge   PENDING
-Acceptance docs Pages   PENDING
+Acceptance docs PR      #160
+Acceptance docs CI      31896013803 · SUCCESS
+Acceptance docs merge   a26c8c0540607c99147c0b6d30b5d3c7ccf6efc9
+Acceptance docs Pages   31896073093 · SUCCESS
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
 Real-user smoke         BUILD92 PASS MADAFAKA · 2026-08-15
-Build93                 UNALLOCATED
 ```
 
 Detailed accepted record: [`changelogs/CHANGELOG-BUILD92.md`](changelogs/CHANGELOG-BUILD92.md).
