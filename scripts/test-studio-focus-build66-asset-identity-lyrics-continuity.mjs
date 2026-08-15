@@ -8,11 +8,12 @@ const lyrics = read('src/components/LyricsEditorPanel.tsx');
 const css = read('src/studio-focus-build66-assets.css');
 const main = read('src/main.tsx');
 
-assert.ok(['0.19.3', '0.19.4'].includes(pkg.version), 'Build66 guard only accepts the validated v0.19.3/v0.19.4 Studio successor line.');
-assert.match(release, /version:\s*'0\.19\.(?:3|4)'/);
+assert.ok(['0.19.3', '0.19.4', '0.19.5'].includes(pkg.version), 'Build66 guard only accepts the validated v0.19.3/v0.19.4/v0.19.5 Studio successor line.');
+assert.match(release, /version:\s*'0\.19\.(?:3|4|5)'/);
 assert.match(release, /build:\s*66/);
 assert.match(release, /codename:\s*'studio-focus-slice4-asset-identity-lyrics-continuity'/);
-if (/build:\s*82/.test(release)) assert.ok(release.includes('build81AncestryMarker'), 'Build82 must preserve accepted Build81 ancestry.');
+if (/build:\s*(?:82|83)/.test(release)) assert.ok(release.includes('build81AncestryMarker'), 'Phase9 successors must preserve accepted Build81 ancestry.');
+if (/build:\s*83/.test(release)) assert.ok(release.includes('build82AncestryMarker'), 'Build83 must preserve accepted Build82 Phase9 ancestry.');
 
 for (const required of [
   'const sourceManager = (',
@@ -37,4 +38,4 @@ assert.ok(main.includes("import './studio-focus-build66-assets.css';"), 'Build 6
 assert.ok(!lyrics.includes('uploadAdminTrackAsset'), 'Lyrics continuity presentation must not own asset transport writes.');
 assert.ok(!lyrics.includes('deleteAdminTrackAsset'), 'Lyrics continuity presentation must not own asset deletion writes.');
 
-console.log(`Studio ${pkg.version} Build66 guard passed through the bounded v0.19.4 Phase9 successor: asset roles, Lyrics source continuity and write ownership remain intact.`);
+console.log(`Studio ${pkg.version} Build66 guard passed through the bounded v0.19.5 Phase9 successor: asset roles, Lyrics source continuity and write ownership remain intact.`);

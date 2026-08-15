@@ -7,9 +7,8 @@ const trackAssets = read('src/services/phase4-admin-api.ts');
 const albums = read('src/services/album-admin-api.ts');
 const pkg = JSON.parse(read('package.json'));
 
-assert.match(release, /version:\s*'0\.19\.4'/);
-assert.match(release, /build:\s*82/);
-assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-destructive-write-ambiguity-guard'"));
+assert.ok(release.includes('build82AncestryMarker'), 'Successor builds must preserve accepted Build82 ancestry.');
+assert.ok(release.includes("version: 0.19.4 · build: 82 · codename: 'studio-focus-slice4-phase9-destructive-write-ambiguity-guard'"), 'Build82 accepted runtime identity must remain immutable in ancestry.');
 assert.ok(release.includes('build81AncestryMarker'), 'Phase9 Build82 must preserve accepted Build81 ancestry.');
 
 for (const marker of [
@@ -61,7 +60,7 @@ assert.ok(albums.includes('if (changed && missing)'), 'Album recovery may call a
 assert.ok(albums.includes('if (!changed && !missing)'), 'Album recovery may allow retry only when revision is unchanged and asset remains present.');
 assert.ok(!albums.includes('retryAdminAlbumAssetDelete'), 'Build82 must not introduce an automatic destructive retry loop.');
 
-assert.ok(pkg.scripts['check:phase9']?.includes('test-phase9-destructive-write-ambiguity-build82.mjs'), 'Build82 guard must run in check:phase9.');
+assert.ok(pkg.scripts['check:phase9']?.includes('test-phase9-destructive-write-ambiguity-build82.mjs'), 'Build82 guard must remain in check:phase9.');
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Phase9 guards must be part of the repository build gate.');
 
-console.log('Phase9 Build82 destructive-write ambiguity guard passed: Track and Album asset deletes classify lost responses through private canonical reread with no blind retry, while Phase4 transport topology remains unchanged.');
+console.log('Phase9 Build82 destructive-write ambiguity guard passed: accepted Track and Album asset-delete lost-response contracts remain inherited under the current successor runtime.');
