@@ -16,32 +16,24 @@ Read:
 
 Then verify the real GitHub state before mutation.
 
-## Current release state
+## Current accepted state
 
 ```text
-Studio accepted         v0.19.6 · Build84 · REAL USER PASS
-Accepted codename       studio-focus-slice4-phase9-sonictrace-save-response-loss-truth
-Accepted runtime merge  b7cf745e11adee1eb77900a32b9b6ca8ea80e000
-Accepted runtime Pages  31858977765 · SUCCESS
-
-Studio candidate        v0.19.7 · Build85 · DEPLOYED CANDIDATE · SMOKE PENDING
-Candidate codename      studio-focus-slice4-phase9-album-metadata-response-loss-truth
-Candidate runtime merge 1199f6a0e26da88e54f64a369985c2a72267e5a5
-Candidate runtime Pages 31863313848 · SUCCESS
-
-Track Manager           v5.23 · DEPLOYED
-Studio bridge           v1.13
-TM admin Worker         439a1ce4-e458-427d-9fd6-61e888efd269
-Public Worker           v2.7 · unchanged
-LaunchPAD public        2026.08.12.102 · REAL USER PASS
-SonicTrace              V2-E Build08 · REAL USER PASS
-Deep Audio              2.0.3-alpha
-LRC Maker               6.3.8
+Studio                v0.19.7 · Build85 · REAL USER PASS
+Codename              studio-focus-slice4-phase9-album-metadata-response-loss-truth
+Runtime merge         1199f6a0e26da88e54f64a369985c2a72267e5a5
+Runtime Pages         31863313848 · SUCCESS
+Track Manager         v5.23 · DEPLOYED
+Studio bridge         v1.13
+TM admin Worker       439a1ce4-e458-427d-9fd6-61e888efd269
+Public Worker         v2.7 · unchanged
+LaunchPAD public      2026.08.12.102 · REAL USER PASS
+SonicTrace            V2-E Build08 · REAL USER PASS
+Deep Audio            2.0.3-alpha
+LRC Maker             6.3.8
 ```
 
-**Studio v0.19.6 · Build84 remains the current accepted runtime.**
-
-**Studio v0.19.7 · Build85 is deployed on Pages as a candidate, not yet accepted.** It extends Phase9 response-loss truth to canonical Album metadata save only. A lost metadata response is never blindly retried; Studio privately rereads the exact pre-write revision, requested metadata and stable non-metadata Album shape before classifying committed, not committed, ambiguous or unverified.
+**Studio v0.19.7 · Build85 is the current accepted runtime.** Build85 extends Phase9 response-loss truth to canonical Album metadata save only. A lost metadata response is never blindly retried; Studio privately rereads the exact pre-write revision, requested metadata and stable non-metadata Album shape before classifying committed, not committed, ambiguous or unverified. The required normal-browser regression received explicit **`BUILD85 PASS`** on 2026-08-15.
 
 The repository currently publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
@@ -97,12 +89,12 @@ Phase 9             ACTIVE
 Phase 9 Slice1      Build82 · REAL USER PASS
 Phase 9 Slice2      Build83 · REAL USER PASS
 Phase 9 Slice3      Build84 · REAL USER PASS
-Phase 9 Slice4      Build85 · DEPLOYED CANDIDATE · smoke pending
+Phase 9 Slice4      Build85 · REAL USER PASS
 Build86             UNALLOCATED
 Phase 10            FUTURE
 ```
 
-The current next action is the bounded **Build85 Album metadata browser regression smoke**. No successor build is allocated while Build85 remains a candidate.
+The immediate next action is a **fresh bounded Phase9 reliability audit**, not another preselected runtime build. Remaining candidates include Album membership/move/upload/create response-loss truth, Access/CORS hardening, bounded read retries/timeouts, and degraded/offline/PWA resilience.
 
 ## Frozen authority model
 
@@ -126,7 +118,7 @@ albums/<album-id>/manifest.json
 
 Ordered `album.trackIds` is the sole membership/artistic-order authority. Track-side Album metadata is compatibility/cache data only.
 
-Build85 candidate failure contract for **metadata save only**:
+Build85 accepted failure contract for **metadata save only**:
 
 ```text
 metadata save response lost
@@ -196,36 +188,42 @@ MASTER FINAL 16:9
 
 Release Campaign is provider-agnostic. Google Flow is a convenience shortcut. Campaign drafts remain browser-local and ZIP export remains review-only.
 
-## Build85 candidate receipts
+## Build85 acceptance receipts
 
 ```text
 Safety pre              safety/pre-phase9-album-metadata-response-loss-build85-20260815-0555
 Runtime PR              #135
 Exact tested head       4bbfb93dfc9333eb1e8fc3a35b62699611e69367
-Validation              31863267911 · SUCCESS
+Validation              31863267911 · SUCCESS · first run
 Runtime merge           1199f6a0e26da88e54f64a369985c2a72267e5a5
 Runtime Pages           31863313848 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #136
+Candidate docs merge    40917edc6a341ca7d19907d8afe59123f44c8d03
+Candidate docs Pages    31863566190 · SUCCESS
 Safety post-deploy      safety/post-build85-deployed-candidate-20260815-0602
+Safety post-acceptance  safety/post-build85-real-user-pass-20260815-0748
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
-Real-user smoke         PENDING
+Real-user smoke         BUILD85 PASS · 2026-08-15
 ```
 
 Detailed record: [`changelogs/CHANGELOG-BUILD85.md`](changelogs/CHANGELOG-BUILD85.md).
 
-## Build84 accepted receipts
+## Accepted predecessors
+
+Build84 remains the accepted Phase9 Slice3 predecessor:
 
 ```text
+Studio                  v0.19.6 · Build84 · REAL USER PASS
 Runtime PR              #132
-Exact tested head       377de51416d4aea258830e55e894707d9f3f6512
 Validation              31858911420 · SUCCESS
 Runtime merge           b7cf745e11adee1eb77900a32b9b6ca8ea80e000
 Runtime Pages           31858977765 · SUCCESS
 Real-user smoke         BUILD84 PASS · 2026-08-15
-Worker deploy           NONE
-R2 migration/write      NONE caused by deployment
 ```
+
+Build83 and Build82 remain accepted Phase9 predecessors. See `CHANGELOG.md` and detailed per-build records for historical receipts.
 
 ## Documentation
 
