@@ -1,6 +1,6 @@
 # Studio v0.19.9 · Build87 — Phase9 Album membership response-loss truth
 
-Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**.
+Status: **REAL USER PASS · ACCEPTED**.
 
 ## Fresh audit proof
 
@@ -141,7 +141,7 @@ Build87 adds:
 - Phase9 gate inheritance Build82 → Build83 → Build84 → Build85 → Build86 → Build87;
 - bounded historical successor compatibility through `v0.19.9 / Build87` without weakening functional assertions.
 
-Exact candidate evidence:
+Exact acceptance evidence:
 
 ```text
 Safety pre              safety/pre-phase9-album-membership-response-loss-build87-20260815-0837
@@ -152,21 +152,31 @@ Final CI                31870328730 · SUCCESS · first run
 Runtime merge           b9e1f121c7dc111ee6db06fd4d00227426d96ce7
 Runtime Pages           31870370403 · SUCCESS · exact runtime merge SHA
 Safety post-deploy      safety/post-build87-deployed-candidate-20260815-0853
+Candidate docs PR       #142
+Candidate docs merge    453be9e9d72c9d90cd97ad5f57be02821efec12a
+Candidate docs Pages    31870838391 · SUCCESS
+Safety post-acceptance  safety/post-build87-real-user-pass-20260815-0903
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
-Real-user smoke         PENDING
+Real-user smoke         BUILD87 PASS · 2026-08-15
 ```
 
 The exact Build87 runtime head passed the complete repository-native validation chain including inherited Phase9 guards, Studio Focus guards, TypeScript and Vite production build **on the first CI run**.
 
-## Real-user acceptance boundary
+## Real-user acceptance — PASS
 
-Build87 is **not yet REAL USER PASS**.
+Acceptance used a normal safe browser regression rather than a manufactured network failure.
 
-Use a normal safe browser regression. Prefer reordering two existing Tracks in a canonical Album, save once, verify `Album tracklist saved and canonically verified across Album + Track caches.`, reload and confirm order persistence plus unchanged Album cache ownership on the reordered Tracks.
+The user returned the explicit verdict:
 
-Do **not** deliberately cut network/Access during a production membership save merely to manufacture a lost response.
+```text
+BUILD87 PASS MADAFAKA
+```
+
+The accepted boundary covered normal Album tracklist reorder/save, the expected full canonical verification receipt, persistence after reload, preserved Album compatibility-cache ownership on reordered Tracks and surrounding Track / Visuals / Lyrics / SonicTrace / Albums navigation sanity.
+
+No deliberate network/Access interruption was required.
 
 ## Safety / rollback
 
@@ -178,4 +188,4 @@ Runtime rollback is Studio-only. Build87 introduces no backend deployment and no
 - Do not merge red CI.
 - Merge only the exact tested head.
 - Runtime merge, Pages deployment and real-user acceptance remain separate states.
-- Do not allocate Build88 until Build87 receives explicit acceptance and a fresh bounded audit proves the next scope.
+- Do not allocate Build88 until a fresh bounded audit proves the next scope.
