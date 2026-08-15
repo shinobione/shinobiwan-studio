@@ -10,8 +10,8 @@ import {
   AlbumAdminError,
   getAdminAlbum,
   getAdminAlbums,
-  moveAdminAlbumTrack,
 } from '../services/album-admin-api';
+import { moveAdminAlbumTrackResilient } from '../services/album-move-admin-api';
 import { measureCanonicalAudioEvidence, type AdminAudioEvidence } from '../services/audio-duration-evidence';
 import {
   saveAdminTrackMetadataWithAudioEvidence,
@@ -302,14 +302,16 @@ export function MetadataValidationPanel({
       }
       if (fresh.status !== 'draft') throw new AlbumAdminError(`Album changed to ${fresh.status}; repair is locked until you review it.`);
 
-      const result = await moveAdminAlbumTrack(fresh.id, {
+      const result = await moveAdminAlbumTrackResilient(fresh.id, {
         trackId: track.id,
         sourceAlbumId: null,
         expectedTargetUpdatedAt: fresh.updatedAt,
         targetIndex: fresh.trackIds.length,
       });
       if (!result.clientVerified) throw new AlbumAdminError(result.verificationWarning || 'Album + Track canonical reread did not verify the repair.');
-      setAlbumAuthorityMessage(`Repaired and verified: ${fresh.title} now canonically owns ${track.id}, and the Track compatibility cache matches.`);
+      setAlbumAuthorityMessage(result.recoveredAfterTransportFailure
+        ? `RECOVERED AFTER LOST RESPONSE · ${fresh.title} now canonically owns ${track.id}; target membership and Track cache are verified. Studio did not retry the write.`
+        : `Repaired and canonically verified: ${fresh.title} now owns ${track.id}, and the Track compatibility cache matches.`);
       if (onSaved) await onSaved();
     } catch (reason) {
       setAlbumAuthorityError(albumErrorMessage(reason));
