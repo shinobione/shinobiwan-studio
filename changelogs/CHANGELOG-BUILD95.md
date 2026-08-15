@@ -4,7 +4,7 @@ Date: 2026-08-15
 Version: `v0.19.17`  
 Build: `95`  
 Codename: `studio-focus-slice4-phase9-albums-daily-resilient-service-convergence`  
-Status: **IMPLEMENTED CANDIDATE · CI PENDING**
+Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
 
 ## Fresh-audit decision
 
@@ -80,15 +80,49 @@ Build95 does **not** change:
 - inherited Phase9 Build82→Build94 gate;
 - Build95 guard included in repository-native Phase9/full build gate.
 
-## Safety
+## Validation history
+
+The first two Build95 CI runs were intentionally **not merged** and are retained as historical successor-guard evidence:
 
 ```text
-Accepted base main      495d1f55bf91d84a1123cd4ac3f607f48fea2d4a
-Safety pre              safety/pre-phase9-albums-daily-resilient-convergence-build95-20260815
-Feature branch          phase9/build95-albums-daily-resilient-convergence
-Worker deploy           NONE planned
-Track Manager change    NONE
-R2 migration/write      NONE caused by implementation
+CI #477 / run 31911328839  FAILURE
+  → inherited Phase7-C Build69 successor cap stopped at v0.19.16
+  → private-read, Phase5, Phase6, C3 and UX had already passed
+
+CI #482 / run 31911459367  FAILURE
+  → after Build69 + Focus64–67 bounded successor alignment
+  → inherited Build93 successor cap stopped at Build94
+  → Phase7, Phase8 and Phase9 Build82→92 had already passed
 ```
 
-CI, merge, Pages and real-user acceptance remain separate future states.
+No Build95 product behavior was changed to repair those runs. Only inherited successor allowlists/ancestry assertions were widened to recognize `v0.19.17 / Build95` while retaining their functional assertions.
+
+Final exact-head validation:
+
+```text
+Runtime PR              #171
+Exact tested head       f7d4ccfbfdebf7dba6cf419ca9eca1c862a16d4b
+Final full CI           31911514334 · SUCCESS
+Runtime merge           0ad5e48f17c658c6b85c2ae405d32e874d2306d6
+Runtime Pages           31911568069 · SUCCESS · build + deploy on exact merge SHA
+Safety pre              safety/pre-phase9-albums-daily-resilient-convergence-build95-20260815
+Safety pre-PR           safety/post-build95-prepr-20260815
+Safety green pre-merge  safety/post-build95-green-premerge-20260815
+Safety post-deploy      safety/post-build95-deployed-candidate-20260815
+Worker deploy           NONE
+Track Manager change    NONE
+R2 migration/write      NONE caused by implementation/deployment
+Real-user smoke         PENDING
+```
+
+## Current acceptance boundary
+
+```text
+CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS
+```
+
+Build95 has crossed the first two states only. It is **not accepted** until explicit bounded real-user validation exists.
+
+The normal-browser smoke must verify the real daily Albums route without manufacturing network/Access failure. Automated guards own the lost-response classification/wiring proof. Album create/upload/delete remain outside Build95 acceptance scope.
+
+Build96 remains **UNALLOCATED**.
