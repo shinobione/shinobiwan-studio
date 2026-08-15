@@ -7,12 +7,8 @@ const admin = read('src/services/admin-api.ts');
 const catalog = read('src/services/catalog-api.ts');
 const pkg = JSON.parse(read('package.json'));
 
-assert.match(release, /version:\s*'0\.19\.10'/);
-assert.match(release, /build:\s*88/);
-assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-private-read-transient-retry-truth'"));
-assert.ok(release.includes('build87AncestryMarker'), 'Build88 must preserve accepted Build87 ancestry.');
-assert.ok(release.includes("version: 0.19.9 · build: 87 · codename: 'studio-focus-slice4-phase9-album-membership-response-loss-truth'"));
-assert.equal(pkg.version, '0.19.10', 'package version must match Build88 runtime version.');
+assert.ok(release.includes('build88AncestryMarker'), 'Build89+ must preserve accepted Build88 ancestry.');
+assert.ok(release.includes("version: 0.19.10 · build: 88 · codename: 'studio-focus-slice4-phase9-private-read-transient-retry-truth'"));
 
 assert.ok(admin.includes("export type AdminReadFailureKind = 'access-or-cors' | 'http' | 'timeout' | 'transport' | 'invalid-response';"), 'Private reads must distinguish transport from Access/CORS.');
 assert.ok(admin.includes('const TRANSIENT_ADMIN_READ_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);'), 'Build88 transient HTTP allowlist must stay explicit and bounded.');
@@ -57,4 +53,4 @@ for (const inherited of [
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must include ${inherited}`);
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Phase9 guards must remain in the full build gate.');
 
-console.log('Phase9 Build88 private-read retry guard passed: health/catalog/track GETs retry once only for transient timeout/transport/HTTP failures, while Access/CORS, deterministic 4xx and invalid JSON remain non-retry and all write transports stay unchanged.');
+console.log('Phase9 Build88 private-read retry guard passed as inherited ancestry: health/catalog/track GETs still retry once only for transient timeout/transport/HTTP failures, while Access/CORS, deterministic 4xx and invalid JSON remain non-retry and all write transports stay unchanged.');
