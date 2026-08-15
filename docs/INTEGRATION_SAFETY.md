@@ -3,8 +3,7 @@
 Date established: 2026-08-08  
 Hardened: 2026-08-09  
 Current-state overlay refreshed: 2026-08-15  
-Current accepted Studio release: `v0.19.5` / Build `83` / REAL USER PASS  
-Current deployed candidate: `v0.19.6` / Build `84` / REAL USER SMOKE PENDING
+Current accepted Studio release: `v0.19.6` / Build `84` / REAL USER PASS
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -21,18 +20,13 @@ For short current state, read root `PROJECT_STATE.md` first. This file contains 
 ## Current production overlay
 
 ```text
-Studio accepted
-  v0.19.5 / Build83 / REAL USER PASS
-  runtime merge b168d8cda805e5c50480a3e26c5d52e490fb7ac6
-  runtime Pages 31856698097 / SUCCESS
-  browser smoke BUILD83 PASS / 2026-08-15
-
-Studio deployed candidate
-  v0.19.6 / Build84 / REAL USER SMOKE PENDING
+Studio
+  v0.19.6 / Build84 / REAL USER PASS
   exact tested head 377de51416d4aea258830e55e894707d9f3f6512
   runtime CI 31858911420 / SUCCESS
   runtime merge b7cf745e11adee1eb77900a32b9b6ca8ea80e000
   runtime Pages 31858977765 / SUCCESS
+  browser smoke BUILD84 PASS / 2026-08-15
   Worker deploy NONE
   R2 migration/write NONE caused by deployment
 
@@ -53,7 +47,7 @@ LRC Maker
   6.3.8
 ```
 
-Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable history; this overlay states current production truth only.
+Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable history; this overlay states current accepted production truth only.
 
 ## Restoration checkpoints
 
@@ -82,6 +76,10 @@ Before Phase9 Build84:
 
 After Build84 deployment candidate:
   safety/post-build84-deployed-candidate-20260815-0425
+  safety/post-build84-candidate-docs-closeout-20260815-0429
+
+After Build84 real-user acceptance:
+  safety/post-build84-real-user-pass-20260815-0435
 ```
 
 Earlier accepted safety branches remain preserved in Git history.
@@ -204,7 +202,7 @@ SonicTrace save response lost / timeout
 
 Before POST, Studio also rejects an already-canonical `analysisId` and a stale source-audio revision. Normal HTTP success requires exact `analysisId` presence in both sidecars before Studio calls the save verified.
 
-Build84 remains **DEPLOYED CANDIDATE**, not REAL USER PASS, until normal-browser regression acceptance is explicit.
+Build84 is **REAL USER PASS** after the explicit 2026-08-15 normal-browser regression verdict.
 
 ## Album authority boundary
 
@@ -287,13 +285,13 @@ Recovered success requires all of:
 
 Build83 is **REAL USER PASS** after explicit normal-browser regression acceptance.
 
-### Build84 candidate scope
+### Build84 accepted scope
 
 Build84 applies the same authority principle to SonicTrace analysis persistence using the unique requested `analysisId` across canonical latest + history.
 
 Recovered success requires the requested ID in both sidecars. Explicit retry safety requires the ID to be absent from both. Partial presence is ambiguous and unsafe to retry.
 
-Build84 is **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**. Do not generalize it into Album-write retry behavior; broader Album writes require their own bounded audit.
+Build84 is **REAL USER PASS** after explicit normal-browser regression acceptance. Do not generalize it into Album-write retry behavior; broader Album writes require their own bounded audit.
 
 ## Destructive/media verification policy
 
@@ -308,7 +306,7 @@ Preferred proof:
 - explicit UI confirmation;
 - disposable Draft asset only if a deliberate destructive browser smoke is truly required.
 
-Build84 acceptance does **not** require deliberately cutting network/Access during a production SonicTrace save just to manufacture response loss. A normal analysis/save is sufficient for regression acceptance when a new history entry is acceptable.
+Build84 acceptance did **not** require deliberately cutting network/Access during a production SonicTrace save just to manufacture response loss. A normal analysis/save was sufficient for regression acceptance.
 
 ## Version / deployment discipline
 
@@ -339,4 +337,4 @@ If a regression appears:
 
 ## Stop line
 
-**Build83 is the accepted Studio REAL USER PASS baseline. Build84 is the only current deployed candidate and must receive explicit browser acceptance before any successor build is allocated. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**
+**Build84 is the accepted Studio REAL USER PASS baseline. Phase9 remains active, but Build85 is UNALLOCATED until a fresh bounded audit proves the next smallest reliability scope. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**
