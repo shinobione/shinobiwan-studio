@@ -218,7 +218,7 @@ export async function uploadAdminAlbumAsset(albumId: string, kind: AdminAlbumAss
   let response: Response; try { response = await fetch(`${baseUrl()}/api/studio/albums/${encodeURIComponent(albumId)}/assets/${kind}/upload`, { method: 'POST', headers: { Accept: 'application/json' }, body: form, cache: 'no-store', credentials: 'include', mode: 'cors' }); } catch { throw new AlbumAdminError('Album asset upload failed before Track Manager returned a response. Reload canonical Album state before retrying.', null, 'ALBUM_ASSET_TRANSPORT'); }
   if (!isJson(response)) throw new AlbumAdminError('Cloudflare Access session is not available to Album asset upload.', response.status || null, 'ALBUM_ACCESS_SESSION_REQUIRED'); const payload = await response.json() as AdminAlbumWriteResponse; if (!response.ok) throw new AlbumAdminError(albumWriteErrorMessage(payload, `Album asset upload returned HTTP ${response.status}.`), response.status, payload.code || null, payload.currentUpdatedAt || null, payload.rollback || null, payload.quality || null, payload.verificationDetail || null); if (!payload.saved || !payload.updatedAt) throw new AlbumAdminError('Track Manager returned an invalid Album asset upload response.'); return verify(albumId, payload);
 }
-export async function deleteAdminAlbumAsset(albumId: string, kind: AdminAlbumAssetKind, expectedUpdatedAt: string) {
+export async function deleteAdminAlbumAsset(albumId: string, kind: AdminAlbumAssetKind, expectedUpdatedAt: string): Promise<AdminAlbumWriteResponse> {
   assertId(albumId);
   if (!expectedUpdatedAt) throw new AlbumAdminError('Canonical Album revision is required.');
   await requireManage('album-assets');
@@ -253,6 +253,7 @@ export async function deleteAdminAlbumAsset(albumId: string, kind: AdminAlbumAss
           updatedAt: manifest?.updatedAt || null,
           album: manifest,
           clientVerified: true,
+          verificationWarning: null,
           recoveredAfterTransportFailure: true,
           retrySafe: false,
           technicalDetails: `${reason.code}: response lost; canonical reread verified a new Album revision and the asset is absent.`,
