@@ -5,6 +5,7 @@ const INTENT = {
   create: 'album-create-v1', metadata: 'album-metadata-save-v1', membership: 'album-membership-save-v1',
   move: 'album-track-move-v1', upload: 'album-asset-upload-v1', deleteAsset: 'album-asset-delete-v1',
 } as const;
+const TRANSIENT_ALBUM_READ_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
 export type AdminAlbumType = 'album' | 'ep' | 'collection';
 export type AdminAlbumStatus = 'draft' | 'published' | 'archived';
 export type AdminAlbumAssetKind = 'cover' | 'thumbnail';
@@ -77,7 +78,14 @@ function metadataMismatch(manifest: AdminAlbumManifest | undefined, expected?: A
   return (Object.keys(expected) as Array<keyof AdminAlbumMetadataPatch>).filter(key =>
     JSON.stringify(manifest[key] ?? null) !== JSON.stringify(expected[key] ?? null));
 }
-async function readJson<T>(path: string, timeoutMs = 7000): Promise<T> {
+function isTransientAlbumReadError(reason: unknown): reason is AdminReadError {
+  return reason instanceof AdminReadError && (
+    reason.kind === 'timeout'
+    || reason.kind === 'transport'
+    || (reason.kind === 'http' && reason.status !== null && TRANSIENT_ALBUM_READ_STATUSES.has(reason.status))
+  );
+}
+async function readJsonOnce<T>(path: string, timeoutMs: number): Promise<T> {
   const controller = new AbortController();
   const timeout = globalThis.setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -88,14 +96,41 @@ async function readJson<T>(path: string, timeoutMs = 7000): Promise<T> {
       });
     } catch (reason) {
       if (reason instanceof DOMException && reason.name === 'AbortError') throw new AdminReadError('timeout', 'Canonical Album read timed out.');
-      throw new AdminReadError('access-or-cors', 'Canonical Album read is unavailable. Authenticate with Cloudflare Access and retry.');
+      throw new AdminReadError('transport', 'Canonical Album read transport was interrupted.');
     }
-    if (!isJson(response)) throw new AdminReadError('access-or-cors', 'Cloudflare Access session is not available to Studio Album Management.', response.status || null);
+    if (!isJson(response)) {
+      if (TRANSIENT_ALBUM_READ_STATUSES.has(response.status)) {
+        throw new AdminReadError('http', `Track Manager Album read returned transient HTTP ${response.status} without JSON.`, response.status);
+      }
+      throw new AdminReadError('access-or-cors', 'Cloudflare Access session is not available to Studio Album Management.', response.status || null);
+    }
     if (!response.ok) throw new AdminReadError(response.status === 401 || response.status === 403 ? 'access-or-cors' : 'http', `Track Manager Album read returned HTTP ${response.status}.`, response.status);
     try { return await response.json() as T; } catch { throw new AdminReadError('invalid-response', 'Track Manager Album read returned invalid JSON.', response.status); }
   } finally {
     globalThis.clearTimeout(timeout);
   }
+}
+async function readJson<T>(path: string, timeoutMs = 7000): Promise<T> {
+  let firstTransientFailure: AdminReadError | null = null;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      return await readJsonOnce<T>(path, timeoutMs);
+    } catch (reason) {
+      if (attempt === 0 && isTransientAlbumReadError(reason)) {
+        firstTransientFailure = reason;
+        continue;
+      }
+      if (firstTransientFailure && reason instanceof AdminReadError) {
+        throw new AdminReadError(
+          reason.kind,
+          `Canonical Album read failed after one bounded transient retry. ${reason.message}`,
+          reason.status,
+        );
+      }
+      throw reason;
+    }
+  }
+  throw new AdminReadError('transport', 'Canonical Album read retry loop ended unexpectedly.');
 }
 async function writeJson(path: string, body: unknown): Promise<AdminAlbumWriteResponse> {
   let response: Response;
@@ -330,4 +365,9 @@ export async function deleteAdminAlbumAsset(albumId: string, kind: AdminAlbumAss
   }
 }
 
-export const albumAdminService = Object.freeze({ intents: INTENT, transport: 'Track Manager v5.23 / bridge v1.13 only' });
+export const albumAdminService = Object.freeze({
+  intents: INTENT,
+  transport: 'Track Manager v5.23 / bridge v1.13 only',
+  privateReadRetryPolicy: 'one-retry-timeout-transport-transient-http-no-access-retry',
+  privateReadMaxAttempts: 2,
+});
