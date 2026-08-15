@@ -2,6 +2,54 @@
 
 This file is the **current concise changelog**. Detailed per-build records live under [`changelogs/`](changelogs/README.md).
 
+## Current deployed candidate
+
+### v0.19.12 · Build90 — 2026-08-15
+
+Codename: `studio-focus-slice4-phase9-lyrics-private-read-transient-retry-truth`  
+Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+
+Build90 extends bounded private-read resilience to canonical Lyrics **GET only**.
+
+Candidate behavior:
+
+- non-timeout canonical Lyrics browser `fetch()` interruption is classified as `LYRICS_READ_TRANSPORT`, not falsely as Cloudflare Access;
+- timeout, transport interruption, and HTTP `408/425/429/500/502/503/504` may receive exactly one bounded retry;
+- 401/403, deterministic ordinary 4xx, non-JSON Access/gating responses and invalid JSON are never retried;
+- maximum attempts are two total, with the existing 7-second timeout per attempt;
+- normal canonical Lyrics loading uses the bounded helper;
+- Build83 `rereadLyricsTruth()` continues to combine canonical Lyrics + Track rereads and merely inherits the hardened GET;
+- Lyrics validation/save POSTs remain unchanged;
+- `LYRICS_SAVE_TIMEOUT` / `LYRICS_SAVE_TRANSPORT` and Build83 committed / not-committed / ambiguous / unverified recovery remain intact;
+- no automatic Lyrics validation/save retry exists;
+- SonicTrace private reads remain a separate future audit family;
+- no Track Manager, Worker, public Worker, R2 schema/data migration, LaunchPAD, LRC Maker or SonicTrace Deep Audio change was required.
+
+Exact candidate evidence:
+
+```text
+Safety pre               safety/pre-phase9-lyrics-private-read-retry-build90-20260815-1419
+Safety pre-PR            safety/post-build90-prepr-20260815-1424
+Studio PR                #150
+Exact tested head        48ca1dc25951d65ead05c4f80bd1f9e6bf8c5d01
+Validation               31884568681 · SUCCESS · first run
+Runtime merge            8a851a7d53d3b4f45359c7036011684441bb25bb
+Runtime Pages            31884614863 · SUCCESS · exact runtime merge SHA
+Safety post-deploy       safety/post-build90-deployed-candidate-20260815-1429
+Track Manager            v5.23 · unchanged
+Studio bridge            v1.13 · unchanged
+TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
+Public Worker            v2.7 · unchanged
+Worker deploy            NONE
+R2 migration/write       NONE caused by deployment
+Real-user smoke          PENDING
+Build91                  UNALLOCATED
+```
+
+Required acceptance is a normal-browser Lyrics read regression only; no deliberate network/Access interruption is required.
+
+Detailed candidate record: [`changelogs/CHANGELOG-BUILD90.md`](changelogs/CHANGELOG-BUILD90.md).
+
 ## Current accepted release
 
 ### v0.19.11 · Build89 — 2026-08-15
@@ -419,6 +467,6 @@ All Phase8/9 health and guidance surfaces continue to preserve the same canonica
 
 ## Next bounded action
 
-Run a fresh post-Build89 Phase9 reliability audit. Build90 remains **UNALLOCATED** until that audit proves the smallest coherent next scope.
+Run the normal-browser Build90 Lyrics private-read regression smoke. Build91 remains **UNALLOCATED** until Build90 is explicitly accepted and a fresh post-Build90 audit proves the next smallest coherent scope.
 
 `CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS` remains mandatory.
