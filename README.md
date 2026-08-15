@@ -16,25 +16,24 @@ Read:
 
 Then verify the real GitHub state before mutation.
 
-## Current state
+## Current accepted state
 
 ```text
-Accepted Studio        v0.19.4 · Build82 · REAL USER PASS
-Deployed candidate     v0.19.5 · Build83 · smoke pending
-Build83 codename       studio-focus-slice4-phase9-lyrics-save-response-loss-truth
-Build83 merge          b168d8cda805e5c50480a3e26c5d52e490fb7ac6
-Build83 Pages          31856698097 · SUCCESS
-Track Manager          v5.23 · DEPLOYED
-Studio bridge          v1.13
-TM admin Worker        439a1ce4-e458-427d-9fd6-61e888efd269
-Public Worker          v2.7 · unchanged
-LaunchPAD public       2026.08.12.102 · REAL USER PASS
-SonicTrace             V2-E Build08 · REAL USER PASS
-Deep Audio             2.0.3-alpha
-LRC Maker              6.3.8
+Studio                v0.19.5 · Build83 · REAL USER PASS
+Codename              studio-focus-slice4-phase9-lyrics-save-response-loss-truth
+Runtime merge         b168d8cda805e5c50480a3e26c5d52e490fb7ac6
+Runtime Pages         31856698097 · SUCCESS
+Track Manager         v5.23 · DEPLOYED
+Studio bridge         v1.13
+TM admin Worker       439a1ce4-e458-427d-9fd6-61e888efd269
+Public Worker         v2.7 · unchanged
+LaunchPAD public      2026.08.12.102 · REAL USER PASS
+SonicTrace            V2-E Build08 · REAL USER PASS
+Deep Audio            2.0.3-alpha
+LRC Maker             6.3.8
 ```
 
-**Build82 remains the current accepted runtime. Build83 is deployed but not yet accepted.** Build83 extends Phase9 reliability to canonical Lyrics save response-loss truth: a lost response is never blindly retried, and private canonical reread classifies the write as committed, not committed, ambiguous or unverified.
+**Studio v0.19.5 · Build83 is the current accepted runtime.** Build83 extends Phase9 reliability to canonical Lyrics save response-loss truth: a lost response is never blindly retried, and private canonical reread classifies the write as committed, not committed, ambiguous or unverified. The required normal browser regression smoke received explicit **`BUILD83 PASS`** on 2026-08-15.
 
 The repository currently publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
@@ -88,11 +87,12 @@ Phase 7-C           COMPLETE · program closeout
 Phase 8             COMPLETE · Build81 closeout
 Phase 9             ACTIVE
 Phase 9 Slice1      Build82 · REAL USER PASS
-Phase 9 Slice2      Build83 · DEPLOYED CANDIDATE · smoke pending
+Phase 9 Slice2      Build83 · REAL USER PASS
+Build84             UNALLOCATED
 Phase 10            FUTURE
 ```
 
-The immediate next action is **Build83 real-user browser smoke**, not another runtime build. After explicit PASS, run a fresh Phase9 audit before allocating any successor.
+The immediate next action is a **fresh bounded Phase9 reliability audit**, not another preselected runtime build. Leading candidates are SonicTrace analysis save response-loss truth, broader guarded Album-write response-loss truth, Access/CORS hardening, and degraded/offline/PWA resilience.
 
 ## Frozen authority model
 
@@ -124,7 +124,7 @@ tracks/<slug>/lyrics.txt
 
 `lyrics.txt` is the unique canonical source. Recognized timestamps define synchronization. `.lrc` is optional export/compatibility only.
 
-Build83 adds this bounded failure contract:
+Build83 adds this bounded accepted failure contract:
 
 ```text
 save response lost
@@ -158,7 +158,7 @@ MASTER FINAL 16:9
 
 Release Campaign is provider-agnostic. Google Flow is a convenience shortcut. Campaign drafts remain browser-local and ZIP export remains review-only.
 
-## Build83 candidate receipts
+## Build83 acceptance receipts
 
 ```text
 Runtime PR              #129
@@ -166,7 +166,10 @@ Exact tested head       beff9fc58c58e36ce2c2082f7bd5c041641a5e12
 Validation              31856653579 · SUCCESS
 Runtime merge           b168d8cda805e5c50480a3e26c5d52e490fb7ac6
 Runtime Pages           31856698097 · SUCCESS
-Real-user smoke         PENDING
+Candidate docs PR       #130
+Candidate docs merge    afc526a59e5a2715929d200a32abbd49195b50bf
+Candidate docs Pages    31856972224 · SUCCESS
+Real-user smoke         BUILD83 PASS · 2026-08-15
 Worker deploy           NONE
 R2 migration/write      NONE caused by deployment
 ```

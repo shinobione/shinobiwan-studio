@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-15 after **Build83 deployed candidate** publication. Real-user smoke remains pending.
+Updated: 2026-08-15 after **Build83 REAL USER PASS**.
 
 This file is the durable roadmap summary. Historical implementation detail belongs in `docs/` and `changelogs/`; do not copy it here unless it changes what is done, active, next or backlogged.
 
@@ -45,36 +45,43 @@ Build81  Sonic/provider semantic truth cleanup        REAL USER PASS / Phase8 cl
 - normal success also canonically verified;
 - no Worker/backend/R2 migration.
 
-## In progress
-
 ### Phase 9 Slice2 — canonical Lyrics save response-loss truth
 
-**Build83 · v0.19.5 · DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+**Build83 · v0.19.5 · REAL USER PASS**
 
 - exact-head CI `31856653579` SUCCESS;
 - runtime PR #129 merged at `b168d8cda805e5c50480a3e26c5d52e490fb7ac6`;
 - Pages `31856698097` SUCCESS on that exact merge;
+- explicit real-user verdict `BUILD83 PASS` on 2026-08-15;
 - no Worker/backend/R2 migration;
 - lost response is classified through private canonical Lyrics + Track reread;
 - no blind retry;
 - normal success retains exact canonical revision + ETag + text verification.
 
+## In progress
+
+### Phase 9 — fresh reliability audit
+
+Phase9 remains active, but **Build84 is not allocated**.
+
+The current task is a fresh read-only audit to identify the smallest remaining reliability gap without duplicating existing recovery logic.
+
 ## Next
 
-**Do not allocate Build84 yet.**
-
-First complete the Build83 normal browser regression smoke and record explicit PASS/FAIL.
-
-The smoke does not require deliberately interrupting a production save. Verify version, canonical Lyrics load, validation, ordinary save/reread only if a safe edit is available, plus basic Track/Visuals/Albums non-regression.
-
-After explicit Build83 PASS, run a fresh bounded Phase9 audit before selecting the next slice. Current leading audit candidates are:
+Audit these candidates in order of proven risk / bounded scope, without assuming a build number:
 
 1. SonicTrace analysis save response-loss truth;
 2. broader guarded Album write response-loss truth;
 3. Access/CORS hardening;
 4. degraded/offline UX and PWA resilience.
 
-Pick one coherent slice only after the audit proves the gap and confirms it does not duplicate existing recovery logic.
+Pick **one** coherent slice only after the audit proves the gap and confirms it does not duplicate existing recovery logic.
+
+Possible Phase9 follow-ups after that:
+
+- bounded read retries/timeouts;
+- PWA update and resilience behavior;
+- anti-loss safeguards where canonical verification is possible.
 
 ## Backlog
 
@@ -102,7 +109,8 @@ There is currently **no official Phase 11**.
 - Do not use a new phase/build as a bucket for opportunistic refactors.
 - Do not treat a candidate as accepted until real-user validation exists where required.
 - Do not deliberately damage or interrupt a production write merely to prove an ambiguity guard.
+- Do not allocate Build84 before a bounded audit selects its scope.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the accepted Build82 smoke plus the pending Build83 smoke.
+See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build83 real-user PASS.
