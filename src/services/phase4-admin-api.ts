@@ -369,7 +369,7 @@ export async function uploadAdminTrackAsset(
       throw new Phase4AdminError(
         'Canonical state changed while the upload response was unavailable. Reload this track and inspect the asset before any retry.',
         null,
-        'ASSET_UPLOAD_AMIGUOUS',
+        'ASSET_UPLOAD_AMBIGUOUS',
         manifest?.updatedAt || null,
         null,
         false,
