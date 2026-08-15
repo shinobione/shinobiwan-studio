@@ -19,10 +19,17 @@ Then verify the real GitHub state before mutation.
 ## Current accepted state
 
 ```text
-Studio                v0.19.8 · Build86 · REAL USER PASS
-Codename              studio-focus-slice4-phase9-album-move-response-loss-truth
-Runtime merge         866ebf9c2a501d11102ed994717b50f6d8189b0d
-Runtime Pages         31868570112 · SUCCESS
+Studio                v0.19.9 · Build87 · REAL USER PASS
+Codename              studio-focus-slice4-phase9-album-membership-response-loss-truth
+Runtime PR            #141
+Exact tested head     5f155d312b0af7227325a78480bfd424a96e7859
+Validation            31870328730 · SUCCESS · first run
+Runtime merge         b9e1f121c7dc111ee6db06fd4d00227426d96ce7
+Runtime Pages         31870370403 · SUCCESS
+Candidate docs PR     #142
+Candidate docs merge  453be9e9d72c9d90cd97ad5f57be02821efec12a
+Candidate docs Pages  31870838391 · SUCCESS
+Real-user smoke       BUILD87 PASS · 2026-08-15
 Track Manager         v5.23 · DEPLOYED
 Studio bridge         v1.13
 TM admin Worker       439a1ce4-e458-427d-9fd6-61e888efd269
@@ -33,25 +40,7 @@ Deep Audio            2.0.3-alpha
 LRC Maker             6.3.8
 ```
 
-**Studio v0.19.8 · Build86 remains the current accepted runtime.** Build86 extends Phase9 response-loss truth to canonical Album move only. A lost move response is never blindly retried; Studio privately rereads the target Album, optional source Album and Track compatibility cache before classifying committed, not committed, ambiguous or unverified. The required normal-browser regression received explicit **`BUILD86 PASS`** on 2026-08-15.
-
-## Current deployed candidate
-
-```text
-Studio                v0.19.9 · Build87 · DEPLOYED CANDIDATE
-Codename              studio-focus-slice4-phase9-album-membership-response-loss-truth
-Runtime PR            #141
-Exact tested head     5f155d312b0af7227325a78480bfd424a96e7859
-Validation            31870328730 · SUCCESS · first run
-Runtime merge         b9e1f121c7dc111ee6db06fd4d00227426d96ce7
-Runtime Pages         31870370403 · SUCCESS
-Real-user smoke       PENDING
-Worker deploy         NONE
-Track Manager change  NONE
-R2 migration/write    NONE caused by deployment
-```
-
-Build87 hardens canonical Album **bulk membership / ordered tracklist save** against lost responses and verifies both the Album and every affected Track compatibility cache. It remains a candidate until explicit browser acceptance.
+**Studio v0.19.9 · Build87 is the current accepted runtime.** Build87 extends Phase9 response-loss truth to canonical Album **bulk membership / ordered tracklist save** only. A lost membership response is never blindly retried; Studio privately rereads the Album and every affected Track compatibility cache before classifying committed, not committed, ambiguous or unverified. The bounded normal-browser regression received explicit **`BUILD87 PASS MADAFAKA`** on 2026-08-15.
 
 The repository currently publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
@@ -109,12 +98,12 @@ Phase 9 Slice2      Build83 · REAL USER PASS
 Phase 9 Slice3      Build84 · REAL USER PASS
 Phase 9 Slice4      Build85 · REAL USER PASS
 Phase 9 Slice5      Build86 · REAL USER PASS
-Phase 9 Slice6      Build87 · DEPLOYED CANDIDATE · smoke pending
+Phase 9 Slice6      Build87 · REAL USER PASS
 Build88             UNALLOCATED
 Phase 10            FUTURE
 ```
 
-The immediate next action is the bounded Build87 normal-browser Album tracklist reorder regression smoke. No successor is allocated before explicit Build87 acceptance and a fresh post-acceptance audit.
+The immediate next action is a **fresh bounded Phase9 reliability audit**, not another preselected runtime build. Remaining candidates include Album asset upload/create response-loss truth, Access/CORS hardening, bounded read retries/timeouts, and degraded/offline/PWA resilience.
 
 ## Frozen authority model
 
@@ -172,7 +161,7 @@ move response unavailable
 
 Build86 does not generalize this contract to Album bulk membership, create or upload.
 
-Build87 candidate failure contract for **Album bulk membership / ordered tracklist save only**:
+Build87 accepted failure contract for **Album bulk membership / ordered tracklist save only**:
 
 ```text
 membership response unavailable
@@ -243,7 +232,7 @@ MASTER FINAL 16:9
 
 Release Campaign is provider-agnostic. Google Flow is a convenience shortcut. Campaign drafts remain browser-local and ZIP export remains review-only.
 
-## Build87 candidate receipts
+## Build87 acceptance receipts
 
 ```text
 Safety pre              safety/pre-phase9-album-membership-response-loss-build87-20260815-0837
@@ -254,10 +243,14 @@ Validation              31870328730 · SUCCESS · first run
 Runtime merge           b9e1f121c7dc111ee6db06fd4d00227426d96ce7
 Runtime Pages           31870370403 · SUCCESS · exact runtime merge SHA
 Safety post-deploy      safety/post-build87-deployed-candidate-20260815-0853
+Candidate docs PR       #142
+Candidate docs merge    453be9e9d72c9d90cd97ad5f57be02821efec12a
+Candidate docs Pages    31870838391 · SUCCESS
+Safety post-acceptance  safety/post-build87-real-user-pass-20260815-0903
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
-Real-user smoke         PENDING
+Real-user smoke         BUILD87 PASS · 2026-08-15
 ```
 
 Detailed record: [`changelogs/CHANGELOG-BUILD87.md`](changelogs/CHANGELOG-BUILD87.md).
