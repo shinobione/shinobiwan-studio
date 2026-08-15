@@ -53,6 +53,17 @@ function deepFailureIsTransport(error: unknown): boolean {
   return /offline|blocked by the browser|timed out/i.test(error.message);
 }
 
+function displaySonicTraceError(error: unknown): string {
+  if (!(error instanceof SonicTraceError)) return error instanceof Error ? error.message : String(error);
+  const code = error.code || '';
+  const state = error.retrySafe
+    ? 'RETRY SAFE AFTER RECONNECT'
+    : ['SONICTRACE_SAVE_AMBIGUOUS', 'SONICTRACE_SAVE_UNVERIFIED'].includes(code)
+      ? 'DO NOT RETRY'
+      : null;
+  return `${state ? `${state} · ` : ''}${error.message}${code ? ` · ${code}` : ''}`;
+}
+
 export function SonicTracePanel({ track, onSaved }: { track: StudioTrackDetail; onSaved: () => Promise<void> | void }) {
   const [state, setState] = useState<SonicTraceAnalysisState | null>(null);
   const [draft, setDraft] = useState<SonicTraceAnalysis | null>(null);
@@ -73,7 +84,7 @@ export function SonicTracePanel({ track, onSaved }: { track: StudioTrackDetail; 
       setState(payload);
       setError(null);
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : String(reason));
+      setError(displaySonicTraceError(reason));
     } finally {
       setLoading(false);
     }
@@ -128,7 +139,7 @@ export function SonicTracePanel({ track, onSaved }: { track: StudioTrackDetail; 
         );
       }
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : String(reason));
+      setError(displaySonicTraceError(reason));
     } finally {
       setBusy(false);
     }
@@ -141,13 +152,21 @@ export function SonicTracePanel({ track, onSaved }: { track: StudioTrackDetail; 
     setBusy(true);
     setError(null);
     try {
-      await saveSonicTraceAnalysis(track.id, draft);
+      const saved = await saveSonicTraceAnalysis(track.id, draft);
       setDraft(null);
-      setNotice('Analysis saved and canonically reread from R2.');
+      if (saved.clientVerified) {
+        setNotice(
+          saved.recoveredAfterTransportFailure
+            ? 'RECOVERED AFTER LOST RESPONSE · The exact analysisId is present in canonical latest + history. Studio did not retry the write.'
+            : 'Analysis saved and canonically verified in latest + history.',
+        );
+      } else {
+        setNotice(saved.verificationWarning || 'Save response received, but canonical SonicTrace reread remains unverified. Reload before another save.');
+      }
       await load();
       await onSaved();
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : String(reason));
+      setError(displaySonicTraceError(reason));
     } finally {
       setBusy(false);
     }

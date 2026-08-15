@@ -7,11 +7,12 @@ const lyrics = read('src/services/lyrics-admin-api.ts');
 const ui = read('src/components/LyricsEditorPanel.tsx');
 const pkg = JSON.parse(read('package.json'));
 
-assert.match(release, /version:\s*'0\.19\.5'/);
-assert.match(release, /build:\s*83/);
-assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-lyrics-save-response-loss-truth'"));
-assert.ok(release.includes('build82AncestryMarker'), 'Build83 must inherit the accepted Build82 runtime contract.');
-assert.equal(pkg.version, '0.19.5', 'package version must match Build83 runtime version.');
+assert.ok(release.includes('build83AncestryMarker'), 'Successor builds must preserve accepted Build83 ancestry.');
+assert.ok(
+  release.includes("version: 0.19.5 · build: 83 · codename: 'studio-focus-slice4-phase9-lyrics-save-response-loss-truth'"),
+  'Build83 accepted runtime identity must remain immutable in ancestry.',
+);
+assert.ok(release.includes('build82AncestryMarker'), 'Build83 ancestry must preserve accepted Build82 ancestry.');
 
 for (const marker of [
   'LYRICS_SAVE_TIMEOUT',
@@ -46,7 +47,7 @@ assert.ok(ui.includes('RETRY SAFE AFTER RECONNECT'), 'Lyrics UI must expose the 
 assert.ok(ui.includes('Studio did not retry the write.'), 'Recovered success copy must state that no blind retry occurred.');
 
 assert.ok(pkg.scripts['check:phase9']?.includes('test-phase9-destructive-write-ambiguity-build82.mjs'), 'Build82 guard must remain inherited.');
-assert.ok(pkg.scripts['check:phase9']?.includes('test-phase9-lyrics-response-loss-build83.mjs'), 'Build83 guard must run in check:phase9.');
+assert.ok(pkg.scripts['check:phase9']?.includes('test-phase9-lyrics-response-loss-build83.mjs'), 'Build83 guard must remain in check:phase9.');
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Phase9 guards must remain in the full build gate.');
 
-console.log('Phase9 Build83 Lyrics response-loss guard passed: lost save responses are canonically classified as committed/not-committed/ambiguous/unverified with no blind retry, while normal success remains canonically verified.');
+console.log('Phase9 Build83 Lyrics response-loss guard passed as inherited ancestry: lost save responses remain canonically classified as committed/not-committed/ambiguous/unverified with no blind retry.');

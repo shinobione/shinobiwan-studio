@@ -28,24 +28,42 @@ interface SonicTraceCatalogResponse {
   error?: string;
 }
 
-interface SonicTraceSaveResponse {
+export type SonicTraceCommitState = 'committed' | 'not-committed' | 'ambiguous' | 'unverified';
+
+export interface SonicTraceSaveResponse {
   ok?: boolean;
   saved?: boolean;
   analysis?: SonicTraceAnalysis;
   historyCount?: number;
   code?: string;
   error?: string;
+  clientVerified?: boolean;
+  verificationWarning?: string | null;
+  recoveredAfterTransportFailure?: boolean;
+  retrySafe?: boolean;
+  commitState?: SonicTraceCommitState;
+  technicalDetails?: string | null;
 }
 
 export class SonicTraceError extends Error {
   readonly status: number | null;
   readonly code: string | null;
+  readonly retrySafe: boolean;
+  readonly technicalDetails: string | null;
 
-  constructor(message: string, status: number | null = null, code: string | null = null) {
+  constructor(
+    message: string,
+    status: number | null = null,
+    code: string | null = null,
+    retrySafe = false,
+    technicalDetails: string | null = null,
+  ) {
     super(message);
     this.name = 'SonicTraceError';
     this.status = status;
     this.code = code;
+    this.retrySafe = retrySafe;
+    this.technicalDetails = technicalDetails;
   }
 }
 
@@ -63,6 +81,22 @@ function validTrackId(trackId: string): boolean {
 
 function isJson(response: Response): boolean {
   return (response.headers.get('content-type') || '').toLowerCase().includes('application/json');
+}
+
+function sameSourceVersion(left: SonicTraceSourceVersion | null | undefined, right: SonicTraceSourceVersion | null | undefined): boolean {
+  return Boolean(
+    left && right
+    && left.kind === right.kind
+    && left.value === right.value
+    && left.sizeBytes === right.sizeBytes,
+  );
+}
+
+function analysisPresence(state: SonicTraceAnalysisState, analysisId: string): { latest: boolean; history: boolean } {
+  return {
+    latest: state.latest?.analysisId === analysisId,
+    history: state.history.some(item => item.analysisId === analysisId),
+  };
 }
 
 async function adminJson<T>(path: string, init?: RequestInit, timeoutMs = 12000): Promise<T> {
@@ -92,6 +126,46 @@ async function adminJson<T>(path: string, init?: RequestInit, timeoutMs = 12000)
   }
 }
 
+async function postSonicTraceSave(trackId: string, analysis: SonicTraceAnalysis): Promise<SonicTraceSaveResponse> {
+  const controller = new AbortController();
+  const timeout = globalThis.setTimeout(() => controller.abort(), 30000);
+  try {
+    let response: Response;
+    try {
+      response = await fetch(`${adminBase()}/api/studio/tracks/${encodeURIComponent(trackId)}/analysis/sonictrace`, {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'text/plain;charset=UTF-8' },
+        body: JSON.stringify({ intent: SAVE_INTENT, analysis }),
+        credentials: 'include',
+        cache: 'no-store',
+        mode: 'cors',
+        signal: controller.signal,
+      });
+    } catch (reason) {
+      const timedOut = reason instanceof DOMException && reason.name === 'AbortError';
+      throw new SonicTraceError(
+        timedOut
+          ? 'SonicTrace save timed out after the write began. Studio will reread canonical latest/history before deciding whether any retry is safe.'
+          : 'SonicTrace save transport was interrupted after the write began. Studio will reread canonical latest/history before deciding whether any retry is safe.',
+        null,
+        timedOut ? 'SONICTRACE_SAVE_TIMEOUT' : 'SONICTRACE_SAVE_TRANSPORT',
+        false,
+        reason instanceof Error ? reason.message : String(reason),
+      );
+    }
+    if (!isJson(response)) throw new SonicTraceError('Cloudflare Access session is not available to the SonicTrace save bridge.', response.status || null, 'SONICTRACE_ACCESS_SESSION_REQUIRED');
+    let payload: SonicTraceSaveResponse;
+    try { payload = await response.json() as SonicTraceSaveResponse; }
+    catch { throw new SonicTraceError('Track Manager returned invalid SonicTrace save JSON.', response.status || null, 'SONICTRACE_INVALID_SAVE_RESPONSE'); }
+    if (!response.ok || payload.ok === false) {
+      throw new SonicTraceError(payload.error || `Track Manager returned HTTP ${response.status}.`, response.status, payload.code || null);
+    }
+    return payload;
+  } finally {
+    globalThis.clearTimeout(timeout);
+  }
+}
+
 export async function getSonicTraceHealth(): Promise<SonicTraceHealth> {
   return fetchJson<SonicTraceHealth>(`${sonicBase()}/api/live`, 1800);
 }
@@ -100,6 +174,8 @@ export async function getSonicTraceAnalysisState(trackId: string): Promise<Sonic
   if (!validTrackId(trackId)) throw new SonicTraceError('Invalid trackId.');
   const payload = await adminJson<SonicTraceAnalysisState>(`/api/studio/tracks/${encodeURIComponent(trackId)}/analysis/sonictrace`);
   if (payload.trackId !== trackId || !Array.isArray(payload.history)) throw new SonicTraceError('Track Manager returned an invalid SonicTrace state.');
+  if (payload.latest && payload.latest.trackId !== trackId) throw new SonicTraceError('Track Manager returned a SonicTrace latest sidecar for the wrong track.');
+  if (payload.history.some(item => item.trackId !== trackId)) throw new SonicTraceError('Track Manager returned SonicTrace history for the wrong track.');
   return payload;
 }
 
@@ -115,17 +191,88 @@ export async function saveSonicTraceAnalysis(trackId: string, analysis: SonicTra
   if (!(health.capabilities?.write || []).includes('sonictrace-analysis')) {
     throw new SonicTraceError('Track Manager does not advertise the guarded SonicTrace write capability. Save stays locked.');
   }
-  const payload = await adminJson<SonicTraceSaveResponse>(
-    `/api/studio/tracks/${encodeURIComponent(trackId)}/analysis/sonictrace`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
-      body: JSON.stringify({ intent: SAVE_INTENT, analysis }),
-    },
-    30000,
-  );
+
+  const before = await getSonicTraceAnalysisState(trackId);
+  const beforePresence = analysisPresence(before, analysis.analysisId);
+  if (beforePresence.latest || beforePresence.history) {
+    throw new SonicTraceError('This SonicTrace analysisId already exists in canonical state. Re-scan before another save.', 409, 'ANALYSIS_EXISTS');
+  }
+  if (before.currentSourceVersion && !sameSourceVersion(before.currentSourceVersion, analysis.sourceVersion)) {
+    throw new SonicTraceError('Canonical audio changed after this SonicTrace analysis. Re-scan before saving.', 409, 'STALE_AUDIO');
+  }
+
+  let payload: SonicTraceSaveResponse;
+  try {
+    payload = await postSonicTraceSave(trackId, analysis);
+  } catch (reason) {
+    if (!(reason instanceof SonicTraceError) || !['SONICTRACE_SAVE_TIMEOUT', 'SONICTRACE_SAVE_TRANSPORT'].includes(reason.code || '')) throw reason;
+    try {
+      const reread = await getSonicTraceAnalysisState(trackId);
+      const presence = analysisPresence(reread, analysis.analysisId);
+      if (presence.latest && presence.history && reread.latest) {
+        return {
+          ok: true,
+          saved: true,
+          analysis: reread.latest,
+          historyCount: reread.history.length,
+          clientVerified: true,
+          recoveredAfterTransportFailure: true,
+          retrySafe: false,
+          commitState: 'committed',
+          technicalDetails: `${reason.code}: response lost; private canonical reread verified analysisId ${analysis.analysisId} in both latest.json and append-only history.`,
+        };
+      }
+      if (!presence.latest && !presence.history) {
+        throw new SonicTraceError(
+          'SonicTrace save response was lost, but private canonical reread proves this analysisId is absent from both latest and history. An explicit retry is safe after connectivity or Access is restored.',
+          null,
+          'SONICTRACE_SAVE_NOT_COMMITTED',
+          true,
+          reason.technicalDetails,
+        );
+      }
+      throw new SonicTraceError(
+        'SonicTrace save response was lost and canonical latest/history disagree about the requested analysisId. Do not retry; reload and inspect canonical SonicTrace state first.',
+        null,
+        'SONICTRACE_SAVE_AMBIGUOUS',
+        false,
+        `${reason.code}: response lost; latestMatch=${presence.latest}; historyMatch=${presence.history}; analysisId=${analysis.analysisId}.`,
+      );
+    } catch (recoveryReason) {
+      if (recoveryReason instanceof SonicTraceError && ['SONICTRACE_SAVE_NOT_COMMITTED', 'SONICTRACE_SAVE_AMBIGUOUS'].includes(recoveryReason.code || '')) throw recoveryReason;
+      throw new SonicTraceError(
+        'SonicTrace save response was lost and Studio could not verify canonical latest/history. Do not retry until private canonical SonicTrace state can be reloaded and inspected.',
+        null,
+        'SONICTRACE_SAVE_UNVERIFIED',
+        false,
+        [reason.code, reason.technicalDetails, recoveryReason instanceof Error ? recoveryReason.message : String(recoveryReason)].filter(Boolean).join(' · '),
+      );
+    }
+  }
+
   if (!payload.saved || payload.analysis?.analysisId !== analysis.analysisId) throw new SonicTraceError('Track Manager returned an invalid SonicTrace save response.');
-  return payload;
+
+  let clientVerified = false;
+  let verificationWarning: string | null = null;
+  try {
+    const reread = await getSonicTraceAnalysisState(trackId);
+    const presence = analysisPresence(reread, analysis.analysisId);
+    clientVerified = presence.latest && presence.history && reread.latest?.analysisId === analysis.analysisId;
+    if (!clientVerified) {
+      verificationWarning = 'Server reported SonicTrace save success, but canonical latest/history did not both verify the requested analysisId. Reload before another save.';
+    }
+  } catch (reason) {
+    verificationWarning = `Server reported SonicTrace save success, but Studio could not complete its canonical latest/history reread (${reason instanceof Error ? reason.message : String(reason)}). Reload before another save.`;
+  }
+
+  return {
+    ...payload,
+    clientVerified,
+    verificationWarning,
+    recoveredAfterTransportFailure: false,
+    retrySafe: false,
+    commitState: clientVerified ? 'committed' : 'unverified',
+  };
 }
 
 export function fetchCanonicalAudio(asset: StudioAsset, onProgress?: (percent: number) => void): Promise<File> {
@@ -279,4 +426,5 @@ export const sonicTraceService = Object.freeze({
   contractSchemaVersion: 1,
   canonicalPersistence: 'R2 sidecars via Track Manager',
   sourceAudioRetention: false,
+  lostResponsePolicy: 'private-canonical-latest-history-reread-no-blind-retry',
 });
