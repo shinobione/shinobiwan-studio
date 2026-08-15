@@ -1,6 +1,6 @@
 # Studio v0.19.13 · Build91 — Phase9 SonicTrace private-read transient retry truth
 
-Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**.
+Status: **REAL USER PASS · ACCEPTED**.
 
 ## Fresh audit proof
 
@@ -28,10 +28,10 @@ GET /api/studio/analysis/sonictrace
 Retry classification:
 
 ```text
-timeout                         → one retry max
+timeout                          → one retry max
 transport/fetch interruption     → one retry max
 HTTP 408/425/429/500/502/503/504 → one retry max
-401/403                         → Access/CORS · NO RETRY
+401/403                          → Access/CORS · NO RETRY
 other deterministic 4xx          → HTTP · NO RETRY
 non-JSON Access/gating response  → Access/CORS · NO RETRY
 invalid JSON                     → invalid-response · NO RETRY
@@ -65,7 +65,7 @@ Build91 does **not** change:
 - LaunchPAD or LRC Maker;
 - any user-facing layout or workflow.
 
-## Validation evidence
+## Validation
 
 Build91 adds `scripts/test-phase9-sonictrace-private-read-transient-retry-build91.mjs` and keeps Build90 as immutable accepted ancestry.
 
@@ -86,56 +86,59 @@ The guard requires:
 
 Known historical successor guards were widened only through bounded `v0.19.13 / Build91` compatibility while keeping all functional assertions intact.
 
-Final exact-head validation and deploy:
-
-```text
-Runtime PR              #154
-Exact tested head       b8ee223b2d077e5d14936530be219f78ed7910ac
-Final CI                31888303536 · SUCCESS · first run
-Runtime merge           591b81a3930f1ba6d9f91f6e4f7d6e31550e5cf6
-Runtime Pages           31888346988 · SUCCESS · exact runtime merge SHA
-```
-
-No red intermediary Build91 validation run was required or merged.
-
-## Safety
+Exact runtime evidence:
 
 ```text
 Safety pre              safety/pre-phase9-sonictrace-private-read-retry-build91-20260815-1546
 Safety pre-PR           safety/post-build91-prepr-20260815-1555
+Runtime PR              #154
+Exact tested head       b8ee223b2d077e5d14936530be219f78ed7910ac
+Validation              31888303536 · SUCCESS · first run
+Runtime merge           591b81a3930f1ba6d9f91f6e4f7d6e31550e5cf6
+Runtime Pages           31888346988 · SUCCESS · exact runtime merge SHA
 Safety post-deploy      safety/post-build91-deployed-candidate-20260815-1559
-Feature branch          phase9/build91-sonictrace-private-read-retry
+Candidate docs PR       #155
+Candidate docs merge    32a57f50c90f3f7677e3a45ad46eace8bd988b3d
+Candidate docs Pages    31889030115 · SUCCESS · exact candidate-docs merge SHA
+Safety post-acceptance  safety/post-build91-real-user-pass-20260815-1700
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
-Build92                 UNALLOCATED
 ```
 
-## Real-user acceptance boundary — PENDING
+## Real-user acceptance
 
-Use a normal browser regression only:
+The required browser boundary was deliberately a **normal SonicTrace private-read regression**, not a manufactured transient-failure test.
 
-- hard refresh and verify `v0.19.13 · Build91`;
-- open a Track that already has canonical SonicTrace analysis;
-- open SonicTrace and confirm canonical latest/history state loads normally;
-- open a Studio surface that consumes the SonicTrace catalog and confirm it loads normally;
-- make **no write** — Build91 is a read slice;
-- quick Track / Albums / Lyrics / SonicTrace navigation sanity.
-
-Do **not** deliberately cut network or invalidate Cloudflare Access merely to manufacture the retry branch. Automated guards own failure-path classification proof.
-
-Until explicit user verdict:
+The user returned the explicit verdict on 2026-08-15:
 
 ```text
-Build91 = DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+BUILD91 PASS MADAFAKA
 ```
 
-## Stop line
+The accepted boundary is the prescribed Build91 smoke:
+
+- deployed `v0.19.13 · Build91` visible after refresh;
+- an existing Track with canonical SonicTrace analysis loads normal canonical latest/history state;
+- a normal SonicTrace catalog/Intelligence surface loads successfully;
+- surrounding Track / Albums / Lyrics / SonicTrace navigation remains sane;
+- no canonical write is required for this read-only slice.
+
+Acceptance intentionally did **not** cut network, invalidate Cloudflare Access, or manufacture timeout/transport/transient-HTTP failures. Those branches remain protected by automated classification and attempt-bound guards.
+
+Result:
+
+```text
+Build91 = REAL USER PASS · ACCEPTED
+Phase9 Slice10 = COMPLETE
+Build92 = UNALLOCATED pending a fresh post-Build91 audit
+```
+
+## Safety stop line
 
 - GET-only retry.
 - Never turn Build91 into SonicTrace save/analysis retry.
 - Do not broaden Build91 into Album create/upload or PWA work.
 - Do not modify Track Manager / Worker / R2 for this slice.
-- Do not merge red CI.
-- Merge only the exact tested head.
-- Do not allocate Build92 before Build91 explicit acceptance plus a fresh audit.
+- Do not generalize one read/write family into another without a fresh audit.
+- Build92 remains unallocated until the Build91 acceptance closeout is published and a fresh audit selects the next bounded scope.
