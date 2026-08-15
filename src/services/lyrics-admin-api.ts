@@ -4,7 +4,6 @@ import { studioConfig } from './config';
 const LYRICS_VALIDATION_INTENT = 'lyrics-validate-v1';
 const LYRICS_SAVE_INTENT = 'lyrics-save-v1';
 const TRANSIENT_LYRICS_READ_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
-const TRANSIENT_LYRICS_VALIDATION_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
 
 type LyricsSaveTransportFailure = {
   timeoutCode: string;
@@ -165,14 +164,6 @@ function isTransientLyricsReadError(reason: unknown): reason is AdminLyricsError
   );
 }
 
-function isTransientLyricsValidationError(reason: unknown): reason is AdminLyricsError {
-  if (!(reason instanceof AdminLyricsError)) return false;
-  if (reason.code === 'LYRICS_VALIDATION_ACCESS_SESSION_REQUIRED' || reason.code === 'LYRICS_VALIDATION_INVALID_RESPONSE') return false;
-  return reason.code === 'LYRICS_VALIDATION_TIMEOUT'
-    || reason.code === 'LYRICS_VALIDATION_TRANSPORT'
-    || (reason.status !== null && TRANSIENT_LYRICS_VALIDATION_STATUSES.has(reason.status));
-}
-
 async function fetchLyricsJsonOnce(trackId: string): Promise<AdminLyricsSnapshot> {
   const controller = new AbortController();
   const timeout = globalThis.setTimeout(() => controller.abort(), 7000);
@@ -247,100 +238,6 @@ async function getLyricsJson(trackId: string): Promise<AdminLyricsSnapshot> {
     }
   }
   throw new AdminLyricsError('Canonical lyrics read failed unexpectedly.', null, 'LYRICS_READ_UNEXPECTED');
-}
-
-async function postLyricsValidationOnce(
-  trackId: string,
-  body: unknown,
-): Promise<AdminLyricsValidationResponse> {
-  const controller = new AbortController();
-  const timeout = globalThis.setTimeout(() => controller.abort(), 9000);
-  try {
-    let response: Response;
-    try {
-      response = await fetch(`${baseUrl()}/api/studio/tracks/${encodeURIComponent(trackId)}/lyrics/validate`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'text/plain;charset=UTF-8',
-        },
-        body: JSON.stringify(body),
-        cache: 'no-store',
-        credentials: 'include',
-        mode: 'cors',
-        signal: controller.signal,
-      });
-    } catch (error) {
-      const timedOut = error instanceof DOMException && error.name === 'AbortError';
-      throw new AdminLyricsError(
-        timedOut ? 'Lyrics validation timed out.' : 'Lyrics validation transport was interrupted.',
-        null,
-        timedOut ? 'LYRICS_VALIDATION_TIMEOUT' : 'LYRICS_VALIDATION_TRANSPORT',
-        null,
-        null,
-        false,
-        error instanceof Error ? error.message : String(error),
-      );
-    }
-
-    if (!isJson(response)) {
-      throw new AdminLyricsError(
-        'Cloudflare Access session is not available to the Studio lyrics validation client.',
-        response.status || null,
-        'LYRICS_VALIDATION_ACCESS_SESSION_REQUIRED',
-      );
-    }
-
-    let payload: AdminLyricsValidationResponse;
-    try {
-      payload = await response.json() as AdminLyricsValidationResponse;
-    } catch {
-      throw new AdminLyricsError(
-        'Track Manager returned invalid lyrics validation JSON.',
-        response.status || null,
-        'LYRICS_VALIDATION_INVALID_RESPONSE',
-      );
-    }
-
-    if (!response.ok || payload.ok === false) {
-      throw new AdminLyricsError(
-        payload.error || `Lyrics validate returned HTTP ${response.status}.`,
-        response.status,
-        payload.code || (response.status === 401 || response.status === 403 ? 'LYRICS_VALIDATION_ACCESS' : 'LYRICS_VALIDATION_HTTP'),
-        payload.currentUpdatedAt || null,
-        payload.currentLyricsEtag || null,
-      );
-    }
-    return payload;
-  } finally {
-    globalThis.clearTimeout(timeout);
-  }
-}
-
-async function validateLyricsWithOneTransientRetry(
-  trackId: string,
-  body: unknown,
-): Promise<AdminLyricsValidationResponse> {
-  for (let attempt = 0; attempt < 2; attempt += 1) {
-    try {
-      return await postLyricsValidationOnce(trackId, body);
-    } catch (reason) {
-      if (attempt === 0 && isTransientLyricsValidationError(reason)) continue;
-      if (attempt === 1 && isTransientLyricsValidationError(reason)) {
-        throw new AdminLyricsError(
-          'Lyrics validation failed after one bounded transient retry.',
-          reason.status,
-          reason.code,
-          reason.currentUpdatedAt,
-          reason.currentLyricsEtag,
-          false,
-          reason.technicalDetails || reason.message,
-        );
-      }
-      throw reason;
-    }
-  }
-  throw new AdminLyricsError('Lyrics validation failed unexpectedly.', null, 'LYRICS_VALIDATION_UNEXPECTED');
 }
 
 async function postLyrics<T extends AdminLyricsValidationResponse | AdminLyricsSaveResponse>(
@@ -433,14 +330,14 @@ export async function validateAdminTrackLyrics(
   if (!expectedUpdatedAt.trim() || !expectedLyricsEtag.trim()) throw new AdminLyricsError('Both canonical manifest revision and lyrics ETag are required.');
   const health = await getAdminBridgeHealth();
   if (!(health.capabilities?.validate ?? []).includes('lyrics')) throw new AdminLyricsError('Track Manager does not advertise lyrics validation.');
-  const payload = await validateLyricsWithOneTransientRetry(trackId, {
+  const payload = await postLyrics<AdminLyricsValidationResponse>(trackId, 'validate', {
     intent: LYRICS_VALIDATION_INTENT,
     expectedUpdatedAt,
     expectedLyricsEtag,
     lyrics,
-  });
+  }, 9000);
   if (payload.validationOnly !== true || !payload.proposed || !payload.expectedLyricsEtag) {
-    throw new AdminLyricsError('Track Manager returned an invalid lyrics validation response.', null, 'LYRICS_VALIDATION_INVALID_RESPONSE');
+    throw new AdminLyricsError('Track Manager returned an invalid lyrics validation response.');
   }
   return payload;
 }
@@ -578,8 +475,4 @@ export const lyricsAdminService = Object.freeze({
   lostResponsePolicy: 'private-canonical-reread-no-blind-retry',
   privateReadRetryPolicy: 'one-retry-timeout-transport-transient-http-no-access-retry',
   privateReadMaxAttempts: 2,
-  validationRetryPolicy: 'one-retry-timeout-transport-transient-http-no-access-or-invalid-response-retry',
-  validationMaxAttempts: 2,
-  validationNonMutating: true,
-  maxAutomaticSaveRetries: 0,
 });
