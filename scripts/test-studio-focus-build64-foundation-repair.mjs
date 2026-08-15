@@ -4,16 +4,17 @@ import fs from 'node:fs';
 const read = path => fs.readFileSync(path, 'utf8');
 
 const pkg = JSON.parse(read('package.json'));
-assert.ok(['0.19.3', '0.19.4', '0.19.5'].includes(pkg.version), 'Build64 guard only accepts the validated v0.19.3/v0.19.4/v0.19.5 Studio successor line.');
+assert.ok(['0.19.3', '0.19.4', '0.19.5', '0.19.6'].includes(pkg.version), 'Build64 guard only accepts the validated v0.19.3-v0.19.6 Studio successor line.');
 
 const release = read('src/release.ts');
-assert.match(release, /version:\s*'0\.19\.(?:3|4|5)'/);
+assert.match(release, /version:\s*'0\.19\.(?:3|4|5|6)'/);
 for (const required of [
   'build: 64',
   "codename: 'foundation-regression-repair'",
 ]) assert.ok(release.includes(required), `Build 64 release ancestry is missing ${required}.`);
-if (/build:\s*(?:82|83)/.test(release)) assert.ok(release.includes('build81AncestryMarker'), 'Phase9 successors must preserve accepted Build81 ancestry.');
-if (/build:\s*83/.test(release)) assert.ok(release.includes('build82AncestryMarker'), 'Build83 must preserve accepted Build82 Phase9 ancestry.');
+if (/build:\s*(?:82|83|84)/.test(release)) assert.ok(release.includes('build81AncestryMarker'), 'Phase9 successors must preserve accepted Build81 ancestry.');
+if (/build:\s*(?:83|84)/.test(release)) assert.ok(release.includes('build82AncestryMarker'), 'Build83+ must preserve accepted Build82 Phase9 ancestry.');
+if (/build:\s*84/.test(release)) assert.ok(release.includes('build83AncestryMarker'), 'Build84 must preserve accepted Build83 Phase9 ancestry.');
 
 const metadata = read('src/components/MetadataValidationPanel.tsx');
 for (const required of [
@@ -39,8 +40,6 @@ for (const required of [
   'trackCacheMatches',
   'Track Manager v5.23 / bridge v1.13 only',
 ]) assert.ok(albumApi.includes(required), `Build 64 Album API contract is missing current bounded successor ${required}.`);
-// Historical Build64 transport was Track Manager v5.21 / bridge v1.11 only.
-// The authority boundary is preserved while the current verified successor advances to v5.23 / bridge v1.13.
 
 const albumVisuals = read('src/services/public-albums-api.ts');
 for (const required of [
@@ -64,4 +63,4 @@ for (const required of [
   "summary.textContent = 'Add lyrics.txt / plain-text editor'",
 ]) assert.ok(presentation.includes(required), `Build 64 visible Lyrics source control is missing ${required}.`);
 
-console.log(`Studio ${pkg.version} Build64 foundation regression repair contract remains protected through the bounded v0.19.5 Phase9 successor.`);
+console.log(`Studio ${pkg.version} Build64 foundation regression repair contract remains protected through the bounded v0.19.6 Phase9 successor.`);
