@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-15 after **Build89 REAL USER PASS**.
+Updated: 2026-08-15 after **Build90 deployed candidate** publication. Build89 remains REAL USER PASS.
 
 This file is the durable roadmap summary. Historical implementation detail belongs in `docs/` and `changelogs/`; do not copy it here unless it changes what is done, active, next or backlogged.
 
@@ -195,6 +195,8 @@ Accepted evidence and behavior:
 - Pages `31881682269` SUCCESS on that exact merge;
 - candidate docs PR #148 merged at `a7894dad8f4b4015ca1cba47b12781bab417fdcf`;
 - candidate docs Pages `31882384329` SUCCESS;
+- acceptance docs PR #149 merged at `07bfd3c6b4fa19ccea0656b9ce194f239b7f7c65`;
+- acceptance docs Pages `31884092117` SUCCESS;
 - explicit real-user verdict `BUILD89 PASS MADAFAKA` on 2026-08-15;
 - Album `fetch()` transport interruption is now typed `transport`, not fake Access/CORS;
 - timeout / transport / HTTP `408/425/429/500/502/503/504` may receive one bounded retry;
@@ -209,25 +211,49 @@ Accepted evidence and behavior:
 
 Historical runs `31881467538` and `31881538488` were red only because inherited successor allowlists stopped at Build88; neither head was merged. Final exact-head CI passed Phase7, Phase8, Phase9 Build82→89, Focus, TypeScript and Vite.
 
+### Phase 9 Slice9 — Lyrics private-read transient retry truth
+
+**Build90 · v0.19.12 · DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+
+The fresh post-Build89 audit selected the single canonical Lyrics private GET as the smallest coherent remaining reliability gap.
+
+Candidate evidence and behavior:
+
+- runtime PR #150;
+- exact tested head `48ca1dc25951d65ead05c4f80bd1f9e6bf8c5d01`;
+- runtime CI `31884568681` SUCCESS **on first run**;
+- runtime merge `8a851a7d53d3b4f45359c7036011684441bb25bb`;
+- Pages `31884614863` SUCCESS on that exact merge;
+- canonical Lyrics GET transport interruption is typed separately from Access/CORS;
+- timeout / transport / HTTP `408/425/429/500/502/503/504` may receive one bounded retry;
+- Access/CORS, deterministic ordinary 4xx and invalid JSON are never retried;
+- maximum two total attempts;
+- normal Lyrics loading and Build83 `rereadLyricsTruth()` inherit the GET helper;
+- Lyrics validate/save POSTs remain unchanged and are never automatically retried;
+- Build83 response-loss truth remains committed / not-committed / ambiguous / unverified with no blind write retry;
+- SonicTrace private reads remain out of scope;
+- no Track Manager, Worker, R2 schema/data migration or cross-product runtime change.
+
+Build90 intentionally does **not** bundle SonicTrace read retry, Album create/upload or PWA/offline work.
+
 ## In progress
 
-### Phase 9 — fresh post-Build89 reliability audit
+### Phase 9 — Build90 real-user smoke
 
-Phase9 remains active, but **Build90 is not allocated**.
+Build90 is deployed but **not accepted yet**.
 
-The current task is a fresh read-only audit to identify the smallest remaining reliability gap without duplicating existing recovery logic or turning Phase9 into a generic refactor bucket.
+Required browser smoke is intentionally normal operation only: load an existing Track with canonical `lyrics.txt`, open Lyrics, verify canonical text loads, then check surrounding Track / Albums / SonicTrace navigation. No write is required.
 
 ## Next
 
-Audit these remaining candidates by proven risk / bounded scope, without assuming a build number:
+After explicit Build90 acceptance, run a fresh read-only audit. Remaining candidates include:
 
-1. Lyrics private-read transient retry truth;
-2. SonicTrace private-read transient retry truth;
-3. Album asset upload response-loss truth;
-4. Album create response-loss truth;
-5. degraded/offline/PWA resilience.
+1. SonicTrace private-read transient retry truth;
+2. Album asset upload response-loss truth;
+3. Album create response-loss truth;
+4. degraded/offline/PWA resilience.
 
-Pick **one** coherent slice only after the audit proves the gap and confirms it does not duplicate existing recovery logic.
+Build91 remains **UNALLOCATED** until that audit proves one coherent scope.
 
 ## Backlog
 
@@ -257,8 +283,8 @@ There is currently **no official Phase 11**.
 - Do not deliberately damage or interrupt production merely to prove a retry/ambiguity guard.
 - Do not generalize GET retry into write retry.
 - Do not generalize one write family's recovery postcondition into another operation family.
-- Do not allocate Build90 before a fresh bounded post-Build89 audit selects its scope.
+- Do not allocate Build91 before Build90 acceptance plus a fresh bounded audit.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build89 real-user PASS boundary.
+See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build90 candidate smoke boundary.
