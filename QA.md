@@ -94,7 +94,7 @@ Additional Build92 guarantees:
 
 The acceptance smoke was intentionally a **normal-browser metadata regression**, not a manufactured response-loss test.
 
-The user returned the explicit verdict:
+The user completed the bounded smoke and returned the explicit verdict:
 
 ```text
 BUILD92 PASS MADAFAKA
@@ -123,59 +123,340 @@ No Worker deployment, Track Manager change, public Worker change, R2 schema/data
 
 ## Build91 automated coverage — GREEN
 
-Final validation run `31888303536` passed the complete repository-native chain on the exact runtime head **on the first run**. Build91 protects private Track Manager SonicTrace GETs with one bounded retry for timeout / transport / HTTP `408/425/429/500/502/503/504`, while Access/CORS, deterministic ordinary 4xx, non-JSON gating and invalid JSON are not retried. Maximum attempts are two total. Build84 `sonictrace-analysis-save-v1` POST truth remains unchanged.
+Final validation run `31888303536` passed the complete repository-native chain on the exact runtime head **on the first run**, including:
+
+- private-read contract;
+- Phase5 algorithms;
+- Phase6 Lyrics contract;
+- C3 / Deep Audio / Album / parity guards;
+- PHASE UX guards;
+- Phase7 and Phase8 guards;
+- inherited Phase9 Build82 destructive-write ambiguity guard;
+- inherited Phase9 Build83 canonical Lyrics save response-loss guard;
+- inherited Phase9 Build84 SonicTrace save response-loss guard;
+- inherited Phase9 Build85 Album metadata response-loss guard;
+- inherited Phase9 Build86 Album move response-loss guard;
+- inherited Phase9 Build87 Album membership response-loss guard;
+- inherited Phase9 Build88 core private-read transient retry guard;
+- inherited Phase9 Build89 Album private-read transient retry guard;
+- inherited Phase9 Build90 Lyrics private-read transient retry guard;
+- new Phase9 Build91 SonicTrace private-read transient retry guard;
+- Studio Focus inherited regression guards through bounded Build91 successor compatibility;
+- TypeScript typecheck;
+- Vite production build.
+
+No red intermediary Build91 validation run was required or merged.
+
+Build91 specifically guards private Track Manager SonicTrace GETs:
+
+```text
+timeout                         → one retry max
+transport/fetch interruption     → one retry max
+HTTP 408/425/429/500/502/503/504 → one retry max
+401/403                         → Access/CORS · NO RETRY
+other deterministic 4xx          → HTTP · NO RETRY
+non-JSON Access/gating response  → Access/CORS · NO RETRY
+invalid JSON                     → invalid-response · NO RETRY
+```
+
+Additional Build91 guarantees:
+
+- non-timeout SonicTrace browser `fetch()` rejection is typed `SONICTRACE_READ_TRANSPORT`, not falsely presented as Cloudflare Access;
+- existing 12-second state and 20-second catalog per-attempt timeouts remain finite;
+- maximum attempts are exactly two total;
+- a second transient failure surfaces immediately rather than starting a loop/backoff framework;
+- canonical latest/history state uses the bounded helper;
+- SonicTrace catalog uses the same bounded helper;
+- the helper is GET-only and no longer accepts arbitrary `RequestInit` / methods;
+- exactly the inherited Track Manager SonicTrace save POST transport remains;
+- `SONICTRACE_SAVE_TIMEOUT` and `SONICTRACE_SAVE_TRANSPORT` remain unchanged;
+- Build84 lost-response recovery still classifies committed / not-committed / ambiguous / unverified and never blindly retries a save;
+- no automatic SonicTrace save/analysis retry helper exists;
+- Deep Audio health/analysis XHR and canonical audio download remain separate and unchanged;
+- no Worker, Track Manager or R2 schema/data mutation was required.
 
 ## Build91 real-user smoke — PASS
+
+The required acceptance smoke was intentionally a **normal-browser read regression**, not a manufactured transient-failure test.
+
+The user completed the bounded smoke and returned the explicit verdict:
 
 ```text
 BUILD91 PASS MADAFAKA
 ```
 
-Accepted smoke: deployed Build91, canonical latest/history loading, normal SonicTrace catalog/Intelligence read and surrounding Track / Albums / Lyrics / SonicTrace navigation. No manufactured transient failure branch.
+The accepted smoke boundary covered:
+
+- hard refresh to deployed `v0.19.13 · Build91`;
+- opening a Track that already has canonical SonicTrace analysis;
+- opening SonicTrace and confirming canonical latest/history state loads normally;
+- opening a normal Studio surface that consumes the SonicTrace catalog / Intelligence data;
+- surrounding Track / Albums / Lyrics / SonicTrace navigation sanity;
+- no canonical write required because Build91 changes read behavior only.
+
+Acceptance intentionally did **not** cut network, expire Cloudflare Access or manufacture timeout/transport/transient-HTTP branches. Those failure paths remain protected by automated classification and attempt-bound guards.
+
+Result:
+
+```text
+Build91 = REAL USER PASS
+```
+
+No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration or cross-repository runtime change was required to reach acceptance.
 
 ## Build90 automated coverage — GREEN
 
-Final validation run `31884568681` passed the complete repository-native chain **on the first run**. Build90 protects canonical Lyrics private GET with one bounded retry for timeout / transport / explicit transient HTTP statuses. Build83 Lyrics save POST behavior and committed / not-committed / ambiguous / unverified response-loss truth remain unchanged.
+Final validation run `31884568681` passed the complete repository-native chain on the exact runtime head **on the first run**, including:
+
+- private-read contract;
+- Phase5 algorithms;
+- Phase6 Lyrics contract;
+- C3 / Deep Audio / Album / parity guards;
+- PHASE UX guards;
+- Phase7 and Phase8 guards;
+- inherited Phase9 Build82 destructive-write ambiguity guard;
+- inherited Phase9 Build83 canonical Lyrics save response-loss guard;
+- inherited Phase9 Build84 SonicTrace response-loss guard;
+- inherited Phase9 Build85 Album metadata response-loss guard;
+- inherited Phase9 Build86 Album move response-loss guard;
+- inherited Phase9 Build87 Album membership response-loss guard;
+- inherited Phase9 Build88 core private-read transient retry guard;
+- inherited Phase9 Build89 Album private-read transient retry guard;
+- new Phase9 Build90 Lyrics private-read transient retry guard;
+- Studio Focus inherited regression guards through bounded Build90 successor compatibility;
+- TypeScript typecheck;
+- Vite production build.
+
+No red intermediary Build90 validation run was required or merged.
+
+Build90 specifically guards canonical Lyrics private GET:
+
+```text
+timeout                         → one retry max
+transport/fetch interruption     → one retry max
+HTTP 408/425/429/500/502/503/504 → one retry max
+401/403                         → Access/CORS · NO RETRY
+other deterministic 4xx          → HTTP · NO RETRY
+non-JSON Access/gating response  → Access/CORS · NO RETRY
+invalid JSON                     → invalid-response · NO RETRY
+```
+
+Additional Build90 guarantees:
+
+- non-timeout canonical Lyrics browser `fetch()` rejection is typed `LYRICS_READ_TRANSPORT`, not falsely presented as Cloudflare Access;
+- the existing 7-second per-attempt timeout remains finite;
+- maximum attempts are exactly two total;
+- a second transient failure surfaces immediately rather than starting a loop/backoff framework;
+- normal `getAdminTrackLyrics()` uses the bounded helper;
+- Build83 `rereadLyricsTruth()` continues to combine canonical Lyrics reread with canonical Track reread;
+- exactly the inherited Lyrics validate/save POST transport remains;
+- `LYRICS_SAVE_TIMEOUT` and `LYRICS_SAVE_TRANSPORT` remain unchanged;
+- Build83 lost-response recovery still classifies committed / not-committed / ambiguous / unverified and never blindly retries a save;
+- no automatic Lyrics validation/save retry helper exists;
+- no Worker, Track Manager or R2 schema/data mutation was required.
 
 ## Build90 real-user smoke — PASS
+
+The required acceptance smoke was intentionally a **normal-browser read regression**, not a manufactured transient-failure test.
+
+The user completed the bounded smoke and returned the explicit verdict:
 
 ```text
 BUILD90 PASS MADAFAKA
 ```
 
-Accepted smoke: deployed Build90, canonical `lyrics.txt` loading and surrounding Track / Albums / SonicTrace / Lyrics navigation. No manufactured network/Access failure branch.
+The accepted smoke boundary covered:
+
+- hard refresh to deployed `v0.19.12 · Build90`;
+- opening a Track that already has canonical `lyrics.txt`;
+- opening Lyrics and confirming canonical lyrics load normally;
+- surrounding Track / Albums / SonicTrace / Lyrics navigation sanity;
+- no canonical write required because Build90 changes read behavior only.
+
+Acceptance intentionally did **not** cut network, expire Cloudflare Access or manufacture timeout/transport/transient-HTTP branches. Those failure paths remain protected by automated classification and attempt-bound guards.
+
+Result:
+
+```text
+Build90 = REAL USER PASS
+```
+
+No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration or cross-repository runtime change was required to reach acceptance.
 
 ## Build89 automated coverage — GREEN
 
-Final validation run `31881635973` passed the complete repository-native chain. Historical runs `31881467538` and `31881538488` were red only because inherited successor allowlists stopped at Build88; neither head was merged.
+Final validation run `31881635973` passed the complete repository-native chain on the exact runtime head, including:
 
-Build89 protects canonical Album collection/detail GETs with one bounded transient retry and no write retry. Album inventory/detail, private visual discovery and existing canonical Album rereads inherit the helper.
+- private-read contract;
+- Phase5 algorithms;
+- Phase6 Lyrics contract;
+- C3 / Deep Audio / Album / parity guards;
+- PHASE UX guards;
+- Phase7 and Phase8 guards;
+- inherited Phase9 Build82 destructive-write ambiguity guard;
+- inherited Phase9 Build83 canonical Lyrics response-loss guard;
+- inherited Phase9 Build84 SonicTrace response-loss guard;
+- inherited Phase9 Build85 Album metadata response-loss guard;
+- inherited Phase9 Build86 Album move response-loss guard;
+- inherited Phase9 Build87 Album membership response-loss guard;
+- inherited Phase9 Build88 core private-read transient retry guard;
+- new Phase9 Build89 Album private-read transient retry guard;
+- Studio Focus inherited regression guards through bounded Build89 successor compatibility;
+- TypeScript typecheck;
+- Vite production build.
+
+Historical runs `31881467538` and `31881538488` were red only because inherited Phase7-C / Studio Focus successor allowlists stopped at `0.19.10 / Build88`. Those heads were never merged. The final exact head `8b73d19d8fced35642ee243cff0ac19d983fd0de` passed the full chain.
+
+Build89 specifically guards canonical Album collection/detail private GETs:
+
+```text
+timeout                         → one retry max
+transport/fetch interruption     → one retry max
+HTTP 408/425/429/500/502/503/504 → one retry max
+401/403                         → Access/CORS · NO RETRY
+other deterministic 4xx          → HTTP · NO RETRY
+non-JSON Access/gating response  → Access/CORS · NO RETRY
+invalid JSON                     → invalid-response · NO RETRY
+```
+
+Additional Build89 guarantees:
+
+- non-timeout Album browser `fetch()` rejection is typed as `transport`, not falsely presented as `access-or-cors`;
+- maximum attempts are exactly two total;
+- a second failure surfaces immediately rather than starting a loop/backoff framework;
+- `getAdminAlbums()` and `getAdminAlbum()` both use the bounded helper;
+- private Album visual discovery inherits `getAdminAlbums()`;
+- existing canonical Album rereads used by guarded verification/recovery inherit the same GET helper;
+- every Album POST/write transport remains unchanged;
+- no automatic Album write retry exists;
+- Album create/upload response-loss semantics remain unchanged;
+- Lyrics private-read transport was a separate audit family at Build89;
+- no Worker, Track Manager or R2 schema/data mutation was required.
 
 ## Build89 real-user smoke — PASS
+
+The required acceptance smoke was intentionally a **normal-browser regression**, not a manufactured network-failure test.
+
+The user completed the bounded smoke and returned the explicit verdict:
 
 ```text
 BUILD89 PASS MADAFAKA
 ```
 
-Accepted smoke: Album inventory, canonical Album detail, private artwork/metadata and surrounding Track / Lyrics / SonicTrace navigation. No manufactured network/Access failure branch.
+The accepted smoke boundary covered:
+
+- hard refresh to deployed `v0.19.11 · Build89`;
+- Albums loading the normal private canonical Album inventory;
+- opening at least one canonical Album detail;
+- private artwork / metadata loading normally;
+- surrounding Track / Lyrics / SonicTrace navigation sanity.
+
+Acceptance intentionally did **not** cut network, expire Cloudflare Access or manufacture timeout/transport/transient-HTTP branches. Those failure paths remain protected by automated classification and attempt-bound guards.
+
+Result:
+
+```text
+Build89 = REAL USER PASS
+```
+
+No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration or cross-repository runtime change was required to reach acceptance.
 
 ## Build88 automated coverage — GREEN
 
-Final validation run `31871980725` passed the complete repository-native chain. Historical runs `31871834515` and `31871883072` were red only because inherited successor allowlists stopped at Build87; neither head was merged.
+Final validation run `31871980725` passed the complete repository-native chain on the exact runtime head, including:
 
-Build88 protects bridge health, Track inventory and Track detail private GETs with one bounded retry for transient failures. Public fallback remains read-only and is reached only after the private helper ultimately fails. No write retry exists.
+- private-read contract;
+- Phase5 algorithms;
+- Phase6 Lyrics contract;
+- C3 / Deep Audio / Album / parity guards;
+- PHASE UX guards;
+- Phase7 and Phase8 guards;
+- inherited Phase9 Build82 destructive-write ambiguity guard;
+- inherited Phase9 Build83 canonical Lyrics response-loss guard;
+- inherited Phase9 Build84 SonicTrace response-loss guard;
+- inherited Phase9 Build85 Album metadata response-loss guard;
+- inherited Phase9 Build86 Album move response-loss guard;
+- inherited Phase9 Build87 Album membership response-loss guard;
+- new Phase9 Build88 private-read transient retry guard;
+- Studio Focus inherited regression guards through bounded Build88 successor compatibility;
+- TypeScript typecheck;
+- Vite production build.
+
+Historical runs `31871834515` and `31871883072` were red only because inherited Phase7-C / Studio Focus successor allowlists stopped at `0.19.9 / Build87`. Those heads were never merged. The final exact head `808b0c63fc22f17a04a9c544b934d97c791d3a73` passed the full chain.
+
+Build88 specifically guards the common core private GET path:
+
+```text
+timeout                         → one retry max
+transport/fetch interruption     → one retry max
+HTTP 408/425/429/500/502/503/504 → one retry max
+401/403                         → Access/CORS · NO RETRY
+other deterministic 4xx          → HTTP · NO RETRY
+non-JSON Access/gating response  → Access/CORS · NO RETRY
+invalid JSON                     → invalid-response · NO RETRY
+```
+
+Additional Build88 guarantees:
+
+- non-timeout browser `fetch()` rejection is typed as `transport`, not falsely presented as `access-or-cors`;
+- maximum attempts are exactly two total;
+- a second failure surfaces immediately rather than starting a loop/backoff framework;
+- public catalog fallback remains unchanged and is reached only after the private helper ultimately fails;
+- the bounded retry applies only to private bridge health, Track inventory and Track detail GETs;
+- metadata validation/save POST transports remain unchanged;
+- no automatic write retry exists;
+- no Album create/upload behavior changed;
+- no Worker, Track Manager or R2 schema/data mutation was required.
 
 ## Build88 real-user smoke — PASS
+
+The required acceptance smoke was intentionally a **normal-browser regression**, not a manufactured network-failure test.
+
+The user completed the bounded smoke and returned the explicit verdict:
 
 ```text
 BUILD88 PASS MADAFAKA
 ```
 
-Accepted smoke: Home / Tracks private inventory, normal private Track detail and surrounding navigation. No manufactured transient branch.
+The accepted smoke boundary covered:
+
+- hard refresh to the deployed `v0.19.10 · Build88` runtime;
+- Home / Tracks loading the normal private inventory, including Draft Tracks when present;
+- opening a Track and loading normal private canonical detail;
+- surrounding Albums / Track / Lyrics / SonicTrace navigation regression sanity.
+
+Acceptance intentionally did **not** require cutting network, expiring Cloudflare Access or manufacturing timeout/transport/HTTP transient branches. Those branches remain protected by the automated Build88 retry-classification and attempt-bound guards.
+
+Result:
+
+```text
+Build88 = REAL USER PASS
+```
+
+No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration or cross-repository runtime change was required to reach acceptance.
 
 ## Build87 automated coverage — GREEN
 
-Final validation run `31870328730` passed the complete repository-native chain on the exact runtime head **on the first run**.
+Final validation run `31870328730` passed the complete repository-native chain on the exact runtime head **on the first run**, including:
+
+- private-read contract;
+- Phase5 algorithms;
+- Phase6 Lyrics contract;
+- C3 / Deep Audio / Album / parity guards;
+- PHASE UX guards;
+- Phase7 and Phase8 guards;
+- inherited Phase9 Build82 destructive-write ambiguity guard;
+- inherited Phase9 Build83 canonical Lyrics response-loss guard;
+- inherited Phase9 Build84 SonicTrace response-loss guard;
+- inherited Phase9 Build85 Album metadata response-loss guard;
+- inherited Phase9 Build86 Album move response-loss guard;
+- new Phase9 Build87 Album membership response-loss guard;
+- missing-prior-Track cleanup behavior;
+- Studio Focus inherited regression guards;
+- TypeScript typecheck;
+- Vite production build.
+
+No red intermediary Build87 CI run was merged or required.
 
 Build87 specifically guards:
 
@@ -197,45 +478,218 @@ Album membership response unavailable
         → UNVERIFIED / DO NOT RETRY
 ```
 
-Requested Tracks must exist. Historically missing prior Tracks may be removed safely. Removed Tracks whose cache claimed the Album converge to transitional `Singles`; unrelated cache claims remain stable. Normal success verifies exact returned Album revision/order, affected Track caches and `trackCachesUpdated` when supplied.
+Additional Build87 guarantees:
+
+- exact Album revision is checked before POST;
+- the snapshot/reread covers the union of previous and requested Track IDs;
+- requested Tracks must exist;
+- a historically missing prior Track can still be removed safely;
+- requested Track cache must converge to the Album;
+- removed Track whose cache claimed the Album must converge to transitional `Singles`;
+- removed Track whose cache did not claim the Album must remain cache-stable;
+- Album non-membership and Track non-Album shapes must remain stable;
+- Tracks that require no cache mutation remain revision-stable;
+- normal HTTP success verifies exact returned Album revision/order, every affected Track cache and server `trackCachesUpdated` when supplied;
+- recovered success explicitly states that Studio did not retry the write.
+
+The deployed Track Manager backend was audited read-only and already owns stale guards, ownership-conflict validation, deterministic membership/cache updates, catalog rebuild and rollback. No backend mutation was needed for Build87.
 
 ## Build87 real-user smoke — PASS
+
+The required acceptance smoke was intentionally a **normal-browser regression**, not a manufactured failure test.
+
+The user completed the bounded smoke and returned the explicit verdict:
 
 ```text
 BUILD87 PASS MADAFAKA
 ```
 
-Accepted smoke: one safe Album reorder, verified canonical Album + Track-cache receipt, persistence after reload, surrounding navigation. No manufactured failure branch.
+The accepted smoke boundary covered:
+
+- hard refresh to the deployed `v0.19.9 · Build87` runtime;
+- opening a safe canonical Album with at least two existing Tracks;
+- harmless reordering of existing Tracks using the Album tracklist controls;
+- one normal **Save tracklist**;
+- verified receipt **`Album tracklist saved and canonically verified across Album + Track caches.`**;
+- ordered tracklist persistence after canonical reload;
+- reordered Tracks retaining the same Album compatibility-cache ownership;
+- surrounding Track / Visuals / Lyrics / SonicTrace / Albums navigation regression sanity.
+
+Acceptance intentionally did **not** require cutting network, invalidating Access or sabotaging a production membership save merely to force timeout/partial-write branches. Those failure paths remain protected by typed classification, stale guards and private canonical Album + Track-cache reread logic.
+
+Result:
+
+```text
+Build87 = REAL USER PASS
+```
+
+No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration or cross-repository runtime change was required to reach acceptance.
 
 ## Build86 automated coverage — GREEN
 
-Final validation run `31868536718` passed the complete repository-native chain **on the first run**.
+Final validation run `31868536718` passed the complete repository-native chain on the exact runtime head **on the first run**, including:
 
-Build86 guards Album move response-loss truth across target + optional source + Track compatibility cache. Exact unchanged pre-write state means not committed; exact target/source/cache postcondition means committed; mixed state is ambiguous; unreadable reread is unverified.
+- private-read contract;
+- Phase5 algorithms;
+- Phase6 Lyrics contract;
+- C3 / Deep Audio / Album / parity guards;
+- PHASE UX guards;
+- Phase7 and Phase8 guards;
+- inherited Phase9 Build82 destructive-write ambiguity guard;
+- inherited Phase9 Build83 canonical Lyrics response-loss guard;
+- inherited Phase9 Build84 SonicTrace response-loss guard;
+- inherited Phase9 Build85 Album metadata response-loss guard;
+- new Phase9 Build86 Album move response-loss guard;
+- Studio Focus inherited regression guards;
+- TypeScript typecheck;
+- Vite production build.
+
+No red intermediary Build86 CI run was merged or required.
+
+Build86 specifically guards:
+
+```text
+Album move response unavailable
+→ NEVER blind automatic retry
+→ private canonical target + source? + Track reread
+   ├─ exact new target revision/order
+   │  + exact source revision/removal when source exists
+   │  + Track cache points to target
+   │  + stable non-membership Album/Track shapes
+   │    → COMMITTED / VERIFIED
+   ├─ exact target/source/Track pre-write state unchanged
+   │    → NOT COMMITTED / explicit retry may be safe after fresh reload
+   ├─ partial/mixed changed state
+   │    → AMBIGUOUS / DO NOT RETRY
+   └─ reread unavailable
+        → UNVERIFIED / DO NOT RETRY
+```
+
+Additional Build86 guarantees:
+
+- exact target revision is checked before POST;
+- exact source revision is checked when a source Album exists;
+- exact expected target artistic order and source removal are computed before POST;
+- target/source non-membership shapes and Track non-Album shape must remain stable;
+- normal HTTP success verifies exact returned target/source revisions and exact returned target/source tracklists;
+- Album Manager cross-release move and Metadata `sourceAlbumId:null` authority repair use the same resilient service;
+- recovered success explicitly states that Studio did not retry the write.
+
+The deployed Track Manager backend was audited read-only and already owns stale guards, deterministic target/source membership, Track compatibility-cache update, catalog rebuild, canonical target/source/Track reread and rollback. No backend mutation was needed for Build86.
 
 ## Build86 real-user smoke — PASS
+
+The required acceptance smoke was intentionally a **normal-browser regression**, not a manufactured failure test.
+
+The user completed the bounded smoke and returned the explicit verdict:
 
 ```text
 BUILD86 PASS
 ```
 
-Accepted smoke: one genuine safe Album→Album move, canonical source removal, target insertion/order, Track cache convergence and surrounding navigation.
+The accepted smoke boundary covered:
+
+- hard refresh to the deployed `v0.19.8 · Build86` runtime;
+- one genuine safe canonical Album → Album move;
+- normal verified receipt **`Track moved and canonically verified across target, source and Track cache.`**;
+- canonical source removal;
+- expected target insertion/order;
+- persistence after source/target reload;
+- moved Track compatibility cache pointing to the target Album;
+- surrounding Track / Visuals / Lyrics / SonicTrace / Albums navigation regression sanity.
+
+Acceptance intentionally did **not** require cutting network, invalidating Access or sabotaging a production move merely to force timeout/partial-write branches. Those failure paths remain protected by typed classification, stale guards and private canonical target/source/Track reread logic.
+
+Result:
+
+```text
+Build86 = REAL USER PASS
+```
+
+No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration or cross-repository runtime change was required to reach acceptance.
 
 ## Build85 automated coverage — GREEN
 
-Final validation run `31863267911` passed the complete repository-native chain **on the first run**.
+Final validation run `31863267911` passed the complete repository-native chain on the exact runtime head **on the first run**, including:
 
-Build85 guards Album metadata-save response-loss truth with exact expected revision, stable non-metadata Album shape and no blind retry.
+- private-read contract;
+- Phase5 algorithms;
+- Phase6 Lyrics contract;
+- C3 / Deep Audio / Album / parity guards;
+- PHASE UX guards;
+- Phase7 and Phase8 guards;
+- inherited Phase9 Build82 destructive-write ambiguity guard;
+- inherited Phase9 Build83 canonical Lyrics response-loss guard;
+- inherited Phase9 Build84 SonicTrace response-loss guard;
+- new Phase9 Build85 Album metadata response-loss guard;
+- Studio Focus inherited regression guards;
+- TypeScript typecheck;
+- Vite production build.
+
+No red intermediary Build85 CI run was merged or required.
+
+Build85 specifically guards:
+
+```text
+Album metadata save response lost / timeout
+→ NEVER blind automatic retry
+→ private canonical Album reread
+   ├─ new revision + exact requested metadata + stable non-metadata shape
+   │    → COMMITTED / VERIFIED
+   ├─ original revision unchanged
+   │    → NOT COMMITTED / explicit retry may be safe
+   ├─ revision changed but exact metadata-only postcondition not proven
+   │    → AMBIGUOUS / DO NOT RETRY
+   └─ private reread unavailable
+        → UNVERIFIED / DO NOT RETRY
+```
+
+Additional Build85 guarantees:
+
+- before POST, Studio privately rereads the canonical Album;
+- exact `expectedUpdatedAt` is required and stale pre-write state is rejected;
+- only timeout/transport-loss failures enter recovery;
+- stable non-metadata shape checks canonical identity, ordered `trackIds`, assets and `createdAt`;
+- normal HTTP success is not called verified unless the reread has the exact server-returned revision, requested metadata and stable non-metadata shape;
+- recovered success explicitly states that Studio did not retry the write;
+- existing Album mutation UI reloads canonical state after errors before another operator decision.
+
+The deployed Track Manager backend was audited read-only and already stale-guards, writes the proposed Album manifest, updates title-dependent Track compatibility caches when needed, rebuilds catalog, rereads/verifies and rolls back touched state on failure. No backend mutation was needed for Build85.
 
 ## Build85 real-user smoke — PASS
+
+The required acceptance smoke was intentionally a **normal-browser regression**, not a manufactured failure test.
+
+The user completed the bounded smoke and returned the explicit verdict:
 
 ```text
 BUILD85 PASS
 ```
 
-Accepted smoke: harmless Album metadata edit/save, canonical verification, revision advance, persistence after reload and surrounding navigation.
+The accepted smoke boundary covered:
+
+- hard refresh to the deployed `v0.19.7 · Build85` runtime;
+- opening an existing safe canonical Album;
+- editing one harmless metadata field;
+- one normal **Save metadata**;
+- verified receipt **`Album metadata saved and canonically verified.`**;
+- canonical revision advance;
+- saved metadata persistence after canonical reload;
+- surrounding Albums / Track / Lyrics / SonicTrace navigation regression sanity.
+
+Acceptance intentionally did **not** require cutting network, invalidating Access or sabotaging a production save merely to force timeout/partial-write branches. Those failure paths remain protected by typed classification, stale guards and private canonical reread logic.
+
+Result:
+
+```text
+Build85 = REAL USER PASS
+```
+
+No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration or cross-repository runtime change was required to reach acceptance.
 
 ## Build84 real-user smoke — PASS
+
+Accepted predecessor:
 
 ```text
 Version                 v0.19.6
@@ -249,7 +703,7 @@ Pages                   31858977765 · SUCCESS
 Real-user verdict       BUILD84 PASS · 2026-08-15
 ```
 
-Build84 protects SonicTrace latest/history save truth using exact `analysisId`. Accepted smoke covered normal SonicTrace loading, normal scan/save with canonical verification and surrounding navigation.
+The accepted smoke covered normal SonicTrace latest/history loading, normal scan/save with canonical verification and surrounding Track / Visuals / Lyrics / Albums navigation. Acceptance did not require manufactured network failure.
 
 ## Build83 real-user smoke — PASS
 
