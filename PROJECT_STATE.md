@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-15 after explicit **`BUILD90 PASS MADAFAKA`** real-user browser acceptance.
+Updated: 2026-08-15 after explicit **`BUILD90 PASS MADAFAKA`** real-user browser acceptance and published acceptance-docs closeout.
 
 This file is the short current checkpoint. It is the first project-state document to read after `AGENTS.md`.
 
@@ -20,8 +20,8 @@ Candidate docs PR       #151
 Candidate docs merge    442b488511d77da15592a37d6e8d2dca0ed30fb8
 Candidate docs Pages    31885123431 · SUCCESS · exact docs merge SHA
 Acceptance docs PR      #152
-Acceptance docs merge   PENDING
-Acceptance docs Pages   PENDING
+Acceptance docs merge   ebc501df90b8a8bf9229da4a61d7784beba13b78
+Acceptance docs Pages   31887090784 · SUCCESS · exact docs merge SHA
 Real-user smoke         BUILD90 PASS MADAFAKA · 2026-08-15
 Worker deploy           NONE
 Track Manager change    NONE
@@ -229,7 +229,7 @@ SonicTrace private reads, Album create/upload semantics, Track Manager, Workers 
 
 **No active blocker after `BUILD90 PASS MADAFAKA`.**
 
-Runtime CI `31884568681` passed the complete chain **on the first run** on exact head `48ca1dc25951d65ead05c4f80bd1f9e6bf8c5d01`. Runtime Pages `31884614863` deployed exact merge `8a851a7d53d3b4f45359c7036011684441bb25bb` successfully. Candidate docs Pages `31885123431` deployed exact candidate-docs merge `442b488511d77da15592a37d6e8d2dca0ed30fb8` successfully.
+Runtime CI `31884568681` passed the complete chain **on the first run** on exact head `48ca1dc25951d65ead05c4f80bd1f9e6bf8c5d01`. Runtime Pages `31884614863` deployed exact merge `8a851a7d53d3b4f45359c7036011684441bb25bb` successfully. Candidate docs Pages `31885123431` deployed exact candidate-docs merge `442b488511d77da15592a37d6e8d2dca0ed30fb8` successfully. Acceptance docs Pages `31887090784` deployed exact acceptance-docs merge `ebc501df90b8a8bf9229da4a61d7784beba13b78` successfully.
 
 The historical `Magnetic Midnight` public-cover palette `Failed to fetch` issue remains resolved since Build62 and covered by regression guards.
 
@@ -307,6 +307,7 @@ safety/post-build90-prepr-20260815-1424
 safety/post-build90-deployed-candidate-20260815-1429
 safety/post-build90-candidate-docs-closeout-20260815-1440
 safety/post-build90-real-user-pass-20260815-1512
+safety/post-build90-rup-docs-closeout-20260815-1524
 ```
 
 ## Acceptance vocabulary
