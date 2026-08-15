@@ -1,6 +1,6 @@
 # Studio v0.19.7 · Build85 — Phase9 Album metadata save response-loss truth
 
-Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**.
+Status: **REAL USER PASS · ACCEPTED**.
 
 ## Fresh audit proof
 
@@ -81,7 +81,7 @@ Normal HTTP success is also canonically reread and is only called verified when:
 
 ## UX truth
 
-Album Management now distinguishes:
+Album Management distinguishes:
 
 - normal metadata save canonically verified;
 - **RECOVERED AFTER LOST RESPONSE** with an explicit statement that Studio did not retry the write;
@@ -104,39 +104,49 @@ Final CI                31863267911 · SUCCESS · first run
 Runtime merge           1199f6a0e26da88e54f64a369985c2a72267e5a5
 Runtime Pages           31863313848 · SUCCESS · exact runtime merge SHA
 Safety post-deploy      safety/post-build85-deployed-candidate-20260815-0602
+Candidate docs PR       #136
+Candidate docs merge    40917edc6a341ca7d19907d8afe59123f44c8d03
+Candidate docs Pages    31863566190 · SUCCESS
+Safety post-acceptance  safety/post-build85-real-user-pass-20260815-0748
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
-Real-user smoke         PENDING
+Real-user smoke         BUILD85 PASS · 2026-08-15
 ```
 
 Historical Studio Focus / Phase7-C guards were widened only for the bounded `v0.19.7 / Build85` successor while preserving their functional assertions and accepted Build81→82→83→84 ancestry requirements.
 
 The exact Build85 feature head passed the complete repository-native chain including Phase9 guards, Studio Focus guards, TypeScript and Vite production build **on the first CI run**.
 
+## Real-user acceptance
+
+The required acceptance smoke was intentionally a normal-browser regression rather than a manufactured response-loss failure.
+
+The user returned the explicit verdict:
+
+```text
+BUILD85 PASS
+```
+
+The accepted browser boundary covered:
+
+1. deployed `v0.19.7 · Build85` after hard refresh;
+2. an existing safe canonical Album;
+3. one harmless metadata edit;
+4. one normal **Save metadata**;
+5. verified receipt **`Album metadata saved and canonically verified.`**;
+6. canonical revision advance;
+7. saved value persistence after canonical reload;
+8. surrounding Albums / Track / Lyrics / SonicTrace navigation sanity.
+
+The smoke did **not** deliberately cut network or Cloudflare Access. The lost-response branches remain protected by automated guards and private canonical reread logic.
+
 ## Safety / rollback
 
-Runtime rollback is a Studio-only revert of PR #135. No Worker or R2 migration rollback is required because this slice introduced no backend deployment or schema/data migration.
-
-A deliberately interrupted production metadata save is **not** required merely to prove the lost-response branches. Guarded source validation plus a normal browser metadata-save regression is the intended acceptance path.
-
-## Real-user acceptance boundary
-
-Pending normal-browser smoke:
-
-1. verify `v0.19.7 · Build85` after hard refresh;
-2. open a safe existing canonical Album;
-3. note its current revision;
-4. edit one harmless metadata field;
-5. perform a normal **Save metadata**;
-6. confirm **`Album metadata saved and canonically verified.`**;
-7. confirm revision advance + value persistence after canonical reload;
-8. confirm surrounding Albums / Track / Lyrics / SonicTrace navigation remains healthy.
-
-Do not deliberately cut network/Access merely to manufacture response loss.
+Runtime rollback remains a Studio-only revert of PR #135. No Worker or R2 migration rollback is required because this slice introduced no backend deployment or schema/data migration.
 
 ## Stop line
 
-- Build85 must not be promoted to REAL USER PASS until explicit browser acceptance is recorded.
-- No successor build is allocated while Build85 acceptance is pending.
+- Build85 is accepted **REAL USER PASS**.
+- Build86 remains unallocated until a fresh post-acceptance audit proves the next smallest reliability scope.
 - Do not generalize Build85 logic into Album membership/move/upload/create without a fresh operation-specific audit.
