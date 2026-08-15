@@ -23,24 +23,6 @@ R2 migration/write      NONE caused by deployment
 Real-user verdict       BUILD83 PASS · 2026-08-15
 ```
 
-## Build83 real-user smoke — PASS
-
-The requested bounded normal-browser Lyrics regression smoke received the user's explicit verdict:
-
-```text
-BUILD83 PASS
-```
-
-The acceptance exercise was deliberately **not** defined as a forced lost-response/destructive production test. The required acceptance boundary was normal Studio/Lyrics regression behavior after hard refresh, with canonical private-read/validation behavior and surrounding workspace sanity checks; the response-loss branches remain primarily protected by source guards, typed classification and private canonical reread logic.
-
-Result:
-
-```text
-Build83 = REAL USER PASS
-```
-
-No Worker deployment, Track Manager change, public Worker change, R2 migration or cross-repository change was required to reach acceptance.
-
 ## Build83 automated coverage
 
 Final validation run `31856653579` passed the complete repository-native chain, including:
@@ -87,7 +69,27 @@ Useful red runs before the final Build83 head were **not merged**:
 
 The fixes to historical guards only widened bounded successor compatibility to v0.19.5 / Build83 while preserving their functional assertions and accepted ancestry.
 
-## Accepted predecessor — Build82
+## Build83 real-user smoke — PASS
+
+The requested bounded normal-browser Lyrics regression smoke received the user's explicit verdict:
+
+```text
+BUILD83 PASS
+```
+
+Acceptance intentionally did **not** require cutting the network, invalidating Access or sabotaging a production write merely to force a timeout/lost-response branch. Those ambiguity branches are primarily protected by source guards, typed classification and canonical reread logic.
+
+Result:
+
+```text
+Build83 = REAL USER PASS
+```
+
+No Worker deployment, Track Manager change, public Worker change, R2 migration or cross-repository change was required to reach acceptance.
+
+## Build82 real-user smoke — PASS
+
+Accepted predecessor:
 
 ```text
 Version                 v0.19.4
@@ -101,7 +103,24 @@ Pages                   31854528438 · SUCCESS
 Real-user verdict       BUILD82 PASS · 2026-08-15
 ```
 
-Build82 hardened Track and Album destructive asset-delete response-loss truth. A deliberate lost-response destructive production test was not required for Build82 acceptance either.
+Validated in the user browser after hard refresh:
+
+- Studio reports `v0.19.4 · Build82`;
+- normal Track workspace/navigation remains functional;
+- Visuals loads existing covers/previews/asset cards normally;
+- delete controls and confirmations remain present without requiring destructive use;
+- Albums / Album Health / Album editor remain functional;
+- Album Assets loads canonical cover/thumbnail and their controls;
+- System/private status remains coherent;
+- no regression requiring a Track Manager, Worker, public Worker or R2 change was observed.
+
+Result:
+
+```text
+BUILD82 PASS
+```
+
+A deliberate lost-response destructive production test was **not** required for Build82 acceptance either.
 
 ## Current ecosystem validation baseline
 
@@ -159,14 +178,14 @@ Git history shows the public-cover credential/fetch path was corrected in Build6
 
 No Build83 acceptance blocker remains.
 
-Before any successor runtime work, perform a fresh bounded Phase9 audit. Leading candidates are:
+Before any successor runtime work, perform a fresh bounded Phase9 audit. Leading candidates remain:
 
 1. SonicTrace analysis save response-loss commit-state truth;
 2. broader guarded Album write response-loss truth;
 3. Access/CORS hardening;
 4. degraded/offline and PWA resilience scenarios.
 
-These are **not** pre-allocated builds. Build84 remains unallocated until an audit proves a concrete scope.
+These are **not yet accepted fixes** and do not imply Build84. Build84 remains unallocated until a fresh bounded audit proves a concrete scope.
 
 ## Standard validation commands
 
