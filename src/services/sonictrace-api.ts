@@ -10,6 +10,7 @@ import type {
 } from '../types/studio';
 
 const SAVE_INTENT = 'sonictrace-analysis-save-v1';
+const TRANSIENT_SONICTRACE_READ_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
 
 export interface SonicTraceHealth {
   status?: string;
@@ -99,31 +100,84 @@ function analysisPresence(state: SonicTraceAnalysisState, analysisId: string): {
   };
 }
 
-async function adminJson<T>(path: string, init?: RequestInit, timeoutMs = 12000): Promise<T> {
+function isTransientSonicTraceReadError(reason: unknown): reason is SonicTraceError {
+  return reason instanceof SonicTraceError && (
+    reason.code === 'SONICTRACE_READ_TIMEOUT'
+    || reason.code === 'SONICTRACE_READ_TRANSPORT'
+    || (reason.status !== null && TRANSIENT_SONICTRACE_READ_STATUSES.has(reason.status))
+  );
+}
+
+async function fetchAdminJsonOnce<T>(path: string, timeoutMs: number): Promise<T> {
   const controller = new AbortController();
   const timeout = globalThis.setTimeout(() => controller.abort(), timeoutMs);
   try {
     let response: Response;
     try {
       response = await fetch(`${adminBase()}${path}`, {
-        ...init,
-        headers: { Accept: 'application/json', ...(init?.headers || {}) },
+        headers: { Accept: 'application/json' },
         credentials: 'include',
         cache: 'no-store',
         mode: 'cors',
         signal: controller.signal,
       });
     } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') throw new SonicTraceError('Track Manager SonicTrace request timed out.');
-      throw new SonicTraceError('Track Manager SonicTrace bridge is unavailable. Authenticate with Cloudflare Access and retry.');
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        throw new SonicTraceError('Track Manager SonicTrace read timed out.', null, 'SONICTRACE_READ_TIMEOUT');
+      }
+      throw new SonicTraceError(
+        'Track Manager SonicTrace read transport was interrupted.',
+        null,
+        'SONICTRACE_READ_TRANSPORT',
+        false,
+        error instanceof Error ? error.message : String(error),
+      );
     }
-    if (!isJson(response)) throw new SonicTraceError('Cloudflare Access session is not available to the SonicTrace bridge.', response.status || null);
-    const payload = await response.json() as T & { ok?: boolean; error?: string; code?: string };
-    if (!response.ok || payload.ok === false) throw new SonicTraceError(payload.error || `Track Manager returned HTTP ${response.status}.`, response.status, payload.code || null);
+    if (!isJson(response)) {
+      throw new SonicTraceError(
+        'Cloudflare Access session is not available to the SonicTrace bridge.',
+        response.status || null,
+        'SONICTRACE_READ_ACCESS_SESSION_REQUIRED',
+      );
+    }
+    let payload: T & { ok?: boolean; error?: string; code?: string };
+    try {
+      payload = await response.json() as T & { ok?: boolean; error?: string; code?: string };
+    } catch {
+      throw new SonicTraceError('Track Manager returned invalid SonicTrace JSON.', response.status || null, 'SONICTRACE_READ_INVALID_RESPONSE');
+    }
+    if (!response.ok || payload.ok === false) {
+      throw new SonicTraceError(
+        payload.error || `Track Manager returned HTTP ${response.status}.`,
+        response.status,
+        payload.code || (response.status === 401 || response.status === 403 ? 'SONICTRACE_READ_ACCESS' : 'SONICTRACE_READ_HTTP'),
+      );
+    }
     return payload;
   } finally {
     globalThis.clearTimeout(timeout);
   }
+}
+
+async function adminJson<T>(path: string, timeoutMs = 12000): Promise<T> {
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      return await fetchAdminJsonOnce<T>(path, timeoutMs);
+    } catch (reason) {
+      if (attempt === 0 && isTransientSonicTraceReadError(reason)) continue;
+      if (attempt === 1 && isTransientSonicTraceReadError(reason)) {
+        throw new SonicTraceError(
+          'Track Manager SonicTrace read failed after one bounded transient retry.',
+          reason.status,
+          reason.code,
+          false,
+          reason.technicalDetails || reason.message,
+        );
+      }
+      throw reason;
+    }
+  }
+  throw new SonicTraceError('Track Manager SonicTrace read failed unexpectedly.', null, 'SONICTRACE_READ_UNEXPECTED');
 }
 
 async function postSonicTraceSave(trackId: string, analysis: SonicTraceAnalysis): Promise<SonicTraceSaveResponse> {
@@ -180,7 +234,7 @@ export async function getSonicTraceAnalysisState(trackId: string): Promise<Sonic
 }
 
 export async function getSonicTraceCatalog(): Promise<SonicTraceCatalogEntry[]> {
-  const payload = await adminJson<SonicTraceCatalogResponse>('/api/studio/analysis/sonictrace', undefined, 20000);
+  const payload = await adminJson<SonicTraceCatalogResponse>('/api/studio/analysis/sonictrace', 20000);
   if (!Array.isArray(payload.entries)) throw new SonicTraceError('Track Manager returned an invalid SonicTrace catalog index.');
   return payload.entries;
 }
@@ -427,4 +481,6 @@ export const sonicTraceService = Object.freeze({
   canonicalPersistence: 'R2 sidecars via Track Manager',
   sourceAudioRetention: false,
   lostResponsePolicy: 'private-canonical-latest-history-reread-no-blind-retry',
+  privateReadRetryPolicy: 'one-retry-timeout-transport-transient-http-no-access-retry',
+  privateReadMaxAttempts: 2,
 });
