@@ -3,8 +3,7 @@
 Date established: 2026-08-08  
 Hardened: 2026-08-09  
 Current-state overlay refreshed: 2026-08-15  
-Current accepted Studio release: `v0.19.7` / Build `85` / REAL USER PASS  
-Current deployed candidate: `v0.19.8` / Build `86` / REAL USER SMOKE PENDING
+Current accepted Studio release: `v0.19.8` / Build `86` / REAL USER PASS
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -22,20 +21,12 @@ For short current state, read root `PROJECT_STATE.md` first. This file contains 
 
 ```text
 Studio accepted
-  v0.19.7 / Build85 / REAL USER PASS
-  exact tested head 4bbfb93dfc9333eb1e8fc3a35b62699611e69367
-  runtime CI 31863267911 / SUCCESS / first run
-  runtime merge 1199f6a0e26da88e54f64a369985c2a72267e5a5
-  runtime Pages 31863313848 / SUCCESS
-  browser smoke BUILD85 PASS / 2026-08-15
-
-Studio candidate
-  v0.19.8 / Build86 / DEPLOYED CANDIDATE
+  v0.19.8 / Build86 / REAL USER PASS
   exact tested head 0d99d17631e3f72a360f404a1269cc05cda33dd8
   runtime CI 31868536718 / SUCCESS / first run
   runtime merge 866ebf9c2a501d11102ed994717b50f6d8189b0d
   runtime Pages 31868570112 / SUCCESS
-  browser smoke PENDING
+  browser smoke BUILD86 PASS / 2026-08-15
   Worker deploy NONE
   Track Manager change NONE
   R2 migration/write NONE caused by deployment
@@ -57,7 +48,7 @@ LRC Maker
   6.3.8
 ```
 
-Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable history; this overlay separates the accepted baseline from the current deployed candidate.
+Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable history; this overlay states current accepted production truth only.
 
 ## Restoration checkpoints
 
@@ -108,6 +99,10 @@ Before Phase9 Build86:
 
 After Build86 deployment candidate:
   safety/post-build86-deployed-candidate-20260815-0808
+  safety/post-build86-candidate-docs-closeout-20260815-0818
+
+After Build86 real-user acceptance:
+  safety/post-build86-real-user-pass-20260815-0823
 ```
 
 Earlier accepted safety branches remain preserved in Git history.
@@ -162,7 +157,7 @@ Build84 changes only client-side SonicTrace **save response-loss classification 
 
 Build85 changes only client-side canonical **Album metadata save** response-loss classification and verification. It does not alter Album create, membership/order, move, upload, asset-delete semantics, Track Manager, Workers or R2 schema/data.
 
-Build86 candidate changes only client-side canonical **Album move** response-loss classification and verification for Album→Album movement plus `sourceAlbumId:null` authority repair. It does not alter bulk membership save, create, upload/delete, Track Manager, Workers or R2 schema/data.
+Build86 changes only client-side canonical **Album move** response-loss classification and verification for Album→Album movement plus `sourceAlbumId:null` authority repair. It does not alter bulk membership save, create, upload/delete, Track Manager, Workers or R2 schema/data.
 
 ### SonicTrace
 
@@ -265,7 +260,7 @@ Stable non-metadata shape includes canonical identity, ordered `trackIds`, asset
 
 Build85 is **REAL USER PASS** after the explicit 2026-08-15 normal-browser Album metadata regression verdict.
 
-### Build86 Album-move boundary — DEPLOYED CANDIDATE
+### Build86 Album-move boundary — ACCEPTED
 
 The deployed Track Manager move route already owns:
 
@@ -300,6 +295,8 @@ Album move response unavailable
 ```
 
 Normal success also requires exact response revisions, exact target/source tracklists and Track cache verification. Build86 covers **only** `album-track-move-v1`; bulk membership save, create and upload remain separate operation-specific audit families.
+
+Build86 is **REAL USER PASS** after explicit 2026-08-15 normal-browser Album move regression acceptance.
 
 ## Studio write boundary
 
@@ -368,11 +365,11 @@ Album **metadata save only**. Recovered success requires a new Album revision + 
 
 Build85 is **REAL USER PASS**. Do not generalize this into Album membership/move/create/upload behavior.
 
-### Build86 candidate scope
+### Build86 accepted scope
 
 Album **move only** (`album-track-move-v1`). Recovered success requires exact target/source membership/order, Track cache target and stable non-membership shapes. Explicit retry safety requires the exact pre-write target/source/Track state to remain canonical.
 
-Build86 is **DEPLOYED CANDIDATE**. Do not generalize it into bulk membership/create/upload behavior.
+Build86 is **REAL USER PASS**. Do not generalize it into bulk membership/create/upload behavior.
 
 ## Destructive/media verification policy
 
@@ -389,7 +386,7 @@ Preferred proof:
 
 Build85 acceptance did **not** require deliberately cutting network/Access during a production metadata save just to manufacture response loss. A normal harmless metadata edit/save was sufficient for regression acceptance.
 
-Build86 acceptance likewise does **not** require deliberately cutting network/Access during a production move. A normal legitimate safe move is the intended regression smoke.
+Build86 acceptance likewise did **not** require deliberately cutting network/Access during a production move. A normal legitimate safe move was sufficient for regression acceptance.
 
 ## Version / deployment discipline
 
@@ -420,4 +417,4 @@ If a regression appears:
 
 ## Stop line
 
-**Build85 is the accepted Studio REAL USER PASS baseline. Build86 is DEPLOYED CANDIDATE with browser smoke pending. Build87 is UNALLOCATED. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**
+**Build86 is the accepted Studio REAL USER PASS baseline. Phase9 remains active, but Build87 is UNALLOCATED until a fresh bounded audit proves the next smallest reliability scope. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**
