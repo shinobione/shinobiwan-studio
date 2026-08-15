@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-15 after **Build87 deployed candidate** publication.
+Updated: 2026-08-15 after **Build87 REAL USER PASS**.
 
 This file is the durable roadmap summary. Historical implementation detail belongs in `docs/` and `changelogs/`; do not copy it here unless it changes what is done, active, next or backlogged.
 
@@ -118,19 +118,20 @@ Accepted evidence and behavior:
 
 Build86 intentionally does **not** bundle Album bulk membership, create or upload.
 
-## In progress
-
 ### Phase 9 Slice6 — Album bulk membership response-loss truth
 
-**Build87 · v0.19.9 · DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+**Build87 · v0.19.9 · REAL USER PASS**
 
 The fresh post-Build86 audit selected Album bulk membership / ordered tracklist save as the smallest coherent remaining gap.
 
-Candidate evidence and behavior:
+Accepted evidence and behavior:
 
 - exact-head CI `31870328730` SUCCESS on first run;
 - runtime PR #141 merged at `b9e1f121c7dc111ee6db06fd4d00227426d96ce7`;
 - Pages `31870370403` SUCCESS on that exact merge;
+- candidate docs PR #142 merged at `453be9e9d72c9d90cd97ad5f57be02821efec12a`;
+- candidate docs Pages `31870838391` SUCCESS;
+- explicit real-user verdict `BUILD87 PASS MADAFAKA` on 2026-08-15;
 - private pre-read covers the exact Album revision plus the union of previous/requested Track manifests;
 - requested Track → compatibility cache points to the Album;
 - removed Track whose cache claimed the Album → transitional `Singles` cache;
@@ -142,21 +143,30 @@ Candidate evidence and behavior:
 - partial/mixed state → ambiguous / do not retry;
 - reread unavailable → unverified / do not retry;
 - normal success also verifies exact response revision/order, every affected Track cache and `trackCachesUpdated` when provided;
+- normal-browser acceptance confirmed save success, ordered tracklist persistence, preserved Album cache ownership and surrounding navigation sanity;
 - no Track Manager, Worker, R2 schema/data migration or cross-product runtime change.
 
 Build87 intentionally does **not** bundle Album create or binary upload.
 
+## In progress
+
+### Phase 9 — fresh reliability audit
+
+Phase9 remains active, but **Build88 is not allocated**.
+
+The current task is a fresh read-only audit to identify the smallest remaining reliability gap without duplicating existing recovery logic or turning Phase9 into a generic refactor bucket.
+
 ## Next
 
-Complete the **Build87 normal-browser Album tracklist regression smoke**. Prefer a harmless reorder of two existing Tracks, save once, reload and verify order/cache persistence. Do not manufacture a response-loss failure.
-
-**Build88 is unallocated.** Only after explicit Build87 PASS should a fresh read-only audit compare remaining candidates:
+Audit these remaining candidates by proven risk / bounded scope, without assuming a build number:
 
 1. Album asset upload response-loss truth;
 2. Album create response-loss truth;
 3. Access/CORS hardening;
 4. bounded read retries/timeouts;
 5. degraded/offline/PWA resilience.
+
+Pick **one** coherent slice only after the audit proves the gap and confirms it does not duplicate existing recovery logic.
 
 ## Backlog
 
@@ -185,8 +195,8 @@ There is currently **no official Phase 11**.
 - Do not treat a candidate as accepted until real-user validation exists where required.
 - Do not deliberately damage or interrupt a production write merely to prove an ambiguity guard.
 - Do not generalize one write family's recovery postcondition into another operation family.
-- Do not allocate Build88 while Build87 acceptance remains pending.
+- Do not allocate Build88 before a fresh bounded audit selects its scope.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build87 smoke boundary.
+See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build87 real-user PASS.
