@@ -2,6 +2,52 @@
 
 This file is the **current concise changelog**. Detailed per-build records live under [`changelogs/`](changelogs/README.md).
 
+## Current deployed candidate
+
+### v0.19.9 · Build87 — 2026-08-15
+
+Codename: `studio-focus-slice4-phase9-album-membership-response-loss-truth`  
+Status: **DEPLOYED CANDIDATE — REAL USER SMOKE PENDING**
+
+Build87 extends Phase9 reliability to canonical Album **bulk membership / ordered tracklist save** only.
+
+Candidate behavior:
+
+- private pre-read captures the exact Album revision plus every Track in the union of previous/requested `album.trackIds`;
+- timeout, fetch interruption or unreadable JSON response is **never blindly retried**;
+- requested Track → compatibility cache must point to the Album;
+- removed Track whose cache claimed the Album → transitional `Singles` cache;
+- removed Track whose cache did not claim the Album → cache remains unchanged;
+- historically missing prior Track may be removed, but a missing Track may not be newly requested;
+- exact new Album revision + requested ordered `trackIds` + exact expected Track caches + stable non-membership shapes = recovered `COMMITTED / VERIFIED`;
+- exact unchanged pre-write Album + Track state = `NOT COMMITTED`, explicit retry may be safe after fresh reload;
+- partial/mixed changed state = `AMBIGUOUS / DO NOT RETRY`;
+- reread unavailable = `UNVERIFIED / DO NOT RETRY`;
+- normal success also requires exact returned revision/order, complete Album + Track-cache canonical verification and `trackCachesUpdated` agreement when provided;
+- no Track Manager, Worker, public Worker, R2 schema/data migration, LaunchPAD, LRC Maker or SonicTrace Deep Audio change was required.
+
+Exact candidate evidence:
+
+```text
+Safety pre               safety/pre-phase9-album-membership-response-loss-build87-20260815-0837
+Safety pre-PR            safety/post-build87-prepr-20260815-0844
+Studio PR                #141
+Exact tested head        5f155d312b0af7227325a78480bfd424a96e7859
+Validation               31870328730 · SUCCESS · first run
+Runtime merge            b9e1f121c7dc111ee6db06fd4d00227426d96ce7
+Runtime Pages            31870370403 · SUCCESS · exact runtime merge SHA
+Safety post-deploy       safety/post-build87-deployed-candidate-20260815-0853
+Track Manager            v5.23 · unchanged
+Studio bridge            v1.13 · unchanged
+TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
+Public Worker            v2.7 · unchanged
+Worker deploy            NONE
+R2 migration/write       NONE caused by deployment
+Real-user smoke          PENDING
+```
+
+Detailed candidate record: [`changelogs/CHANGELOG-BUILD87.md`](changelogs/CHANGELOG-BUILD87.md).
+
 ## Current accepted release
 
 ### v0.19.8 · Build86 — 2026-08-15
@@ -266,8 +312,8 @@ All Phase8/9 health and guidance surfaces continue to preserve the same canonica
 
 ## Next bounded action
 
-**Build87 is unallocated.**
+Complete the **Build87 normal-browser Album tracklist reorder regression smoke**. Do not deliberately interrupt a production membership save merely to prove response-loss guards.
 
-Run a fresh Phase9 reliability audit before selecting another runtime slice. Remaining candidate areas are Album bulk membership/upload/create response-loss truth, Access/CORS hardening, bounded read retries/timeouts, and degraded/offline/PWA resilience.
+Build88 remains **UNALLOCATED** until explicit Build87 acceptance and a fresh bounded audit.
 
 `CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS` remains mandatory.
