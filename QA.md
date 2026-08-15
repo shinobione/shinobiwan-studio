@@ -1,44 +1,27 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-08-15 after **Build86 deployed candidate** publication. Real-user acceptance remains pending.
+Updated: 2026-08-15 after explicit **Build86 REAL USER PASS**.
 
 This file records what has actually been validated, what automated guards cover, and what remains unproven. It is not a full test-history dump.
 
 ## Current accepted Studio runtime
 
 ```text
-Version                 v0.19.7
-Build                   Build85
-Status                  REAL USER PASS
-Runtime PR              #135
-Exact tested head       4bbfb93dfc9333eb1e8fc3a35b62699611e69367
-Final CI                31863267911 · SUCCESS · first run
-Runtime merge           1199f6a0e26da88e54f64a369985c2a72267e5a5
-Pages                   31863313848 · SUCCESS · exact runtime merge SHA
-Candidate docs PR       #136
-Candidate docs merge    40917edc6a341ca7d19907d8afe59123f44c8d03
-Candidate docs Pages    31863566190 · SUCCESS
-Worker deploy           NONE
-Track Manager change    NONE
-R2 migration/write      NONE caused by deployment
-Real-user verdict       BUILD85 PASS · 2026-08-15
-```
-
-## Current deployed candidate
-
-```text
 Version                 v0.19.8
 Build                   Build86
-Status                  DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Status                  REAL USER PASS
 Runtime PR              #138
 Exact tested head       0d99d17631e3f72a360f404a1269cc05cda33dd8
 Final CI                31868536718 · SUCCESS · first run
 Runtime merge           866ebf9c2a501d11102ed994717b50f6d8189b0d
 Pages                   31868570112 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #139
+Candidate docs merge    9a03c33f6ecb472ab49c3631dd9688e3c6f03bf7
+Candidate docs Pages    31869026213 · SUCCESS
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
-Real-user verdict       PENDING
+Real-user verdict       BUILD86 PASS · 2026-08-15
 ```
 
 ## Build86 automated coverage — GREEN
@@ -93,28 +76,36 @@ Additional Build86 guarantees:
 
 The deployed Track Manager backend was audited read-only and already owns stale guards, deterministic target/source membership, Track compatibility-cache update, catalog rebuild, canonical target/source/Track reread and rollback. No backend mutation was needed for Build86.
 
-## Build86 real-user smoke — PENDING
+## Build86 real-user smoke — PASS
 
-The required acceptance smoke is intentionally a **normal-browser regression**, not a manufactured failure test:
+The required acceptance smoke was intentionally a **normal-browser regression**, not a manufactured failure test.
 
-1. hard refresh Studio and verify `v0.19.8 · Build86`;
-2. open **Albums** and choose a safe canonical source Album;
-3. identify one Track that can genuinely be moved to another safe canonical Album;
-4. use the normal **Move** control;
-5. expect **`Track moved and canonically verified across target, source and Track cache.`**;
-6. verify the source no longer contains the Track;
-7. verify the target contains it at the expected position;
-8. reload/reopen both Albums and verify persistence/order;
-9. open the moved Track and verify its Album compatibility cache points to target;
-10. quick Track / Visuals / Lyrics / SonicTrace / Albums regression sanity.
-
-Do not cut network, invalidate Access or sabotage a production move merely to force response-loss branches.
-
-Until explicit user verdict:
+The user completed the bounded smoke and returned the explicit verdict:
 
 ```text
-Build86 != REAL USER PASS
+BUILD86 PASS
 ```
+
+The accepted smoke boundary covered:
+
+- hard refresh to the deployed `v0.19.8 · Build86` runtime;
+- one genuine safe canonical Album → Album move;
+- normal verified receipt **`Track moved and canonically verified across target, source and Track cache.`**;
+- canonical source removal;
+- expected target insertion/order;
+- persistence after source/target reload;
+- moved Track compatibility cache pointing to the target Album;
+- surrounding Track / Visuals / Lyrics / SonicTrace / Albums navigation regression sanity.
+
+Acceptance intentionally did **not** require cutting network, invalidating Access or sabotaging a production move merely to force timeout/partial-write branches. Those failure paths remain protected by typed classification, stale guards and private canonical target/source/Track reread logic.
+
+Result:
+
+```text
+Build86 = REAL USER PASS
+```
+
+No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration or cross-repository runtime change was required to reach acceptance.
 
 ## Build85 automated coverage — GREEN
 
@@ -307,13 +298,11 @@ Git history shows the public-cover credential/fetch path was corrected in Build6
 
 ## Known open QA gaps / next audits
 
-Current acceptance gap:
+No Build86 acceptance blocker remains.
 
-1. Build86 normal-browser Album move regression smoke.
+Before any successor runtime work, perform a fresh bounded Phase9 audit. Candidate areas include Album bulk membership/upload/create response-loss truth, Access/CORS hardening, bounded read retries/timeouts and degraded/offline/PWA resilience.
 
-Do not allocate Build87 while Build86 acceptance remains pending.
-
-After explicit Build86 PASS, perform a fresh bounded Phase9 audit. Remaining candidates include Album bulk membership, upload, create, Access/CORS, bounded read retries/timeouts and degraded/offline/PWA resilience.
+**Build87 is unallocated** until a fresh bounded audit proves a concrete scope.
 
 ## Standard validation commands
 
