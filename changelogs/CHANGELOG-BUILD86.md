@@ -1,6 +1,6 @@
 # Studio v0.19.8 · Build86 — Phase9 Album move response-loss truth
 
-Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**.
+Status: **REAL USER PASS · ACCEPTED**.
 
 ## Fresh audit proof
 
@@ -29,7 +29,7 @@ Why:
 - Studio's previous normal-success path already reread the same target/source/Track triplet;
 - only timeout/transport/invalid-response commit truth remained generic and ambiguous.
 
-Other candidates are deliberately deferred:
+Other candidates were deliberately deferred:
 
 - membership may update an arbitrary number of Track caches and needs broader cache verification;
 - upload mutates binary R2 object state plus manifest/catalog and exact binary causality is harder to prove after a lost response without server-returned ETag/digest evidence;
@@ -108,7 +108,7 @@ The service exposes:
 
 Existing mutation wrappers reload canonical state after error before another operator decision.
 
-## Validation target
+## Validation
 
 Build86 adds:
 
@@ -117,7 +117,7 @@ Build86 adds:
 - Phase9 gate inheritance Build82 → Build83 → Build84 → Build85 → Build86;
 - bounded historical successor compatibility through `v0.19.8 / Build86` without weakening functional assertions.
 
-Exact candidate evidence:
+Exact acceptance evidence:
 
 ```text
 Safety pre              safety/pre-phase9-album-move-response-loss-build86-20260815-0757
@@ -127,21 +127,39 @@ Final CI                31868536718 · SUCCESS · first run
 Runtime merge           866ebf9c2a501d11102ed994717b50f6d8189b0d
 Runtime Pages           31868570112 · SUCCESS · exact runtime merge SHA
 Safety post-deploy      safety/post-build86-deployed-candidate-20260815-0808
+Candidate docs PR       #139
+Candidate docs merge    9a03c33f6ecb472ab49c3631dd9688e3c6f03bf7
+Candidate docs Pages    31869026213 · SUCCESS
+Safety post-acceptance  safety/post-build86-real-user-pass-20260815-0823
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
-Real-user smoke         PENDING
+Real-user smoke         BUILD86 PASS · 2026-08-15
 ```
 
 The exact Build86 feature head passed the complete repository-native validation chain including inherited Phase9 guards, Studio Focus guards, TypeScript and Vite production build **on the first CI run**.
 
-## Real-user acceptance boundary
+## Real-user acceptance — PASS
 
-Build86 is **not yet REAL USER PASS**.
+The acceptance smoke remained a normal safe browser regression; no manufactured response-loss failure was required.
 
-Use a normal safe browser regression: perform one genuine safe Album move, verify the normal receipt `Track moved and canonically verified across target, source and Track cache.`, reread source/target order and Track compatibility cache, then do a quick surrounding navigation sanity pass.
+The user performed one genuine safe canonical Album move and returned explicit:
 
-Do **not** deliberately cut network/Access during a production move merely to manufacture a lost response.
+```text
+BUILD86 PASS
+```
+
+Acceptance covered:
+
+- deployed `v0.19.8 · Build86` identity;
+- normal Album move receipt `Track moved and canonically verified across target, source and Track cache.`;
+- source Album removal;
+- target Album insertion/order;
+- persistence after canonical source/target reload;
+- moved Track compatibility cache converging to the target Album;
+- quick surrounding Track / Visuals / Lyrics / SonicTrace / Albums navigation sanity.
+
+No network/Access sabotage was used to manufacture a lost response.
 
 ## Safety / rollback
 
@@ -153,4 +171,4 @@ Runtime rollback is Studio-only. Build86 introduces no backend deployment and no
 - Do not merge red CI.
 - Merge only the exact tested head.
 - Runtime merge, Pages deployment and real-user acceptance remain separate states.
-- Build87 remains unallocated until explicit Build86 acceptance and a fresh bounded audit.
+- Build87 remains unallocated until a fresh bounded post-Build86 audit selects its scope.
