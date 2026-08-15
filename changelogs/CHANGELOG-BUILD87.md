@@ -1,6 +1,6 @@
 # Studio v0.19.9 · Build87 — Phase9 Album membership response-loss truth
 
-Status: **IMPLEMENTATION CANDIDATE · CI PENDING**.
+Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**.
 
 ## Fresh audit proof
 
@@ -66,9 +66,12 @@ Track removed from Album AND its cache currently claims that Album
 
 Track removed but its cache does not claim this Album
 → cache must remain unchanged
+
+Historically missing prior Track being removed
+→ remains absent; no fake cache write is created
 ```
 
-The ordered requested `album.trackIds` remain the sole canonical membership/artistic-order authority.
+A missing Track may never be introduced into the requested tracklist. The ordered requested `album.trackIds` remain the sole canonical membership/artistic-order authority.
 
 ## Lost-response contract
 
@@ -129,7 +132,7 @@ The service exposes `RETRY SAFE AFTER RECONNECT` only when the exact pre-write A
 
 The existing mutation wrapper reloads canonical state after any error before another operator decision.
 
-## Validation target
+## Validation evidence
 
 Build87 adds:
 
@@ -138,26 +141,36 @@ Build87 adds:
 - Phase9 gate inheritance Build82 → Build83 → Build84 → Build85 → Build86 → Build87;
 - bounded historical successor compatibility through `v0.19.9 / Build87` without weakening functional assertions.
 
-Expected candidate evidence:
+Exact candidate evidence:
 
 ```text
 Safety pre              safety/pre-phase9-album-membership-response-loss-build87-20260815-0837
-Runtime PR              PENDING
-Exact tested head       PENDING
-Final CI                PENDING
-Runtime merge           PENDING
-Runtime Pages           PENDING
-Worker deploy           NONE planned
-Track Manager change    NONE planned
+Safety pre-PR           safety/post-build87-prepr-20260815-0844
+Runtime PR              #141
+Exact tested head       5f155d312b0af7227325a78480bfd424a96e7859
+Final CI                31870328730 · SUCCESS · first run
+Runtime merge           b9e1f121c7dc111ee6db06fd4d00227426d96ce7
+Runtime Pages           31870370403 · SUCCESS · exact runtime merge SHA
+Safety post-deploy      safety/post-build87-deployed-candidate-20260815-0853
+Worker deploy           NONE
+Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
-Real-user smoke         PENDING after deployment
+Real-user smoke         PENDING
 ```
+
+The exact Build87 runtime head passed the complete repository-native validation chain including inherited Phase9 guards, Studio Focus guards, TypeScript and Vite production build **on the first CI run**.
+
+## Real-user acceptance boundary
+
+Build87 is **not yet REAL USER PASS**.
+
+Use a normal safe browser regression. Prefer reordering two existing Tracks in a canonical Album, save once, verify `Album tracklist saved and canonically verified across Album + Track caches.`, reload and confirm order persistence plus unchanged Album cache ownership on the reordered Tracks.
+
+Do **not** deliberately cut network/Access during a production membership save merely to manufacture a lost response.
 
 ## Safety / rollback
 
 Runtime rollback is Studio-only. Build87 introduces no backend deployment and no R2 schema/data migration.
-
-Acceptance must use a normal safe browser regression. Do **not** deliberately cut network/Access during a production membership save merely to manufacture a lost response.
 
 ## Stop line
 
