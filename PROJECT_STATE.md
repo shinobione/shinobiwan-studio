@@ -1,42 +1,31 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-15 after **Build85 deployed candidate** publication. Real-user acceptance is pending.
+Updated: 2026-08-15 after explicit **`BUILD85 PASS`** real-user browser acceptance.
 
 This file is the short current checkpoint. It is the first project-state document to read after `AGENTS.md`.
 
 ## Current accepted runtime
 
 ```text
-Studio version          v0.19.6
-Studio build            Build84
-Codename                studio-focus-slice4-phase9-sonictrace-save-response-loss-truth
-Acceptance              REAL USER PASS
-Runtime PR              #132
-Exact tested head       377de51416d4aea258830e55e894707d9f3f6512
-Final runtime CI        31858911420 · SUCCESS
-Runtime merge SHA       b7cf745e11adee1eb77900a32b9b6ca8ea80e000
-Runtime Pages           31858977765 · SUCCESS
-Real-user smoke         BUILD84 PASS · 2026-08-15
-```
-
-Build84 remains the latest **accepted** runtime until Build85 receives explicit real-user browser acceptance.
-
-## Current deployed candidate
-
-```text
 Studio version          v0.19.7
 Studio build            Build85
 Codename                studio-focus-slice4-phase9-album-metadata-response-loss-truth
-Acceptance              DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Acceptance              REAL USER PASS
 Runtime PR              #135
 Exact tested head       4bbfb93dfc9333eb1e8fc3a35b62699611e69367
-Final runtime CI        31863267911 · SUCCESS
+Final runtime CI        31863267911 · SUCCESS · first run
 Runtime merge SHA       1199f6a0e26da88e54f64a369985c2a72267e5a5
 Runtime Pages           31863313848 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #136
+Candidate docs merge    40917edc6a341ca7d19907d8afe59123f44c8d03
+Candidate docs Pages    31863566190 · SUCCESS
+Real-user smoke         BUILD85 PASS · 2026-08-15
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
 ```
+
+Build85 is now the latest **accepted** Studio runtime.
 
 ## Current ecosystem baseline
 
@@ -65,7 +54,7 @@ Phase 9                 ACTIVE
 Phase 9 Slice1          COMPLETE · Build82 REAL USER PASS
 Phase 9 Slice2          COMPLETE · Build83 REAL USER PASS
 Phase 9 Slice3          COMPLETE · Build84 REAL USER PASS
-Phase 9 Slice4          Build85 DEPLOYED CANDIDATE · smoke pending
+Phase 9 Slice4          COMPLETE · Build85 REAL USER PASS
 Phase 10                FUTURE
 Official Phase 11       NONE
 ```
@@ -76,7 +65,7 @@ Official Phase 11       NONE
 - **Build83** hardens canonical `lyrics.txt` save response-loss truth with exact revision + ETag + normalized requested text verification.
 - **Build84** hardens SonicTrace analysis save response-loss truth using exact `analysisId` presence across canonical latest + history.
 
-## Build85 candidate behavior
+## Build85 accepted behavior
 
 The fresh post-Build84 audit proved **Album metadata save only** as the smallest coherent remaining Album write-truth gap. The deployed Track Manager already stale-guards, writes, verifies and rolls back this transaction; Build85 changes no backend behavior.
 
@@ -98,28 +87,31 @@ Stable non-metadata shape includes canonical identity, ordered `trackIds`, asset
 
 Normal HTTP success also requires exact server-returned revision + requested metadata + stable non-metadata shape before Studio calls the save verified.
 
+The bounded normal-browser smoke confirmed the deployed Build85 path loads an existing canonical Album, performs a harmless metadata edit/save with canonical verification, advances the canonical revision, persists the saved value after reload, and preserves surrounding Albums / Track / Lyrics / SonicTrace navigation.
+
 ## Current blockers
 
-No code, CI or deployment blocker remains for Build85.
+**No active blocker after `BUILD85 PASS`.**
 
-**Acceptance blocker:** real-user browser smoke is pending. Do not promote Build85 to REAL USER PASS before an explicit verdict.
+The historical `Magnetic Midnight` public-cover palette `Failed to fetch` issue remains resolved since Build62 and covered by regression guards.
 
 ## Exact next action
 
-Run the bounded **Build85 normal-browser Album metadata regression smoke**:
+**Do not allocate Build86 yet.**
 
-1. hard refresh Studio and verify `v0.19.7 · Build85`;
-2. open an existing safe canonical Album;
-3. note its current revision;
-4. edit one harmless metadata field such as heading/description/accent;
-5. click **Save metadata** normally;
-6. expect **`Album metadata saved and canonically verified.`**;
-7. confirm the revision advances and the saved value survives canonical reload;
-8. sanity-check normal Albums / Track / Lyrics / SonicTrace navigation.
+Run a fresh, read-only Phase9 reliability audit and select the smallest coherent next reliability slice only after proving the gap and confirming existing recovery logic does not already cover it.
 
-Do **not** deliberately cut network or Cloudflare Access during the save merely to manufacture response loss.
+Remaining audit candidates include:
 
-After explicit PASS: close Build85 as REAL USER PASS, then run a fresh Phase9 audit before allocating Build86. Album membership/move/upload/create response-loss truth and Access/read/PWA resilience remain candidates, not commitments.
+1. Album membership response-loss truth;
+2. Album move response-loss truth;
+3. Album asset upload response-loss truth;
+4. Album create response-loss truth;
+5. Access/CORS hardening;
+6. bounded read retries/timeouts;
+7. degraded/offline/PWA resilience.
+
+No candidate above is an automatic commitment or pre-allocated build.
 
 ## Frozen stop lines
 
@@ -149,6 +141,8 @@ safety/post-build84-real-user-pass-20260815-0435
 safety/post-build84-rup-docs-closeout-20260815-0441
 safety/pre-phase9-album-metadata-response-loss-build85-20260815-0555
 safety/post-build85-deployed-candidate-20260815-0602
+safety/post-build85-candidate-docs-closeout-20260815-0608
+safety/post-build85-real-user-pass-20260815-0748
 ```
 
 ## Acceptance vocabulary
@@ -157,4 +151,4 @@ safety/post-build85-deployed-candidate-20260815-0602
 CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS
 ```
 
-Build84 is **REAL USER PASS**. Build85 is **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**. Build86 is **UNALLOCATED**.
+Build85 is **REAL USER PASS**. Build86 is **UNALLOCATED**.
