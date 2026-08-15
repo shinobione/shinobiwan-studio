@@ -32,10 +32,10 @@ Candidate docs PR     #163
 Candidate docs CI     31899284370 · SUCCESS
 Candidate docs merge  6464659428e34a679c8acfeb481bfaca78e05bc7
 Candidate docs Pages  31899342536 · SUCCESS
-Acceptance docs PR    PENDING
-Acceptance docs CI    PENDING
-Acceptance docs merge PENDING
-Acceptance docs Pages PENDING
+Acceptance docs PR    #164
+Acceptance docs CI    31901050237 · SUCCESS
+Acceptance docs merge 8df0417ee4d96de1e1b386c0fb15af60dcdbc661
+Acceptance docs Pages 31901109789 · SUCCESS
 Real-user smoke       BUILD93 PASS MADAFAKA · 2026-08-15
 Track Manager         v5.23 · DEPLOYED
 Studio bridge         v1.13
@@ -120,7 +120,7 @@ Build94             UNALLOCATED
 Phase 10            FUTURE
 ```
 
-The immediate next action is to finish this Build93 acceptance-docs closeout, then run a **fresh read-only post-Build93 Phase9 reliability audit**. No Build94 is allocated before that audit proves a concrete smallest coherent gap.
+The immediate next action is a **fresh read-only post-Build93 Phase9 reliability audit**. No Build94 is allocated before that audit proves a concrete smallest coherent gap.
 
 ## Frozen authority model
 
@@ -337,10 +337,10 @@ Candidate docs CI       31899284370 · SUCCESS
 Candidate docs merge    6464659428e34a679c8acfeb481bfaca78e05bc7
 Candidate docs Pages    31899342536 · SUCCESS
 Safety post-acceptance  safety/post-build93-real-user-pass-20260815-2010
-Acceptance docs PR      PENDING
-Acceptance docs CI      PENDING
-Acceptance docs merge   PENDING
-Acceptance docs Pages   PENDING
+Acceptance docs PR      #164
+Acceptance docs CI      31901050237 · SUCCESS
+Acceptance docs merge   8df0417ee4d96de1e1b386c0fb15af60dcdbc661
+Acceptance docs Pages   31901109789 · SUCCESS
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
