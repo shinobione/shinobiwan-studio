@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-15 after **Build88 deployed candidate** publication.
+Updated: 2026-08-15 after **Build88 REAL USER PASS**.
 
 This file is the durable roadmap summary. Historical implementation detail belongs in `docs/` and `changelogs/`; do not copy it here unless it changes what is done, active, next or backlogged.
 
@@ -148,44 +148,54 @@ Accepted evidence and behavior:
 
 Build87 intentionally does **not** bundle Album create or binary upload.
 
-## In progress
-
 ### Phase 9 Slice7 — core private-read transient retry truth
 
-**Build88 · v0.19.10 · DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+**Build88 · v0.19.10 · REAL USER PASS**
 
 The fresh post-Build87 audit selected the core private Track Manager GET path as the smallest coherent reliability gap.
 
-Candidate evidence and behavior:
+Accepted evidence and behavior:
 
 - runtime PR #144;
 - exact tested head `808b0c63fc22f17a04a9c544b934d97c791d3a73`;
 - final runtime CI `31871980725` SUCCESS;
 - runtime merge `9d4f0a7ba4cd17de1d4d6c69e4abe6bc706c7633`;
 - Pages `31872073050` SUCCESS on that exact merge;
+- candidate docs PR #145 merged at `316ad1b0784d72fb7d29d92c5deaedb56d262e49`;
+- candidate docs Pages `31872540118` SUCCESS;
+- explicit real-user verdict `BUILD88 PASS MADAFAKA` on 2026-08-15;
 - non-timeout fetch interruption is now `transport`, not fake `access-or-cors`;
 - timeout / transport / HTTP `408/425/429/500/502/503/504` may receive one bounded retry;
 - 401/403, deterministic ordinary 4xx, non-JSON Access/gating responses and invalid JSON are never retried;
 - maximum two total attempts;
 - public fallback remains unchanged and occurs only after the private helper ultimately fails;
 - no POST/write retry behavior changed;
+- normal-browser acceptance confirmed private inventory, normal private Track detail and surrounding navigation sanity;
+- acceptance did not manufacture a network/Access failure branch;
 - no Track Manager, Worker, R2 schema/data migration or cross-product runtime change.
 
 Historical validation runs `31871834515` and `31871883072` were red only because inherited successor allowlists capped the runtime at Build87. They were never merge candidates. The final exact head passed the complete chain.
 
 Build88 intentionally does **not** bundle Album create/upload or PWA/service-worker work.
 
+## In progress
+
+### Phase 9 — fresh post-Build88 reliability audit
+
+Phase9 remains active, but **Build89 is not allocated**.
+
+The current task is a fresh read-only audit to identify the smallest remaining reliability gap without duplicating existing recovery logic or turning Phase9 into a generic refactor bucket.
+
 ## Next
 
-Complete the **Build88 normal-browser private-read regression smoke**:
+Audit these remaining candidates by proven risk / bounded scope, without assuming a build number:
 
-1. hard refresh and verify `v0.19.10 · Build88`;
-2. Home / Tracks should load the normal private inventory, including Draft Tracks when present;
-3. open a Track and verify normal private canonical detail;
-4. quick Albums / Lyrics / SonicTrace navigation sanity;
-5. do not deliberately cut network or invalidate Access merely to manufacture the retry path.
+1. Album asset upload response-loss truth;
+2. Album create response-loss truth;
+3. broader private-read resilience outside the Build88 core GETs;
+4. degraded/offline/PWA resilience.
 
-**Build89 is unallocated.** Only after explicit Build88 PASS should another fresh read-only audit compare remaining candidates such as Album asset upload, Album create, broader read resilience and degraded/offline/PWA behavior.
+Pick **one** coherent slice only after the audit proves the gap and confirms it does not duplicate existing recovery logic.
 
 ## Backlog
 
@@ -215,8 +225,8 @@ There is currently **no official Phase 11**.
 - Do not deliberately damage or interrupt production merely to prove a retry/ambiguity guard.
 - Do not generalize GET retry into write retry.
 - Do not generalize one write family's recovery postcondition into another operation family.
-- Do not allocate Build89 while Build88 acceptance remains pending.
+- Do not allocate Build89 before a fresh bounded audit selects its scope.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build88 smoke boundary.
+See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build88 real-user PASS.
