@@ -4,6 +4,15 @@ import { studioConfig } from './config';
 const LYRICS_VALIDATION_INTENT = 'lyrics-validate-v1';
 const LYRICS_SAVE_INTENT = 'lyrics-save-v1';
 
+type LyricsSaveTransportFailure = {
+  timeoutCode: string;
+  transportCode: string;
+  timeoutMessage: string;
+  transportMessage: string;
+};
+
+export type AdminLyricsCommitState = 'committed' | 'not-committed' | 'ambiguous' | 'unverified';
+
 export interface AdminLyricsQuality {
   state?: string | null;
   publishable?: boolean | null;
@@ -85,6 +94,10 @@ export interface AdminLyricsSaveResponse {
   } | null;
   clientVerified?: boolean;
   verificationWarning?: string | null;
+  recoveredAfterTransportFailure?: boolean;
+  retrySafe?: boolean;
+  commitState?: AdminLyricsCommitState;
+  technicalDetails?: string | null;
 }
 
 export class AdminLyricsError extends Error {
@@ -92,6 +105,8 @@ export class AdminLyricsError extends Error {
   readonly code: string | null;
   readonly currentUpdatedAt: string | null;
   readonly currentLyricsEtag: string | null;
+  readonly retrySafe: boolean;
+  readonly technicalDetails: string | null;
 
   constructor(
     message: string,
@@ -99,6 +114,8 @@ export class AdminLyricsError extends Error {
     code: string | null = null,
     currentUpdatedAt: string | null = null,
     currentLyricsEtag: string | null = null,
+    retrySafe = false,
+    technicalDetails: string | null = null,
   ) {
     super(message);
     this.name = 'AdminLyricsError';
@@ -106,6 +123,8 @@ export class AdminLyricsError extends Error {
     this.code = code;
     this.currentUpdatedAt = currentUpdatedAt;
     this.currentLyricsEtag = currentLyricsEtag;
+    this.retrySafe = retrySafe;
+    this.technicalDetails = technicalDetails;
   }
 }
 
@@ -115,6 +134,10 @@ function baseUrl(): string {
 
 function validTrackId(trackId: string): boolean {
   return /^[a-z0-9][a-z0-9-]{0,119}$/.test(trackId);
+}
+
+function normalizeLyricsText(lyrics: string): string {
+  return lyrics.replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
 }
 
 function isJson(response: Response): boolean {
@@ -164,6 +187,7 @@ async function postLyrics<T extends AdminLyricsValidationResponse | AdminLyricsS
   suffix: 'validate' | 'save',
   body: unknown,
   timeoutMs: number,
+  transportFailure?: LyricsSaveTransportFailure,
 ): Promise<T> {
   const controller = new AbortController();
   const timeout = globalThis.setTimeout(() => controller.abort(), timeoutMs);
@@ -183,7 +207,19 @@ async function postLyrics<T extends AdminLyricsValidationResponse | AdminLyricsS
         signal: controller.signal,
       });
     } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') throw new AdminLyricsError(`Lyrics ${suffix} timed out. Reload canonical lyrics before retrying.`);
+      const timedOut = error instanceof DOMException && error.name === 'AbortError';
+      if (transportFailure) {
+        throw new AdminLyricsError(
+          timedOut ? transportFailure.timeoutMessage : transportFailure.transportMessage,
+          null,
+          timedOut ? transportFailure.timeoutCode : transportFailure.transportCode,
+          null,
+          null,
+          false,
+          error instanceof Error ? error.message : String(error),
+        );
+      }
+      if (timedOut) throw new AdminLyricsError(`Lyrics ${suffix} timed out. Reload canonical lyrics before retrying.`);
       throw new AdminLyricsError(`Lyrics ${suffix} is unavailable. Authenticate with Cloudflare Access and reload before retrying.`);
     }
     const payload = await parseJson<T>(response, `Track Manager returned invalid lyrics ${suffix} JSON.`);
@@ -200,6 +236,17 @@ async function postLyrics<T extends AdminLyricsValidationResponse | AdminLyricsS
   } finally {
     globalThis.clearTimeout(timeout);
   }
+}
+
+async function rereadLyricsTruth(trackId: string): Promise<{
+  lyrics: AdminLyricsSnapshot;
+  revision: string | null;
+}> {
+  const [lyricsReread, trackReread] = await Promise.all([getLyricsJson(trackId), getAdminTrack(trackId)]);
+  return {
+    lyrics: lyricsReread,
+    revision: trackReread.track?.manifest?.updatedAt || lyricsReread.updatedAt || null,
+  };
 }
 
 export async function getAdminTrackLyrics(trackId: string): Promise<AdminLyricsSnapshot> {
@@ -248,12 +295,93 @@ export async function saveAdminTrackLyrics(
   const health = await getAdminBridgeHealth();
   if (!(health.capabilities?.write ?? []).includes('lyrics')) throw new AdminLyricsError('Track Manager does not advertise the guarded lyrics write capability. Save stays locked.');
 
-  const payload = await postLyrics<AdminLyricsSaveResponse>(trackId, 'save', {
-    intent: LYRICS_SAVE_INTENT,
-    expectedUpdatedAt,
-    expectedLyricsEtag,
-    lyrics,
-  }, 15000);
+  const normalizedLyrics = normalizeLyricsText(lyrics);
+  let payload: AdminLyricsSaveResponse;
+  try {
+    payload = await postLyrics<AdminLyricsSaveResponse>(trackId, 'save', {
+      intent: LYRICS_SAVE_INTENT,
+      expectedUpdatedAt,
+      expectedLyricsEtag,
+      lyrics,
+    }, 15000, {
+      timeoutCode: 'LYRICS_SAVE_TIMEOUT',
+      transportCode: 'LYRICS_SAVE_TRANSPORT',
+      timeoutMessage: 'Lyrics save timed out after the write began. Studio will reread canonical lyrics before deciding whether any retry is safe.',
+      transportMessage: 'Lyrics save transport was interrupted after the write began. Studio will reread canonical lyrics before deciding whether any retry is safe.',
+    });
+  } catch (reason) {
+    if (!(reason instanceof AdminLyricsError) || !['LYRICS_SAVE_TIMEOUT', 'LYRICS_SAVE_TRANSPORT'].includes(reason.code || '')) throw reason;
+    try {
+      const reread = await rereadLyricsTruth(trackId);
+      const rereadEtag = reread.lyrics.lyricsEtag || null;
+      const rereadText = typeof reread.lyrics.lyrics === 'string' ? normalizeLyricsText(reread.lyrics.lyrics) : null;
+      const revisionChanged = Boolean(reread.revision && reread.revision !== expectedUpdatedAt);
+      const etagChanged = Boolean(rereadEtag && rereadEtag !== expectedLyricsEtag);
+      const sameRevision = reread.revision === expectedUpdatedAt;
+      const sameEtag = rereadEtag === expectedLyricsEtag;
+      const textMatches = rereadText === normalizedLyrics;
+
+      if (revisionChanged && etagChanged && textMatches) {
+        return {
+          ok: true,
+          saved: true,
+          noChange: false,
+          trackId,
+          filename: reread.lyrics.filename || 'lyrics.txt',
+          previousUpdatedAt: expectedUpdatedAt,
+          updatedAt: reread.revision,
+          previousLyricsEtag: expectedLyricsEtag,
+          lyricsEtag: rereadEtag,
+          bytes: reread.lyrics.bytes,
+          timestampsAvailable: reread.lyrics.timestampsAvailable,
+          timestampCount: reread.lyrics.timestampCount,
+          segmentCount: reread.lyrics.segmentCount,
+          quality: reread.lyrics.quality || null,
+          clientVerified: true,
+          recoveredAfterTransportFailure: true,
+          retrySafe: false,
+          commitState: 'committed',
+          technicalDetails: `${reason.code}: response lost; private canonical reread verified a new manifest revision, a new lyrics ETag and the exact requested normalized lyrics text.`,
+        };
+      }
+
+      if (sameRevision && sameEtag) {
+        throw new AdminLyricsError(
+          'Lyrics save response was lost, but private canonical reread proves the write did not commit. An explicit retry is safe after connectivity or Access is restored.',
+          null,
+          'LYRICS_SAVE_NOT_COMMITTED',
+          reread.revision,
+          rereadEtag,
+          true,
+          reason.technicalDetails,
+        );
+      }
+
+      throw new AdminLyricsError(
+        'Lyrics save response was lost and canonical state changed without matching the exact requested postcondition. Do not retry; reload and inspect the canonical lyrics first.',
+        null,
+        'LYRICS_SAVE_AMBIGUOUS',
+        reread.revision,
+        rereadEtag,
+        false,
+        `${reason.code}: response lost; revisionChanged=${revisionChanged}; etagChanged=${etagChanged}; textMatches=${textMatches}.`,
+      );
+    } catch (recoveryReason) {
+      if (recoveryReason instanceof AdminLyricsError && ['LYRICS_SAVE_NOT_COMMITTED', 'LYRICS_SAVE_AMBIGUOUS'].includes(recoveryReason.code || '')) {
+        throw recoveryReason;
+      }
+      throw new AdminLyricsError(
+        'Lyrics save response was lost and Studio could not verify canonical commit state. Do not retry until private canonical lyrics can be reloaded and inspected.',
+        null,
+        'LYRICS_SAVE_UNVERIFIED',
+        null,
+        null,
+        false,
+        [reason.code, reason.technicalDetails, recoveryReason instanceof Error ? recoveryReason.message : String(recoveryReason)].filter(Boolean).join(' · '),
+      );
+    }
+  }
+
   if (payload.saved !== true && payload.noChange !== true) throw new AdminLyricsError('Track Manager returned an invalid lyrics save response.');
 
   const expectedRevision = payload.updatedAt || expectedUpdatedAt;
@@ -261,9 +389,8 @@ export async function saveAdminTrackLyrics(
   let clientVerified = false;
   let verificationWarning: string | null = null;
   try {
-    const [lyricsReread, trackReread] = await Promise.all([getLyricsJson(trackId), getAdminTrack(trackId)]);
-    const rereadRevision = trackReread.track?.manifest?.updatedAt || lyricsReread.updatedAt || null;
-    if (lyricsReread.lyricsEtag === expectedEtag && rereadRevision === expectedRevision && lyricsReread.lyrics === lyrics.replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n')) {
+    const reread = await rereadLyricsTruth(trackId);
+    if (reread.lyrics.lyricsEtag === expectedEtag && reread.revision === expectedRevision && reread.lyrics.lyrics === normalizedLyrics) {
       clientVerified = true;
     } else {
       verificationWarning = 'Canonical reread did not match the saved lyrics revision/ETag/text. Reload before any further edit.';
@@ -271,7 +398,14 @@ export async function saveAdminTrackLyrics(
   } catch (reason) {
     verificationWarning = `Server reported lyrics save success, but Studio could not complete its canonical reread (${reason instanceof Error ? reason.message : String(reason)}). Reload before any further edit.`;
   }
-  return { ...payload, clientVerified, verificationWarning };
+  return {
+    ...payload,
+    clientVerified,
+    verificationWarning,
+    recoveredAfterTransportFailure: false,
+    retrySafe: false,
+    commitState: clientVerified ? 'committed' : 'unverified',
+  };
 }
 
 export const lyricsAdminService = Object.freeze({
@@ -280,4 +414,5 @@ export const lyricsAdminService = Object.freeze({
   saveIntent: LYRICS_SAVE_INTENT,
   transport: 'text/plain-simple-request',
   separateLrcRequired: false,
+  lostResponsePolicy: 'private-canonical-reread-no-blind-retry',
 });
