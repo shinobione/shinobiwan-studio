@@ -7,9 +7,6 @@ import {
   deleteAdminAlbumAsset,
   getAdminAlbum,
   getAdminAlbums,
-  moveAdminAlbumTrack,
-  saveAdminAlbumMembership,
-  saveAdminAlbumMetadata,
   uploadAdminAlbumAsset,
   type AdminAlbumAssetState,
   type AdminAlbumManifest,
@@ -18,6 +15,9 @@ import {
   type AdminAlbumSummary,
   type AdminAlbumType,
 } from '../services/album-admin-api';
+import { saveAdminAlbumMembershipResilient } from '../services/album-membership-admin-api';
+import { saveAdminAlbumMetadataResilient } from '../services/album-metadata-admin-api';
+import { moveAdminAlbumTrackResilient } from '../services/album-move-admin-api';
 import { getPublicAlbumVisuals, type PublicAlbumVisual } from '../services/public-albums-api';
 import type { StudioTrack } from '../types/studio';
 import { CoverImagePreview } from './CoverImagePreview';
@@ -214,11 +214,13 @@ function AlbumEditor({ albumId, albums, tracks, visual, onChanged, onClose }: {
     const requestedStatus = form.status;
     await mutate(async () => {
       const patch = metadataPatch(form);
-      const result = await saveAdminAlbumMetadata(album.id, album.updatedAt!, patch);
+      const result = await saveAdminAlbumMetadataResilient(album.id, album.updatedAt!, patch);
       if (!result.clientVerified) throw new AlbumAdminError(result.verificationWarning || 'Album metadata reread failed.');
-      setNotice(requestedStatus !== previousStatus
-        ? `Album status ${requestedStatus.toUpperCase()} saved and canonically verified.`
-        : 'Album metadata saved and canonically verified.');
+      setNotice(result.recoveredAfterTransportFailure
+        ? 'RECOVERED AFTER LOST RESPONSE · Album metadata is canonically verified. Studio did not retry the write.'
+        : requestedStatus !== previousStatus
+          ? `Album status ${requestedStatus.toUpperCase()} saved and canonically verified.`
+          : 'Album metadata saved and canonically verified.');
     });
   }
 
@@ -226,9 +228,11 @@ function AlbumEditor({ albumId, albums, tracks, visual, onChanged, onClose }: {
     if (!album?.updatedAt || !changed) return;
     if (!globalThis.confirm(`Save ordered tracklist for “${album.title}”?\n\nRemoved tracks leave this canonical Album and will surface in the virtual Singles collection unless claimed by another Album.`)) return;
     await mutate(async () => {
-      const result = await saveAdminAlbumMembership(album.id, album.updatedAt!, ids);
-      if (!result.clientVerified) throw new AlbumAdminError(result.verificationWarning || 'Album tracklist reread failed.');
-      setNotice('Album tracklist saved and canonically reread.');
+      const result = await saveAdminAlbumMembershipResilient(album.id, album.updatedAt!, ids);
+      if (!result.clientVerified) throw new AlbumAdminError(result.verificationWarning || 'Album tracklist + Track cache reread failed.');
+      setNotice(result.recoveredAfterTransportFailure
+        ? 'RECOVERED AFTER LOST RESPONSE · Album tracklist is canonically verified across Album + Track caches. Studio did not retry the write.'
+        : 'Album tracklist saved and canonically verified across Album + Track caches.');
     });
   }
 
@@ -243,7 +247,7 @@ function AlbumEditor({ albumId, albums, tracks, visual, onChanged, onClose }: {
       const source = sourcePayload.album?.manifest;
       const target = targetPayload.album?.manifest;
       if (!source?.updatedAt || !target?.updatedAt) throw new AlbumAdminError('Fresh source/target revisions unavailable.');
-      const result = await moveAdminAlbumTrack(targetId, {
+      const result = await moveAdminAlbumTrackResilient(targetId, {
         trackId,
         sourceAlbumId: album.id,
         expectedSourceUpdatedAt: source.updatedAt,
@@ -252,7 +256,9 @@ function AlbumEditor({ albumId, albums, tracks, visual, onChanged, onClose }: {
       });
       if (!result.clientVerified) throw new AlbumAdminError(result.verificationWarning || 'Album move reread failed.');
       setMoves(current => ({ ...current, [trackId]: '' }));
-      setNotice('Track moved and canonically reread.');
+      setNotice(result.recoveredAfterTransportFailure
+        ? 'RECOVERED AFTER LOST RESPONSE · Album move is canonically verified across target, source and Track cache. Studio did not retry the write.'
+        : 'Track moved and canonically verified across target, source and Track cache.');
     });
   }
 
