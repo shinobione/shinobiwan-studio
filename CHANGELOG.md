@@ -2,6 +2,49 @@
 
 This file is the **current concise changelog**. Detailed per-build records live under [`changelogs/`](changelogs/README.md).
 
+## Current deployed candidate
+
+### v0.19.6 · Build84 — 2026-08-15
+
+Codename: `studio-focus-slice4-phase9-sonictrace-save-response-loss-truth`  
+Status: **DEPLOYED CANDIDATE — REAL USER SMOKE PENDING**
+
+Build84 extends Phase9 reliability to the Studio-side canonical SonicTrace analysis save path.
+
+Candidate behavior:
+
+- one save is identified by the exact requested `analysisId`;
+- Studio rereads canonical SonicTrace state before POST to reject duplicate IDs / stale source-audio evidence;
+- a lost response or timeout is **never blindly retried**;
+- private canonical reread checks both `latest.json` and append-only `history/<analysisId>.json`;
+- requested `analysisId` in both = recovered `COMMITTED / VERIFIED`;
+- requested `analysisId` absent from both = `NOT COMMITTED`, explicit retry may be safe;
+- requested `analysisId` in only one sidecar = `AMBIGUOUS / DO NOT RETRY`;
+- reread unavailable = `UNVERIFIED / DO NOT RETRY`;
+- normal HTTP success also requires exact latest + history verification;
+- no Track Manager, Worker, public Worker, R2 schema/data migration, LaunchPAD, LRC Maker or Deep Audio compute change was required.
+
+Exact candidate evidence:
+
+```text
+Safety pre               safety/pre-phase9-sonictrace-response-loss-build84-20260815-0413
+Studio PR                #132
+Exact tested head        377de51416d4aea258830e55e894707d9f3f6512
+Validation               31858911420 · SUCCESS
+Runtime merge            b7cf745e11adee1eb77900a32b9b6ca8ea80e000
+Runtime Pages            31858977765 · SUCCESS · exact runtime merge SHA
+Safety post-deploy       safety/post-build84-deployed-candidate-20260815-0425
+Track Manager            v5.23 · unchanged
+Studio bridge            v1.13 · unchanged
+TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
+Public Worker            v2.7 · unchanged
+Worker deploy            NONE
+R2 migration/write       NONE caused by deployment
+Real-user smoke          PENDING
+```
+
+Detailed candidate record: [`changelogs/CHANGELOG-BUILD84.md`](changelogs/CHANGELOG-BUILD84.md).
+
 ## Current accepted release
 
 ### v0.19.5 · Build83 — 2026-08-15
@@ -133,8 +176,8 @@ All Phase8/9 health and guidance surfaces continue to preserve the same canonica
 
 ## Next bounded action
 
-**Build84 is unallocated.**
+Complete the **Build84 normal-browser SonicTrace regression smoke**. Do not deliberately interrupt a production save merely to prove the response-loss guard.
 
-Run a fresh Phase9 reliability audit before selecting another runtime slice. Current leading candidates are SonicTrace analysis save response-loss truth, broader guarded Album-write response-loss truth, Access/CORS hardening, and degraded/offline/PWA resilience.
+Only after explicit Build84 PASS should a fresh Phase9 audit select the next reliability scope. No successor build is allocated.
 
 `CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS` remains mandatory.
