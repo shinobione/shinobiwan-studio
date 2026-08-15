@@ -21,11 +21,16 @@ for (const marker of [
   'LYRICS_SAVE_UNVERIFIED',
   'recoveredAfterTransportFailure: true',
   "commitState: 'committed'",
-  'retrySafe: true',
   'Do not retry',
   "lostResponsePolicy: 'private-canonical-reread-no-blind-retry'",
 ]) assert.ok(lyrics.includes(marker), `Build83 Lyrics lost-response contract missing ${marker}`);
 
+assert.ok(lyrics.includes('readonly retrySafe: boolean;'), 'AdminLyricsError must carry typed retry safety.');
+assert.match(
+  lyrics,
+  /'LYRICS_SAVE_NOT_COMMITTED'[\s\S]{0,220}?reread\.revision,[\s\S]{0,120}?rereadEtag,[\s\S]{0,80}?true,/,
+  'NOT_COMMITTED classification must explicitly set retrySafe=true after unchanged revision + ETag reread.',
+);
 assert.ok(lyrics.includes('transportFailure?: LyricsSaveTransportFailure'), 'Lyrics save must classify transport loss in the existing POST transport helper.');
 assert.ok(lyrics.includes("timeoutCode: 'LYRICS_SAVE_TIMEOUT'"), 'Lyrics save must attach a bounded timeout code to the established transport.');
 assert.ok(lyrics.includes("!['LYRICS_SAVE_TIMEOUT', 'LYRICS_SAVE_TRANSPORT'].includes(reason.code || '')"), 'Only lost-response transport failures may enter Lyrics recovery.');
