@@ -1,6 +1,6 @@
 # Studio v0.19.8 · Build86 — Phase9 Album move response-loss truth
 
-Status: **IMPLEMENTATION CANDIDATE · CI PENDING**.
+Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**.
 
 ## Fresh audit proof
 
@@ -43,7 +43,7 @@ Build86 changes Studio-side **Album move** response-loss handling for both exist
 1. canonical Album → Album move;
 2. `sourceAlbumId:null` authority repair used when a Track compatibility cache claims an Album but canonical `album.trackIds` is missing the Track.
 
-No Track Manager / Worker / R2 schema/data change is required.
+No Track Manager / Worker / R2 schema/data change was required.
 
 ## Lost-response contract
 
@@ -117,26 +117,35 @@ Build86 adds:
 - Phase9 gate inheritance Build82 → Build83 → Build84 → Build85 → Build86;
 - bounded historical successor compatibility through `v0.19.8 / Build86` without weakening functional assertions.
 
-Expected candidate evidence:
+Exact candidate evidence:
 
 ```text
 Safety pre              safety/pre-phase9-album-move-response-loss-build86-20260815-0757
-Runtime PR              PENDING
-Exact tested head       PENDING
-Final CI                PENDING
-Runtime merge           PENDING
-Runtime Pages           PENDING
-Worker deploy           NONE planned
-Track Manager change    NONE planned
+Runtime PR              #138
+Exact tested head       0d99d17631e3f72a360f404a1269cc05cda33dd8
+Final CI                31868536718 · SUCCESS · first run
+Runtime merge           866ebf9c2a501d11102ed994717b50f6d8189b0d
+Runtime Pages           31868570112 · SUCCESS · exact runtime merge SHA
+Safety post-deploy      safety/post-build86-deployed-candidate-20260815-0808
+Worker deploy           NONE
+Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
-Real-user smoke         PENDING after deployment
+Real-user smoke         PENDING
 ```
+
+The exact Build86 feature head passed the complete repository-native validation chain including inherited Phase9 guards, Studio Focus guards, TypeScript and Vite production build **on the first CI run**.
+
+## Real-user acceptance boundary
+
+Build86 is **not yet REAL USER PASS**.
+
+Use a normal safe browser regression: perform one genuine safe Album move, verify the normal receipt `Track moved and canonically verified across target, source and Track cache.`, reread source/target order and Track compatibility cache, then do a quick surrounding navigation sanity pass.
+
+Do **not** deliberately cut network/Access during a production move merely to manufacture a lost response.
 
 ## Safety / rollback
 
 Runtime rollback is Studio-only. Build86 introduces no backend deployment and no R2 schema/data migration.
-
-Acceptance must use a normal safe browser regression. Do **not** deliberately cut network/Access during a production move merely to manufacture a lost response.
 
 ## Stop line
 
@@ -144,3 +153,4 @@ Acceptance must use a normal safe browser regression. Do **not** deliberately cu
 - Do not merge red CI.
 - Merge only the exact tested head.
 - Runtime merge, Pages deployment and real-user acceptance remain separate states.
+- Build87 remains unallocated until explicit Build86 acceptance and a fresh bounded audit.
