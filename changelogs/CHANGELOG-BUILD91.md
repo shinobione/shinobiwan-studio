@@ -101,6 +101,9 @@ Candidate docs PR       #155
 Candidate docs merge    32a57f50c90f3f7677e3a45ad46eace8bd988b3d
 Candidate docs Pages    31889030115 · SUCCESS · exact candidate-docs merge SHA
 Safety post-acceptance  safety/post-build91-real-user-pass-20260815-1700
+Acceptance docs PR      #156
+Acceptance docs merge   PENDING
+Acceptance docs Pages   PENDING
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
