@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-08-15 after explicit **Build91 REAL USER PASS**.
+Updated: 2026-08-15 after **Build92 DEPLOYED CANDIDATE** publication. Build91 remains REAL USER PASS.
 
 This file records what has actually been validated, what automated guards cover, and what remains unproven. It is not a full test-history dump.
 
@@ -19,12 +19,114 @@ Candidate docs PR       #155
 Candidate docs merge    32a57f50c90f3f7677e3a45ad46eace8bd988b3d
 Candidate docs Pages    31889030115 · SUCCESS
 Acceptance docs PR      #156
-Acceptance docs merge   PENDING
-Acceptance docs Pages   PENDING
+Acceptance docs merge   80b6c34f2bd8937cbbc4ef5e24899d13a6949731
+Acceptance docs Pages   31892156760 · SUCCESS
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
 Real-user verdict       BUILD91 PASS MADAFAKA · 2026-08-15
+```
+
+## Current deployed candidate
+
+```text
+Version                 v0.19.14
+Build                   Build92
+Status                  DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Runtime PR              #158
+Exact tested head       2b859d831f5fc46eea9853f31c4b86057041128b
+Final CI                31893496536 · SUCCESS
+Historical guard CI     31893447100 · FAILURE · Build80 seam assertion only · never merged
+Runtime merge           d0ca8b3aa4481c3217f79790e347000bfd22823a
+Pages                   31893652679 · SUCCESS · exact runtime merge SHA
+Worker deploy           NONE
+Track Manager change    NONE
+R2 migration/write      NONE caused by deployment
+Real-user verdict       PENDING
+```
+
+## Build92 automated coverage — GREEN
+
+Final validation run `31893496536` passed the complete repository-native chain on exact head `2b859d831f5fc46eea9853f31c4b86057041128b`, including:
+
+- private-read contract;
+- Phase5 algorithms;
+- Phase6 Lyrics contract;
+- C3 / Deep Audio / Album / parity guards;
+- PHASE UX guards;
+- Phase7 and Phase8 guards;
+- inherited Phase9 Build82 destructive-write ambiguity guard;
+- inherited Phase9 Build83 canonical Lyrics save response-loss guard;
+- inherited Phase9 Build84 SonicTrace save response-loss guard;
+- inherited Phase9 Build85 Album metadata response-loss guard;
+- inherited Phase9 Build86 Album move response-loss guard;
+- inherited Phase9 Build87 Album membership response-loss guard;
+- inherited Phase9 Build88 core private-read transient retry guard;
+- inherited Phase9 Build89 Album private-read transient retry guard;
+- inherited Phase9 Build90 Lyrics private-read transient retry guard;
+- inherited Phase9 Build91 SonicTrace private-read transient retry guard;
+- new Phase9 Build92 Track metadata response-loss guard;
+- Studio Focus inherited regression guards through bounded Build92 successor compatibility;
+- TypeScript typecheck;
+- Vite production build.
+
+Historical run `31893447100` was red only because the inherited Build80 duration-evidence guard still expected validation and save bridge checks in the same source file. Build92 intentionally moved the save seam into the resilient Track metadata service. The guard was updated to protect the same bounded `5.22/1.12` + `5.23/1.13` contract across both seams; no runtime product change was made to repair that red run. The red head was never merged.
+
+Build92 specifically guards canonical Track metadata save:
+
+```text
+metadata save response unavailable
+→ NEVER automatic retry
+→ private canonical Track reread
+   ├─ new revision + exact reviewed normalized proposal
+   │    → COMMITTED / VERIFIED
+   ├─ original revision unchanged
+   │    → NOT COMMITTED / explicit retry safe after reconnect
+   ├─ changed revision but exact reviewed proposal unproven
+   │    → AMBIGUOUS / DO NOT RETRY
+   └─ reread unavailable
+        → UNVERIFIED / DO NOT RETRY
+```
+
+Additional Build92 guarantees:
+
+- the same non-mutating metadata validation is repeated immediately before POST;
+- reviewed proposal is anchored to exact Track ID + `expectedUpdatedAt`;
+- private pre-write Track reread rejects stale canonical revision;
+- optional audio evidence uses only the bounded Track Manager/bridge pairs already accepted by the duration-evidence contract;
+- derived `duration` remains non-editable but is included in the exact reviewed proposal when evidence exists;
+- timeout and transport loss are typed separately as `TRACK_METADATA_SAVE_TIMEOUT` / `TRACK_METADATA_SAVE_TRANSPORT`;
+- response-loss recovery starts only for those typed timeout/transport failures;
+- Access gating, invalid JSON and ordinary server rejection do not enter lost-response recovery;
+- exact proposal comparison ignores only top-level runtime `updatedAt` and `updatedBy`;
+- normal `saved:true` requires canonical reread revision === server `updatedAt` plus exact reviewed proposal;
+- normal `noChange:true` requires original revision plus exact reviewed proposal;
+- mismatch is ambiguous; unreadable reread is unverified;
+- no `retryTrackMetadataSave` helper and no write retry loop exist;
+- recovered-after-lost-response verifies canonical Track metadata/duration but does not fabricate an independently unobservable `catalogRebuilt:true` receipt;
+- no Track Manager, Worker or R2 schema/data mutation was required.
+
+## Build92 real-user smoke — PENDING
+
+The required acceptance smoke is intentionally a **normal-browser metadata regression**, not a manufactured response-loss test.
+
+Required boundary:
+
+- hard refresh to deployed `v0.19.14 · Build92`;
+- open one safe existing private canonical Track;
+- choose one harmless reversible metadata edit such as mood, tag or era;
+- run **Validate** and review the normalized proposal;
+- perform one normal explicit **Save**;
+- confirm the UI reports canonical reread verification (`CANONICAL REREAD · VERIFIED`);
+- reload the Track and confirm the edit persisted;
+- surrounding Track / Albums / Lyrics / SonicTrace navigation sanity.
+
+Do **not** cut network, expire Cloudflare Access or manufacture timeout/transport branches. Automated guards own committed / not-committed / ambiguous / unverified failure-path proof.
+
+Until explicit user verdict:
+
+```text
+Build92 = DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
 ```
 
 ## Build91 automated coverage — GREEN
@@ -465,7 +567,7 @@ Album move response unavailable
    │    → COMMITTED / VERIFIED
    ├─ exact target/source/Track pre-write state unchanged
    │    → NOT COMMITTED / explicit retry may be safe after fresh reload
-   ├─ partial/mixed/changed state
+   ├─ partial/mixed changed state
    │    → AMBIGUOUS / DO NOT RETRY
    └─ reread unavailable
         → UNVERIFIED / DO NOT RETRY
@@ -652,7 +754,7 @@ Deep Audio              2.0.3-alpha
 LRC Maker               6.3.8
 ```
 
-Build91 does not supersede those products' independent validation histories.
+Build92 does not supersede those products' independent validation histories.
 
 ## Core contracts that must remain guarded
 
@@ -667,6 +769,19 @@ Build91 does not supersede those products' independent validation histories.
 - maximum attempts are two total;
 - public fallback remains read-only and happens only where explicitly designed after private reads ultimately fail;
 - private GET retry must never become automatic POST/write retry.
+
+### Track metadata
+
+- `metadata-validate-v1` remains non-mutating;
+- `metadata-save-v1` remains guarded by exact `expectedUpdatedAt`;
+- Build92 repeats validation immediately before save to obtain the exact normalized proposal;
+- derived `duration` may be included from canonical audio evidence but remains non-editable;
+- a lost metadata-save response is never blindly retried;
+- new revision + exact reviewed proposal is the only recovered committed proof;
+- unchanged revision proves not committed / explicit retry safe after reconnect;
+- changed but non-matching revision is ambiguous;
+- reread unavailable is unverified;
+- recovered canonical Track truth does not fabricate an independently unobservable catalog rebuild receipt.
 
 ### Lyrics
 
@@ -705,7 +820,8 @@ Build91 does not supersede those products' independent validation histories.
 - a lost response is never automatic failure or automatic success;
 - no blind retry after response loss;
 - canonical reread must prove exact operation-specific postconditions;
-- Build88, Build89, Build90 and Build91 do not alter any write retry rule.
+- Build88, Build89, Build90 and Build91 do not alter any write retry rule;
+- Build92 adds operation-specific Track metadata recovery only and must not be generalized to create/upload or another write family.
 
 ### Release Campaign
 
@@ -723,11 +839,11 @@ Git history shows the public-cover credential/fetch path was corrected in Build6
 
 ## Known open QA gaps / next audits
 
-No Build91 acceptance blocker remains.
+Build92 real-user smoke is the current blocker.
 
-Before any successor runtime work, perform a fresh bounded post-Build91 Phase9 audit. Candidate areas include Album asset upload response-loss truth, Album create response-loss truth, degraded/offline/PWA behavior, or another smaller reliability gap only if fresh evidence proves it.
+After Build92 acceptance, perform a fresh bounded Phase9 audit before any successor allocation. Album asset upload and Album create remain known heavier candidates; degraded/offline/PWA remains cross-cutting. A smaller gap may win only if fresh evidence proves it.
 
-**Build92 is unallocated** until that fresh bounded audit proves a concrete scope.
+**Build93 is unallocated** until Build92 acceptance plus a fresh bounded audit proves a concrete scope.
 
 ## Standard validation commands
 

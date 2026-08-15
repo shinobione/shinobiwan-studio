@@ -2,6 +2,56 @@
 
 This file is the **current concise changelog**. Detailed per-build records live under [`changelogs/`](changelogs/README.md).
 
+## Current deployed candidate
+
+### v0.19.14 · Build92 — 2026-08-15
+
+Codename: `studio-focus-slice4-phase9-track-metadata-response-loss-truth`  
+Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+
+Build92 adds response-loss truth to canonical Track **metadata save only**.
+
+Candidate behavior:
+
+- the same non-mutating metadata validation is repeated immediately before POST;
+- exact normalized `proposed` manifest + exact `expectedUpdatedAt` become the operation-specific postcondition;
+- already-supported derived audio duration is included in the proposal when canonical audio evidence exists, while `duration` remains non-editable;
+- timeout / transport response loss is never blindly retried;
+- new revision + exact reviewed proposal → recovered `COMMITTED / VERIFIED`;
+- original revision unchanged → `NOT COMMITTED / explicit retry safe after reconnect`;
+- changed revision without exact proposal → `AMBIGUOUS / DO NOT RETRY`;
+- unreadable canonical reread → `UNVERIFIED / DO NOT RETRY`;
+- normal `saved:true` and `noChange:true` responses are also canonically reread and exactly verified;
+- recovered-after-lost-response verifies canonical Track manifest truth but does not fabricate an independently unobservable `catalogRebuilt:true` receipt;
+- Track create, Track asset upload/delete, Album create/upload, Lyrics/SonicTrace writes and PWA/offline remain out of scope;
+- no Track Manager, Worker, public Worker, R2 schema/data migration, LaunchPAD or LRC Maker change was required.
+
+Exact candidate evidence:
+
+```text
+Safety pre               safety/pre-phase9-track-metadata-response-loss-build92-20260815-1722
+Safety pre-PR            safety/post-build92-prepr-20260815-1740
+Studio PR                #158
+Exact tested head        2b859d831f5fc46eea9853f31c4b86057041128b
+Validation               31893496536 · SUCCESS
+Historical guard CI      31893447100 · FAILURE · Build80 seam assertion only · never merged
+Runtime merge            d0ca8b3aa4481c3217f79790e347000bfd22823a
+Runtime Pages            31893652679 · SUCCESS · exact runtime merge SHA
+Safety post-deploy       safety/post-build92-deployed-candidate-20260815-1748
+Track Manager            v5.23 · unchanged
+Studio bridge            v1.13 · unchanged
+TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
+Public Worker            v2.7 · unchanged
+Worker deploy            NONE
+R2 migration/write       NONE caused by deployment
+Real-user smoke          PENDING
+Build93                  UNALLOCATED
+```
+
+Required acceptance is a normal-browser Track metadata validation/save regression only; no deliberate network/Access interruption is required.
+
+Detailed candidate record: [`changelogs/CHANGELOG-BUILD92.md`](changelogs/CHANGELOG-BUILD92.md).
+
 ## Current accepted release
 
 ### v0.19.13 · Build91 — 2026-08-15
@@ -45,8 +95,8 @@ Candidate docs merge     32a57f50c90f3f7677e3a45ad46eace8bd988b3d
 Candidate docs Pages     31889030115 · SUCCESS
 Safety post-acceptance   safety/post-build91-real-user-pass-20260815-1700
 Acceptance docs PR       #156
-Acceptance docs merge    PENDING
-Acceptance docs Pages    PENDING
+Acceptance docs merge    80b6c34f2bd8937cbbc4ef5e24899d13a6949731
+Acceptance docs Pages    31892156760 · SUCCESS
 Track Manager            v5.23 · unchanged
 Studio bridge            v1.13 · unchanged
 TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
@@ -54,7 +104,6 @@ Public Worker            v2.7 · unchanged
 Worker deploy            NONE
 R2 migration/write       NONE caused by deployment
 Real-user smoke          BUILD91 PASS MADAFAKA · 2026-08-15
-Build92                  UNALLOCATED
 ```
 
 Detailed accepted record: [`changelogs/CHANGELOG-BUILD91.md`](changelogs/CHANGELOG-BUILD91.md).
@@ -534,6 +583,6 @@ All Phase8/9 health and guidance surfaces continue to preserve the same canonica
 
 ## Next bounded action
 
-Run a fresh post-Build91 Phase9 reliability audit. Build92 remains **UNALLOCATED** until that audit proves the smallest coherent next scope.
+Run the bounded normal-browser Build92 Track metadata regression smoke. Build93 remains **UNALLOCATED** until Build92 is explicitly accepted and a fresh post-Build92 audit proves the next smallest coherent scope.
 
 `CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS` remains mandatory.

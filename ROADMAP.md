@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-15 after **Build91 REAL USER PASS**.
+Updated: 2026-08-15 after **Build92 deployed candidate** publication. Build91 remains REAL USER PASS.
 
 This file is the durable roadmap summary. Historical implementation detail belongs in `docs/` and `changelogs/`; do not copy it here unless it changes what is done, active, next or backlogged.
 
@@ -127,7 +127,7 @@ The fresh post-Build86 audit selected Album bulk membership / ordered tracklist 
 Accepted evidence and behavior:
 
 - exact-head CI `31870328730` SUCCESS on first run;
-- runtime PR #141 merged at `b9e1f121c7dc111ee6db06fd4d00227426d96ce7`;
+- runtime PR #141 merged at `b9e1f121c7dc11102ed994717b50f6d8189b0d`;
 - Pages `31870370403` SUCCESS on that exact merge;
 - candidate docs PR #142 merged at `453be9e9d72c9d90cd97ad5f57be02821efec12a`;
 - candidate docs Pages `31870838391` SUCCESS;
@@ -257,7 +257,8 @@ Accepted evidence and behavior:
 - Pages `31888346988` SUCCESS on that exact merge;
 - candidate docs PR #155 merged at `32a57f50c90f3f7677e3a45ad46eace8bd988b3d`;
 - candidate docs Pages `31889030115` SUCCESS;
-- acceptance docs PR #156 opened for the explicit PASS closeout;
+- acceptance docs PR #156 merged at `80b6c34f2bd8937cbbc4ef5e24899d13a6949731`;
+- acceptance docs Pages `31892156760` SUCCESS;
 - explicit real-user verdict `BUILD91 PASS MADAFAKA` on 2026-08-15;
 - canonical SonicTrace latest/history state and catalog GET transport interruptions are typed separately from Access/CORS;
 - timeout / transport / HTTP `408/425/429/500/502/503/504` may receive one bounded retry;
@@ -276,22 +277,37 @@ Build91 intentionally does **not** bundle Album create/upload or PWA/offline wor
 
 ## In progress
 
-### Phase 9 — fresh post-Build91 reliability audit
+### Phase 9 Slice11 — Track metadata response-loss truth
 
-Build91 is accepted. **Build92 is not allocated.**
+**Build92 · v0.19.14 · DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
 
-The current task is a fresh read-only audit to identify the smallest remaining reliability gap without duplicating existing recovery logic or turning Phase9 into a generic refactor bucket.
+The fresh post-Build91 audit compared Album upload, Album create, degraded/offline/PWA and smaller unprotected reliability gaps. Track metadata save was the smallest coherent gap because Track Manager already owns stale guarding, deterministic proposal application, manifest write, catalog rebuild, canonical reread and rollback while Studio lacked lost-response truth.
+
+Candidate evidence and behavior:
+
+- runtime PR #158;
+- exact tested head `2b859d831f5fc46eea9853f31c4b86057041128b`;
+- final runtime CI `31893496536` SUCCESS;
+- historical CI `31893447100` was red only because the inherited Build80 duration-evidence guard still expected validation and save checks in one file; no runtime change was needed for the guard fix;
+- runtime merge `d0ca8b3aa4481c3217f79790e347000bfd22823a`;
+- Pages `31893652679` SUCCESS on that exact merge;
+- a second non-mutating validation immediately before POST supplies the exact normalized reviewed proposal;
+- canonical pre-read requires exact `expectedUpdatedAt`;
+- derived audio duration remains non-editable and is included in the reviewed proposal when evidence exists;
+- timeout/transport response loss is never blindly retried;
+- new revision + exact reviewed proposal → committed/verified;
+- original revision unchanged → not committed / explicit retry safe after reconnect;
+- changed revision without exact proposal → ambiguous / do not retry;
+- reread unavailable → unverified / do not retry;
+- normal `saved`/`noChange` HTTP responses are also canonically reread and exactly verified;
+- recovered-after-lost-response does not fabricate an independently unobservable derived catalog rebuild receipt;
+- no Track create, asset upload/delete, Album create/upload, Lyrics/SonicTrace write, PWA/offline, Track Manager/Worker or R2 schema/data change.
 
 ## Next
 
-Audit remaining candidates by proven risk / bounded scope, without assuming a build number:
+Run the bounded normal-browser Build92 Track metadata regression smoke. Do not deliberately cut network/Access to manufacture a lost response. If accepted, run a fresh read-only post-Build92 audit before allocating any successor.
 
-1. Album asset upload response-loss truth;
-2. Album create response-loss truth;
-3. degraded/offline/PWA resilience;
-4. any newly proven smaller bounded reliability gap found by the fresh audit.
-
-Pick **one** coherent slice only after the audit proves the gap and confirms it does not duplicate existing recovery logic.
+**Build93 remains UNALLOCATED.**
 
 ## Backlog
 
@@ -321,8 +337,8 @@ There is currently **no official Phase 11**.
 - Do not deliberately damage or interrupt production merely to prove a retry/ambiguity guard.
 - Do not generalize GET retry into write retry.
 - Do not generalize one write family's recovery postcondition into another operation family.
-- Do not allocate Build92 before a fresh bounded post-Build91 audit selects its scope.
+- Do not allocate Build93 before Build92 acceptance plus a fresh bounded post-Build92 audit.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build91 REAL USER PASS boundary.
+See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build92 candidate smoke boundary.

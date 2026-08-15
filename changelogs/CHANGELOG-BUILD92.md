@@ -4,7 +4,7 @@ Date: 2026-08-15
 Version: `v0.19.14`  
 Build: `92`  
 Codename: `studio-focus-slice4-phase9-track-metadata-response-loss-truth`  
-Status: **IMPLEMENTED · PRE-PR CANDIDATE**
+Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
 
 ## Fresh-audit decision
 
@@ -114,14 +114,47 @@ TRACK_METADATA_PROPOSAL_STALE
 - no fabricated derived catalog receipt after response loss;
 - inherited Phase9 Build82→Build91 gate.
 
+## Validation / deployment receipts
+
+Runtime PR #158 was tested on exact head `2b859d831f5fc46eea9853f31c4b86057041128b`.
+
+Historical CI `31893447100` was red only because the inherited Build80 duration-evidence successor guard still expected validation and save bridge-compatibility checks in the same source file. Build92 intentionally moved the save seam into the resilient service. The guard was updated to follow the same bounded bridge contract across both seams. **No runtime product change was made to repair that red run, and the red head was never merged.**
+
+Final full validation `31893496536` passed the complete repository-native chain on the exact merged runtime head.
+
+Runtime merge `d0ca8b3aa4481c3217f79790e347000bfd22823a` deployed successfully through Pages run `31893652679`.
+
 ## Safety
 
 ```text
 Safety pre              safety/pre-phase9-track-metadata-response-loss-build92-20260815-1722
+Safety pre-PR           safety/post-build92-prepr-20260815-1740
+Runtime PR              #158
+Exact tested head       2b859d831f5fc46eea9853f31c4b86057041128b
+Validation              31893496536 · SUCCESS
+Historical guard CI     31893447100 · FAILURE · Build80 seam assertion only · never merged
+Runtime merge           d0ca8b3aa4481c3217f79790e347000bfd22823a
+Runtime Pages           31893652679 · SUCCESS · exact runtime merge SHA
+Safety post-deploy      safety/post-build92-deployed-candidate-20260815-1748
 Worker deploy           NONE
 Track Manager change    NONE
-R2 migration/write      NONE caused by implementation
+R2 migration/write      NONE caused by implementation/deployment
+Real-user smoke         PENDING
 Build93                 UNALLOCATED
 ```
 
-Build92 remains a candidate until exact-head CI, exact merge-SHA Pages deployment and the bounded normal-browser smoke are complete.
+## Required real-user acceptance
+
+Use a normal browser regression only:
+
+1. hard refresh and verify `v0.19.14 · Build92`;
+2. open one safe existing private canonical Track;
+3. change one harmless reversible metadata field such as mood, tag or era;
+4. run **Validate**, review the normalized proposal, then perform one normal explicit **Save**;
+5. confirm `CANONICAL REREAD · VERIFIED`;
+6. reload and confirm the harmless edit persisted;
+7. check surrounding Track / Albums / Lyrics / SonicTrace navigation.
+
+Do **not** deliberately cut network or invalidate Cloudflare Access to manufacture a lost response. Automated guards own the failure-path proof.
+
+Build92 remains a candidate until explicit real-user browser acceptance. Build93 remains unallocated.
