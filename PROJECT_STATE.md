@@ -1,51 +1,34 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-15 after **Build91 deployed candidate** publication. Build90 remains the accepted real-user baseline.
+Updated: 2026-08-15 after explicit **`BUILD91 PASS MADAFAKA`** real-user browser acceptance.
 
 This file is the short current checkpoint. It is the first project-state document to read after `AGENTS.md`.
 
 ## Current accepted runtime
 
 ```text
-Studio version          v0.19.12
-Studio build            Build90
-Codename                studio-focus-slice4-phase9-lyrics-private-read-transient-retry-truth
-Acceptance              REAL USER PASS
-Runtime PR              #150
-Exact tested head       48ca1dc25951d65ead05c4f80bd1f9e6bf8c5d01
-Final runtime CI        31884568681 · SUCCESS · first run
-Runtime merge SHA       8a851a7d53d3b4f45359c7036011684441bb25bb
-Runtime Pages           31884614863 · SUCCESS · exact runtime merge SHA
-Candidate docs PR       #151
-Candidate docs merge    442b488511d77da15592a37d6e8d2dca0ed30fb8
-Candidate docs Pages    31885123431 · SUCCESS · exact docs merge SHA
-Acceptance docs PR      #152
-Acceptance docs merge   ebc501df90b8a8bf9229da4a61d7784beba13b78
-Acceptance docs Pages   31887090784 · SUCCESS · exact docs merge SHA
-Real-user smoke         BUILD90 PASS MADAFAKA · 2026-08-15
-Worker deploy           NONE
-Track Manager change    NONE
-R2 migration/write      NONE caused by deployment
-```
-
-Build90 remains the latest **accepted** Studio runtime until Build91 receives explicit real-user browser acceptance.
-
-## Current deployed candidate
-
-```text
 Studio version          v0.19.13
 Studio build            Build91
 Codename                studio-focus-slice4-phase9-sonictrace-private-read-transient-retry-truth
-Acceptance              DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Acceptance              REAL USER PASS
 Runtime PR              #154
 Exact tested head       b8ee223b2d077e5d14936530be219f78ed7910ac
 Final runtime CI        31888303536 · SUCCESS · first run
 Runtime merge SHA       591b81a3930f1ba6d9f91f6e4f7d6e31550e5cf6
 Runtime Pages           31888346988 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #155
+Candidate docs merge    32a57f50c90f3f7677e3a45ad46eace8bd988b3d
+Candidate docs Pages    31889030115 · SUCCESS · exact docs merge SHA
+Acceptance docs PR      #156
+Acceptance docs merge   PENDING
+Acceptance docs Pages   PENDING
+Real-user smoke         BUILD91 PASS MADAFAKA · 2026-08-15
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
 ```
+
+Build91 is now the latest **accepted** Studio runtime.
 
 ## Current ecosystem baseline
 
@@ -86,7 +69,7 @@ Phase 9 Slice6          COMPLETE · Build87 REAL USER PASS
 Phase 9 Slice7          COMPLETE · Build88 REAL USER PASS
 Phase 9 Slice8          COMPLETE · Build89 REAL USER PASS
 Phase 9 Slice9          COMPLETE · Build90 REAL USER PASS
-Phase 9 Slice10         Build91 DEPLOYED CANDIDATE · smoke pending
+Phase 9 Slice10         COMPLETE · Build91 REAL USER PASS
 Phase 10                FUTURE
 Official Phase 11       NONE
 ```
@@ -243,7 +226,7 @@ Build83 write truth remains unchanged: `lyrics-validate-v1` / `lyrics-save-v1` P
 
 The bounded normal-browser smoke received explicit **`BUILD90 PASS MADAFAKA`** on 2026-08-15 after deployed version verification, canonical `lyrics.txt` loading on an existing Track, and surrounding Track / Albums / SonicTrace / Lyrics navigation sanity. Acceptance intentionally did **not** cut network, invalidate Cloudflare Access or manufacture transient failure branches.
 
-## Build91 deployed candidate behavior
+## Build91 accepted behavior
 
 The fresh post-Build90 audit compared SonicTrace private reads, Album create/upload and degraded/offline/PWA work. The smallest coherent gap was the private Track Manager SonicTrace GET helper shared by canonical latest/history state and the SonicTrace catalog.
 
@@ -265,30 +248,32 @@ There are at most **two total attempts**. A second transient failure surfaces im
 
 Build84 write truth remains unchanged: `sonictrace-analysis-save-v1` POSTs are not retried, `SONICTRACE_SAVE_TIMEOUT` / `SONICTRACE_SAVE_TRANSPORT` remain intact, and lost saves still classify committed / not committed / ambiguous / unverified through private canonical latest/history reread. The only improvement is that those canonical readbacks may survive one transient GET failure.
 
+The bounded normal-browser smoke received explicit **`BUILD91 PASS MADAFAKA`** on 2026-08-15 after deployed version verification, normal canonical SonicTrace latest/history loading on an existing Track, a normal SonicTrace catalog/Intelligence read, and surrounding Track / Albums / Lyrics / SonicTrace navigation sanity. Acceptance intentionally did **not** cut network, invalidate Cloudflare Access or manufacture transient failure branches.
+
 SonicTrace Deep Audio health/analysis XHR, canonical audio download, Album create/upload semantics, Track Manager, Workers and R2 schema/data remain unchanged.
 
 ## Current blockers
 
-**Build91 real-user browser smoke is pending.**
+**No active blocker after `BUILD91 PASS MADAFAKA`.**
 
-Runtime CI `31888303536` passed the complete chain **on the first run** on exact head `b8ee223b2d077e5d14936530be219f78ed7910ac`. Runtime Pages `31888346988` deployed exact merge `591b81a3930f1ba6d9f91f6e4f7d6e31550e5cf6` successfully.
+Runtime CI `31888303536` passed the complete chain **on the first run** on exact head `b8ee223b2d077e5d14936530be219f78ed7910ac`. Runtime Pages `31888346988` deployed exact merge `591b81a3930f1ba6d9f91f6e4f7d6e31550e5cf6` successfully. Candidate docs Pages `31889030115` deployed exact candidate-docs merge `32a57f50c90f3f7677e3a45ad46eace8bd988b3d` successfully.
 
 The historical `Magnetic Midnight` public-cover palette `Failed to fetch` issue remains resolved since Build62 and covered by regression guards.
 
 ## Exact next action
 
-Run the bounded normal-browser **Build91 SonicTrace private-read regression smoke**:
+**Do not allocate Build92 yet.**
 
-1. hard refresh Studio and verify `v0.19.13 · Build91`;
-2. open a Track that already has canonical SonicTrace analysis;
-3. open SonicTrace and confirm canonical latest/history state loads normally;
-4. open a Studio surface that consumes the SonicTrace catalog and confirm it loads normally;
-5. no write is required — Build91 is a read-only reliability slice;
-6. quick Track / Albums / Lyrics / SonicTrace navigation sanity.
+Run a fresh, read-only post-Build91 Phase9 reliability audit and select the smallest coherent next reliability slice only after proving the gap and confirming existing recovery/read logic does not already cover it.
 
-Do **not** deliberately cut network or invalidate Cloudflare Access merely to manufacture transient retry behavior. Automated guards own the failure-path proof.
+Remaining audit candidates include:
 
-If clean, explicit verdict may promote Build91 to REAL USER PASS. **Build92 remains UNALLOCATED** until then and until a fresh post-Build91 audit proves the next scope.
+1. Album asset upload response-loss truth;
+2. Album create response-loss truth;
+3. degraded/offline/PWA resilience;
+4. any newly proven smaller bounded reliability gap found by the fresh audit.
+
+No candidate above is an automatic commitment or pre-allocated build.
 
 ## Frozen stop lines
 
@@ -354,6 +339,8 @@ safety/post-build90-receipts-closeout-20260815-1528
 safety/pre-phase9-sonictrace-private-read-retry-build91-20260815-1546
 safety/post-build91-prepr-20260815-1555
 safety/post-build91-deployed-candidate-20260815-1559
+safety/post-build91-candidate-docs-closeout-20260815-1608
+safety/post-build91-real-user-pass-20260815-1700
 ```
 
 ## Acceptance vocabulary
@@ -362,4 +349,4 @@ safety/post-build91-deployed-candidate-20260815-1559
 CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS
 ```
 
-Build90 is **REAL USER PASS**. Build91 is **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**. Build92 is **UNALLOCATED**.
+Build91 is **REAL USER PASS**. Build92 is **UNALLOCATED**.
