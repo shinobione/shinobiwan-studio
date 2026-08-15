@@ -8,12 +8,9 @@ const albums = read('src/components/AlbumManager.tsx');
 const metadata = read('src/components/MetadataValidationPanel.tsx');
 const pkg = JSON.parse(read('package.json'));
 
-assert.match(release, /version:\s*'0\.19\.8'/);
-assert.match(release, /build:\s*86/);
-assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-album-move-response-loss-truth'"));
-assert.ok(release.includes('build85AncestryMarker'), 'Build86 must inherit accepted Build85 ancestry.');
-assert.ok(release.includes("version: 0.19.7 · build: 85 · codename: 'studio-focus-slice4-phase9-album-metadata-response-loss-truth'"));
-assert.equal(pkg.version, '0.19.8', 'package version must match Build86 runtime version.');
+assert.ok(release.includes('build86AncestryMarker'), 'Successor builds must preserve accepted Build86 ancestry.');
+assert.ok(release.includes("version: 0.19.8 · build: 86 · codename: 'studio-focus-slice4-phase9-album-move-response-loss-truth'"), 'Build86 accepted runtime identity must remain immutable in ancestry.');
+assert.ok(release.includes('build85AncestryMarker'), 'Build86 ancestry must preserve accepted Build85 ancestry.');
 
 for (const marker of [
   'ALBUM_MOVE_TIMEOUT',
@@ -33,11 +30,11 @@ assert.ok(move.includes('before.source?.updatedAt !== input.expectedSourceUpdate
 assert.ok(move.includes('expectedTargetTrackIds: insertAt(before.target.trackIds, input.trackId, input.targetIndex)'), 'Move recovery must compute exact target artistic order before POST.');
 assert.ok(move.includes('before.source.trackIds.filter(value => value !== input.trackId)'), 'Move recovery must compute exact source removal postcondition.');
 assert.ok(move.includes('async function postAlbumMove('), 'Build86 must isolate Album move transport with timeout classification.');
-assert.ok(move.includes('LOST_RESPONSE_CODES.has(reason.code || \'\')'), 'Only timeout/transport/invalid-response ambiguity may enter canonical recovery.');
+assert.ok(move.includes("LOST_RESPONSE_CODES.has(reason.code || '')"), 'Only timeout/transport/invalid-response ambiguity may enter canonical recovery.');
 assert.ok(move.includes('const after = await readMoveState(targetAlbumId, effectiveSourceId, input.trackId);'), 'Lost response must reread canonical target/source/Track state.');
 assert.ok(move.includes('committedPostcondition(before, after, targetAlbumId)'), 'Recovered success must require the exact operation-specific committed postcondition.');
 assert.ok(move.includes('notCommittedPostcondition(before, after)'), 'Retry safety must require the exact pre-write state to remain canonical.');
-assert.ok(move.includes("after.track.album?.id === targetAlbumId"), 'Committed move must verify the Track compatibility cache points to target.');
+assert.ok(move.includes('after.track.album?.id === targetAlbumId'), 'Committed move must verify the Track compatibility cache points to target.');
 assert.ok(move.includes('albumShapeMatches(before.target, after.target)'), 'Target metadata/assets shape must remain stable under membership-only move.');
 assert.ok(move.includes('trackShapeMatches(before.track, after.track)'), 'Track non-album shape must remain stable under compatibility-cache update.');
 assert.ok(!move.includes('retryAlbumMove'), 'Build86 must not introduce blind automatic Album move retry.');
@@ -61,7 +58,8 @@ for (const inherited of [
   'test-phase9-sonictrace-response-loss-build84.mjs',
   'test-phase9-album-metadata-response-loss-build85.mjs',
   'test-phase9-album-move-response-loss-build86.mjs',
+  'test-phase9-album-membership-response-loss-build87.mjs',
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must include ${inherited}`);
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Phase9 guards must remain in the full build gate.');
 
-console.log('Phase9 Build86 Album move response-loss guard passed: exact target/source membership + Track cache classify committed/not-committed/ambiguous/unverified without blind retry for cross-Album moves and source-null authority repair.');
+console.log('Phase9 Build86 Album move response-loss guard passed as inherited ancestry through Build87: exact target/source membership + Track cache still classify committed/not-committed/ambiguous/unverified without blind retry.');
