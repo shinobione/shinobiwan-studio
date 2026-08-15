@@ -2,16 +2,16 @@
 
 This file is the **current concise changelog**. Detailed per-build records live under [`changelogs/`](changelogs/README.md).
 
-## Current deployed candidate
+## Current accepted release
 
 ### v0.19.8 · Build86 — 2026-08-15
 
 Codename: `studio-focus-slice4-phase9-album-move-response-loss-truth`  
-Status: **DEPLOYED CANDIDATE — REAL USER SMOKE PENDING**
+Status: **REAL USER PASS — ACCEPTED**
 
 Build86 extends Phase9 reliability to canonical Album **move** only.
 
-Candidate behavior:
+Accepted behavior:
 
 - covers canonical Album→Album move and `sourceAlbumId:null` authority repair;
 - private pre-read captures target Album + optional source Album + Track compatibility cache;
@@ -22,9 +22,10 @@ Candidate behavior:
 - partial/mixed changed state = `AMBIGUOUS / DO NOT RETRY`;
 - reread unavailable = `UNVERIFIED / DO NOT RETRY`;
 - normal success also requires exact returned revisions + exact target/source tracklists + Track cache verification;
+- normal-browser acceptance confirmed source removal, target insertion/order persistence, Track compatibility-cache convergence and surrounding navigation sanity;
 - no Track Manager, Worker, public Worker, R2 schema/data migration, LaunchPAD, LRC Maker or SonicTrace Deep Audio change was required.
 
-Exact candidate evidence:
+Exact acceptance evidence:
 
 ```text
 Safety pre               safety/pre-phase9-album-move-response-loss-build86-20260815-0757
@@ -34,18 +35,22 @@ Validation               31868536718 · SUCCESS · first run
 Runtime merge            866ebf9c2a501d11102ed994717b50f6d8189b0d
 Runtime Pages            31868570112 · SUCCESS · exact runtime merge SHA
 Safety post-deploy       safety/post-build86-deployed-candidate-20260815-0808
+Candidate docs PR        #139
+Candidate docs merge     9a03c33f6ecb472ab49c3631dd9688e3c6f03bf7
+Candidate docs Pages     31869026213 · SUCCESS
+Safety post-acceptance   safety/post-build86-real-user-pass-20260815-0823
 Track Manager            v5.23 · unchanged
 Studio bridge            v1.13 · unchanged
 TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
 Public Worker            v2.7 · unchanged
 Worker deploy            NONE
 R2 migration/write       NONE caused by deployment
-Real-user smoke          PENDING
+Real-user smoke          BUILD86 PASS · 2026-08-15
 ```
 
-Detailed candidate record: [`changelogs/CHANGELOG-BUILD86.md`](changelogs/CHANGELOG-BUILD86.md).
+Detailed accepted record: [`changelogs/CHANGELOG-BUILD86.md`](changelogs/CHANGELOG-BUILD86.md).
 
-## Current accepted release
+## Accepted predecessor
 
 ### v0.19.7 · Build85 — 2026-08-15
 
@@ -261,8 +266,8 @@ All Phase8/9 health and guidance surfaces continue to preserve the same canonica
 
 ## Next bounded action
 
-Complete the **Build86 normal-browser Album move regression smoke**. Do not deliberately interrupt a production move merely to prove response-loss guards.
+**Build87 is unallocated.**
 
-Build87 remains **UNALLOCATED** until explicit Build86 acceptance and a fresh bounded audit.
+Run a fresh Phase9 reliability audit before selecting another runtime slice. Remaining candidate areas are Album bulk membership/upload/create response-loss truth, Access/CORS hardening, bounded read retries/timeouts, and degraded/offline/PWA resilience.
 
 `CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS` remains mandatory.
