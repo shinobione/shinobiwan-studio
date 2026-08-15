@@ -1,13 +1,13 @@
 # SHINOBIWAN STUDIO — CURRENT ROADMAP
 
-Updated: 2026-08-15 after **Build80 REAL USER PASS**.
+Updated: 2026-08-15 after **Build81 REAL USER PASS**.
 
 This file is the current roadmap authority. Historical implementation detail belongs in `../changelogs/` and milestone-specific docs.
 
 ## Current state
 
 ```text
-Studio accepted          v0.19.3 · Build80 · REAL USER PASS
+Studio accepted          v0.19.3 · Build81 · REAL USER PASS
 Phase 7-A                Build46 · REAL USER PASS
 Phase 7-B                Build51 · REAL USER PASS
 Phase 7-C Slice1         Build71 · REAL USER PASS
@@ -15,6 +15,7 @@ Phase 7-C Slice2/program Build73 · REAL USER PASS / COMPLETE
 Phase 8 Slice1           Build74 · Content Health Truth · REAL USER PASS
 Phase 8 Slice2           Build75 · Health Drill-down · REAL USER PASS
 Phase 8 Album lineage    Builds76→80 · accepted cumulatively via Build80
+Phase 8 semantic truth   Build81 · REAL USER PASS
 Track Manager            v5.23 · DEPLOYED
 Studio bridge            v1.13
 TM admin Worker          439a1ce4-e458-427d-9fd6-61e888efd269
@@ -23,98 +24,92 @@ LaunchPAD public         2026.08.12.102 · REAL USER PASS
 SonicTrace               V2-E Build08 · REAL USER PASS
 Deep Audio               2.0.3-alpha
 LRC Maker                6.3.8
-Next build               Build81 · UNUSED
+Next build               Build82 · UNUSED
 ```
 
 `CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS` remains mandatory.
 
 ## Immediate gate
 
-Build80 is now the accepted Studio baseline.
+Build81 is now the accepted Studio baseline.
 
-Before any Build81 runtime mutation:
+Before any Build82 runtime mutation:
 
 1. reread real GitHub state;
-2. audit the next genuine Phase8 gap;
-3. prove it does not duplicate Content Health, Workflow drill-down, Album Health, C3-B Intelligence or `workflow.nextAction`;
+2. reproduce/audit a genuine remaining gap;
+3. prove the change does not duplicate Content Health, Workflow drill-down, Album Health, C3-B Intelligence or `workflow.nextAction`;
 4. create a fresh safety checkpoint from accepted `main`;
 5. preserve exact-head CI → anti-drift → exact merge-SHA deployment → real-user smoke.
 
 Do not invent another dashboard, queue, Album authority, priority model or generic writer.
 
-## Phase 8 Album lineage — accepted cumulatively via Build80
+## Phase 8 accepted lineage
 
 ```text
-Build76  Album Health truth · functional candidate
-Build77  Album Health visual polish · candidate
-Build78  humanized Track-side Album mismatch UX · candidate
-Build79  Album publication truth + exact blockers · deployed candidate / superseded
-Build80  duration-evidence successor compatibility · REAL USER PASS
+Build74  Content Health Truth                         REAL USER PASS
+Build75  Health Drill-down                            REAL USER PASS
+Build76  Album Health truth                           candidate
+Build77  Album Health visual polish                   candidate
+Build78  humanized Track-side Album mismatch UX      candidate
+Build79  Album publication truth                      candidate
+Build80  cumulative Album Health/publication fix     REAL USER PASS
+Build81  semantic truth cleanup                       REAL USER PASS
 ```
 
-Historical candidates remain historical evidence; they are not retroactively relabeled as accepted.
+Historical candidates remain historical evidence; they are not retroactively relabelled accepted.
 
-### What Build79 established
+### Build80 cumulative Album baseline
 
-Album publication now preserves the backend quality truth and exposes exact human blockers. A canonical Album can be Published only when the existing Track Manager quality checks pass, including:
+Build80 is the accepted cumulative runtime for the Builds76→80 Album Health/publication lineage.
 
-- title present;
-- canonical `album.trackIds` non-empty;
-- Album cover present;
-- every `trackId` resolves;
-- every member Track is itself `published`.
+Accepted Album truth includes:
 
-Studio now:
+- canonical `album.trackIds` remains sole membership/order authority;
+- Album health can expose missing cover, empty tracklist, unresolved Track references and member production gaps;
+- Track-side Album cache mismatch is humanized as Track metadata out-of-sync rather than an Album membership failure;
+- Album publication preserves exact Track Manager quality blockers;
+- requested Album metadata is verified against canonical reread;
+- TM v5.23 / bridge1.13 is explicitly allowed for the preserved duration-evidence contract;
+- unknown future bridge pairs remain locked.
 
-- preserves Worker `quality` details;
-- renders named blockers such as a member Track still Draft;
-- compares every requested Album metadata field to canonical reread;
-- treats requested `Published` / canonical `Draft` as a hard verification failure;
-- keeps failure messages visible after canonical reload;
-- shows green success only after canonical verification.
+### Build81 semantic truth closeout
 
-TM v5.23 / bridge v1.13 adds strict server-side metadata reread equality and rollback verification without adding a second writer or a new Album publication route.
+Build81 closes two focused false-signals found by fresh code audit:
 
-### What Build80 closed
+1. SonicTrace/audio-intelligence stage wording `Sound` → `Sonic`.
+2. decorative Release Campaign `Premium provider` selector removed because provider selection never changed prompt semantics.
 
-The Build79 smoke correctly told the user that `Neon Swagger` had to be Published before `Pulse Dominion`. Following that instruction exposed an obsolete Studio client pin: duration-aware metadata still accepted only TM v5.22 / bridge1.12, rejecting the deployed compatible v5.23 / 1.13.
+Accepted Build81 behavior:
 
-Build80 replaces that exact predecessor pin with a bounded compatibility allowlist:
+- Track progression uses `Sonic`;
+- full analysis uses `TRACK / SONIC`;
+- Release Campaign states `PROVIDER-AGNOSTIC`;
+- Google Flow remains a convenience shortcut only;
+- MASTER/1:1/9:16/motion prompts remain provider-agnostic;
+- browser-local campaign drafts continue to restore prompts/assets/copy;
+- campaign export remains review-only with `canonicalWrite: false`;
+- no Worker/backend/R2 change.
 
-```text
-5.22 / 1.12
-5.23 / 1.13
-```
-
-Unknown future pairs remain locked. No generic semver `>=` rule is used.
-
-### Exact accepted receipts
+Exact Build81 receipts:
 
 ```text
-TM PR                    LaunchPAD #237
-TM tested head           a1fe4c8dd0df78d0dbb2bde418ccaed294290266
-TM merge                 bc82fea12edc7cbd1b7b054c697a553694e76322
-Admin deploy             31842482166 · SUCCESS · target=admin
-TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269
-Public Worker deploy     SKIPPED
-TM safety pre            safety/pre-tm523-album-publish-truth-20260814-2300
-
-Build79 PR               #119
-Build79 tested head      13e29763e2cced348057814c28f0623b5def3444
-Build79 final CI         31842783733 · SUCCESS
-Build79 runtime merge    128b5c4397cb6f3b8e9eda7cac035d5b5c40afe5
-Build79 Pages            31842865337 · SUCCESS
-Build79 smoke            NOT PASS · exposed v5.22-only duration-evidence pin
-
-Build80 safety pre       safety/pre-build80-duration-evidence-successor-compat-20260814-2358
-Build80 PR               #121
-Build80 tested head      3cb58fe4e108cb932a3a76474a9a00ca29724db9
-Build80 CI               31845088922 · SUCCESS
-Build80 runtime merge    1bb775596dc0f7a9e1c06956097793299064b976
-Build80 Pages            31845175630 · SUCCESS · exact runtime merge SHA
-Build80 smoke            PASS · 2026-08-15
-Smoke proof              Neon Swagger Published → Pulse Dominion Published
-Build80 safety post-RUP  safety/post-build80-real-user-pass-20260815-0057
+Safety pre               safety/pre-build81-semantic-truth-20260815-0113
+Studio PR                #123
+Exact tested head        bdc79b8dd3fffb41c8368990d50fd733afe87fe3
+Validation               31850313391 · SUCCESS
+Runtime merge            20d587fe1b1d1a5405cd346571c8d5a0eb1d2fa4
+Runtime Pages            31850382728 · SUCCESS · exact runtime merge SHA
+Safety post-deploy       safety/post-build81-deployed-candidate-20260815-0129
+Candidate docs PR        #124
+Candidate docs merge     b151eadcec376f8bbebc0378f7e51d92c62b0a31
+Candidate docs Pages     31850596471 · SUCCESS
+Real-user smoke          BUILD81 PASS · 2026-08-15
+Safety post-RUP          safety/post-build81-real-user-pass-20260815-0159
+Track Manager            v5.23 · unchanged
+Studio bridge            v1.13 · unchanged
+Public Worker            v2.7 · unchanged
+Worker deploy            NONE
+R2 migration/write       NONE
 ```
 
 ## Frozen architecture
@@ -184,19 +179,36 @@ TXT only      = attention / Timing needed
 
 Home, Tracks, Workflow, Track Workspace and Phase8 health surfaces reuse the same `workflow.nextAction` authority.
 
+## Next bounded audit — Build82 not allocated
+
+The first remaining focused product issue is:
+
+### Magnetic Midnight asset-selection error
+
+Status: **UNRESOLVED / MUST REPRODUCE FIRST**.
+
+Before any fix:
+
+- reproduce the exact asset-selection failure on `Magnetic Midnight`;
+- identify which surface is involved: canonical Visual assets, Release Campaign browser-local imports, or another flow;
+- capture the visible error and exact runtime path;
+- determine whether the failure is input validation, browser-local storage, file decoding/dimensions, Track Manager asset write, stale revision, or another bounded cause;
+- do not widen write authority or mutate canonical R2 while diagnosing.
+
+Only after reproduction should Build82 be scoped.
+
+## Rolling premium interaction backlog
+
+Retained for a later bounded polish slice:
+
+- tactile press/release feedback;
+- restrained glow/focus transitions;
+- coherent hover/active states;
+- smooth panel/tab transitions;
+- reduced-motion-safe animation;
+- no decorative motion that obscures state or slows work.
+
 ## Later roadmap
-
-### Phase 8 — next bounded audit
-
-Build80 closes the current Album Health/publication corrective lineage. The next Phase8 scope must begin with a real-code audit and add a capability not already covered by:
-
-- Build74 Content Health Truth;
-- Build75 Health Drill-down;
-- Builds76→80 Album Health/publication truth;
-- C3-B SonicTrace catalog/project intelligence;
-- Phase7 `workflow.nextAction`.
-
-Prefer read-only capability unless a concrete requirement proves a guarded write is necessary.
 
 ### Phase 9 — Security / reliability / PWA
 
@@ -212,22 +224,6 @@ Potential extraction of mature LRC/SonicTrace/catalog engines while Studio remai
 
 There is currently no official Phase 11.
 
-## Rolling premium interaction backlog
-
-- tactile press/release feedback;
-- restrained glow/focus transitions;
-- coherent hover/active states;
-- smooth panel/tab transitions;
-- reduced-motion-safe animation;
-- no decorative motion that obscures state or slows work.
-
-## Focused product backlog retained
-
-- wording audit: `Sound` → `Sonic` where still relevant;
-- reproduce/fix the asset-selection error observed on `Magnetic Midnight` if still present;
-- keep provider/prompt semantics understandable;
-- remove provider controls that do not materially change prompt/output behavior.
-
 ## Historical numbering discipline
 
 - Build62 = Studio Focus closeout REAL USER PASS.
@@ -242,18 +238,19 @@ There is currently no official Phase 11.
 - Build75 = Phase8 Health Drill-down accepted.
 - Builds76–79 = Album Health/publication candidate lineage.
 - Build80 = accepted cumulative Album Health/publication runtime.
-- Build81 = unused.
+- Build81 = semantic truth cleanup REAL USER PASS.
+- Build82 = unused.
 
 ## Files to read before next mutation
 
 - `README.md`
 - `docs/ROADMAP-CURRENT.md`
 - `docs/NEXT-SESSION-HANDOFF.md`
+- `changelogs/CHANGELOG-PHASE8-BUILD81.md`
 - `changelogs/CHANGELOG-PHASE8-BUILD80.md`
-- `changelogs/CHANGELOG-PHASE8-BUILD79.md`
 - `docs/PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md`
 - `docs/INTEGRATION_SAFETY.md`
 
 ## Stop line
 
-**Studio Build80 is REAL USER PASS and is the accepted baseline. TM v5.23 / bridge1.13 is deployed. Build81 is unused: audit first, then scope, then safety branch, then runtime.**
+**Studio Build81 is REAL USER PASS and is the accepted baseline. TM v5.23 / bridge1.13 is deployed. Build82 is unused: reproduce the next real issue before mutation.**
