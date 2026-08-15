@@ -4,6 +4,60 @@ This file is the **current concise changelog**. Detailed per-build records live 
 
 ## Current accepted release
 
+### v0.19.17 · Build95 — 2026-08-15
+
+Codename: `studio-focus-slice4-phase9-albums-daily-resilient-service-convergence`  
+Status: **REAL USER PASS — ACCEPTED**
+
+Build95 closes a daily Albums wiring gap rather than inventing a new recovery algorithm. The normal `AlbumsWorkspace` now consumes the accepted Build85/86/87 resilient mutation services for metadata, move and ordered membership respectively.
+
+Accepted behavior:
+
+- daily Album metadata save uses Build85 resilient response-loss truth;
+- daily Album move uses Build86 resilient response-loss truth;
+- daily ordered tracklist save uses Build87 resilient response-loss truth;
+- older generic metadata/membership/move mutations are no longer used by the daily Albums workspace;
+- existing recovered-after-lost-response semantics remain explicit and no write is blindly retried;
+- Album create, binary upload and asset delete remain out of scope;
+- no Track Manager, Worker, public Worker, R2 schema/data migration, LaunchPAD or LRC Maker change was required;
+- normal-browser acceptance received explicit **`BUILD95 PASS MADAFAKA`** on 2026-08-16;
+- acceptance did not deliberately cut network or invalidate Cloudflare Access to manufacture a lost response; automated guards own that proof.
+
+Exact acceptance evidence:
+
+```text
+Safety pre               safety/pre-phase9-albums-daily-resilient-convergence-build95-20260815
+Safety pre-PR            safety/post-build95-prepr-20260815
+Safety green pre-merge   safety/post-build95-green-premerge-20260815
+Studio PR                #171
+Exact tested head        f7d4ccfbfdebf7dba6cf419ca9eca1c862a16d4b
+Historical CI #477       31911328839 · FAILURE · inherited Phase7-C Build69 successor cap only · never merged
+Historical CI #482       31911459367 · FAILURE · inherited Build93 successor cap only · never merged
+Validation               31911514334 · SUCCESS
+Runtime merge            0ad5e48f17c658c6b85c2ae405d32e874d2306d6
+Runtime Pages            31911568069 · SUCCESS · exact runtime merge SHA
+Candidate docs PR        #172
+Candidate docs CI        31911702567 · SUCCESS
+Candidate docs merge     1bff0a18588b274a6cb0200cb6bd90b377b0c1af
+Candidate docs Pages     31911746874 · SUCCESS
+Safety post-deploy       safety/post-build95-deployed-candidate-20260815
+Safety post-acceptance   safety/post-build95-real-user-pass-20260816
+Track Manager            v5.23 · unchanged
+Studio bridge            v1.13 · unchanged
+TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
+Public Worker            v2.7 · unchanged
+Worker deploy            NONE
+R2 migration/write       NONE caused by implementation/deployment
+Real-user smoke          BUILD95 PASS MADAFAKA · 2026-08-16
+Build96                  UNALLOCATED pending fresh audit
+```
+
+The two red Build95 validation runs are preserved as inherited-guard history. Neither red head was merged and neither required a product-runtime change.
+
+Detailed accepted record: [`changelogs/CHANGELOG-BUILD95.md`](changelogs/CHANGELOG-BUILD95.md).
+
+## Accepted predecessor
+
 ### v0.19.16 · Build94 — 2026-08-15
 
 Codename: `studio-focus-slice4-phase9-lyrics-validation-transient-retry-truth`  

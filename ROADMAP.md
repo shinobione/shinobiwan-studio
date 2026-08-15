@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-15 after **Build94 REAL USER PASS**; acceptance-docs closeout is in progress.
+Updated: 2026-08-16 after **Build95 REAL USER PASS**; acceptance-docs closeout is in progress.
 
 This file is the durable roadmap summary. Historical implementation detail belongs in `docs/` and `changelogs/`; do not copy it here unless it changes what is done, active, next or backlogged.
 
@@ -366,17 +366,43 @@ Accepted runtime evidence and behavior:
 - acceptance did **not** deliberately cut network or invalidate Cloudflare Access to manufacture a transient retry;
 - no Track Manager, Worker, R2 schema/data migration or cross-product runtime change.
 
+### Phase 9 Slice14 — daily Albums resilient service convergence
+
+**Build95 · v0.19.17 · REAL USER PASS**
+
+The fresh post-Build94 audit found that the real daily Albums route still consumed older generic metadata / membership / move mutations even though accepted Build85/86/87 resilient engines already existed.
+
+Accepted evidence and behavior:
+
+- runtime PR #171;
+- exact tested head `f7d4ccfbfdebf7dba6cf419ca9eca1c862a16d4b`;
+- final runtime CI `31911514334` SUCCESS;
+- historical CI `31911328839` failed only at inherited Phase7-C Build69 successor compatibility and was never merged;
+- historical CI `31911459367` failed only at inherited Build93 successor compatibility and was never merged;
+- runtime merge `0ad5e48f17c658c6b85c2ae405d32e874d2306d6`;
+- runtime Pages `31911568069` SUCCESS;
+- candidate docs PR #172 / CI `31911702567` / merge `1bff0a18588b274a6cb0200cb6bd90b377b0c1af` / Pages `31911746874` SUCCESS;
+- daily metadata save now consumes Build85 resilient service;
+- daily Album move now consumes Build86 resilient service;
+- daily ordered membership save now consumes Build87 resilient service;
+- no resilient engine algorithm changed;
+- Album create, binary upload and asset delete remain out of scope;
+- explicit real-user verdict **`BUILD95 PASS MADAFAKA`** on 2026-08-16;
+- normal-browser acceptance covered metadata persistence, ordered tracklist persistence, coherent Move UI presence and surrounding Albums / Track / Lyrics / SonicTrace navigation;
+- acceptance did not manufacture network/Access/lost-response failure;
+- no Track Manager, Worker, R2 schema/data migration or cross-product runtime change.
+
 ## In progress
 
-### Build94 acceptance-docs closeout
+### Build95 acceptance-docs closeout
 
-Runtime CI, runtime merge, Pages and explicit real-user acceptance are complete. This isolated seven-document acceptance branch must still pass its own exact-head CI, merge and Pages before its administrative closeout receipts are final.
+Runtime CI, runtime merge, Pages, candidate-docs checkpoint and explicit real-user acceptance are complete. This isolated seven-document acceptance branch must still pass its own exact-head CI, merge and Pages before the administrative closeout is final.
 
-**Build95 remains UNALLOCATED.**
+**Build96 remains UNALLOCATED.**
 
 ## Next
 
-After Build94 acceptance-docs closeout, run a fresh read-only post-Build94 Phase9 reliability audit. Audit remaining candidates by proven risk / bounded scope, without assuming a build number:
+After Build95 acceptance-docs closeout, run a fresh read-only post-Build95 Phase9 reliability audit. Audit remaining candidates by proven risk / bounded scope, without assuming a build number:
 
 1. Album asset upload response-loss truth;
 2. Album create response-loss truth;
@@ -386,7 +412,7 @@ After Build94 acceptance-docs closeout, run a fresh read-only post-Build94 Phase
 
 Pick **one** coherent slice only after the audit proves the gap and confirms it does not duplicate existing recovery logic.
 
-**Build95 remains UNALLOCATED.**
+**Build96 remains UNALLOCATED.**
 
 ## Backlog
 
@@ -417,8 +443,8 @@ There is currently **no official Phase 11**.
 - Do not generalize GET retry into write retry.
 - Do not generalize non-mutating validation retry into write retry.
 - Do not generalize one write family's recovery postcondition into another operation family.
-- Do not allocate Build95 before Build94 acceptance-docs closeout and a fresh bounded post-Build94 audit select its scope.
+- Do not allocate Build96 before Build95 acceptance-docs closeout and a fresh bounded post-Build95 audit selects its scope.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build94 REAL USER PASS boundary.
+See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build95 REAL USER PASS boundary.

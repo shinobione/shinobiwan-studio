@@ -19,14 +19,18 @@ Then verify the real GitHub state before mutation.
 ## Current accepted state
 
 ```text
-Studio                v0.19.16 · Build94 · REAL USER PASS
-Codename              studio-focus-slice4-phase9-lyrics-validation-transient-retry-truth
-Runtime PR            #169
-Exact tested head     81298582163505a11378fe1094f800f1f3d437b5
-Validation            31907745153 · SUCCESS
-Runtime merge         fe636560de9ca5f3f33aae76dddc5474ba990f17
-Runtime Pages         31907784289 · SUCCESS · exact merge SHA
-Real-user smoke       BUILD94 PASS MADAFAKA · 2026-08-15
+Studio                v0.19.17 · Build95 · REAL USER PASS
+Codename              studio-focus-slice4-phase9-albums-daily-resilient-service-convergence
+Runtime PR            #171
+Exact tested head     f7d4ccfbfdebf7dba6cf419ca9eca1c862a16d4b
+Validation            31911514334 · SUCCESS
+Runtime merge         0ad5e48f17c658c6b85c2ae405d32e874d2306d6
+Runtime Pages         31911568069 · SUCCESS · exact runtime merge SHA
+Candidate docs PR     #172
+Candidate docs CI     31911702567 · SUCCESS
+Candidate docs merge  1bff0a18588b274a6cb0200cb6bd90b377b0c1af
+Candidate docs Pages  31911746874 · SUCCESS
+Real-user smoke       BUILD95 PASS MADAFAKA · 2026-08-16
 Track Manager         v5.23 · DEPLOYED
 Studio bridge         v1.13
 TM admin Worker       439a1ce4-e458-427d-9fd6-61e888efd269
@@ -37,13 +41,13 @@ Deep Audio            2.0.3-alpha
 LRC Maker             6.3.8
 ```
 
-**Studio v0.19.16 · Build94 is the current accepted runtime.** Build94 hardens only the non-mutating canonical Lyrics validation seam. The visible Lyrics **Validate** path may receive one bounded retry after timeout, browser transport interruption or HTTP `408/425/429/500/502/503/504`. Access/session gating, deterministic ordinary 4xx and invalid JSON/proposal responses are never retried. Maximum attempts are two, with a finite 9-second timeout per attempt.
+**Studio v0.19.17 · Build95 is the current accepted runtime.** Build95 closes a wiring gap in the real daily Albums route: metadata save, ordered membership save and Album move now consume the already accepted Build85/86/87 resilient services instead of the older generic mutations.
 
-`lyrics-save-v1` remains at **zero automatic retries**. Build83 lost-response recovery remains canonical: a private Lyrics + Track reread classifies committed / not committed / ambiguous / unverified, with no blind save retry.
+Build95 does **not** add a new recovery algorithm. Album create, binary upload and asset delete remain on their existing operation-specific paths. No Track Manager/Worker/R2 schema or data migration was introduced.
 
-The bounded normal-browser acceptance received explicit **`BUILD94 PASS MADAFAKA`** on 2026-08-15. The transient failure branch was not deliberately manufactured by cutting network or invalidating Cloudflare Access; automated guards own timeout/transport/transient-HTTP classification and the two-attempt bound.
+The bounded normal-browser acceptance received explicit **`BUILD95 PASS MADAFAKA`** on 2026-08-16. The smoke covered the normal Albums surface, a harmless metadata save with persistence, a safe ordered tracklist save with persistence, coherent Move UI presence, and surrounding Albums / Track / Lyrics / SonicTrace navigation. No network/Cloudflare failure was deliberately manufactured.
 
-Build93 remains the accepted predecessor that protects non-mutating Track metadata validation. Build92 remains the accepted write-truth predecessor for Track metadata save response loss.
+Build94 remains the accepted predecessor for non-mutating Lyrics validation retry truth; Build85/86/87 remain the operation-specific Album response-loss authorities that Build95 now wires into the daily editor.
 
 The repository currently publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
@@ -109,11 +113,12 @@ Phase 9 Slice10     Build91 · REAL USER PASS
 Phase 9 Slice11     Build92 · REAL USER PASS
 Phase 9 Slice12     Build93 · REAL USER PASS
 Phase 9 Slice13     Build94 · REAL USER PASS
-Build95             UNALLOCATED
+Phase 9 Slice14     Build95 · REAL USER PASS
+Build96             UNALLOCATED
 Phase 10            FUTURE
 ```
 
-The immediate next action is a **fresh read-only post-Build94 Phase9 reliability audit**. No Build95 is allocated before that audit proves a concrete smallest coherent gap.
+The immediate next action is a **fresh read-only post-Build95 Phase9 reliability audit**. Build96 remains unallocated until that audit proves the smallest coherent next gap.
 
 ## Frozen authority model
 
@@ -249,6 +254,8 @@ Requested Tracks must exist. A historically missing prior Track can still be rem
 
 Build89 changes only canonical Album GET behavior. It does not alter the Build85/86/87 write contracts. Album create and binary upload remain separate operation-specific audit families requiring stronger causality/digest proof before lost-response recovery can be safely added.
 
+Build95 changes the **daily Albums UI wiring only**: `AlbumsWorkspace` now consumes Build85 metadata, Build86 move and Build87 membership resilient services. Their no-blind-retry/postcondition rules remain unchanged. Album create, binary upload and asset delete are not generalized by Build95.
+
 ### Lyrics
 
 ```text
@@ -325,6 +332,35 @@ MASTER FINAL 16:9
 ```
 
 Release Campaign is provider-agnostic. Google Flow is a convenience shortcut. Campaign drafts remain browser-local and ZIP export remains review-only.
+
+## Build95 acceptance receipts
+
+```text
+Safety pre               safety/pre-phase9-albums-daily-resilient-convergence-build95-20260815
+Safety pre-PR            safety/post-build95-prepr-20260815
+Safety green pre-merge   safety/post-build95-green-premerge-20260815
+Runtime PR               #171
+Exact tested head        f7d4ccfbfdebf7dba6cf419ca9eca1c862a16d4b
+Historical CI #477       31911328839 · FAILURE · inherited Phase7-C Build69 successor cap only · never merged
+Historical CI #482       31911459367 · FAILURE · inherited Build93 successor cap only · never merged
+Validation               31911514334 · SUCCESS
+Runtime merge            0ad5e48f17c658c6b85c2ae405d32e874d2306d6
+Runtime Pages            31911568069 · SUCCESS · exact runtime merge SHA
+Safety post-deploy       safety/post-build95-deployed-candidate-20260815
+Candidate docs PR        #172
+Candidate docs CI        31911702567 · SUCCESS
+Candidate docs merge     1bff0a18588b274a6cb0200cb6bd90b377b0c1af
+Candidate docs Pages     31911746874 · SUCCESS
+Safety candidate docs    safety/post-build95-candidate-docs-closeout-20260815
+Safety post-acceptance   safety/post-build95-real-user-pass-20260816
+Worker deploy            NONE
+Track Manager change     NONE
+R2 migration/write       NONE caused by implementation/deployment
+Real-user smoke          BUILD95 PASS MADAFAKA · 2026-08-16
+Build96                  UNALLOCATED pending fresh audit
+```
+
+Detailed accepted record: [`changelogs/CHANGELOG-BUILD95.md`](changelogs/CHANGELOG-BUILD95.md).
 
 ## Build94 acceptance receipts
 

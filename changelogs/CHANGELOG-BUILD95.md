@@ -4,7 +4,7 @@ Date: 2026-08-15
 Version: `v0.19.17`  
 Build: `95`  
 Codename: `studio-focus-slice4-phase9-albums-daily-resilient-service-convergence`  
-Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+Status: **REAL USER PASS · ACCEPTED**
 
 ## Fresh-audit decision
 
@@ -97,7 +97,7 @@ CI #482 / run 31911459367  FAILURE
 
 No Build95 product behavior was changed to repair those runs. Only inherited successor allowlists/ancestry assertions were widened to recognize `v0.19.17 / Build95` while retaining their functional assertions.
 
-Final exact-head validation:
+Final exact-head validation and deployed-candidate receipts:
 
 ```text
 Runtime PR              #171
@@ -105,24 +105,46 @@ Exact tested head       f7d4ccfbfdebf7dba6cf419ca9eca1c862a16d4b
 Final full CI           31911514334 · SUCCESS
 Runtime merge           0ad5e48f17c658c6b85c2ae405d32e874d2306d6
 Runtime Pages           31911568069 · SUCCESS · build + deploy on exact merge SHA
+Candidate docs PR       #172
+Candidate docs CI       31911702567 · SUCCESS
+Candidate docs merge    1bff0a18588b274a6cb0200cb6bd90b377b0c1af
+Candidate docs Pages    31911746874 · SUCCESS · build + deploy on exact docs merge SHA
 Safety pre              safety/pre-phase9-albums-daily-resilient-convergence-build95-20260815
 Safety pre-PR           safety/post-build95-prepr-20260815
 Safety green pre-merge  safety/post-build95-green-premerge-20260815
 Safety post-deploy      safety/post-build95-deployed-candidate-20260815
+Safety candidate docs   safety/post-build95-candidate-docs-closeout-20260815
+Safety post-acceptance  safety/post-build95-real-user-pass-20260816
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by implementation/deployment
-Real-user smoke         PENDING
+Real-user smoke         BUILD95 PASS MADAFAKA · 2026-08-16
 ```
 
-## Current acceptance boundary
+## Real-user acceptance — 2026-08-16
+
+Explicit human verdict:
 
 ```text
-CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS
+BUILD95 PASS MADAFAKA
 ```
 
-Build95 has crossed the first two states only. It is **not accepted** until explicit bounded real-user validation exists.
+The bounded normal-browser smoke covered the **real daily Albums route** after hard refresh:
 
-The normal-browser smoke must verify the real daily Albums route without manufacturing network/Access failure. Automated guards own the lost-response classification/wiring proof. Album create/upload/delete remain outside Build95 acceptance scope.
+- deployed `v0.19.17 · Build95` identity visible;
+- an existing safe Album opened from the normal Albums surface;
+- one harmless/reversible metadata save completed normally and persisted after reload;
+- one ordered tracklist save completed normally and persisted after reload;
+- the `Move to…` control remained present/coherent; no unnecessary destructive real-world move was required merely to manufacture evidence;
+- surrounding `Albums → Track → Lyrics → SonicTrace → Albums` navigation remained healthy.
 
-Build96 remains **UNALLOCATED**.
+No network cut, Cloudflare invalidation or fabricated lost-response failure was performed. Automated guards own the response-loss classification and prove that the daily UI traverses the already accepted Build85/86/87 resilient services. Album create, binary upload and asset delete remain outside Build95 scope.
+
+## Accepted boundary
+
+```text
+Build95 = REAL USER PASS / ACCEPTED
+Build96 = UNALLOCATED pending fresh read-only audit
+```
+
+Build95 closes the daily Albums resilient-service convergence gap without changing Track Manager authority, Worker code, R2 schema/data or the operation semantics of create/upload/delete.
