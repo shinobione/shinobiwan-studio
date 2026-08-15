@@ -3,8 +3,7 @@
 Date established: 2026-08-08  
 Hardened: 2026-08-09  
 Current-state overlay refreshed: 2026-08-15  
-Current accepted Studio release: `v0.19.8` / Build `86` / REAL USER PASS  
-Current deployed candidate: `v0.19.9` / Build `87` / REAL USER SMOKE PENDING
+Current accepted Studio release: `v0.19.9` / Build `87` / REAL USER PASS
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -22,20 +21,14 @@ For short current state, read root `PROJECT_STATE.md` first. This file contains 
 
 ```text
 Studio accepted
-  v0.19.8 / Build86 / REAL USER PASS
-  exact tested head 0d99d17631e3f72a360f404a1269cc05cda33dd8
-  runtime CI 31868536718 / SUCCESS / first run
-  runtime merge 866ebf9c2a501d11102ed994717b50f6d8189b0d
-  runtime Pages 31868570112 / SUCCESS
-  browser smoke BUILD86 PASS / 2026-08-15
-
-Studio candidate
-  v0.19.9 / Build87 / DEPLOYED CANDIDATE
+  v0.19.9 / Build87 / REAL USER PASS
   exact tested head 5f155d312b0af7227325a78480bfd424a96e7859
   runtime CI 31870328730 / SUCCESS / first run
   runtime merge b9e1f121c7dc111ee6db06fd4d00227426d96ce7
   runtime Pages 31870370403 / SUCCESS
-  browser smoke PENDING
+  candidate docs merge 453be9e9d72c9d90cd97ad5f57be02821efec12a
+  candidate docs Pages 31870838391 / SUCCESS
+  browser smoke BUILD87 PASS / 2026-08-15
   Worker deploy NONE
   Track Manager change NONE
   R2 migration/write NONE caused by deployment
@@ -57,7 +50,7 @@ LRC Maker
   6.3.8
 ```
 
-Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable history; this overlay separates the accepted baseline from the current deployed candidate.
+Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable history; this overlay states current accepted production truth only.
 
 ## Restoration checkpoints
 
@@ -122,6 +115,10 @@ After Build87 implementation before PR:
 
 After Build87 deployment candidate:
   safety/post-build87-deployed-candidate-20260815-0853
+  safety/post-build87-candidate-docs-closeout-20260815-0901
+
+After Build87 real-user acceptance:
+  safety/post-build87-real-user-pass-20260815-0903
 ```
 
 Earlier accepted safety branches remain preserved in Git history.
@@ -178,7 +175,7 @@ Build85 changes only client-side canonical **Album metadata save** response-loss
 
 Build86 changes only client-side canonical **Album move** response-loss classification and verification for Album→Album movement plus `sourceAlbumId:null` authority repair. It does not alter bulk membership save, create, upload/delete, Track Manager, Workers or R2 schema/data.
 
-Build87 candidate changes only client-side canonical **Album bulk membership / ordered tracklist save** response-loss classification and complete Album + affected Track-cache verification. It does not alter Album create, binary upload/delete, Track Manager, Workers or R2 schema/data.
+Build87 changes only client-side canonical **Album bulk membership / ordered tracklist save** response-loss classification and complete Album + affected Track-cache verification. It does not alter Album create, binary upload/delete, Track Manager, Workers or R2 schema/data.
 
 ### SonicTrace
 
@@ -319,7 +316,7 @@ Normal success also requires exact response revisions, exact target/source track
 
 Build86 is **REAL USER PASS** after explicit 2026-08-15 normal-browser Album move regression acceptance.
 
-### Build87 Album-membership boundary — DEPLOYED CANDIDATE
+### Build87 Album-membership boundary — ACCEPTED
 
 The deployed Track Manager membership route already owns:
 
@@ -362,6 +359,8 @@ Operation-specific compatibility-cache semantics:
 - missing Track may never be newly requested.
 
 Normal success also requires exact response revision/order, exact canonical Album order, every affected Track cache and `trackCachesUpdated` agreement when the server supplies it. Build87 is deliberately limited to **bulk membership / ordered tracklist save**; Album create and binary upload remain separate audit families.
+
+Build87 is **REAL USER PASS** after explicit 2026-08-15 normal-browser Album tracklist regression acceptance.
 
 ## Studio write boundary
 
@@ -436,11 +435,11 @@ Album **move only** (`album-track-move-v1`). Recovered success requires exact ta
 
 Build86 is **REAL USER PASS**. Do not generalize it into bulk membership/create/upload behavior.
 
-### Build87 candidate scope
+### Build87 accepted scope
 
 Album **bulk membership / ordered tracklist save only**. Recovered success requires exact new Album revision/order, exact expected compatibility cache for every affected Track and stable non-membership shapes. Explicit retry safety requires the exact pre-write Album + Track state to remain canonical.
 
-Build87 is **DEPLOYED CANDIDATE**. Do not generalize it into Album create/upload behavior.
+Build87 is **REAL USER PASS**. Do not generalize it into Album create/upload behavior.
 
 ## Destructive/media verification policy
 
@@ -459,7 +458,7 @@ Build85 acceptance did **not** require deliberately cutting network/Access durin
 
 Build86 acceptance likewise did **not** require deliberately cutting network/Access during a production move. A normal legitimate safe move was sufficient for regression acceptance.
 
-Build87 acceptance likewise does **not** require deliberately cutting network/Access. Prefer a harmless reorder of two existing Tracks in one safe Album.
+Build87 acceptance likewise did **not** require deliberately cutting network/Access. A harmless reorder of existing Tracks in one safe Album was sufficient.
 
 ## Version / deployment discipline
 
@@ -490,4 +489,4 @@ If a regression appears:
 
 ## Stop line
 
-**Build86 is the accepted Studio REAL USER PASS baseline. Build87 is DEPLOYED CANDIDATE with browser smoke pending. Build88 is UNALLOCATED. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**
+**Build87 is the accepted Studio REAL USER PASS baseline. Build88 is UNALLOCATED until a fresh bounded audit proves the next smallest reliability scope. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**

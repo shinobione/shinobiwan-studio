@@ -1,48 +1,31 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-15 after **Build87 deployed candidate** publication. Real-user acceptance is pending.
+Updated: 2026-08-15 after explicit **`BUILD87 PASS MADAFAKA`** real-user browser acceptance.
 
 This file is the short current checkpoint. It is the first project-state document to read after `AGENTS.md`.
 
 ## Current accepted runtime
 
 ```text
-Studio version          v0.19.8
-Studio build            Build86
-Codename                studio-focus-slice4-phase9-album-move-response-loss-truth
-Acceptance              REAL USER PASS
-Runtime PR              #138
-Exact tested head       0d99d17631e3f72a360f404a1269cc05cda33dd8
-Final runtime CI        31868536718 · SUCCESS · first run
-Runtime merge SHA       866ebf9c2a501d11102ed994717b50f6d8189b0d
-Runtime Pages           31868570112 · SUCCESS · exact runtime merge SHA
-Candidate docs PR       #139
-Candidate docs merge    9a03c33f6ecb472ab49c3631dd9688e3c6f03bf7
-Candidate docs Pages    31869026213 · SUCCESS
-Real-user smoke         BUILD86 PASS · 2026-08-15
-Worker deploy           NONE
-Track Manager change    NONE
-R2 migration/write      NONE caused by deployment
-```
-
-Build86 remains the latest **accepted** Studio runtime until Build87 receives explicit real-user browser acceptance.
-
-## Current deployed candidate
-
-```text
 Studio version          v0.19.9
 Studio build            Build87
 Codename                studio-focus-slice4-phase9-album-membership-response-loss-truth
-Acceptance              DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Acceptance              REAL USER PASS
 Runtime PR              #141
 Exact tested head       5f155d312b0af7227325a78480bfd424a96e7859
 Final runtime CI        31870328730 · SUCCESS · first run
 Runtime merge SHA       b9e1f121c7dc111ee6db06fd4d00227426d96ce7
 Runtime Pages           31870370403 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #142
+Candidate docs merge    453be9e9d72c9d90cd97ad5f57be02821efec12a
+Candidate docs Pages    31870838391 · SUCCESS · exact docs merge SHA
+Real-user smoke         BUILD87 PASS · 2026-08-15
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
 ```
+
+Build87 is now the latest **accepted** Studio runtime.
 
 ## Current ecosystem baseline
 
@@ -56,8 +39,6 @@ SonicTrace              V2-E Build08 · REAL USER PASS
 Deep Audio              2.0.3-alpha
 LRC Maker               6.3.8
 ```
-
-Build86 changes only Studio client-side canonical **Album move** response-loss classification and verification. It covers Album→Album move plus the existing `sourceAlbumId:null` authority repair. It does **not** change Album bulk membership save, create, upload/delete, Track Manager, Workers, R2 schema/data, LaunchPAD, SonicTrace Deep Audio or LRC Maker.
 
 Build87 changes only Studio client-side canonical **Album bulk membership / ordered tracklist save** response-loss classification and verification across the Album plus every affected Track compatibility cache. It does **not** change Album create, binary upload, Track Manager, Workers, R2 schema/data, LaunchPAD, SonicTrace Deep Audio or LRC Maker.
 
@@ -75,7 +56,7 @@ Phase 9 Slice2          COMPLETE · Build83 REAL USER PASS
 Phase 9 Slice3          COMPLETE · Build84 REAL USER PASS
 Phase 9 Slice4          COMPLETE · Build85 REAL USER PASS
 Phase 9 Slice5          COMPLETE · Build86 REAL USER PASS
-Phase 9 Slice6          Build87 DEPLOYED CANDIDATE · smoke pending
+Phase 9 Slice6          COMPLETE · Build87 REAL USER PASS
 Phase 10                FUTURE
 Official Phase 11       NONE
 ```
@@ -135,7 +116,7 @@ Normal HTTP success also requires exact server-returned target/source revisions,
 
 The bounded normal-browser smoke confirmed one genuine safe Album move, canonical source removal, target insertion/order persistence after reload, Track compatibility-cache convergence to the target Album, and surrounding Track / Visuals / Lyrics / SonicTrace / Albums navigation sanity.
 
-## Build87 candidate behavior
+## Build87 accepted behavior
 
 The fresh post-Build86 audit selected **Album bulk membership / ordered tracklist save** as the smallest coherent remaining reliability gap. Before Build87, Studio used a generic write transport and normal success only reread the Album manifest; it did not prove every Track compatibility cache affected by membership.
 
@@ -162,30 +143,29 @@ Requested Tracks must exist. A historically missing prior Track may still be rem
 
 Normal HTTP success also requires exact returned revision/order, exact canonical Album order, every affected Track cache and stable shapes, plus `trackCachesUpdated` agreement when supplied by Track Manager.
 
+The bounded normal-browser smoke received explicit **`BUILD87 PASS MADAFAKA`** on 2026-08-15 after a normal safe Album tracklist regression. Acceptance did not require deliberately interrupting network/Access or manufacturing a response-loss branch.
+
 ## Current blockers
 
-No code/CI/deployment blocker remains for Build87.
-
-**Acceptance blocker:** normal real-user browser smoke is pending. Do not promote Build87 to REAL USER PASS before an explicit verdict.
+**No active blocker after `BUILD87 PASS`.**
 
 The historical `Magnetic Midnight` public-cover palette `Failed to fetch` issue remains resolved since Build62 and covered by regression guards.
 
 ## Exact next action
 
-Run the bounded **Build87 Album tracklist regression smoke**:
+**Do not allocate Build88 yet.**
 
-1. hard refresh Studio and verify `v0.19.9 · Build87`;
-2. open **Albums** and select a safe canonical Album with at least two Tracks;
-3. reorder two existing Tracks using ↑ / ↓ only;
-4. perform one normal **Save tracklist**;
-5. expect `Album tracklist saved and canonically verified across Album + Track caches.`;
-6. reload/reopen the Album and verify the order persists;
-7. open one or two reordered Tracks and verify they still claim the same Album;
-8. quick regression: Track → Visuals → Lyrics → SonicTrace → Albums.
+Run a fresh, read-only Phase9 reliability audit and select the smallest coherent next reliability slice only after proving the gap and confirming existing recovery logic does not already cover it.
 
-Do **not** deliberately cut network/Access to manufacture response loss.
+Remaining audit candidates include:
 
-After explicit Build87 PASS, close Slice6 and run another fresh bounded audit before allocating any successor. **Build88 is UNALLOCATED.**
+1. Album asset upload response-loss truth;
+2. Album create response-loss truth;
+3. Access/CORS hardening;
+4. bounded read retries/timeouts;
+5. degraded/offline/PWA resilience.
+
+No candidate above is an automatic commitment or pre-allocated build.
 
 ## Frozen stop lines
 
@@ -226,6 +206,8 @@ safety/post-build86-rup-docs-closeout-20260815-0828
 safety/pre-phase9-album-membership-response-loss-build87-20260815-0837
 safety/post-build87-prepr-20260815-0844
 safety/post-build87-deployed-candidate-20260815-0853
+safety/post-build87-candidate-docs-closeout-20260815-0901
+safety/post-build87-real-user-pass-20260815-0903
 ```
 
 ## Acceptance vocabulary
@@ -234,4 +216,4 @@ safety/post-build87-deployed-candidate-20260815-0853
 CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS
 ```
 
-Build86 is **REAL USER PASS**. Build87 is **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**. Build88 is **UNALLOCATED**.
+Build87 is **REAL USER PASS**. Build88 is **UNALLOCATED**.
