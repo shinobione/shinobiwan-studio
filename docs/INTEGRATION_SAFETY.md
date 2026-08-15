@@ -3,7 +3,8 @@
 Date established: 2026-08-08  
 Hardened: 2026-08-09  
 Current-state overlay refreshed: 2026-08-15  
-Current accepted Studio release: `v0.19.4` / Build `82` / REAL USER PASS
+Current accepted Studio release: `v0.19.4` / Build `82` / REAL USER PASS  
+Current deployed Studio candidate: `v0.19.5` / Build `83` / REAL USER SMOKE PENDING
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -20,11 +21,20 @@ For short current state, read root `PROJECT_STATE.md` first. This file contains 
 ## Current production overlay
 
 ```text
-Studio
+Studio accepted
   v0.19.4 / Build82 / REAL USER PASS
   runtime merge 7a0d52fcc0bf862478c459f0648afc1c6690b34f
   runtime Pages 31854528438 / SUCCESS
   browser smoke BUILD82 PASS / 2026-08-15
+
+Studio deployed candidate
+  v0.19.5 / Build83 / REAL USER SMOKE PENDING
+  exact tested head beff9fc58c58e36ce2c2082f7bd5c041641a5e12
+  runtime CI 31856653579 / SUCCESS
+  runtime merge b168d8cda805e5c50480a3e26c5d52e490fb7ac6
+  runtime Pages 31856698097 / SUCCESS
+  Worker deploy NONE
+  R2 migration/write NONE caused by deployment
 
 LaunchPAD
   2026.08.12.102 / REAL USER PASS
@@ -43,7 +53,7 @@ LRC Maker
   6.3.8
 ```
 
-Historical Phase6/Phase7/Phase8 checkpoints remain immutable history; this overlay states current production truth only.
+Historical Phase6/Phase7/Phase8 checkpoints remain immutable history; this overlay states current accepted/deployed-candidate truth only.
 
 ## Restoration checkpoints
 
@@ -59,6 +69,12 @@ Before Phase9 Build82:
 
 After Build82 deployment candidate:
   safety/post-build82-deployed-candidate-20260815-0248
+
+Before Phase9 Build83:
+  safety/pre-phase9-lyrics-response-loss-build83-20260815-0319
+
+After Build83 deployment candidate:
+  safety/post-build83-deployed-candidate
 ```
 
 Earlier accepted safety branches remain preserved in Git history.
@@ -103,6 +119,10 @@ Worker Version ID 439a1ce4-e458-427d-9fd6-61e888efd269
 public Worker v2.7 unchanged
 ```
 
+### SHINOBIWAN Studio
+
+Studio remains the private orchestrator, never a second canonical write authority. Build83 changes only client-side canonical Lyrics save response-loss classification/recovery. It does not add a Worker, generic write API or direct R2 mutation path.
+
 ### SonicTrace
 
 SonicTrace remains the audio-intelligence compute engine. R2 sidecars hold durable catalog-linked analysis. No duplicate canonical WAV is stored in analysis persistence.
@@ -120,6 +140,22 @@ recognized timestamps     = synchronized lyrics
 ```
 
 Canonical save uses Track Manager only, with manifest revision + lyrics ETag stale guards and private reread verification.
+
+Build83 adds a bounded lost-response recovery rule to the Studio client:
+
+```text
+Lyrics save response lost / timeout
+→ NEVER blind automatic retry
+→ private canonical reread of lyrics + Track manifest
+   ├─ new revision + new ETag + exact requested normalized text
+   │    → COMMITTED / VERIFIED
+   ├─ same revision + same ETag
+   │    → NOT COMMITTED / explicit retry may be safe
+   ├─ changed but exact postcondition is not proven
+   │    → AMBIGUOUS / DO NOT RETRY
+   └─ reread unavailable
+        → UNVERIFIED / DO NOT RETRY
+```
 
 ## Album authority boundary
 
@@ -181,7 +217,7 @@ Public fallback can never perform this verification.
 
 ### Build82 accepted scope
 
-Build82 applies this policy only to destructive asset deletion:
+Build82 applies this policy to destructive asset deletion:
 
 - Track asset delete;
 - Album asset delete.
@@ -190,7 +226,19 @@ For both, recovery requires exact private canonical reread and asset absence; am
 
 Build82 is **REAL USER PASS** after the 2026-08-15 browser regression smoke.
 
-Do not silently generalize Build82 into retries for metadata, lyrics, SonicTrace or other Album writes. Those require separate bounded audits.
+### Build83 deployed-candidate scope
+
+Build83 applies the same authority principle, with Lyrics-specific postconditions, to canonical `lyrics.txt` save response loss.
+
+Recovered success requires all of:
+
+- new Track manifest revision;
+- new Lyrics ETag;
+- exact requested normalized canonical text.
+
+Unchanged revision + ETag is the only response-loss state that may be surfaced as explicitly retry-safe. Any changed-but-unproven or unreadable canonical state remains `DO NOT RETRY`.
+
+Build83 is **DEPLOYED CANDIDATE / REAL USER SMOKE PENDING**. Do not generalize it into retries for SonicTrace or broader Album writes; those require their own bounded audit.
 
 ## Destructive/media verification policy
 
@@ -205,6 +253,8 @@ Preferred proof:
 - explicit UI confirmation;
 - disposable Draft asset only if a deliberate destructive browser smoke is truly required.
 
+Build83 acceptance does not require deliberately cutting network/Access during a production Lyrics save just to manufacture response loss.
+
 ## Version / deployment discipline
 
 Treat separately:
@@ -215,7 +265,9 @@ Treat separately:
 4. R2/catalog data changed;
 5. real-user acceptance recorded.
 
-For private Track Manager-only Worker changes, prefer `target=admin` and `confirm=DEPLOY`. Build82 required no Worker deployment.
+For private Track Manager-only Worker changes, prefer `target=admin` and `confirm=DEPLOY`.
+
+Build82 and Build83 required no Worker deployment. Build83 Pages deployment caused no intentional R2/catalog mutation.
 
 Docs-only governance/closeout work does not create a new Studio build.
 
@@ -232,4 +284,4 @@ If a regression appears:
 
 ## Stop line
 
-**Build82 is the accepted Studio REAL USER PASS baseline. Phase9 is active. Build83 remains UNUSED until a fresh bounded audit proves the smallest next reliability scope. Track Manager v5.23 / bridge1.13 remains the sole deployed protected write authority.**
+**Build82 remains the accepted Studio REAL USER PASS baseline. Build83 is the currently deployed candidate and must receive explicit normal browser regression PASS before acceptance. Do not allocate Build84 before that verdict. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**

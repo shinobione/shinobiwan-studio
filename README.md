@@ -16,25 +16,27 @@ Read:
 
 Then verify the real GitHub state before mutation.
 
-## Current accepted state
+## Current state
 
 ```text
-Studio                v0.19.4 · Build82 · REAL USER PASS
-Codename              studio-focus-slice4-phase9-destructive-write-ambiguity-guard
-Runtime merge         7a0d52fcc0bf862478c459f0648afc1c6690b34f
-Track Manager         v5.23 · DEPLOYED
-Studio bridge         v1.13
-TM admin Worker       439a1ce4-e458-427d-9fd6-61e888efd269
-Public Worker         v2.7 · unchanged
-LaunchPAD public      2026.08.12.102 · REAL USER PASS
-SonicTrace            V2-E Build08 · REAL USER PASS
-Deep Audio            2.0.3-alpha
-LRC Maker             6.3.8
+Accepted Studio        v0.19.4 · Build82 · REAL USER PASS
+Deployed candidate     v0.19.5 · Build83 · smoke pending
+Build83 codename       studio-focus-slice4-phase9-lyrics-save-response-loss-truth
+Build83 merge          b168d8cda805e5c50480a3e26c5d52e490fb7ac6
+Build83 Pages          31856698097 · SUCCESS
+Track Manager          v5.23 · DEPLOYED
+Studio bridge          v1.13
+TM admin Worker        439a1ce4-e458-427d-9fd6-61e888efd269
+Public Worker          v2.7 · unchanged
+LaunchPAD public       2026.08.12.102 · REAL USER PASS
+SonicTrace             V2-E Build08 · REAL USER PASS
+Deep Audio             2.0.3-alpha
+LRC Maker              6.3.8
 ```
 
-**Studio v0.19.4 · Build82 is the current accepted runtime.** Build82 opens Phase9 with bounded destructive-write ambiguity handling for Track and Album asset deletion. Lost responses are never blindly retried; private canonical reread classifies the outcome and normal success also requires canonical postcondition verification.
+**Build82 remains the current accepted runtime. Build83 is deployed but not yet accepted.** Build83 extends Phase9 reliability to canonical Lyrics save response-loss truth: a lost response is never blindly retried, and private canonical reread classifies the write as committed, not committed, ambiguous or unverified.
 
-The repository currently publishes **no formal GitHub Release objects and no Git tags**. The runtime release identity is carried by code, docs and Pages.
+The repository currently publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
 ## Product model
 
@@ -86,11 +88,11 @@ Phase 7-C           COMPLETE · program closeout
 Phase 8             COMPLETE · Build81 closeout
 Phase 9             ACTIVE
 Phase 9 Slice1      Build82 · REAL USER PASS
-Build83             UNUSED
+Phase 9 Slice2      Build83 · DEPLOYED CANDIDATE · smoke pending
 Phase 10            FUTURE
 ```
 
-The next action is **not** a preselected Build83. Run a fresh bounded Phase9 reliability audit first. Current candidates are canonical Lyrics save response-loss truth, SonicTrace analysis save response-loss truth and broader guarded Album-write ambiguity.
+The immediate next action is **Build83 real-user browser smoke**, not another runtime build. After explicit PASS, run a fresh Phase9 audit before allocating any successor.
 
 ## Frozen authority model
 
@@ -122,6 +124,17 @@ tracks/<slug>/lyrics.txt
 
 `lyrics.txt` is the unique canonical source. Recognized timestamps define synchronization. `.lrc` is optional export/compatibility only.
 
+Build83 adds this bounded failure contract:
+
+```text
+save response lost
+→ private canonical reread
+   ├─ exact new revision + ETag + requested text → COMMITTED / VERIFIED
+   ├─ unchanged revision + ETag                  → NOT COMMITTED / retry may be safe
+   ├─ changed but exact postcondition unproven   → AMBIGUOUS / DO NOT RETRY
+   └─ reread unavailable                         → UNVERIFIED / DO NOT RETRY
+```
+
 ### Audio duration
 
 `manifest.duration` is a derived canonical fact from the current master audio, never a free-form metadata field.
@@ -145,22 +158,20 @@ MASTER FINAL 16:9
 
 Release Campaign is provider-agnostic. Google Flow is a convenience shortcut. Campaign drafts remain browser-local and ZIP export remains review-only.
 
-## Build82 acceptance
+## Build83 candidate receipts
 
 ```text
-Runtime PR              #126
-Exact tested head       07fbcb4efdcd57e79614825d7c45bccd4ab2d860
-Validation              31854468795 · SUCCESS
-Runtime merge           7a0d52fcc0bf862478c459f0648afc1c6690b34f
-Runtime Pages           31854528438 · SUCCESS
-Candidate docs PR       #127
-Candidate docs merge    077ef8bb19920c439971325604a2d30e015e41c1
-Real-user smoke         BUILD82 PASS · 2026-08-15
+Runtime PR              #129
+Exact tested head       beff9fc58c58e36ce2c2082f7bd5c041641a5e12
+Validation              31856653579 · SUCCESS
+Runtime merge           b168d8cda805e5c50480a3e26c5d52e490fb7ac6
+Runtime Pages           31856698097 · SUCCESS
+Real-user smoke         PENDING
 Worker deploy           NONE
-R2 migration/write      NONE
+R2 migration/write      NONE caused by deployment
 ```
 
-Detailed record: [`changelogs/CHANGELOG-PHASE9-BUILD82.md`](changelogs/CHANGELOG-PHASE9-BUILD82.md).
+Detailed record: [`changelogs/CHANGELOG-BUILD83.md`](changelogs/CHANGELOG-BUILD83.md).
 
 ## Documentation
 
