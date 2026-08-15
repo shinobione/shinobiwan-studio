@@ -30,7 +30,10 @@ Candidate docs PR     #176
 Candidate docs CI     31913104842 · SUCCESS
 Candidate docs merge  dbb8bab680ab3cad5ef8f11fa276f3e9bb3dd43a
 Candidate docs Pages  31913138348 · SUCCESS
-Acceptance docs       IN PROGRESS
+Acceptance docs PR    #177
+Acceptance docs CI    31914122068 · SUCCESS
+Acceptance docs merge b5448ebbd1ab3aa27c21804d06a78ec4beffa669
+Acceptance docs Pages 31914188650 · SUCCESS
 Real-user smoke       Build 96 SMOKED 💨 · 2026-08-16
 Track Manager         v5.23 · DEPLOYED
 Studio bridge         v1.13
@@ -122,7 +125,7 @@ Build97             UNALLOCATED
 Phase 10            FUTURE
 ```
 
-The immediate next action is a **fresh read-only post-Build96 Phase9 reliability audit** after acceptance-docs closeout. Build97 remains unallocated until that audit proves the smallest coherent next gap.
+The immediate next action is a **fresh read-only post-Build96 Phase9 reliability audit**. Build97 remains unallocated until that audit proves the smallest coherent next gap.
 
 ## Frozen authority model
 

@@ -91,7 +91,7 @@ No network cut, Cloudflare invalidation or lost-response failure was manufacture
 
 ```text
 Build96 = REAL USER PASS · ACCEPTED
-Build97 = UNALLOCATED pending acceptance-docs closeout + fresh audit
+Build97 = UNALLOCATED pending fresh read-only post-Build96 audit
 ```
 
 Acceptance closeout safety checkpoint:
@@ -99,3 +99,15 @@ Acceptance closeout safety checkpoint:
 ```text
 safety/post-build96-real-user-pass-20260816
 ```
+## Acceptance-docs closeout receipts
+
+```text
+Acceptance docs PR       #177
+Exact docs head          70fc1a6ee18cf2089ef3d3f11a96a19bac772e8b
+Acceptance docs CI       31914122068 · SUCCESS
+Acceptance docs merge    b5448ebbd1ab3aa27c21804d06a78ec4beffa669
+Acceptance docs Pages    31914188650 · SUCCESS · build + deploy
+Safety docs green        safety/post-build96-rup-docs-green-premerge-20260816
+Safety docs closeout     safety/post-build96-rup-docs-closeout-20260816
+```
+
