@@ -2,7 +2,6 @@ import {
   AdminSaveError,
   AdminValidationError,
   getAdminBridgeHealth,
-  getAdminTrack,
   validateAdminTrackMetadata,
   type AdminMetadataPatch,
   type AdminMetadataSaveResponse,
@@ -13,7 +12,6 @@ import { studioConfig } from './config';
 import { saveAdminTrackMetadataResilient } from './track-metadata-admin-api';
 
 const METADATA_VALIDATION_INTENT = 'metadata-validate-v1';
-const METADATA_SAVE_INTENT = 'metadata-save-v1';
 const DURATION_EVIDENCE_BRIDGES = new Set([
   '5.22/1.12',
   '5.23/1.13',
@@ -52,8 +50,13 @@ async function postValidationWithEvidence(trackId: string, expectedUpdatedAt: st
     let response: Response;
     try {
       response = await fetch(`${baseUrl()}/api/studio/tracks/${encodeURIComponent(trackId)}/metadata/validate`, {
-        method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'text/plain;charset=UTF-8' },
-        body: JSON.stringify({ intent: METADATA_VALIDATION_INTENT, expectedUpdatedAt, metadata, evidence }), cache: 'no-store', credentials: 'include', mode: 'cors', signal: controller.signal,
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'text/plain;charset=UTF-8' },
+        body: JSON.stringify({ intent: METADATA_VALIDATION_INTENT, expectedUpdatedAt, metadata, evidence }),
+        cache: 'no-store',
+        credentials: 'include',
+        mode: 'cors',
+        signal: controller.signal,
       });
     } catch (reason) {
       if (reason instanceof DOMException && reason.name === 'AbortError') throw new AdminValidationError('Track Manager duration-aware metadata validation timed out.');
@@ -66,51 +69,9 @@ async function postValidationWithEvidence(trackId: string, expectedUpdatedAt: st
     if (!response.ok || payload.ok === false) throw new AdminValidationError(payload.error || `Track Manager metadata validation returned HTTP ${response.status}.`, response.status, payload.code || null, payload.currentUpdatedAt || null);
     if (payload.validationOnly !== true || !payload.proposed) throw new AdminValidationError('Track Manager returned an invalid duration-aware metadata proposal.');
     return payload;
-  } finally { globalThis.clearTimeout(timeout); }
-}
-
-async function postSaveWithEvidence(trackId: string, expectedUpdatedAt: string, metadata: AdminMetadataPatch, evidence: AdminAudioEvidence): Promise<AdminMetadataSaveResponse> {
-  let health;
-  try { health = await getAdminBridgeHealth(); }
-  catch (reason) { throw new AdminSaveError(reason instanceof Error ? reason.message : String(reason)); }
-  if (!durationEvidenceBridgeCompatible(health.trackManagerVersion, health.version)) throw new AdminSaveError(durationEvidenceBridgeError(health.trackManagerVersion, health.version), 409, 'DURATION_EVIDENCE_BRIDGE_REQUIRED');
-  if (!(health.capabilities?.write ?? []).includes('metadata')) throw new AdminSaveError('Track Manager does not advertise guarded metadata write capability. Save stays locked.');
-
-  const controller = new AbortController();
-  const timeout = globalThis.setTimeout(() => controller.abort(), 12000);
-  try {
-    let response: Response;
-    try {
-      response = await fetch(`${baseUrl()}/api/studio/tracks/${encodeURIComponent(trackId)}/metadata/save`, {
-        method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'text/plain;charset=UTF-8' },
-        body: JSON.stringify({ intent: METADATA_SAVE_INTENT, expectedUpdatedAt, metadata, evidence }), cache: 'no-store', credentials: 'include', mode: 'cors', signal: controller.signal,
-      });
-    } catch (reason) {
-      if (reason instanceof DOMException && reason.name === 'AbortError') throw new AdminSaveError('Duration-aware metadata save timed out. Reload canonical state before retrying.');
-      throw new AdminSaveError('Duration-aware metadata save is unavailable. Reload canonical state before retrying.');
-    }
-    if (!isJsonResponse(response)) throw new AdminSaveError('Cloudflare Access session is unavailable to duration-aware metadata save.', response.status || null);
-    let payload: AdminMetadataSaveResponse;
-    try { payload = await response.json() as AdminMetadataSaveResponse; }
-    catch { throw new AdminSaveError('Track Manager returned invalid duration-aware save JSON.', response.status || null); }
-    if (!response.ok || payload.ok === false) throw new AdminSaveError(payload.error || `Track Manager metadata save returned HTTP ${response.status}.`, response.status, payload.code || null, payload.currentUpdatedAt || null, payload.rollback || null);
-    if (!payload.track || (payload.saved !== true && payload.noChange !== true)) throw new AdminSaveError('Track Manager returned an invalid duration-aware save response. Reload canonical state before retrying.');
-
-    const expectedRevision = payload.updatedAt || payload.track.updatedAt || expectedUpdatedAt;
-    let clientVerified = false;
-    let verificationWarning: string | null = null;
-    try {
-      const reread = await getAdminTrack(trackId);
-      const rereadRevision = reread.track?.manifest?.updatedAt || null;
-      const rereadDuration = reread.track?.manifest?.duration ?? null;
-      const expectedDuration = payload.track.duration ?? null;
-      if (rereadRevision === expectedRevision && (expectedDuration == null || rereadDuration === expectedDuration)) clientVerified = true;
-      else verificationWarning = `Canonical reread returned revision ${rereadRevision || 'none'} / duration ${rereadDuration ?? 'none'} instead of ${expectedRevision} / ${expectedDuration ?? 'none'}. Reload before another edit.`;
-    } catch (reason) {
-      verificationWarning = `Server reported the save as successful, but Studio could not complete its canonical reread (${reason instanceof Error ? reason.message : String(reason)}). Reload before another edit.`;
-    }
-    return { ...payload, clientVerified, verificationWarning };
-  } finally { globalThis.clearTimeout(timeout); }
+  } finally {
+    globalThis.clearTimeout(timeout);
+  }
 }
 
 export async function validateAdminTrackMetadataWithAudioEvidence(trackId: string, expectedUpdatedAt: string, metadata: AdminMetadataPatch, evidence: AdminAudioEvidence | null): Promise<DurationAwareValidationResponse> {
@@ -119,19 +80,13 @@ export async function validateAdminTrackMetadataWithAudioEvidence(trackId: strin
 }
 
 export async function saveAdminTrackMetadataWithAudioEvidence(trackId: string, expectedUpdatedAt: string, metadata: AdminMetadataPatch, evidence: AdminAudioEvidence | null): Promise<AdminMetadataSaveResponse> {
-  // Build92: repeat the same non-mutating validation immediately before the write.
+  // Build92 repeats the same non-mutating validation immediately before the write.
   // The exact normalized proposal becomes the operation-specific postcondition for
-  // normal-success verification and response-loss recovery. This preserves the
-  // existing Validate → review → explicit Save UX while refusing to guess after
-  // a lost POST response. No write is automatically retried.
+  // normal-success verification and response-loss recovery. The visible
+  // Validate → review → explicit Save UX remains unchanged, and no write is retried.
   const reviewed = await validateAdminTrackMetadataWithAudioEvidence(trackId, expectedUpdatedAt, metadata, evidence);
   if (reviewed.validationOnly !== true || reviewed.valid !== true || !reviewed.proposed) {
     throw new AdminSaveError('Track metadata proposal is no longer valid. Validate again before saving.', 409, 'TRACK_METADATA_PROPOSAL_STALE', expectedUpdatedAt);
   }
   return saveAdminTrackMetadataResilient(trackId, expectedUpdatedAt, metadata, evidence, reviewed.proposed);
 }
-
-// Historical implementation retained only as source-level evidence for the pre-Build92
-// duration-aware transport. Build92 routes the callable save through the resilient
-// operation-specific service above; this helper is intentionally not exported/called.
-void postSaveWithEvidence;
