@@ -2,6 +2,47 @@
 
 This file is the **current concise changelog**. Detailed per-build records live under [`changelogs/`](changelogs/README.md).
 
+## Current deployed candidate
+
+### v0.19.5 · Build83 — 2026-08-15
+
+Codename: `studio-focus-slice4-phase9-lyrics-save-response-loss-truth`  
+Status: **DEPLOYED CANDIDATE — REAL USER SMOKE PENDING**
+
+Build83 extends Phase9 reliability to the native canonical `lyrics.txt` save path.
+
+Candidate behavior:
+
+- Lyrics save timeout / transport loss is classified separately from ordinary server errors;
+- the write is **never blindly retried** after response loss;
+- Studio privately rereads canonical Lyrics + Track manifest;
+- new revision + new ETag + exact requested normalized text = recovered `COMMITTED / VERIFIED`;
+- unchanged revision + unchanged ETag = `NOT COMMITTED`, explicit retry may be safe;
+- changed but causality/postcondition unproven = `AMBIGUOUS / DO NOT RETRY`;
+- reread unavailable = `UNVERIFIED / DO NOT RETRY`;
+- normal HTTP success still requires exact canonical revision + ETag + normalized-text verification;
+- no Track Manager, Worker, public Worker, R2 migration, SonicTrace, LRC Maker or LaunchPAD change was required.
+
+Exact candidate evidence:
+
+```text
+Safety pre               safety/pre-phase9-lyrics-response-loss-build83-20260815-0319
+Studio PR                #129
+Exact tested head        beff9fc58c58e36ce2c2082f7bd5c041641a5e12
+Validation               31856653579 · SUCCESS
+Runtime merge            b168d8cda805e5c50480a3e26c5d52e490fb7ac6
+Runtime Pages            31856698097 · SUCCESS · exact runtime merge SHA
+Safety post-deploy       safety/post-build83-deployed-candidate
+Real-user smoke          PENDING
+Track Manager            v5.23 · unchanged
+Studio bridge            v1.13 · unchanged
+Public Worker            v2.7 · unchanged
+Worker deploy            NONE
+R2 migration/write       NONE caused by deployment
+```
+
+Detailed candidate record: [`changelogs/CHANGELOG-BUILD83.md`](changelogs/CHANGELOG-BUILD83.md).
+
 ## Current accepted release
 
 ### v0.19.4 · Build82 — 2026-08-15
@@ -9,7 +50,7 @@ This file is the **current concise changelog**. Detailed per-build records live 
 Codename: `studio-focus-slice4-phase9-destructive-write-ambiguity-guard`  
 Status: **REAL USER PASS — ACCEPTED**
 
-Build82 opens Phase9 with bounded response-loss truth for destructive asset deletion.
+Build82 opened Phase9 with bounded response-loss truth for destructive asset deletion.
 
 Accepted behavior:
 
@@ -85,16 +126,12 @@ Identity → Core media → Lyrics → Intelligence → Release
 
 All Phase8/9 health and guidance surfaces continue to preserve the same canonical authority boundaries.
 
-## Next bounded audit
+## Next bounded action
 
-**Build83 is unused.**
+**Do not allocate Build84 yet.**
 
-After Build82 acceptance, the next action is a fresh read-only Phase9 reliability audit. Current candidates include:
+Complete the normal Build83 real-user browser Lyrics regression smoke first. Do not deliberately interrupt a production write to manufacture a lost-response condition.
 
-- canonical Lyrics save response-loss truth;
-- SonicTrace analysis save response-loss truth;
-- broader guarded Album write response-loss truth.
-
-Do not allocate a runtime build until the audit proves the smallest coherent gap.
+After explicit Build83 PASS, run a fresh Phase9 audit. Current leading candidates are SonicTrace analysis save response-loss truth, broader guarded Album-write response-loss truth, then Access/CORS and degraded/offline/PWA resilience.
 
 `CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS` remains mandatory.
