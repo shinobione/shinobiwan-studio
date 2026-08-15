@@ -33,7 +33,7 @@ assert.ok(albumApi.includes('return verify(albumId, payload);'), 'Build96 must l
 // Both existing create surfaces inherit the service fix and still refuse unverified success.
 for (const [name, source] of [['focused', focused], ['legacy', legacy]]) {
   assert.ok(source.includes('createAdminAlbum'), `${name} Album create surface must keep using the shared canonical create service.`);
-  assert.ok(source.includes('result.clientVerified'), `${name} Album create surface must reject a create that the canonical reread cannot verify.`);
+  assert.match(source, /if\s*\(\s*!\w+\.clientVerified\s*\)/, `${name} Album create surface must reject a create that the canonical reread cannot verify.`);
 }
 
 for (const inherited of [
