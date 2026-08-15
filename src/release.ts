@@ -1,8 +1,8 @@
 export const studioRelease = {
-  version: '0.19.17',
-  build: 95,
-  codename: 'studio-focus-slice4-phase9-albums-daily-resilient-service-convergence',
-  releasedAt: '2026-08-15',
+  version: '0.19.18',
+  build: 96,
+  codename: 'studio-focus-slice4-phase9-album-create-success-verification-truth',
+  releasedAt: '2026-08-16',
 } as const;
 
 // Historical candidate markers retained only so exact earlier guards remain immutable.
@@ -37,3 +37,4 @@ export const build91AncestryMarker = "version: 0.19.13 · build: 91 · codename:
 export const build92AncestryMarker = "version: 0.19.14 · build: 92 · codename: 'studio-focus-slice4-phase9-track-metadata-response-loss-truth'";
 export const build93AncestryMarker = "version: 0.19.15 · build: 93 · codename: 'studio-focus-slice4-phase9-track-metadata-validation-transient-retry-truth'";
 export const build94AncestryMarker = "version: 0.19.16 · build: 94 · codename: 'studio-focus-slice4-phase9-lyrics-validation-transient-retry-truth'";
+export const build95AncestryMarker = "version: 0.19.17 · build: 95 · codename: 'studio-focus-slice4-phase9-albums-daily-resilient-service-convergence'";

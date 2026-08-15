@@ -226,7 +226,14 @@ export function adminAlbumMediaUrl(albumId: string, kind: AdminAlbumAssetKind): 
 
 export async function getAdminAlbums(): Promise<AdminAlbumsResponse> { const payload = await readJson<AdminAlbumsResponse>('/api/studio/albums'); if (payload.ok === false || !Array.isArray(payload.albums)) throw new AdminReadError('invalid-response', 'Track Manager returned an invalid Album collection.'); return payload; }
 export async function getAdminAlbum(albumId: string): Promise<AdminAlbumResponse> { assertId(albumId); const payload = await readJson<AdminAlbumResponse>(`/api/studio/albums/${encodeURIComponent(albumId)}`); if (payload.ok === false || !payload.album?.manifest) throw new AdminReadError('invalid-response', 'Track Manager returned an invalid canonical Album response.'); return payload; }
-export async function createAdminAlbum(album: { id: string } & AdminAlbumMetadataPatch) { assertId(album.id); await requireManage('album-create'); const payload = await writeJson('/api/studio/albums', { intent: INTENT.create, album }); if (!payload.created || !payload.album) throw new AlbumAdminError('Track Manager returned an invalid Album create response.'); return verify(album.id, payload); }
+export async function createAdminAlbum(album: { id: string } & AdminAlbumMetadataPatch) {
+  assertId(album.id);
+  await requireManage('album-create');
+  const payload = await writeJson('/api/studio/albums', { intent: INTENT.create, album });
+  if (!payload.created || !payload.album) throw new AlbumAdminError('Track Manager returned an invalid Album create response.');
+  const { id, ...metadata } = album;
+  return verify(id, payload, { expectedMetadata: metadata });
+}
 export async function saveAdminAlbumMetadata(albumId: string, expectedUpdatedAt: string, metadata: AdminAlbumMetadataPatch) { assertId(albumId); if (!expectedUpdatedAt) throw new AlbumAdminError('Canonical Album revision is required.'); await requireManage('album-metadata'); const payload = await writeJson(`/api/studio/albums/${encodeURIComponent(albumId)}/metadata/save`, { intent: INTENT.metadata, expectedUpdatedAt, metadata }); if (!payload.saved || !payload.album) throw new AlbumAdminError('Track Manager returned an invalid Album metadata response.'); return verify(albumId, payload, { expectedMetadata: metadata }); }
 export async function saveAdminAlbumMembership(albumId: string, expectedUpdatedAt: string, trackIds: string[]) { assertId(albumId); if (!expectedUpdatedAt) throw new AlbumAdminError('Canonical Album revision is required.'); await requireManage('album-membership'); const payload = await writeJson(`/api/studio/albums/${encodeURIComponent(albumId)}/tracks/save`, { intent: INTENT.membership, expectedUpdatedAt, trackIds }); if (!payload.saved || !Array.isArray(payload.trackIds)) throw new AlbumAdminError('Track Manager returned an invalid Album membership response.'); return verify(albumId, payload, { expectedTrackIds: payload.trackIds }); }
 export async function moveAdminAlbumTrack(targetAlbumId: string, input: { trackId: string; sourceAlbumId?: string | null; expectedTargetUpdatedAt: string; expectedSourceUpdatedAt?: string | null; targetIndex?: number }) {
@@ -370,4 +377,7 @@ export const albumAdminService = Object.freeze({
   transport: 'Track Manager v5.23 / bridge v1.13 only',
   privateReadRetryPolicy: 'one-retry-timeout-transport-transient-http-no-access-retry',
   privateReadMaxAttempts: 2,
+  createSuccessVerificationPolicy: 'canonical-reread-revision-plus-requested-metadata',
+  createLostResponsePolicy: 'not-covered-no-operation-id-no-blind-retry',
+  maxAutomaticCreateRetries: 0,
 });
