@@ -1,6 +1,6 @@
 # Studio v0.19.10 · Build88 — Phase9 core private-read transient retry truth
 
-Status: **IMPLEMENTATION CANDIDATE · CI PENDING**.
+Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**.
 
 ## Fresh audit proof
 
@@ -72,31 +72,41 @@ privateReadRetryPolicy: one-retry-timeout-transport-transient-http-no-access-ret
 privateReadMaxAttempts: 2
 ```
 
-## Validation target
+## Validation evidence
 
 Build88 adds:
 
 - `scripts/test-phase9-private-read-transient-retry-build88.mjs`;
 - Phase9 gate inheritance Build82 → Build83 → Build84 → Build85 → Build86 → Build87 → Build88;
 - immutable Build87 ancestry marker;
-- bounded historical successor compatibility only where old guards explicitly cap the accepted runtime line.
+- bounded historical successor compatibility only where old guards explicitly capped the accepted runtime line.
 
-Expected candidate evidence:
+Exact candidate evidence:
 
 ```text
 Safety pre              safety/pre-phase9-private-read-retry-build88-20260815-0916
-Runtime PR              PENDING
-Exact tested head       PENDING
-Final CI                PENDING
-Runtime merge           PENDING
-Runtime Pages           PENDING
-Worker deploy           NONE planned
-Track Manager change    NONE planned
+Runtime PR              #144
+Exact tested head       808b0c63fc22f17a04a9c544b934d97c791d3a73
+Final CI                31871980725 · SUCCESS
+Runtime merge           9d4f0a7ba4cd17de1d4d6c69e4abe6bc706c7633
+Runtime Pages           31872073050 · SUCCESS · exact runtime merge SHA
+Safety post-deploy      safety/post-build88-deployed-candidate-20260815-0932
+Worker deploy           NONE
+Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
-Real-user smoke         PENDING after deployment
+Real-user smoke         PENDING
 ```
 
+Historical CI runs:
+
+- `31871834515` — red only because the inherited Phase7-C Build69 successor allowlist stopped at `0.19.9`;
+- `31871883072` — Phase7/8/9 including the new Build88 guard passed, then the inherited Studio Focus Build64 successor allowlist stopped at `0.19.9`.
+
+Those heads were never merged. The old guards were widened only for bounded Build88 successor compatibility while preserving their functional assertions. Final exact-head CI `31871980725` passed the complete repository-native chain.
+
 ## Real-user acceptance boundary
+
+Build88 is **not yet REAL USER PASS**.
 
 Use a normal browser regression after deployment:
 
@@ -106,6 +116,13 @@ Use a normal browser regression after deployment:
 - quick Albums / Lyrics / SonicTrace navigation sanity.
 
 Do **not** deliberately cut network or invalidate Cloudflare Access merely to manufacture the retry branch. Automated guards cover the classification and bounded-attempt contract.
+
+## Safety / rollback
+
+Runtime rollback is Studio-only. Build88 introduces no backend deployment and no R2 schema/data migration. The safety checkpoints are:
+
+- `safety/pre-phase9-private-read-retry-build88-20260815-0916`;
+- `safety/post-build88-deployed-candidate-20260815-0932`.
 
 ## Stop line
 
