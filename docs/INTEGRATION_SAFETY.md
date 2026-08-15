@@ -32,10 +32,10 @@ Studio accepted
   candidate docs CI 31899284370 / SUCCESS
   candidate docs merge 6464659428e34a679c8acfeb481bfaca78e05bc7
   candidate docs Pages 31899342536 / SUCCESS
-  acceptance docs PR PENDING
-  acceptance docs CI PENDING
-  acceptance docs merge PENDING
-  acceptance docs Pages PENDING
+  acceptance docs PR #164
+  acceptance docs CI 31901050237 / SUCCESS
+  acceptance docs merge 8df0417ee4d96de1e1b386c0fb15af60dcdbc661
+  acceptance docs Pages 31901109789 / SUCCESS
   browser smoke BUILD93 PASS MADAFAKA / 2026-08-15
   Worker deploy NONE
   Track Manager change NONE
@@ -218,6 +218,8 @@ After Build93 candidate-docs closeout:
 
 After Build93 real-user acceptance:
   safety/post-build93-real-user-pass-20260815-2010
+  safety/post-build93-rup-docs-prepr-20260815-2010
+  safety/post-build93-rup-docs-closeout-20260815-2010
 ```
 
 Earlier accepted safety branches remain preserved in Git history.
@@ -818,4 +820,4 @@ If a regression appears:
 
 ## Stop line
 
-**Build93 is the accepted Studio REAL USER PASS baseline. Build94 is UNALLOCATED pending the acceptance-docs closeout and a fresh bounded post-Build93 audit. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**
+**Build93 is the accepted Studio REAL USER PASS baseline. Build94 is UNALLOCATED pending a fresh bounded post-Build93 audit. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**

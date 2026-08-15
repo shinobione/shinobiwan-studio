@@ -88,6 +88,8 @@ Runtime merge `6c1ceb7d59971ec6c7e251532054392f02c08157` deployed successfully t
 
 Candidate documentation PR #163 passed full CI `31899284370`, merged at `6464659428e34a679c8acfeb481bfaca78e05bc7`, and Pages run `31899342536` deployed that exact docs merge successfully.
 
+Acceptance documentation PR #164 passed full CI `31901050237`, merged at `8df0417ee4d96de1e1b386c0fb15af60dcdbc661`, and Pages run `31901109789` deployed that exact acceptance-docs merge successfully.
+
 No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration, LaunchPAD change, LRC Maker change or SonicTrace runtime change was required.
 
 ## Real-user acceptance
@@ -122,10 +124,10 @@ Candidate docs CI       31899284370 · SUCCESS
 Candidate docs merge    6464659428e34a679c8acfeb481bfaca78e05bc7
 Candidate docs Pages    31899342536 · SUCCESS · exact docs merge SHA
 Safety post-acceptance  safety/post-build93-real-user-pass-20260815-2010
-Acceptance docs PR      PENDING
-Acceptance docs CI      PENDING
-Acceptance docs merge   PENDING
-Acceptance docs Pages   PENDING
+Acceptance docs PR      #164
+Acceptance docs CI      31901050237 · SUCCESS
+Acceptance docs merge   8df0417ee4d96de1e1b386c0fb15af60dcdbc661
+Acceptance docs Pages   31901109789 · SUCCESS · exact docs merge SHA
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by implementation/deployment
@@ -135,4 +137,4 @@ Build94                 UNALLOCATED
 
 ## Next boundary
 
-Build94 remains **UNALLOCATED** until this acceptance-docs closeout is fully merged/deployed and a fresh read-only post-Build93 Phase9 audit proves the smallest coherent next reliability gap. Album create, Album binary upload and degraded/offline/PWA remain candidates, not commitments.
+Build94 remains **UNALLOCATED** until a fresh read-only post-Build93 Phase9 audit proves the smallest coherent next reliability gap. Album create, Album binary upload and degraded/offline/PWA remain candidates, not commitments.

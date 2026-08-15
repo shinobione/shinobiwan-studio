@@ -48,10 +48,10 @@ Candidate docs CI        31899284370 · SUCCESS
 Candidate docs merge     6464659428e34a679c8acfeb481bfaca78e05bc7
 Candidate docs Pages     31899342536 · SUCCESS
 Safety post-acceptance   safety/post-build93-real-user-pass-20260815-2010
-Acceptance docs PR       PENDING
-Acceptance docs CI       PENDING
-Acceptance docs merge    PENDING
-Acceptance docs Pages    PENDING
+Acceptance docs PR       #164
+Acceptance docs CI       31901050237 · SUCCESS
+Acceptance docs merge    8df0417ee4d96de1e1b386c0fb15af60dcdbc661
+Acceptance docs Pages    31901109789 · SUCCESS · exact docs merge SHA
 Track Manager            v5.23 · unchanged
 Studio bridge            v1.13 · unchanged
 TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
@@ -655,6 +655,6 @@ All Phase8/9 health and guidance surfaces continue to preserve the same canonica
 
 ## Next bounded action
 
-Finish the Build93 acceptance-docs closeout, then run a fresh read-only post-Build93 Phase9 reliability audit. Build94 remains **UNALLOCATED** until that audit proves the smallest coherent next scope.
+Run a fresh read-only post-Build93 Phase9 reliability audit. Build94 remains **UNALLOCATED** until that audit proves the smallest coherent next scope.
 
 `CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS` remains mandatory.

@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-15 after **Build93 REAL USER PASS**.
+Updated: 2026-08-15 after **Build93 REAL USER PASS and acceptance-docs closeout**.
 
 This file is the durable roadmap summary. Historical implementation detail belongs in `docs/` and `changelogs/`; do not copy it here unless it changes what is done, active, next or backlogged.
 
@@ -292,6 +292,9 @@ Accepted evidence and behavior:
 - candidate docs PR #159 merged at `f46b846841e6ef9ce705b2fa3817baecd0aecefa`;
 - candidate docs CI `31894353160` SUCCESS;
 - candidate docs Pages `31894411652` SUCCESS;
+- acceptance docs PR #160 merged at `a26c8c0540607c99147c0b6d30b5d3c7ccf6efc9`;
+- acceptance docs CI `31896013803` SUCCESS;
+- acceptance docs Pages `31896073093` SUCCESS;
 - safety post-acceptance `safety/post-build92-real-user-pass-20260815-1819`;
 - explicit real-user verdict `BUILD92 PASS MADAFAKA` on 2026-08-15;
 - a second non-mutating validation immediately before POST supplies the exact normalized reviewed proposal;
@@ -325,6 +328,7 @@ Accepted evidence and behavior:
 - runtime merge `6c1ceb7d59971ec6c7e251532054392f02c08157`;
 - Pages `31898639778` SUCCESS on that exact merge;
 - candidate docs PR #163 passed CI `31899284370`, merged at `6464659428e34a679c8acfeb481bfaca78e05bc7`, and candidate docs Pages `31899342536` SUCCESS;
+- acceptance docs PR #164 passed CI `31901050237`, merged at `8df0417ee4d96de1e1b386c0fb15af60dcdbc661`, and acceptance docs Pages `31901109789` SUCCESS;
 - visible Track metadata **Validate** and Build92 fresh pre-save validation share the hardened wrapper;
 - plain and duration-aware `metadata-validate-v1` both get at most one bounded retry;
 - timeout / transport / HTTP `408/425/429/500/502/503/504` may retry once;
@@ -337,20 +341,24 @@ Accepted evidence and behavior:
 
 ## In progress
 
-### Build93 acceptance-docs closeout
+### Phase 9 — fresh post-Build93 reliability audit
 
-Build93 is accepted. The remaining action is governance-only: merge/deploy the exact seven-document acceptance closeout and then freeze a final post-closeout checkpoint. This creates no new Studio build.
+Build93 is fully accepted and its acceptance-docs receipts are published. **Build94 is not allocated.**
+
+The current task is a fresh read-only audit to identify the smallest remaining reliability gap without duplicating existing recovery logic or turning Phase9 into a generic refactor bucket.
 
 ## Next
 
-After acceptance-docs closeout, run a fresh read-only post-Build93 Phase9 reliability audit. Audit candidates include:
+Audit remaining candidates by proven risk / bounded scope, without assuming a build number:
 
 1. Album asset upload response-loss truth;
 2. Album create response-loss truth;
 3. degraded/offline/PWA resilience;
-4. any newly proven smaller bounded reliability gap.
+4. any newly proven smaller bounded reliability gap found by the fresh audit.
 
-Pick **one** coherent slice only after fresh proof. **Build94 remains UNALLOCATED.**
+Pick **one** coherent slice only after the audit proves the gap and confirms it does not duplicate existing recovery logic.
+
+**Build94 remains UNALLOCATED.**
 
 ## Backlog
 

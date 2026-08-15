@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-15 after explicit **`BUILD93 PASS MADAFAKA`** real-user browser acceptance. Acceptance-docs closeout is in progress.
+Updated: 2026-08-15 after explicit **`BUILD93 PASS MADAFAKA`** real-user browser acceptance and published acceptance-docs closeout.
 
 This file is the short current checkpoint. It is the first project-state document to read after `AGENTS.md`.
 
@@ -22,10 +22,10 @@ Candidate docs PR       #163
 Candidate docs CI       31899284370 · SUCCESS
 Candidate docs merge    6464659428e34a679c8acfeb481bfaca78e05bc7
 Candidate docs Pages    31899342536 · SUCCESS · exact docs merge SHA
-Acceptance docs PR      PENDING
-Acceptance docs CI      PENDING
-Acceptance docs merge   PENDING
-Acceptance docs Pages   PENDING
+Acceptance docs PR      #164
+Acceptance docs CI      31901050237 · SUCCESS
+Acceptance docs merge   8df0417ee4d96de1e1b386c0fb15af60dcdbc661
+Acceptance docs Pages   31901109789 · SUCCESS · exact docs merge SHA
 Real-user smoke         BUILD93 PASS MADAFAKA · 2026-08-15
 Worker deploy           NONE
 Track Manager change    NONE
@@ -316,24 +316,19 @@ Maximum total attempts are two. Plain and duration-aware validation use the same
 
 Historical CI `31898251689` failed only at the inherited Phase7-C Build69 successor cap. Historical CI `31898329621` then passed Phase7-C, Phase8 and Phase9 Build82→93 and failed only at the inherited Focus Build64 successor cap. Focus64–67 were widened only to recognize v0.19.15/Build93 while retaining functional assertions. Neither red head was merged. Final CI `31898542379` passed the complete repository-native chain on exact head `fcbe4c59a3a364d9665eba2ed432f37475116364`.
 
-Runtime PR #162 merged that exact tested head at `6c1ceb7d59971ec6c7e251532054392f02c08157`. Pages `31898639778` completed build + deploy successfully on that exact merge SHA. Candidate docs PR #163 passed CI `31899284370`, merged at `6464659428e34a679c8acfeb481bfaca78e05bc7`, and Pages `31899342536` deployed that exact docs merge successfully.
+Runtime PR #162 merged that exact tested head at `6c1ceb7d59971ec6c7e251532054392f02c08157`. Pages `31898639778` completed build + deploy successfully on that exact merge SHA. Candidate docs PR #163 passed CI `31899284370`, merged at `6464659428e34a679c8acfeb481bfaca78e05bc7`, and Pages `31899342536` deployed that exact docs merge successfully. Acceptance docs PR #164 passed CI `31901050237`, merged at `8df0417ee4d96de1e1b386c0fb15af60dcdbc661`, and Pages `31901109789` deployed that exact acceptance-docs merge successfully.
 
 The bounded normal-browser regression received the explicit verdict **`BUILD93 PASS MADAFAKA`** on 2026-08-15. Acceptance did **not** deliberately cut network or invalidate Cloudflare Access merely to manufacture a transient retry; automated guards own the timeout/transport/transient-HTTP failure-path proof and two-attempt bound.
 
 ## Current blockers
 
-**No active code / CI / deploy / real-user acceptance blocker after `BUILD93 PASS MADAFAKA`.**
-
-The only current closure task is this documentation/receipt promotion. Build94 remains unallocated.
+**No active code / CI / deploy / acceptance blocker after Build93 closeout.**
 
 The historical `Magnetic Midnight` public-cover palette `Failed to fetch` issue remains resolved since Build62 and covered by regression guards.
 
 ## Exact next action
 
-1. finish Build93 acceptance-docs PR / CI / merge / Pages closeout;
-2. create the final immutable post-closeout safety checkpoint;
-3. run a fresh, read-only post-Build93 Phase9 reliability audit;
-4. allocate Build94 **only if** that audit proves a smallest coherent gap.
+Run a fresh, read-only post-Build93 Phase9 reliability audit. Allocate Build94 **only if** that audit proves a smallest coherent gap.
 
 Remaining audit candidates include Album asset upload response-loss truth, Album create response-loss truth, degraded/offline/PWA resilience, and any newly proven smaller bounded reliability gap. None is pre-selected.
 
@@ -421,6 +416,8 @@ safety/post-build93-deployed-candidate-20260815-1936
 safety/post-build93-candidate-docs-prepr-20260815-1946
 safety/post-build93-candidate-docs-closeout-20260815-1949
 safety/post-build93-real-user-pass-20260815-2010
+safety/post-build93-rup-docs-prepr-20260815-2010
+safety/post-build93-rup-docs-closeout-20260815-2010
 ```
 
 ## Acceptance vocabulary

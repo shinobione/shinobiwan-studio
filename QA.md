@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-08-15 after explicit **Build93 REAL USER PASS**.
+Updated: 2026-08-15 after explicit **Build93 REAL USER PASS** and published acceptance-docs closeout.
 
 This file records what has actually been validated, what automated guards cover, and what remains unproven. It is not a full test-history dump.
 
@@ -21,10 +21,10 @@ Candidate docs PR       #163
 Candidate docs CI       31899284370 · SUCCESS
 Candidate docs merge    6464659428e34a679c8acfeb481bfaca78e05bc7
 Candidate docs Pages    31899342536 · SUCCESS
-Acceptance docs PR      PENDING
-Acceptance docs CI      PENDING
-Acceptance docs merge   PENDING
-Acceptance docs Pages   PENDING
+Acceptance docs PR      #164
+Acceptance docs CI      31901050237 · SUCCESS
+Acceptance docs merge   8df0417ee4d96de1e1b386c0fb15af60dcdbc661
+Acceptance docs Pages   31901109789 · SUCCESS
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
@@ -919,9 +919,9 @@ Git history shows the public-cover credential/fetch path was corrected in Build6
 
 ## Known open QA gaps / next audits
 
-No Build93 acceptance blocker remains.
+No Build93 acceptance blocker remains. Acceptance docs PR #164 passed CI `31901050237`, merged at `8df0417ee4d96de1e1b386c0fb15af60dcdbc661`, and Pages `31901109789` deployed that exact merge successfully.
 
-After this acceptance-docs closeout, perform a fresh bounded Phase9 audit before any successor allocation. Album asset upload and Album create remain known heavier candidates; degraded/offline/PWA remains cross-cutting. A smaller gap may win only if fresh evidence proves it.
+The current QA boundary is a fresh bounded post-Build93 Phase9 audit before any successor allocation. Album asset upload and Album create remain known heavier candidates; degraded/offline/PWA remains cross-cutting. A smaller gap may win only if fresh evidence proves it.
 
 **Build94 is unallocated** until the fresh post-Build93 audit proves a concrete scope.
 
