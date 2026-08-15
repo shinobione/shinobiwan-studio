@@ -1,7 +1,7 @@
 export const studioRelease = {
-  version: '0.19.13',
-  build: 91,
-  codename: 'studio-focus-slice4-phase9-sonictrace-private-read-transient-retry-truth',
+  version: '0.19.14',
+  build: 92,
+  codename: 'studio-focus-slice4-phase9-track-metadata-response-loss-truth',
   releasedAt: '2026-08-15',
 } as const;
 
@@ -33,3 +33,4 @@ export const build87AncestryMarker = "version: 0.19.9 · build: 87 · codename: 
 export const build88AncestryMarker = "version: 0.19.10 · build: 88 · codename: 'studio-focus-slice4-phase9-private-read-transient-retry-truth'";
 export const build89AncestryMarker = "version: 0.19.11 · build: 89 · codename: 'studio-focus-slice4-phase9-album-private-read-transient-retry-truth'";
 export const build90AncestryMarker = "version: 0.19.12 · build: 90 · codename: 'studio-focus-slice4-phase9-lyrics-private-read-transient-retry-truth'";
+export const build91AncestryMarker = "version: 0.19.13 · build: 91 · codename: 'studio-focus-slice4-phase9-sonictrace-private-read-transient-retry-truth'";
