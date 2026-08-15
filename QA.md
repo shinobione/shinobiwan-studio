@@ -1,48 +1,32 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-08-15 after **Build92 DEPLOYED CANDIDATE** publication. Build91 remains REAL USER PASS.
+Updated: 2026-08-15 after explicit **Build92 REAL USER PASS**.
 
 This file records what has actually been validated, what automated guards cover, and what remains unproven. It is not a full test-history dump.
 
 ## Current accepted Studio runtime
 
 ```text
-Version                 v0.19.13
-Build                   Build91
-Status                  REAL USER PASS
-Runtime PR              #154
-Exact tested head       b8ee223b2d077e5d14936530be219f78ed7910ac
-Final CI                31888303536 · SUCCESS · first run
-Runtime merge           591b81a3930f1ba6d9f91f6e4f7d6e31550e5cf6
-Pages                   31888346988 · SUCCESS · exact runtime merge SHA
-Candidate docs PR       #155
-Candidate docs merge    32a57f50c90f3f7677e3a45ad46eace8bd988b3d
-Candidate docs Pages    31889030115 · SUCCESS
-Acceptance docs PR      #156
-Acceptance docs merge   80b6c34f2bd8937cbbc4ef5e24899d13a6949731
-Acceptance docs Pages   31892156760 · SUCCESS
-Worker deploy           NONE
-Track Manager change    NONE
-R2 migration/write      NONE caused by deployment
-Real-user verdict       BUILD91 PASS MADAFAKA · 2026-08-15
-```
-
-## Current deployed candidate
-
-```text
 Version                 v0.19.14
 Build                   Build92
-Status                  DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Status                  REAL USER PASS
 Runtime PR              #158
 Exact tested head       2b859d831f5fc46eea9853f31c4b86057041128b
 Final CI                31893496536 · SUCCESS
 Historical guard CI     31893447100 · FAILURE · Build80 seam assertion only · never merged
 Runtime merge           d0ca8b3aa4481c3217f79790e347000bfd22823a
 Pages                   31893652679 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #159
+Candidate docs CI       31894353160 · SUCCESS
+Candidate docs merge    f46b846841e6ef9ce705b2fa3817baecd0aecefa
+Candidate docs Pages    31894411652 · SUCCESS
+Acceptance docs PR      PENDING
+Acceptance docs merge   PENDING
+Acceptance docs Pages   PENDING
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
-Real-user verdict       PENDING
+Real-user verdict       BUILD92 PASS MADAFAKA · 2026-08-15
 ```
 
 ## Build92 automated coverage — GREEN
@@ -106,28 +90,36 @@ Additional Build92 guarantees:
 - recovered-after-lost-response verifies canonical Track metadata/duration but does not fabricate an independently unobservable `catalogRebuilt:true` receipt;
 - no Track Manager, Worker or R2 schema/data mutation was required.
 
-## Build92 real-user smoke — PENDING
+## Build92 real-user smoke — PASS
 
-The required acceptance smoke is intentionally a **normal-browser metadata regression**, not a manufactured response-loss test.
+The acceptance smoke was intentionally a **normal-browser metadata regression**, not a manufactured response-loss test.
 
-Required boundary:
-
-- hard refresh to deployed `v0.19.14 · Build92`;
-- open one safe existing private canonical Track;
-- choose one harmless reversible metadata edit such as mood, tag or era;
-- run **Validate** and review the normalized proposal;
-- perform one normal explicit **Save**;
-- confirm the UI reports canonical reread verification (`CANONICAL REREAD · VERIFIED`);
-- reload the Track and confirm the edit persisted;
-- surrounding Track / Albums / Lyrics / SonicTrace navigation sanity.
-
-Do **not** cut network, expire Cloudflare Access or manufacture timeout/transport branches. Automated guards own committed / not-committed / ambiguous / unverified failure-path proof.
-
-Until explicit user verdict:
+The user completed the bounded smoke and returned the explicit verdict:
 
 ```text
-Build92 = DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+BUILD92 PASS MADAFAKA
 ```
+
+The accepted smoke boundary covered:
+
+- hard refresh to deployed `v0.19.14 · Build92`;
+- opening one safe existing private canonical Track;
+- one harmless reversible metadata edit;
+- **Validate** and review of the normalized proposal;
+- one normal explicit **Save**;
+- canonical reread verification (`CANONICAL REREAD · VERIFIED`);
+- persistence of the metadata edit after canonical reload;
+- surrounding Track / Albums / Lyrics / SonicTrace navigation sanity.
+
+Acceptance intentionally did **not** cut network, expire Cloudflare Access or manufacture timeout/transport/ambiguous-write branches. Those failure paths remain protected by automated Build92 classification guards.
+
+Result:
+
+```text
+Build92 = REAL USER PASS
+```
+
+No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration or cross-repository runtime change was required to reach acceptance.
 
 ## Build91 automated coverage — GREEN
 
@@ -839,11 +831,11 @@ Git history shows the public-cover credential/fetch path was corrected in Build6
 
 ## Known open QA gaps / next audits
 
-Build92 real-user smoke is the current blocker.
+No Build92 acceptance blocker remains.
 
-After Build92 acceptance, perform a fresh bounded Phase9 audit before any successor allocation. Album asset upload and Album create remain known heavier candidates; degraded/offline/PWA remains cross-cutting. A smaller gap may win only if fresh evidence proves it.
+Before any successor runtime work, perform a fresh bounded post-Build92 Phase9 audit. Candidate areas include Album asset upload response-loss truth, Album create response-loss truth, degraded/offline/PWA behavior, or another smaller reliability gap only if fresh evidence proves it.
 
-**Build93 is unallocated** until Build92 acceptance plus a fresh bounded audit proves a concrete scope.
+**Build93 is unallocated** until that fresh bounded audit proves a concrete scope.
 
 ## Standard validation commands
 

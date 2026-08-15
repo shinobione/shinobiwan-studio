@@ -3,8 +3,7 @@
 Date established: 2026-08-08  
 Hardened: 2026-08-09  
 Current-state overlay refreshed: 2026-08-15  
-Current accepted Studio release: `v0.19.13` / Build `91` / REAL USER PASS  
-Current deployed candidate: `v0.19.14` / Build `92` / REAL USER SMOKE PENDING
+Current accepted Studio release: `v0.19.14` / Build `92` / REAL USER PASS
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -22,30 +21,20 @@ For short current state, read root `PROJECT_STATE.md` first. This file contains 
 
 ```text
 Studio accepted
-  v0.19.13 / Build91 / REAL USER PASS
-  exact tested head b8ee223b2d077e5d14936530be219f78ed7910ac
-  runtime CI 31888303536 / SUCCESS / first run
-  runtime merge 591b81a3930f1ba6d9f91f6e4f7d6e31550e5cf6
-  runtime Pages 31888346988 / SUCCESS
-  candidate docs PR #155
-  candidate docs merge 32a57f50c90f3f7677e3a45ad46eace8bd988b3d
-  candidate docs Pages 31889030115 / SUCCESS
-  acceptance docs PR #156
-  acceptance docs merge 80b6c34f2bd8937cbbc4ef5e24899d13a6949731
-  acceptance docs Pages 31892156760 / SUCCESS
-  browser smoke BUILD91 PASS MADAFAKA / 2026-08-15
-  Worker deploy NONE
-  Track Manager change NONE
-  R2 migration/write NONE caused by deployment
-
-Studio candidate
-  v0.19.14 / Build92 / DEPLOYED CANDIDATE
+  v0.19.14 / Build92 / REAL USER PASS
   exact tested head 2b859d831f5fc46eea9853f31c4b86057041128b
   final runtime CI 31893496536 / SUCCESS
   historical guard CI 31893447100 / FAILURE / Build80 seam assertion only / never merged
   runtime merge d0ca8b3aa4481c3217f79790e347000bfd22823a
   runtime Pages 31893652679 / SUCCESS
-  browser smoke PENDING
+  candidate docs PR #159
+  candidate docs CI 31894353160 / SUCCESS
+  candidate docs merge f46b846841e6ef9ce705b2fa3817baecd0aecefa
+  candidate docs Pages 31894411652 / SUCCESS
+  acceptance docs PR PENDING
+  acceptance docs merge PENDING
+  acceptance docs Pages PENDING
+  browser smoke BUILD92 PASS MADAFAKA / 2026-08-15
   Worker deploy NONE
   Track Manager change NONE
   R2 migration/write NONE caused by deployment
@@ -67,7 +56,7 @@ LRC Maker
   6.3.8
 ```
 
-Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable history; this overlay distinguishes current accepted production truth from the currently deployed candidate.
+Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable history; this overlay states current accepted production truth only.
 
 ## Restoration checkpoints
 
@@ -201,6 +190,10 @@ After Build92 implementation before PR:
 
 After Build92 deployment candidate:
   safety/post-build92-deployed-candidate-20260815-1748
+  safety/post-build92-candidate-docs-closeout-20260815-1803
+
+After Build92 real-user acceptance:
+  safety/post-build92-real-user-pass-20260815-1819
 ```
 
 Earlier accepted safety branches remain preserved in Git history.
@@ -331,7 +324,7 @@ Build90 is **REAL USER PASS** after explicit 2026-08-15 normal-browser Lyrics-re
 
 Track Manager owns canonical Track metadata stale guarding, proposal application, manifest write, derived catalog rebuild, canonical reread and rollback attempts. Build92 adds Studio-side response-loss truth without changing that server transaction.
 
-### Build92 Track metadata response-loss boundary — CANDIDATE
+### Build92 Track metadata response-loss boundary — ACCEPTED
 
 Immediately before the explicit write, Studio repeats the same non-mutating metadata validation against the exact expected Track revision. The exact normalized proposal becomes the operation-specific postcondition. If canonical audio evidence exists, already-supported derived `duration` is part of that proposal while remaining non-editable.
 
@@ -362,7 +355,7 @@ Rules:
 
 Track Manager rebuilds the catalog inside its server transaction, but the private Track reread reconstructs Track state from manifests rather than independently reading the derived catalog index. Therefore Build92 **must not fabricate `catalogRebuilt:true` after a lost response**. Normal HTTP responses retain the server's real catalog receipt.
 
-Build92 is **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**. Browser acceptance must be one harmless normal metadata validate/save regression, not a manufactured lost-response test.
+Build92 is **REAL USER PASS** after explicit 2026-08-15 normal-browser Track metadata acceptance: one harmless reversible metadata edit, Validate → one normal Save, `CANONICAL REREAD · VERIFIED`, persistence after reload and surrounding Track / Albums / Lyrics / SonicTrace navigation. The browser smoke did not deliberately break network or Access; automated guards own response-loss failure-path proof.
 
 ## SonicTrace persistence boundary
 
@@ -694,13 +687,13 @@ Private Track Manager SonicTrace **GET retry only** for canonical latest/history
 
 Build91 is **REAL USER PASS** after explicit 2026-08-15 normal-browser canonical SonicTrace-read regression acceptance. Acceptance did not manufacture a failure branch.
 
-### Build92 candidate scope
+### Build92 accepted scope
 
 Canonical Track **metadata save response-loss truth only**. Recovery is entered only after typed timeout/transport response loss and never automatically retries the POST. Recovered committed truth requires a new canonical Track revision plus the exact normalized proposal reviewed immediately before the write. An unchanged original revision is not committed / explicit retry safe after reconnect; changed-but-nonmatching is ambiguous; unavailable reread is unverified.
 
 Build92 must not be generalized into Track create, asset upload/delete, Album create/upload or any other write family. A recovered Track manifest does not independently prove the derived catalog rebuild receipt, so Build92 does not fabricate one.
 
-Build92 is **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**.
+Build92 is **REAL USER PASS** after explicit 2026-08-15 normal-browser Track metadata validation/save acceptance. Acceptance did not manufacture a response-loss branch.
 
 ## Destructive/media verification policy
 
@@ -727,9 +720,9 @@ Build89 acceptance likewise did **not** require deliberately cutting network or 
 
 Build90 acceptance likewise did **not** require deliberately cutting network or invalidating Access. Automated guards own the transient failure-path proof; browser acceptance was a normal canonical Lyrics-read regression.
 
-Build91 acceptance likewise did **not** require deliberately cutting network or invalidating Access. Automated guards own the transient failure-path proof; browser acceptance was a normal canonical SonicTrace-read regression.
+Build91 acceptance likewise did **not** require deliberately cutting network or invalidating Access. Automated guards own that failure-path proof; browser acceptance was a normal canonical SonicTrace-read regression.
 
-Build92 candidate smoke likewise must **not** deliberately cut network or invalidate Access merely to prove response-loss classification. Automated guards own committed/not-committed/ambiguous/unverified failure-path proof; browser acceptance should be one normal harmless Track metadata validate/save regression.
+Build92 acceptance likewise did **not** deliberately cut network or invalidate Access merely to prove response-loss classification. Automated guards own committed/not-committed/ambiguous/unverified failure-path proof; browser acceptance was one normal harmless Track metadata validate/save regression.
 
 ## Version / deployment discipline
 
@@ -760,4 +753,4 @@ If a regression appears:
 
 ## Stop line
 
-**Build91 is the accepted Studio REAL USER PASS baseline. Build92 is DEPLOYED CANDIDATE · REAL USER SMOKE PENDING. Build93 is UNALLOCATED. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**
+**Build92 is the accepted Studio REAL USER PASS baseline. Build93 is UNALLOCATED pending a fresh bounded post-Build92 audit. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**

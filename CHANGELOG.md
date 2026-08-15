@@ -2,16 +2,16 @@
 
 This file is the **current concise changelog**. Detailed per-build records live under [`changelogs/`](changelogs/README.md).
 
-## Current deployed candidate
+## Current accepted release
 
 ### v0.19.14 · Build92 — 2026-08-15
 
 Codename: `studio-focus-slice4-phase9-track-metadata-response-loss-truth`  
-Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+Status: **REAL USER PASS — ACCEPTED**
 
 Build92 adds response-loss truth to canonical Track **metadata save only**.
 
-Candidate behavior:
+Accepted behavior:
 
 - the same non-mutating metadata validation is repeated immediately before POST;
 - exact normalized `proposed` manifest + exact `expectedUpdatedAt` become the operation-specific postcondition;
@@ -23,10 +23,12 @@ Candidate behavior:
 - unreadable canonical reread → `UNVERIFIED / DO NOT RETRY`;
 - normal `saved:true` and `noChange:true` responses are also canonically reread and exactly verified;
 - recovered-after-lost-response verifies canonical Track manifest truth but does not fabricate an independently unobservable `catalogRebuilt:true` receipt;
+- accepted normal-browser smoke confirmed one harmless reversible metadata edit through Validate → one normal Save, `CANONICAL REREAD · VERIFIED`, persistence after reload and surrounding Track / Albums / Lyrics / SonicTrace navigation sanity;
+- acceptance did not manufacture a timeout/transport/Access/response-loss branch;
 - Track create, Track asset upload/delete, Album create/upload, Lyrics/SonicTrace writes and PWA/offline remain out of scope;
 - no Track Manager, Worker, public Worker, R2 schema/data migration, LaunchPAD or LRC Maker change was required.
 
-Exact candidate evidence:
+Exact acceptance evidence:
 
 ```text
 Safety pre               safety/pre-phase9-track-metadata-response-loss-build92-20260815-1722
@@ -38,21 +40,27 @@ Historical guard CI      31893447100 · FAILURE · Build80 seam assertion only �
 Runtime merge            d0ca8b3aa4481c3217f79790e347000bfd22823a
 Runtime Pages            31893652679 · SUCCESS · exact runtime merge SHA
 Safety post-deploy       safety/post-build92-deployed-candidate-20260815-1748
+Candidate docs PR        #159
+Candidate docs CI        31894353160 · SUCCESS
+Candidate docs merge     f46b846841e6ef9ce705b2fa3817baecd0aecefa
+Candidate docs Pages     31894411652 · SUCCESS
+Safety post-acceptance   safety/post-build92-real-user-pass-20260815-1819
+Acceptance docs PR       PENDING
+Acceptance docs merge    PENDING
+Acceptance docs Pages    PENDING
 Track Manager            v5.23 · unchanged
 Studio bridge            v1.13 · unchanged
 TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
 Public Worker            v2.7 · unchanged
 Worker deploy            NONE
 R2 migration/write       NONE caused by deployment
-Real-user smoke          PENDING
+Real-user smoke          BUILD92 PASS MADAFAKA · 2026-08-15
 Build93                  UNALLOCATED
 ```
 
-Required acceptance is a normal-browser Track metadata validation/save regression only; no deliberate network/Access interruption is required.
+Detailed accepted record: [`changelogs/CHANGELOG-BUILD92.md`](changelogs/CHANGELOG-BUILD92.md).
 
-Detailed candidate record: [`changelogs/CHANGELOG-BUILD92.md`](changelogs/CHANGELOG-BUILD92.md).
-
-## Current accepted release
+## Accepted predecessor
 
 ### v0.19.13 · Build91 — 2026-08-15
 
@@ -583,6 +591,6 @@ All Phase8/9 health and guidance surfaces continue to preserve the same canonica
 
 ## Next bounded action
 
-Run the bounded normal-browser Build92 Track metadata regression smoke. Build93 remains **UNALLOCATED** until Build92 is explicitly accepted and a fresh post-Build92 audit proves the next smallest coherent scope.
+Run a fresh post-Build92 Phase9 reliability audit. Build93 remains **UNALLOCATED** until that audit proves the smallest coherent next scope.
 
 `CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS` remains mandatory.
