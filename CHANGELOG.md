@@ -4,80 +4,73 @@ This file is the **current concise changelog**. Detailed per-build records live 
 
 ## Current accepted release
 
-### v0.19.3 · Build81 — 2026-08-15
+### v0.19.4 · Build82 — 2026-08-15
 
-Codename: `studio-focus-slice4-phase8-semantic-truth-cleanup`  
+Codename: `studio-focus-slice4-phase9-destructive-write-ambiguity-guard`  
 Status: **REAL USER PASS — ACCEPTED**
 
-Build81 closes two semantic mismatches proven by fresh code audit:
-
-- Track production/intelligence wording `Sound` → `Sonic`;
-- decorative Release Campaign `Premium provider` selector removed because provider choice never changed prompt builders.
+Build82 opens Phase9 with bounded response-loss truth for destructive asset deletion.
 
 Accepted behavior:
 
-- Track progression says `Sonic`;
-- full SonicTrace view says `TRACK / SONIC`;
-- Release Campaign visibly states `PROVIDER-AGNOSTIC`;
-- Google Flow remains a convenience shortcut only;
-- MASTER/1:1/9:16/motion prompts remain provider-agnostic;
-- old browser-local Release Campaign drafts still restore prompts/assets/copy;
-- campaign export remains review-only with `canonicalWrite: false`;
-- no Worker/backend/R2 change.
+- Track asset delete captures canonical pre-write revision/state;
+- Album asset delete captures canonical pre-write revision/state;
+- a lost response or timeout is **never blindly retried**;
+- private canonical reread classifies committed / not committed / ambiguous / unverified;
+- normal success also requires exact new revision + canonical asset absence;
+- no generic retry framework or second write authority was introduced;
+- no Track Manager, Worker, public Worker or R2 migration change was required.
 
 Exact acceptance evidence:
 
 ```text
-Safety pre               safety/pre-build81-semantic-truth-20260815-0113
-Studio PR                #123
-Exact tested head        bdc79b8dd3fffb41c8368990d50fd733afe87fe3
-Validation               31850313391 · SUCCESS
-Runtime merge            20d587fe1b1d1a5405cd346571c8d5a0eb1d2fa4
-Runtime Pages            31850382728 · SUCCESS · exact runtime merge SHA
-Safety post-deploy       safety/post-build81-deployed-candidate-20260815-0129
-Candidate docs PR        #124
-Candidate docs merge     b151eadcec376f8bbebc0378f7e51d92c62b0a31
-Candidate docs Pages     31850596471 · SUCCESS
-Real-user smoke          BUILD81 PASS · 2026-08-15
-Safety post-RUP          safety/post-build81-real-user-pass-20260815-0159
+Safety pre               safety/pre-phase9-destructive-ambiguity-build82-20260815-0216
+Studio PR                #126
+Exact tested head        07fbcb4efdcd57e79614825d7c45bccd4ab2d860
+Validation               31854468795 · SUCCESS
+Runtime merge            7a0d52fcc0bf862478c459f0648afc1c6690b34f
+Runtime Pages            31854528438 · SUCCESS · exact runtime merge SHA
+Safety post-deploy       safety/post-build82-deployed-candidate-20260815-0248
+Candidate docs PR        #127
+Candidate docs CI        31854668980 · SUCCESS
+Candidate docs merge     077ef8bb19920c439971325604a2d30e015e41c1
+Candidate docs Pages     31854709308 · SUCCESS
+Real-user smoke          BUILD82 PASS · 2026-08-15
 Track Manager            v5.23 · unchanged
 Studio bridge            v1.13 · unchanged
-TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269
+TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
 Public Worker            v2.7 · unchanged
 Worker deploy            NONE
 R2 migration/write       NONE
 ```
 
-Detailed accepted record: [`changelogs/CHANGELOG-PHASE8-BUILD81.md`](changelogs/CHANGELOG-PHASE8-BUILD81.md).
+Detailed accepted record: [`changelogs/CHANGELOG-PHASE9-BUILD82.md`](changelogs/CHANGELOG-PHASE9-BUILD82.md).
 
 ## Accepted predecessor
 
-### v0.19.3 · Build80 — 2026-08-15
+### v0.19.3 · Build81 — 2026-08-15
 
-Status: **REAL USER PASS — cumulative Album Health/publication baseline**
+Status: **REAL USER PASS — Phase8 closeout**
 
-Build80 accepted the cumulative Builds76→80 Album Health/publication lineage after fixing the obsolete Studio duration-evidence bridge pin and completing the browser sequence:
+Build81 closed the Phase8 semantic-truth cleanup:
 
-```text
-Neon Swagger → Published
-Pulse Dominion → Published
-```
+- Track production/intelligence wording `Sound` → `Sonic`;
+- decorative Release Campaign `Premium provider` selector removed because provider choice never changed prompt builders;
+- Release Campaign remains provider-agnostic and browser-local/review-only.
 
-TM v5.23 / bridge1.13 remains the deployed protected backend baseline.
-
-Detailed record: [`changelogs/CHANGELOG-PHASE8-BUILD80.md`](changelogs/CHANGELOG-PHASE8-BUILD80.md).
+Detailed record: [`changelogs/CHANGELOG-PHASE8-BUILD81.md`](changelogs/CHANGELOG-PHASE8-BUILD81.md).
 
 ## Accepted Phase8 lineage
 
 ```text
 Build74  Content Health Truth                         REAL USER PASS
-Build75  Health Drill-down                            REAL USER PASS
-Build76  Album Health truth                           candidate
-Build77  Album Health visual polish                   candidate
-Build78  humanized Track-side Album mismatch UX      candidate
-Build79  Album publication truth                      candidate
+Build75  Health drill-down                            REAL USER PASS
+Build76  Album Health truth                           historical candidate
+Build77  Album Health visual polish                   historical candidate
+Build78  humanized Track-side Album mismatch UX      historical candidate
+Build79  Album publication truth                      historical candidate
 Build80  cumulative Album Health/publication fix     REAL USER PASS
-Build81  semantic truth cleanup                       REAL USER PASS
+Build81  semantic truth cleanup                       REAL USER PASS / Phase8 closeout
 ```
 
 Historical candidates remain historical evidence; they are not retroactively relabelled accepted.
@@ -90,16 +83,18 @@ Phase7-C remains program-complete on Build73. Accepted workflow authority:
 Identity → Core media → Lyrics → Intelligence → Release
 ```
 
-All Phase8 health surfaces continue to reuse the same `workflow.nextAction` authority. Studio remains an orchestrator, not a second workflow engine or generic writer.
-
-Detailed Phase7-C records:
-
-- [`changelogs/CHANGELOG-PHASE7-C-BUILD73.md`](changelogs/CHANGELOG-PHASE7-C-BUILD73.md)
-- [`changelogs/CHANGELOG-PHASE7-C-BUILD71.md`](changelogs/CHANGELOG-PHASE7-C-BUILD71.md)
-- [`docs/PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md`](docs/PHASE-7-C-PROGRAM-CLOSEOUT-AUDIT.md)
+All Phase8/9 health and guidance surfaces continue to preserve the same canonical authority boundaries.
 
 ## Next bounded audit
 
-Build82 is unused. The first remaining focused issue is the asset-selection error previously observed on `Magnetic Midnight`; reproduce it before designing a fix.
+**Build83 is unused.**
+
+After Build82 acceptance, the next action is a fresh read-only Phase9 reliability audit. Current candidates include:
+
+- canonical Lyrics save response-loss truth;
+- SonicTrace analysis save response-loss truth;
+- broader guarded Album write response-loss truth.
+
+Do not allocate a runtime build until the audit proves the smallest coherent gap.
 
 `CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS` remains mandatory.

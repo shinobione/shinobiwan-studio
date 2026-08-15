@@ -2,11 +2,26 @@
 
 Private artist production cockpit and orchestrator for the SHINOBIWAN toolchain.
 
+## Start here
+
+For project continuation, do **not** reconstruct state from old chat transcripts or the full historical docs tree.
+
+Read:
+
+1. [`AGENTS.md`](AGENTS.md)
+2. [`PROJECT_STATE.md`](PROJECT_STATE.md)
+3. [`ROADMAP.md`](ROADMAP.md)
+4. [`DECISIONS.md`](DECISIONS.md)
+5. [`QA.md`](QA.md)
+
+Then verify the real GitHub state before mutation.
+
 ## Current accepted state
 
 ```text
-Studio                v0.19.3 · Build81 · REAL USER PASS
-Codename              studio-focus-slice4-phase8-semantic-truth-cleanup
+Studio                v0.19.4 · Build82 · REAL USER PASS
+Codename              studio-focus-slice4-phase9-destructive-write-ambiguity-guard
+Runtime merge         7a0d52fcc0bf862478c459f0648afc1c6690b34f
 Track Manager         v5.23 · DEPLOYED
 Studio bridge         v1.13
 TM admin Worker       439a1ce4-e458-427d-9fd6-61e888efd269
@@ -17,9 +32,9 @@ Deep Audio            2.0.3-alpha
 LRC Maker             6.3.8
 ```
 
-**Studio v0.19.3 · Build81 is the current accepted runtime.** Build81 closes the Phase8 semantic-truth cleanup: SonicTrace is labelled `Sonic` in the Track production flow, and Release Campaign no longer exposes a fake mutable provider selector when prompts are provider-agnostic.
+**Studio v0.19.4 · Build82 is the current accepted runtime.** Build82 opens Phase9 with bounded destructive-write ambiguity handling for Track and Album asset deletion. Lost responses are never blindly retried; private canonical reread classifies the outcome and normal success also requires canonical postcondition verification.
 
-This repository currently publishes **no formal GitHub Release objects and no Git tags**. `v0.19.3 · Build81` is the project/runtime release identity carried by code, docs and Pages.
+The repository currently publishes **no formal GitHub Release objects and no Git tags**. The runtime release identity is carried by code, docs and Pages.
 
 ## Product model
 
@@ -53,43 +68,29 @@ Production:  Needs attention / Production complete
 Publication: Published / Draft
 ```
 
-A production-ready Track may remain Draft. A Published Track may still expose production-health gaps. Publication is a guarded decision, not readiness scoring.
-
 ## Accepted workflow authority
 
 ```text
 Identity → Core media → Lyrics → Intelligence → Release
 ```
 
-Home, Tracks, Workflow, Track Workspace and Phase8 health surfaces reuse the same `workflow.nextAction` authority. Studio does not introduce a second queue, priority engine or generic writer.
+Home, Tracks, Workflow, Track Workspace and health surfaces reuse the same `workflow.nextAction` authority. Studio does not introduce a second queue, priority engine or generic writer.
 
-## Phase 8 accepted lineage
+## Current program position
 
 ```text
-Build74  Content Health Truth                         REAL USER PASS
-Build75  Health Drill-down                            REAL USER PASS
-Build76  Album Health truth                           candidate
-Build77  Album Health visual polish                   candidate
-Build78  humanized Track-side Album mismatch UX      candidate
-Build79  Album publication truth                      candidate
-Build80  cumulative Album Health/publication fix     REAL USER PASS
-Build81  semantic truth cleanup                       REAL USER PASS
+Phases 0–6          COMPLETE
+Phase 7-A           COMPLETE · REAL USER PASS
+Phase 7-B           COMPLETE · REAL USER PASS
+Phase 7-C           COMPLETE · program closeout
+Phase 8             COMPLETE · Build81 closeout
+Phase 9             ACTIVE
+Phase 9 Slice1      Build82 · REAL USER PASS
+Build83             UNUSED
+Phase 10            FUTURE
 ```
 
-Historical candidates remain historical evidence and are not retroactively relabelled RUP.
-
-### Build81 accepted behavior
-
-- Track production stage says **`Sonic`**, not `Sound`.
-- Full SonicTrace view says **`TRACK / SONIC`**.
-- Release Campaign is visibly **`PROVIDER-AGNOSTIC`**.
-- Google Flow remains a convenience shortcut only.
-- MASTER / 1:1 / 9:16 / motion prompts remain provider-agnostic.
-- old browser-local Release Campaign drafts still restore prompts/assets/copy.
-- campaign export remains review-only with `canonicalWrite: false`.
-- no Track Manager, Worker or R2 mutation was required for Build81.
-
-Exact Build81 acceptance record: [`changelogs/CHANGELOG-PHASE8-BUILD81.md`](changelogs/CHANGELOG-PHASE8-BUILD81.md).
+The next action is **not** a preselected Build83. Run a fresh bounded Phase9 reliability audit first. Current candidates are canonical Lyrics save response-loss truth, SonicTrace analysis save response-loss truth and broader guarded Album-write ambiguity.
 
 ## Frozen authority model
 
@@ -111,7 +112,7 @@ Exact Build81 acceptance record: [`changelogs/CHANGELOG-PHASE8-BUILD81.md`](chan
 albums/<album-id>/manifest.json
 ```
 
-Ordered `album.trackIds` is the sole membership/artistic-order authority. Track-side Album metadata is compatibility cache only.
+Ordered `album.trackIds` is the sole membership/artistic-order authority. Track-side Album metadata is compatibility/cache data only.
 
 ### Lyrics
 
@@ -123,7 +124,7 @@ tracks/<slug>/lyrics.txt
 
 ### Audio duration
 
-`manifest.duration` is a derived canonical fact from the current master audio, never a free-form metadata field. Duration evidence is accepted only through explicitly compatible guarded Track Manager bridge pairs.
+`manifest.duration` is a derived canonical fact from the current master audio, never a free-form metadata field.
 
 ### SonicTrace
 
@@ -142,32 +143,43 @@ MASTER FINAL 16:9
 └── 9:16 independently anchored to MASTER
 ```
 
-9:16 is never derived from 1:1. Campaign drafts remain browser-local and ZIP export remains review-only.
+Release Campaign is provider-agnostic. Google Flow is a convenience shortcut. Campaign drafts remain browser-local and ZIP export remains review-only.
 
-## What comes next
+## Build82 acceptance
 
-The remaining focused product backlog starts with a **fresh reproduction/audit of the asset-selection error previously observed on `Magnetic Midnight`**. Do not assume its cause or fix before reproduction.
+```text
+Runtime PR              #126
+Exact tested head       07fbcb4efdcd57e79614825d7c45bccd4ab2d860
+Validation              31854468795 · SUCCESS
+Runtime merge           7a0d52fcc0bf862478c459f0648afc1c6690b34f
+Runtime Pages           31854528438 · SUCCESS
+Candidate docs PR       #127
+Candidate docs merge    077ef8bb19920c439971325604a2d30e015e41c1
+Real-user smoke         BUILD82 PASS · 2026-08-15
+Worker deploy           NONE
+R2 migration/write      NONE
+```
 
-Premium interaction polish remains a rolling backlog: tactile press/release feedback, restrained glow/focus, coherent hover/active states and smooth reduced-motion-safe transitions.
-
-Later roadmap:
-
-- **Phase 9 — Security / reliability / PWA**: Access/CORS hardening, retries/timeouts, ambiguous-write handling, degraded/offline UX, PWA resilience.
-- **Phase 10 — Progressive extraction**: potential extraction of mature LRC/SonicTrace/catalog engines while Studio remains orchestrator.
-- there is currently **no official Phase 11**.
+Detailed record: [`changelogs/CHANGELOG-PHASE9-BUILD82.md`](changelogs/CHANGELOG-PHASE9-BUILD82.md).
 
 ## Documentation
 
-Start here:
+### Canonical current truth
 
-- [Current roadmap](docs/ROADMAP-CURRENT.md)
-- [Next-session handoff](docs/NEXT-SESSION-HANDOFF.md)
-- [Build81 REAL USER PASS](changelogs/CHANGELOG-PHASE8-BUILD81.md)
-- [Current concise changelog](CHANGELOG.md)
+- [Agent startup contract](AGENTS.md)
+- [Project state](PROJECT_STATE.md)
+- [Roadmap](ROADMAP.md)
+- [Decisions](DECISIONS.md)
+- [QA / acceptance](QA.md)
+- [Integration safety](docs/INTEGRATION_SAFETY.md)
+- [Concise changelog](CHANGELOG.md)
+
+### Historical evidence
+
 - [Documentation map](docs/README.md)
 - [Detailed changelog archive](changelogs/README.md)
-- [Phase 7-C guided actions contract](docs/PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md)
-- [Integration safety](docs/INTEGRATION_SAFETY.md)
+
+Old `docs/ROADMAP-CURRENT.md` and `docs/NEXT-SESSION-HANDOFF.md` paths are retained as compatibility pointers only.
 
 ## Acceptance policy
 
@@ -175,4 +187,4 @@ Start here:
 CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS
 ```
 
-A runtime is accepted only after exact-head CI, anti-drift verification, exact merge-SHA Pages deployment and explicit real-user browser validation.
+A runtime is accepted only after exact-head CI, exact merge-SHA deployment and explicit real-user validation where required. Merge, Pages deployment, Worker deployment and R2 mutation remain separate states.

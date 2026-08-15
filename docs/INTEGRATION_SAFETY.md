@@ -3,9 +3,11 @@
 Date established: 2026-08-08  
 Hardened: 2026-08-09  
 Current-state overlay refreshed: 2026-08-15  
-Current accepted Studio release before Build82: `v0.19.3` / Build `81` / REAL USER PASS
+Current accepted Studio release: `v0.19.4` / Build `82` / REAL USER PASS
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
+
+For short current state, read root `PROJECT_STATE.md` first. This file contains the detailed safety contract.
 
 ## Protected production projects
 
@@ -19,9 +21,10 @@ This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace
 
 ```text
 Studio
-  v0.19.3 / Build81 / REAL USER PASS
-  runtime merge 20d587fe1b1d1a5405cd346571c8d5a0eb1d2fa4
-  closeout main d4487fe2eb33ba6f78c4941b5ef2fafe9646d4a1
+  v0.19.4 / Build82 / REAL USER PASS
+  runtime merge 7a0d52fcc0bf862478c459f0648afc1c6690b34f
+  runtime Pages 31854528438 / SUCCESS
+  browser smoke BUILD82 PASS / 2026-08-15
 
 LaunchPAD
   2026.08.12.102 / REAL USER PASS
@@ -40,7 +43,7 @@ LRC Maker
   6.3.8
 ```
 
-Historical Phase6/Phase7 checkpoints remain immutable history; this overlay states current production truth only.
+Historical Phase6/Phase7/Phase8 checkpoints remain immutable history; this overlay states current production truth only.
 
 ## Restoration checkpoints
 
@@ -53,6 +56,9 @@ Accepted Build81 runtime/docs:
 
 Before Phase9 Build82:
   safety/pre-phase9-destructive-ambiguity-build82-20260815-0216
+
+After Build82 deployment candidate:
+  safety/post-build82-deployed-candidate-20260815-0248
 ```
 
 Earlier accepted safety branches remain preserved in Git history.
@@ -72,7 +78,8 @@ For every risky integration step:
 9. never merge red CI;
 10. merge only the exact tested head;
 11. keep source merge, web deployment, Worker deployment and R2/catalog mutation as distinct states;
-12. verify a deployed dependency before enabling its consumer.
+12. verify a deployed dependency before enabling its consumer;
+13. record REAL USER PASS separately when the roadmap requires browser validation.
 
 `CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS`.
 
@@ -172,14 +179,16 @@ A lost-response write may be recovered as success only when the operation-specif
 
 Public fallback can never perform this verification.
 
-### Build82 scope
+### Build82 accepted scope
 
 Build82 applies this policy only to destructive asset deletion:
 
 - Track asset delete;
 - Album asset delete.
 
-For both, recovery requires exact private canonical reread and asset absence; ambiguous/unverified states explicitly forbid blind retry.
+For both, recovery requires exact private canonical reread and asset absence; ambiguous/unverified states explicitly forbid blind retry. Normal success also requires verified post-write revision plus asset absence.
+
+Build82 is **REAL USER PASS** after the 2026-08-15 browser regression smoke.
 
 Do not silently generalize Build82 into retries for metadata, lyrics, SonicTrace or other Album writes. Those require separate bounded audits.
 
@@ -203,9 +212,12 @@ Treat separately:
 1. code merged;
 2. GitHub Pages deployed;
 3. Worker deployed;
-4. R2/catalog data changed.
+4. R2/catalog data changed;
+5. real-user acceptance recorded.
 
-For private Track Manager-only Worker changes, prefer `target=admin` and `confirm=DEPLOY`. Build82 requires no Worker deployment.
+For private Track Manager-only Worker changes, prefer `target=admin` and `confirm=DEPLOY`. Build82 required no Worker deployment.
+
+Docs-only governance/closeout work does not create a new Studio build.
 
 ## Rollback principle
 
@@ -220,4 +232,4 @@ If a regression appears:
 
 ## Stop line
 
-**Build81 is the accepted Studio baseline. Build82 is Phase9 Slice1 candidate only until exact CI/deployment and explicit browser acceptance. Track Manager v5.23 / bridge1.13 remains the sole deployed write authority.**
+**Build82 is the accepted Studio REAL USER PASS baseline. Phase9 is active. Build83 remains UNUSED until a fresh bounded audit proves the smallest next reliability scope. Track Manager v5.23 / bridge1.13 remains the sole deployed protected write authority.**
