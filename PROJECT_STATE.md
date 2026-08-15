@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-15 after explicit **`BUILD84 PASS`** real-user browser acceptance.
+Updated: 2026-08-15 after **Build85 deployed candidate** publication. Real-user acceptance is pending.
 
 This file is the short current checkpoint. It is the first project-state document to read after `AGENTS.md`.
 
@@ -15,16 +15,28 @@ Runtime PR              #132
 Exact tested head       377de51416d4aea258830e55e894707d9f3f6512
 Final runtime CI        31858911420 · SUCCESS
 Runtime merge SHA       b7cf745e11adee1eb77900a32b9b6ca8ea80e000
-Runtime Pages           31858977765 · SUCCESS · exact runtime merge SHA
-Candidate docs PR       #133
-Candidate docs merge    ea93441094173b3c05a1e08b22f7c53ef87f3783
-Candidate docs Pages    31859213261 · SUCCESS
+Runtime Pages           31858977765 · SUCCESS
 Real-user smoke         BUILD84 PASS · 2026-08-15
-Worker deploy           NONE
-R2 migration/write      NONE caused by deployment
 ```
 
-Build84 is now the latest **accepted** Studio runtime.
+Build84 remains the latest **accepted** runtime until Build85 receives explicit real-user browser acceptance.
+
+## Current deployed candidate
+
+```text
+Studio version          v0.19.7
+Studio build            Build85
+Codename                studio-focus-slice4-phase9-album-metadata-response-loss-truth
+Acceptance              DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Runtime PR              #135
+Exact tested head       4bbfb93dfc9333eb1e8fc3a35b62699611e69367
+Final runtime CI        31863267911 · SUCCESS
+Runtime merge SHA       1199f6a0e26da88e54f64a369985c2a72267e5a5
+Runtime Pages           31863313848 · SUCCESS · exact runtime merge SHA
+Worker deploy           NONE
+Track Manager change    NONE
+R2 migration/write      NONE caused by deployment
+```
 
 ## Current ecosystem baseline
 
@@ -39,7 +51,7 @@ Deep Audio              2.0.3-alpha
 LRC Maker               6.3.8
 ```
 
-Build84 changes only Studio client-side SonicTrace **save verification / response-loss classification**. It does **not** change SonicTrace Deep Audio computation, Track Manager, the Studio bridge, any Worker, R2 schema/data, LaunchPAD or LRC Maker.
+Build85 changes only Studio client-side canonical **Album metadata save** verification / response-loss classification. It does **not** change Album create, membership/order, move, upload, asset deletion, Track Manager, Workers, R2 schema/data, LaunchPAD, SonicTrace Deep Audio or LRC Maker.
 
 ## Program position
 
@@ -53,67 +65,61 @@ Phase 9                 ACTIVE
 Phase 9 Slice1          COMPLETE · Build82 REAL USER PASS
 Phase 9 Slice2          COMPLETE · Build83 REAL USER PASS
 Phase 9 Slice3          COMPLETE · Build84 REAL USER PASS
+Phase 9 Slice4          Build85 DEPLOYED CANDIDATE · smoke pending
 Phase 10                FUTURE
 Official Phase 11       NONE
 ```
 
-## Build82 accepted behavior
+## Build82–84 accepted behavior
 
-Build82 hardens destructive Track and Album asset deletion ambiguity. Lost responses are never blindly retried; private canonical reread classifies committed / not committed / ambiguous / unverified and normal success also requires exact canonical verification.
+- **Build82** hardens destructive Track/Album asset deletion ambiguity with private canonical reread and no blind retry.
+- **Build83** hardens canonical `lyrics.txt` save response-loss truth with exact revision + ETag + normalized requested text verification.
+- **Build84** hardens SonicTrace analysis save response-loss truth using exact `analysisId` presence across canonical latest + history.
 
-## Build83 accepted behavior
+## Build85 candidate behavior
 
-Build83 hardens canonical `lyrics.txt` save response-loss truth with private canonical Lyrics + Track reread. A write is recovered only when the exact new revision, ETag and normalized requested text are proven.
-
-## Build84 accepted behavior
-
-Build84 hardens the canonical SonicTrace **analysis save** response-loss path. The post-Build83 audit proved this was the smallest remaining coherent write-truth gap because one requested `analysisId` has deterministic canonical presence across two sidecars already owned by Track Manager:
+The fresh post-Build84 audit proved **Album metadata save only** as the smallest coherent remaining Album write-truth gap. The deployed Track Manager already stale-guards, writes, verifies and rolls back this transaction; Build85 changes no backend behavior.
 
 ```text
-tracks/<slug>/analysis/sonictrace/latest.json
-tracks/<slug>/analysis/sonictrace/history/<analysisId>.json
-```
-
-The deployed Track Manager already writes history, then latest, rereads both, and attempts rollback on verification failure. Build84 changes no backend behavior.
-
-```text
-SonicTrace save response lost / timeout
+Album metadata save response lost / timeout
 → NEVER blind automatic retry
-→ private canonical reread of latest + history
-   ├─ requested analysisId present in BOTH
+→ private canonical Album reread
+   ├─ new revision + exact requested metadata + stable non-metadata shape
    │    → COMMITTED / VERIFIED
-   ├─ requested analysisId absent from BOTH
+   ├─ original revision unchanged
    │    → NOT COMMITTED / explicit retry may be safe
-   ├─ requested analysisId present in only one
+   ├─ revision changed but exact metadata-only postcondition unproven
    │    → AMBIGUOUS / DO NOT RETRY
    └─ private reread unavailable
         → UNVERIFIED / DO NOT RETRY
 ```
 
-Before save, Studio also rejects an already-canonical `analysisId` and stale source-audio evidence. Normal HTTP success requires exact canonical latest + history verification before Studio calls the save verified.
+Stable non-metadata shape includes canonical identity, ordered `trackIds`, assets and `createdAt`, preventing unrelated membership/media drift from being mistaken for metadata-save recovery.
 
-The bounded normal-browser smoke confirmed the deployed Build84 path loads SonicTrace latest/history normally, performs a normal scan/save with canonical verification, updates the analysis state, and preserves surrounding Studio navigation.
+Normal HTTP success also requires exact server-returned revision + requested metadata + stable non-metadata shape before Studio calls the save verified.
 
 ## Current blockers
 
-**No active blocker after `BUILD84 PASS`.**
+No code, CI or deployment blocker remains for Build85.
 
-The historical `Magnetic Midnight` public-cover palette `Failed to fetch` issue remains resolved since Build62 and covered by regression guards.
+**Acceptance blocker:** real-user browser smoke is pending. Do not promote Build85 to REAL USER PASS before an explicit verdict.
 
 ## Exact next action
 
-**Do not allocate Build85 yet.**
+Run the bounded **Build85 normal-browser Album metadata regression smoke**:
 
-Run a fresh, read-only Phase9 reliability audit and select the smallest coherent next reliability slice only after proving the gap and confirming existing recovery logic does not already cover it.
+1. hard refresh Studio and verify `v0.19.7 · Build85`;
+2. open an existing safe canonical Album;
+3. note its current revision;
+4. edit one harmless metadata field such as heading/description/accent;
+5. click **Save metadata** normally;
+6. expect **`Album metadata saved and canonically verified.`**;
+7. confirm the revision advances and the saved value survives canonical reload;
+8. sanity-check normal Albums / Track / Lyrics / SonicTrace navigation.
 
-Remaining audit candidates include:
+Do **not** deliberately cut network or Cloudflare Access during the save merely to manufacture response loss.
 
-1. broader guarded Album write response-loss truth;
-2. Access/CORS hardening;
-3. bounded read retries/timeouts;
-4. degraded/offline UX and PWA resilience.
-
-No candidate above is an automatic commitment or pre-allocated build.
+After explicit PASS: close Build85 as REAL USER PASS, then run a fresh Phase9 audit before allocating Build86. Album membership/move/upload/create response-loss truth and Access/read/PWA resilience remain candidates, not commitments.
 
 ## Frozen stop lines
 
@@ -126,6 +132,7 @@ No candidate above is an automatic commitment or pre-allocated build.
 - No destructive production smoke merely to prove a guard.
 - `lyrics.txt` remains the unique canonical lyrics source.
 - `album.trackIds` remains the sole Album membership/artistic-order authority.
+- Operation-specific response-loss recovery must never be generalized without a fresh audit.
 
 ## Relevant safety references
 
@@ -139,6 +146,9 @@ safety/pre-phase9-sonictrace-response-loss-build84-20260815-0413
 safety/post-build84-deployed-candidate-20260815-0425
 safety/post-build84-candidate-docs-closeout-20260815-0429
 safety/post-build84-real-user-pass-20260815-0435
+safety/post-build84-rup-docs-closeout-20260815-0441
+safety/pre-phase9-album-metadata-response-loss-build85-20260815-0555
+safety/post-build85-deployed-candidate-20260815-0602
 ```
 
 ## Acceptance vocabulary
@@ -147,4 +157,4 @@ safety/post-build84-real-user-pass-20260815-0435
 CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS
 ```
 
-Build84 is **REAL USER PASS**. Build85 is **UNALLOCATED**.
+Build84 is **REAL USER PASS**. Build85 is **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**. Build86 is **UNALLOCATED**.
