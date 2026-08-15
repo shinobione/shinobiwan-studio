@@ -33,7 +33,25 @@ Deep Audio            2.0.3-alpha
 LRC Maker             6.3.8
 ```
 
-**Studio v0.19.8 · Build86 is the current accepted runtime.** Build86 extends Phase9 response-loss truth to canonical Album move only. A lost move response is never blindly retried; Studio privately rereads the target Album, optional source Album and Track compatibility cache before classifying committed, not committed, ambiguous or unverified. The required normal-browser regression received explicit **`BUILD86 PASS`** on 2026-08-15.
+**Studio v0.19.8 · Build86 remains the current accepted runtime.** Build86 extends Phase9 response-loss truth to canonical Album move only. A lost move response is never blindly retried; Studio privately rereads the target Album, optional source Album and Track compatibility cache before classifying committed, not committed, ambiguous or unverified. The required normal-browser regression received explicit **`BUILD86 PASS`** on 2026-08-15.
+
+## Current deployed candidate
+
+```text
+Studio                v0.19.9 · Build87 · DEPLOYED CANDIDATE
+Codename              studio-focus-slice4-phase9-album-membership-response-loss-truth
+Runtime PR            #141
+Exact tested head     5f155d312b0af7227325a78480bfd424a96e7859
+Validation            31870328730 · SUCCESS · first run
+Runtime merge         b9e1f121c7dc111ee6db06fd4d00227426d96ce7
+Runtime Pages         31870370403 · SUCCESS
+Real-user smoke       PENDING
+Worker deploy         NONE
+Track Manager change  NONE
+R2 migration/write    NONE caused by deployment
+```
+
+Build87 hardens canonical Album **bulk membership / ordered tracklist save** against lost responses and verifies both the Album and every affected Track compatibility cache. It remains a candidate until explicit browser acceptance.
 
 The repository currently publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
@@ -91,11 +109,12 @@ Phase 9 Slice2      Build83 · REAL USER PASS
 Phase 9 Slice3      Build84 · REAL USER PASS
 Phase 9 Slice4      Build85 · REAL USER PASS
 Phase 9 Slice5      Build86 · REAL USER PASS
-Build87             UNALLOCATED
+Phase 9 Slice6      Build87 · DEPLOYED CANDIDATE · smoke pending
+Build88             UNALLOCATED
 Phase 10            FUTURE
 ```
 
-The immediate next action is a **fresh bounded Phase9 reliability audit**, not another preselected runtime build. Remaining candidates include Album bulk membership/upload/create response-loss truth, Access/CORS hardening, bounded read retries/timeouts, and degraded/offline/PWA resilience.
+The immediate next action is the bounded Build87 normal-browser Album tracklist reorder regression smoke. No successor is allocated before explicit Build87 acceptance and a fresh post-acceptance audit.
 
 ## Frozen authority model
 
@@ -153,6 +172,24 @@ move response unavailable
 
 Build86 does not generalize this contract to Album bulk membership, create or upload.
 
+Build87 candidate failure contract for **Album bulk membership / ordered tracklist save only**:
+
+```text
+membership response unavailable
+→ private Album + union(previous, requested) Track reread
+   ├─ new Album revision + exact requested ordered trackIds
+   │  + exact expected Track caches + stable non-membership shapes
+   │    → COMMITTED / VERIFIED
+   ├─ exact pre-write Album + Track state unchanged
+   │    → NOT COMMITTED / retry may be safe after fresh reload
+   ├─ partial/mixed changed state
+   │    → AMBIGUOUS / DO NOT RETRY
+   └─ reread unavailable
+        → UNVERIFIED / DO NOT RETRY
+```
+
+Requested Tracks must exist. A historically missing prior Track can still be removed. Removed Tracks whose cache claimed the Album converge to transitional `Singles`; unrelated cache claims remain unchanged. Build87 does not generalize this contract to Album create or binary upload.
+
 ### Lyrics
 
 ```text
@@ -205,6 +242,25 @@ MASTER FINAL 16:9
 ```
 
 Release Campaign is provider-agnostic. Google Flow is a convenience shortcut. Campaign drafts remain browser-local and ZIP export remains review-only.
+
+## Build87 candidate receipts
+
+```text
+Safety pre              safety/pre-phase9-album-membership-response-loss-build87-20260815-0837
+Safety pre-PR           safety/post-build87-prepr-20260815-0844
+Runtime PR              #141
+Exact tested head       5f155d312b0af7227325a78480bfd424a96e7859
+Validation              31870328730 · SUCCESS · first run
+Runtime merge           b9e1f121c7dc111ee6db06fd4d00227426d96ce7
+Runtime Pages           31870370403 · SUCCESS · exact runtime merge SHA
+Safety post-deploy      safety/post-build87-deployed-candidate-20260815-0853
+Worker deploy           NONE
+Track Manager change    NONE
+R2 migration/write      NONE caused by deployment
+Real-user smoke         PENDING
+```
+
+Detailed record: [`changelogs/CHANGELOG-BUILD87.md`](changelogs/CHANGELOG-BUILD87.md).
 
 ## Build86 acceptance receipts
 
