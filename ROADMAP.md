@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-15 after **Build91 deployed candidate** publication. Build90 remains REAL USER PASS.
+Updated: 2026-08-15 after **Build91 REAL USER PASS**.
 
 This file is the durable roadmap summary. Historical implementation detail belongs in `docs/` and `changelogs/`; do not copy it here unless it changes what is done, active, next or backlogged.
 
@@ -244,17 +244,21 @@ Build90 intentionally does **not** bundle SonicTrace read retry, Album create/up
 
 ### Phase 9 Slice10 — SonicTrace private-read transient retry truth
 
-**Build91 · v0.19.13 · DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+**Build91 · v0.19.13 · REAL USER PASS**
 
 The fresh post-Build90 audit selected the private Track Manager SonicTrace GET helper as the smallest coherent remaining reliability gap.
 
-Candidate evidence and behavior:
+Accepted evidence and behavior:
 
 - runtime PR #154;
 - exact tested head `b8ee223b2d077e5d14936530be219f78ed7910ac`;
 - runtime CI `31888303536` SUCCESS **on first run**;
 - runtime merge `591b81a3930f1ba6d9f91f6e4f7d6e31550e5cf6`;
 - Pages `31888346988` SUCCESS on that exact merge;
+- candidate docs PR #155 merged at `32a57f50c90f3f7677e3a45ad46eace8bd988b3d`;
+- candidate docs Pages `31889030115` SUCCESS;
+- acceptance docs PR #156 opened for the explicit PASS closeout;
+- explicit real-user verdict `BUILD91 PASS MADAFAKA` on 2026-08-15;
 - canonical SonicTrace latest/history state and catalog GET transport interruptions are typed separately from Access/CORS;
 - timeout / transport / HTTP `408/425/429/500/502/503/504` may receive one bounded retry;
 - Access/CORS, deterministic ordinary 4xx, non-JSON gating and invalid JSON are never retried;
@@ -264,27 +268,30 @@ Candidate evidence and behavior:
 - `sonictrace-analysis-save-v1` POST remains unchanged and is never automatically retried;
 - Build84 response-loss truth remains committed / not-committed / ambiguous / unverified with no blind write retry;
 - Deep Audio health/analysis XHR and canonical audio download remain out of scope;
+- normal-browser acceptance confirmed deployed Build91, canonical SonicTrace latest/history loading on an existing Track, a normal catalog/Intelligence read and surrounding Track / Albums / Lyrics / SonicTrace navigation sanity;
+- acceptance did not manufacture a network/Access failure branch;
 - no Track Manager, Worker, R2 schema/data migration or cross-product runtime change.
 
 Build91 intentionally does **not** bundle Album create/upload or PWA/offline work.
 
 ## In progress
 
-### Phase 9 — Build91 real-user smoke
+### Phase 9 — fresh post-Build91 reliability audit
 
-Build91 is deployed but **not accepted yet**.
+Build91 is accepted. **Build92 is not allocated.**
 
-Required browser smoke is intentionally normal read-only operation: load a Track with canonical SonicTrace analysis, open SonicTrace latest/history state, verify a SonicTrace catalog-consuming surface, then check surrounding Track / Albums / Lyrics / SonicTrace navigation. No write is required.
+The current task is a fresh read-only audit to identify the smallest remaining reliability gap without duplicating existing recovery logic or turning Phase9 into a generic refactor bucket.
 
 ## Next
 
-After explicit Build91 acceptance, run a fresh read-only audit. Remaining candidates include:
+Audit remaining candidates by proven risk / bounded scope, without assuming a build number:
 
 1. Album asset upload response-loss truth;
 2. Album create response-loss truth;
-3. degraded/offline/PWA resilience.
+3. degraded/offline/PWA resilience;
+4. any newly proven smaller bounded reliability gap found by the fresh audit.
 
-Build92 remains **UNALLOCATED** until that audit proves one coherent scope.
+Pick **one** coherent slice only after the audit proves the gap and confirms it does not duplicate existing recovery logic.
 
 ## Backlog
 
@@ -314,8 +321,8 @@ There is currently **no official Phase 11**.
 - Do not deliberately damage or interrupt production merely to prove a retry/ambiguity guard.
 - Do not generalize GET retry into write retry.
 - Do not generalize one write family's recovery postcondition into another operation family.
-- Do not allocate Build92 before Build91 acceptance plus a fresh bounded audit.
+- Do not allocate Build92 before a fresh bounded post-Build91 audit selects its scope.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build91 candidate smoke boundary.
+See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build91 REAL USER PASS boundary.
