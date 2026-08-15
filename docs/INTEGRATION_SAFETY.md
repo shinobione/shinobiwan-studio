@@ -3,7 +3,8 @@
 Date established: 2026-08-08  
 Hardened: 2026-08-09  
 Current-state overlay refreshed: 2026-08-15  
-Current accepted Studio release: `v0.19.13` / Build `91` / REAL USER PASS
+Current accepted Studio release: `v0.19.13` / Build `91` / REAL USER PASS  
+Current deployed candidate: `v0.19.14` / Build `92` / REAL USER SMOKE PENDING
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -30,9 +31,21 @@ Studio accepted
   candidate docs merge 32a57f50c90f3f7677e3a45ad46eace8bd988b3d
   candidate docs Pages 31889030115 / SUCCESS
   acceptance docs PR #156
-  acceptance docs merge PENDING
-  acceptance docs Pages PENDING
+  acceptance docs merge 80b6c34f2bd8937cbbc4ef5e24899d13a6949731
+  acceptance docs Pages 31892156760 / SUCCESS
   browser smoke BUILD91 PASS MADAFAKA / 2026-08-15
+  Worker deploy NONE
+  Track Manager change NONE
+  R2 migration/write NONE caused by deployment
+
+Studio candidate
+  v0.19.14 / Build92 / DEPLOYED CANDIDATE
+  exact tested head 2b859d831f5fc46eea9853f31c4b86057041128b
+  final runtime CI 31893496536 / SUCCESS
+  historical guard CI 31893447100 / FAILURE / Build80 seam assertion only / never merged
+  runtime merge d0ca8b3aa4481c3217f79790e347000bfd22823a
+  runtime Pages 31893652679 / SUCCESS
+  browser smoke PENDING
   Worker deploy NONE
   Track Manager change NONE
   R2 migration/write NONE caused by deployment
@@ -54,7 +67,7 @@ LRC Maker
   6.3.8
 ```
 
-Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable history; this overlay states current accepted production truth only.
+Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable history; this overlay distinguishes current accepted production truth from the currently deployed candidate.
 
 ## Restoration checkpoints
 
@@ -177,6 +190,17 @@ After Build91 deployment candidate:
 
 After Build91 real-user acceptance:
   safety/post-build91-real-user-pass-20260815-1700
+  safety/post-build91-rup-docs-closeout-20260815-1716
+  safety/post-build91-receipts-closeout-20260815-1720
+
+Before Phase9 Build92:
+  safety/pre-phase9-track-metadata-response-loss-build92-20260815-1722
+
+After Build92 implementation before PR:
+  safety/post-build92-prepr-20260815-1740
+
+After Build92 deployment candidate:
+  safety/post-build92-deployed-candidate-20260815-1748
 ```
 
 Earlier accepted safety branches remain preserved in Git history.
@@ -243,6 +267,8 @@ Build90 changes only canonical Lyrics private **GET** behavior. It adds one boun
 
 Build91 changes only private Track Manager SonicTrace **GET** behavior for canonical latest/history state and the SonicTrace catalog. It adds one bounded retry for timeout/transport/selected transient HTTP failures. It changes no `sonictrace-analysis-save-v1` POST behavior, no Build84 lost-response recovery rule, no Deep Audio health/analysis XHR, no canonical audio download behavior, no Track Manager route, no Worker and no R2 data/schema.
 
+Build92 changes only Studio-side canonical Track **metadata save response-loss truth**. It repeats non-mutating validation immediately before the write, anchors the save to the exact reviewed proposal + revision, and classifies a lost timeout/transport response through private canonical Track reread. It changes no Track Manager route, Worker, R2 schema/data, Track create/assets, Album writes, Lyrics/SonicTrace writes or PWA/offline behavior.
+
 ### SonicTrace
 
 SonicTrace remains the audio-intelligence compute engine. R2 sidecars hold durable catalog-linked analysis. No duplicate canonical WAV is stored in analysis persistence.
@@ -300,6 +326,43 @@ Rules:
 - `rereadLyricsTruth()` may survive one transient Lyrics GET failure but still never retries the save POST.
 
 Build90 is **REAL USER PASS** after explicit 2026-08-15 normal-browser Lyrics-read regression acceptance. The browser smoke did not deliberately break network or Access; automated guards own the transient failure-path proof.
+
+## Track metadata write boundary
+
+Track Manager owns canonical Track metadata stale guarding, proposal application, manifest write, derived catalog rebuild, canonical reread and rollback attempts. Build92 adds Studio-side response-loss truth without changing that server transaction.
+
+### Build92 Track metadata response-loss boundary — CANDIDATE
+
+Immediately before the explicit write, Studio repeats the same non-mutating metadata validation against the exact expected Track revision. The exact normalized proposal becomes the operation-specific postcondition. If canonical audio evidence exists, already-supported derived `duration` is part of that proposal while remaining non-editable.
+
+```text
+Track metadata save response unavailable
+→ NEVER blind automatic retry
+→ private canonical Track reread
+   ├─ new revision + exact reviewed normalized proposal
+   │    → COMMITTED / VERIFIED
+   ├─ original revision unchanged
+   │    → NOT COMMITTED / explicit retry safe after reconnect
+   ├─ changed revision but exact reviewed proposal unproven
+   │    → AMBIGUOUS / DO NOT RETRY
+   └─ reread unavailable
+        → UNVERIFIED / DO NOT RETRY
+```
+
+Rules:
+
+- only typed `TRACK_METADATA_SAVE_TIMEOUT` / `TRACK_METADATA_SAVE_TRANSPORT` enter response-loss recovery;
+- Access gating, invalid response and ordinary server rejection do not enter that recovery path;
+- no automatic write retry exists;
+- exact proposal comparison ignores only runtime `updatedAt` and `updatedBy`;
+- normal `saved:true` requires canonical reread revision === server `updatedAt` + exact reviewed proposal;
+- normal `noChange:true` requires the original revision + exact reviewed proposal;
+- mismatch is ambiguous; unreadable reread is unverified;
+- recovered canonical Track metadata/duration truth does not imply an independently observed `catalog/index.json` rebuild receipt.
+
+Track Manager rebuilds the catalog inside its server transaction, but the private Track reread reconstructs Track state from manifests rather than independently reading the derived catalog index. Therefore Build92 **must not fabricate `catalogRebuilt:true` after a lost response**. Normal HTTP responses retain the server's real catalog receipt.
+
+Build92 is **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**. Browser acceptance must be one harmless normal metadata validate/save regression, not a manufactured lost-response test.
 
 ## SonicTrace persistence boundary
 
@@ -631,6 +694,14 @@ Private Track Manager SonicTrace **GET retry only** for canonical latest/history
 
 Build91 is **REAL USER PASS** after explicit 2026-08-15 normal-browser canonical SonicTrace-read regression acceptance. Acceptance did not manufacture a failure branch.
 
+### Build92 candidate scope
+
+Canonical Track **metadata save response-loss truth only**. Recovery is entered only after typed timeout/transport response loss and never automatically retries the POST. Recovered committed truth requires a new canonical Track revision plus the exact normalized proposal reviewed immediately before the write. An unchanged original revision is not committed / explicit retry safe after reconnect; changed-but-nonmatching is ambiguous; unavailable reread is unverified.
+
+Build92 must not be generalized into Track create, asset upload/delete, Album create/upload or any other write family. A recovered Track manifest does not independently prove the derived catalog rebuild receipt, so Build92 does not fabricate one.
+
+Build92 is **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**.
+
 ## Destructive/media verification policy
 
 Do not mutate a real production WAV, cover, video, Album cover or lyrics object merely to prove destructive/media code can mutate it.
@@ -658,6 +729,8 @@ Build90 acceptance likewise did **not** require deliberately cutting network or 
 
 Build91 acceptance likewise did **not** require deliberately cutting network or invalidating Access. Automated guards own the transient failure-path proof; browser acceptance was a normal canonical SonicTrace-read regression.
 
+Build92 candidate smoke likewise must **not** deliberately cut network or invalidate Access merely to prove response-loss classification. Automated guards own committed/not-committed/ambiguous/unverified failure-path proof; browser acceptance should be one normal harmless Track metadata validate/save regression.
+
 ## Version / deployment discipline
 
 Treat separately:
@@ -670,7 +743,7 @@ Treat separately:
 
 For private Track Manager-only Worker changes, prefer `target=admin` and `confirm=DEPLOY`.
 
-Build82, Build83, Build84, Build85, Build86, Build87, Build88, Build89, Build90 and Build91 required no Worker deployment. Build91 Pages deployment caused no intentional R2 schema/data migration.
+Build82, Build83, Build84, Build85, Build86, Build87, Build88, Build89, Build90, Build91 and Build92 required no Worker deployment. Build92 Pages deployment caused no intentional R2 schema/data migration.
 
 Docs-only governance/closeout work does not create a new Studio build.
 
@@ -687,4 +760,4 @@ If a regression appears:
 
 ## Stop line
 
-**Build91 is the accepted Studio REAL USER PASS baseline. Build92 is UNALLOCATED pending a fresh bounded post-Build91 audit. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**
+**Build91 is the accepted Studio REAL USER PASS baseline. Build92 is DEPLOYED CANDIDATE · REAL USER SMOKE PENDING. Build93 is UNALLOCATED. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**
