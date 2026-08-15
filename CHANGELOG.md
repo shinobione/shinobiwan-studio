@@ -67,7 +67,44 @@ Accepted behavior:
 - no generic retry framework or second write authority was introduced;
 - no Track Manager, Worker, public Worker or R2 migration change was required.
 
+Exact acceptance evidence:
+
+```text
+Safety pre               safety/pre-phase9-destructive-ambiguity-build82-20260815-0216
+Studio PR                #126
+Exact tested head        07fbcb4efdcd57e79614825d7c45bccd4ab2d860
+Validation               31854468795 · SUCCESS
+Runtime merge            7a0d52fcc0bf862478c459f0648afc1c6690b34f
+Runtime Pages            31854528438 · SUCCESS · exact runtime merge SHA
+Safety post-deploy       safety/post-build82-deployed-candidate-20260815-0248
+Candidate docs PR        #127
+Candidate docs CI        31854668980 · SUCCESS
+Candidate docs merge     077ef8bb19920c439971325604a2d30e015e41c1
+Candidate docs Pages     31854709308 · SUCCESS
+Real-user smoke          BUILD82 PASS · 2026-08-15
+Track Manager            v5.23 · unchanged
+Studio bridge            v1.13 · unchanged
+TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
+Public Worker            v2.7 · unchanged
+Worker deploy            NONE
+R2 migration/write       NONE
+```
+
 Detailed accepted record: [`changelogs/CHANGELOG-PHASE9-BUILD82.md`](changelogs/CHANGELOG-PHASE9-BUILD82.md).
+
+## Accepted predecessor
+
+### v0.19.3 · Build81 — 2026-08-15
+
+Status: **REAL USER PASS — Phase8 closeout**
+
+Build81 closed the Phase8 semantic-truth cleanup:
+
+- Track production/intelligence wording `Sound` → `Sonic`;
+- decorative Release Campaign `Premium provider` selector removed because provider choice never changed prompt builders;
+- Release Campaign remains provider-agnostic and browser-local/review-only.
+
+Detailed record: [`changelogs/CHANGELOG-PHASE8-BUILD81.md`](changelogs/CHANGELOG-PHASE8-BUILD81.md).
 
 ## Accepted Phase8 lineage
 
