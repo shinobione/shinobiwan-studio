@@ -1,6 +1,6 @@
 # Studio v0.19.10 · Build88 — Phase9 core private-read transient retry truth
 
-Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**.
+Status: **REAL USER PASS · ACCEPTED**.
 
 ## Fresh audit proof
 
@@ -14,15 +14,15 @@ The fresh read-only Phase9 audit compared:
 - bounded read retries/timeouts;
 - degraded/offline/PWA resilience.
 
-The smallest coherent proven gap is the **core private Track Manager GET path** used for bridge health, Track inventory and Track detail.
+The smallest coherent proven gap was the **core private Track Manager GET path** used for bridge health, Track inventory and Track detail.
 
 Before Build88, `fetchAdminJson()` already had finite 4.5–7s timeouts, but any non-timeout browser `fetch()` rejection was classified as `access-or-cors`. `catalog-api.ts` then immediately fell back to the public catalog after that first private failure. A transient network/transport blip could therefore be presented as an Access problem and temporarily hide private-only canonical truth such as Draft Tracks.
 
-Album create remains deferred because absent→present creation has no pre-write revision or persisted client operation identifier strong enough to prove exact causality after a lost response without a backend contract change.
+Album create remained deferred because absent→present creation has no pre-write revision or persisted client operation identifier strong enough to prove exact causality after a lost response without a backend contract change.
 
-Album binary upload remains deferred because the server returns the canonical R2 ETag only after upload; Studio does not currently possess a precomputable exact digest/ETag contract that can prove the uploaded bytes after a lost response.
+Album binary upload remained deferred because the server returns the canonical R2 ETag only after upload; Studio does not currently possess a precomputable exact digest/ETag contract that can prove the uploaded bytes after a lost response.
 
-Offline/PWA resilience remains cross-cutting: Studio currently has no dedicated service-worker/PWA layer, so introducing one is not a bounded Phase9 reliability correction.
+Offline/PWA resilience remained cross-cutting: Studio currently has no dedicated service-worker/PWA layer, so introducing one was not a bounded Phase9 reliability correction.
 
 ## Scope
 
@@ -44,7 +44,7 @@ It does **not** change:
 
 ## Retry classification
 
-Core private GETs now distinguish:
+Core private GETs distinguish:
 
 ```text
 timeout                         transient → one retry max
@@ -59,7 +59,7 @@ invalid JSON                     invalid response → NO RETRY
 
 There are at most **two total attempts**. A second failure is surfaced immediately; there is no loop/backoff framework.
 
-Public fallback remains unchanged in `catalog-api.ts`: it is consulted only after the private helper ultimately fails. Build88 simply prevents one transient private transport fault from causing an immediate downgrade to public truth.
+Public fallback remains unchanged in `catalog-api.ts`: it is consulted only after the private helper ultimately fails. Build88 prevents one transient private transport fault from causing an immediate downgrade to public truth.
 
 ## Safety boundary
 
@@ -81,7 +81,7 @@ Build88 adds:
 - immutable Build87 ancestry marker;
 - bounded historical successor compatibility only where old guards explicitly capped the accepted runtime line.
 
-Exact candidate evidence:
+Exact acceptance evidence:
 
 ```text
 Safety pre              safety/pre-phase9-private-read-retry-build88-20260815-0916
@@ -91,10 +91,14 @@ Final CI                31871980725 · SUCCESS
 Runtime merge           9d4f0a7ba4cd17de1d4d6c69e4abe6bc706c7633
 Runtime Pages           31872073050 · SUCCESS · exact runtime merge SHA
 Safety post-deploy      safety/post-build88-deployed-candidate-20260815-0932
+Candidate docs PR       #145
+Candidate docs merge    316ad1b0784d72fb7d29d92c5deaedb56d262e49
+Candidate docs Pages    31872540118 · SUCCESS · exact docs merge SHA
+Safety post-acceptance  safety/post-build88-real-user-pass-20260815-1253
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
-Real-user smoke         PENDING
+Real-user smoke         BUILD88 PASS MADAFAKA · 2026-08-15
 ```
 
 Historical CI runs:
@@ -104,25 +108,26 @@ Historical CI runs:
 
 Those heads were never merged. The old guards were widened only for bounded Build88 successor compatibility while preserving their functional assertions. Final exact-head CI `31871980725` passed the complete repository-native chain.
 
-## Real-user acceptance boundary
+## Real-user acceptance — PASS
 
-Build88 is **not yet REAL USER PASS**.
+The user completed the bounded normal-browser regression and returned the explicit verdict:
 
-Use a normal browser regression after deployment:
+```text
+BUILD88 PASS MADAFAKA
+```
 
-- hard refresh Studio and verify `v0.19.10 · Build88`;
-- Home / Tracks should load the normal private inventory, including Draft Tracks when present;
-- open a Track and verify normal private canonical detail;
-- quick Albums / Lyrics / SonicTrace navigation sanity.
+Acceptance covered normal deployed `v0.19.10 · Build88` loading, Home / Tracks private inventory, normal private canonical Track detail and Albums / Track / Lyrics / SonicTrace navigation sanity.
 
-Do **not** deliberately cut network or invalidate Cloudflare Access merely to manufacture the retry branch. Automated guards cover the classification and bounded-attempt contract.
+Acceptance deliberately did **not** cut network, invalidate Cloudflare Access or manufacture timeout/transport/transient-HTTP branches. Those failure branches are guarded by automated classification/attempt-limit tests rather than destructive or misleading production smoke.
 
 ## Safety / rollback
 
-Runtime rollback is Studio-only. Build88 introduces no backend deployment and no R2 schema/data migration. The safety checkpoints are:
+Runtime rollback is Studio-only. Build88 introduces no backend deployment and no R2 schema/data migration. The relevant safety checkpoints are:
 
 - `safety/pre-phase9-private-read-retry-build88-20260815-0916`;
-- `safety/post-build88-deployed-candidate-20260815-0932`.
+- `safety/post-build88-deployed-candidate-20260815-0932`;
+- `safety/post-build88-candidate-docs-closeout-20260815-0942`;
+- `safety/post-build88-real-user-pass-20260815-1253`.
 
 ## Stop line
 
@@ -131,4 +136,4 @@ Runtime rollback is Studio-only. Build88 introduces no backend deployment and no
 - Do not retry deterministic Access/CORS or invalid-response failures.
 - Do not merge red CI.
 - Merge only the exact tested head.
-- Do not allocate Build89 before Build88 explicit acceptance plus a fresh bounded audit.
+- Do not allocate Build89 before a fresh post-Build88 bounded audit proves the next smallest coherent gap.

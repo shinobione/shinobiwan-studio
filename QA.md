@@ -1,44 +1,27 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-08-15 after **Build88 deployed candidate** publication. Real-user acceptance remains pending.
+Updated: 2026-08-15 after explicit **Build88 REAL USER PASS**.
 
 This file records what has actually been validated, what automated guards cover, and what remains unproven. It is not a full test-history dump.
 
 ## Current accepted Studio runtime
 
 ```text
-Version                 v0.19.9
-Build                   Build87
-Status                  REAL USER PASS
-Runtime PR              #141
-Exact tested head       5f155d312b0af7227325a78480bfd424a96e7859
-Final CI                31870328730 · SUCCESS · first run
-Runtime merge           b9e1f121c7dc111ee6db06fd4d00227426d96ce7
-Pages                   31870370403 · SUCCESS · exact runtime merge SHA
-Candidate docs PR       #142
-Candidate docs merge    453be9e9d72c9d90cd97ad5f57be02821efec12a
-Candidate docs Pages    31870838391 · SUCCESS
-Worker deploy           NONE
-Track Manager change    NONE
-R2 migration/write      NONE caused by deployment
-Real-user verdict       BUILD87 PASS · 2026-08-15
-```
-
-## Current deployed candidate
-
-```text
 Version                 v0.19.10
 Build                   Build88
-Status                  DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Status                  REAL USER PASS
 Runtime PR              #144
 Exact tested head       808b0c63fc22f17a04a9c544b934d97c791d3a73
 Final CI                31871980725 · SUCCESS
 Runtime merge           9d4f0a7ba4cd17de1d4d6c69e4abe6bc706c7633
 Pages                   31872073050 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #145
+Candidate docs merge    316ad1b0784d72fb7d29d92c5deaedb56d262e49
+Candidate docs Pages    31872540118 · SUCCESS
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
-Real-user verdict       PENDING
+Real-user verdict       BUILD88 PASS MADAFAKA · 2026-08-15
 ```
 
 ## Build88 automated coverage — GREEN
@@ -88,21 +71,32 @@ Additional Build88 guarantees:
 - no Album create/upload behavior changed;
 - no Worker, Track Manager or R2 schema/data mutation was required.
 
-## Build88 real-user smoke — PENDING
+## Build88 real-user smoke — PASS
 
-The required acceptance smoke is intentionally a **normal-browser regression**, not a manufactured network-failure test:
+The required acceptance smoke was intentionally a **normal-browser regression**, not a manufactured network-failure test.
 
-1. hard refresh Studio and verify `v0.19.10 · Build88`;
-2. open **Home / Tracks** and verify the normal private inventory loads, including Draft Tracks when present;
-3. open one Track and verify normal private canonical detail loads;
-4. quick **Albums → Track → Lyrics → SonicTrace** navigation sanity;
-5. do **not** cut network, expire Access or otherwise manufacture the retry branch.
-
-Until explicit user verdict:
+The user completed the bounded smoke and returned the explicit verdict:
 
 ```text
-Build88 != REAL USER PASS
+BUILD88 PASS MADAFAKA
 ```
+
+The accepted smoke boundary covered:
+
+- hard refresh to the deployed `v0.19.10 · Build88` runtime;
+- Home / Tracks loading the normal private inventory, including Draft Tracks when present;
+- opening a Track and loading normal private canonical detail;
+- surrounding Albums / Track / Lyrics / SonicTrace navigation regression sanity.
+
+Acceptance intentionally did **not** require cutting network, expiring Cloudflare Access or manufacturing timeout/transport/HTTP transient branches. Those branches remain protected by the automated Build88 retry-classification and attempt-bound guards.
+
+Result:
+
+```text
+Build88 = REAL USER PASS
+```
+
+No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration or cross-repository runtime change was required to reach acceptance.
 
 ## Build87 automated coverage — GREEN
 
@@ -479,13 +473,11 @@ Git history shows the public-cover credential/fetch path was corrected in Build6
 
 ## Known open QA gaps / next audits
 
-Current acceptance gap:
+No Build88 acceptance blocker remains.
 
-1. Build88 normal-browser private-read regression smoke.
+Before any successor runtime work, perform a fresh bounded Phase9 audit. Candidate areas include Album asset upload response-loss truth, Album create response-loss truth, broader private-read resilience and degraded/offline/PWA behavior.
 
-Do not allocate Build89 while Build88 acceptance remains pending.
-
-After explicit Build88 PASS, perform a fresh bounded Phase9 audit. Remaining candidates include Album asset upload, Album create, broader read resilience and degraded/offline/PWA behavior.
+**Build89 is unallocated** until a fresh bounded audit proves a concrete scope.
 
 ## Standard validation commands
 

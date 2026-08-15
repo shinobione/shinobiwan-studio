@@ -1,48 +1,31 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-15 after **Build88 deployed candidate** publication. Real-user acceptance is pending.
+Updated: 2026-08-15 after explicit **`BUILD88 PASS MADAFAKA`** real-user browser acceptance.
 
 This file is the short current checkpoint. It is the first project-state document to read after `AGENTS.md`.
 
 ## Current accepted runtime
 
 ```text
-Studio version          v0.19.9
-Studio build            Build87
-Codename                studio-focus-slice4-phase9-album-membership-response-loss-truth
-Acceptance              REAL USER PASS
-Runtime PR              #141
-Exact tested head       5f155d312b0af7227325a78480bfd424a96e7859
-Final runtime CI        31870328730 · SUCCESS · first run
-Runtime merge SHA       b9e1f121c7dc111ee6db06fd4d00227426d96ce7
-Runtime Pages           31870370403 · SUCCESS · exact runtime merge SHA
-Candidate docs PR       #142
-Candidate docs merge    453be9e9d72c9d90cd97ad5f57be02821efec12a
-Candidate docs Pages    31870838391 · SUCCESS · exact docs merge SHA
-Real-user smoke         BUILD87 PASS · 2026-08-15
-Worker deploy           NONE
-Track Manager change    NONE
-R2 migration/write      NONE caused by deployment
-```
-
-Build87 remains the latest **accepted** Studio runtime until Build88 receives explicit real-user browser acceptance.
-
-## Current deployed candidate
-
-```text
 Studio version          v0.19.10
 Studio build            Build88
 Codename                studio-focus-slice4-phase9-private-read-transient-retry-truth
-Acceptance              DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Acceptance              REAL USER PASS
 Runtime PR              #144
 Exact tested head       808b0c63fc22f17a04a9c544b934d97c791d3a73
 Final runtime CI        31871980725 · SUCCESS
 Runtime merge SHA       9d4f0a7ba4cd17de1d4d6c69e4abe6bc706c7633
 Runtime Pages           31872073050 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #145
+Candidate docs merge    316ad1b0784d72fb7d29d92c5deaedb56d262e49
+Candidate docs Pages    31872540118 · SUCCESS · exact docs merge SHA
+Real-user smoke         BUILD88 PASS MADAFAKA · 2026-08-15
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
 ```
+
+Build88 is now the latest **accepted** Studio runtime.
 
 ## Current ecosystem baseline
 
@@ -56,8 +39,6 @@ SonicTrace              V2-E Build08 · REAL USER PASS
 Deep Audio              2.0.3-alpha
 LRC Maker               6.3.8
 ```
-
-Build87 changes only Studio client-side canonical **Album bulk membership / ordered tracklist save** response-loss classification and verification across the Album plus every affected Track compatibility cache. It does **not** change Album create, binary upload, Track Manager, Workers, R2 schema/data, LaunchPAD, SonicTrace Deep Audio or LRC Maker.
 
 Build88 changes only the Studio core private Track Manager **GET** transport for bridge health, Track inventory and Track detail. It distinguishes transient transport from Access/CORS and permits at most one bounded retry for timeout/transport/selected transient HTTP failures. It does **not** retry writes and does not change Track Manager, Workers, R2 schema/data, LaunchPAD, SonicTrace Deep Audio or LRC Maker.
 
@@ -76,7 +57,7 @@ Phase 9 Slice3          COMPLETE · Build84 REAL USER PASS
 Phase 9 Slice4          COMPLETE · Build85 REAL USER PASS
 Phase 9 Slice5          COMPLETE · Build86 REAL USER PASS
 Phase 9 Slice6          COMPLETE · Build87 REAL USER PASS
-Phase 9 Slice7          Build88 DEPLOYED CANDIDATE · smoke pending
+Phase 9 Slice7          COMPLETE · Build88 REAL USER PASS
 Phase 10                FUTURE
 Official Phase 11       NONE
 ```
@@ -165,7 +146,7 @@ Normal HTTP success also requires exact returned revision/order, exact canonical
 
 The bounded normal-browser smoke received explicit **`BUILD87 PASS MADAFAKA`** on 2026-08-15 after a normal safe Album tracklist regression. Acceptance did not require deliberately interrupting network/Access or manufacturing a response-loss branch.
 
-## Build88 candidate behavior
+## Build88 accepted behavior
 
 The fresh post-Build87 audit proved the core private read transport as the smallest coherent reliability gap. Before Build88, a non-timeout `fetch()` rejection was mislabeled `access-or-cors`, and the catalog layer could immediately downgrade to public fallback after one transient private failure.
 
@@ -183,11 +164,11 @@ invalid JSON                     → invalid-response · NO RETRY
 
 There are at most **two total attempts**. A second failure surfaces immediately. Public fallback behavior remains in `catalog-api.ts`; it is consulted only after the private helper ultimately fails. Build88 introduces no generic retry framework and no automatic write retry.
 
+The bounded normal-browser smoke received explicit **`BUILD88 PASS MADAFAKA`** on 2026-08-15 after Home / Tracks private inventory, normal private Track detail and Albums / Track / Lyrics / SonicTrace navigation regression checks. Acceptance did **not** require deliberately cutting network, invalidating Cloudflare Access, or manufacturing transient failure branches.
+
 ## Current blockers
 
-No code/CI/deployment blocker remains for Build88.
-
-**Acceptance blocker:** normal real-user browser smoke is pending. Do not promote Build88 to REAL USER PASS before an explicit verdict.
+**No active blocker after `BUILD88 PASS MADAFAKA`.**
 
 Historical CI runs `31871834515` and `31871883072` were red only because inherited Phase7-C / Studio Focus successor allowlists stopped at Build87. Those heads were never merged. Final runtime CI `31871980725` passed the complete chain on exact head `808b0c63fc22f17a04a9c544b934d97c791d3a73`.
 
@@ -195,15 +176,18 @@ The historical `Magnetic Midnight` public-cover palette `Failed to fetch` issue 
 
 ## Exact next action
 
-Run the bounded **Build88 normal-browser private-read regression smoke**:
+**Do not allocate Build89 yet.**
 
-1. hard refresh Studio and verify `v0.19.10 · Build88`;
-2. open Home / Tracks and verify the normal private inventory loads, including Draft Tracks when present;
-3. open one Track and verify normal private canonical detail;
-4. quick regression: Albums → Track → Lyrics → SonicTrace;
-5. do **not** deliberately cut network or invalidate Cloudflare Access merely to manufacture the retry branch.
+Run a fresh, read-only Phase9 reliability audit and select the smallest coherent next reliability slice only after proving the gap and confirming existing recovery logic does not already cover it.
 
-After explicit Build88 PASS, close Slice7 and run another fresh bounded audit before allocating any successor. **Build89 is UNALLOCATED.**
+Remaining audit candidates include:
+
+1. Album asset upload response-loss truth;
+2. Album create response-loss truth;
+3. broader private-read resilience outside the Build88 core GETs;
+4. degraded/offline/PWA resilience.
+
+No candidate above is an automatic commitment or pre-allocated build.
 
 ## Frozen stop lines
 
@@ -250,6 +234,8 @@ safety/post-build87-real-user-pass-20260815-0903
 safety/post-build87-rup-docs-closeout-20260815-0912
 safety/pre-phase9-private-read-retry-build88-20260815-0916
 safety/post-build88-deployed-candidate-20260815-0932
+safety/post-build88-candidate-docs-closeout-20260815-0942
+safety/post-build88-real-user-pass-20260815-1253
 ```
 
 ## Acceptance vocabulary
@@ -258,4 +244,4 @@ safety/post-build88-deployed-candidate-20260815-0932
 CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS
 ```
 
-Build87 is **REAL USER PASS**. Build88 is **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**. Build89 is **UNALLOCATED**.
+Build88 is **REAL USER PASS**. Build89 is **UNALLOCATED**.

@@ -3,8 +3,7 @@
 Date established: 2026-08-08  
 Hardened: 2026-08-09  
 Current-state overlay refreshed: 2026-08-15  
-Current accepted Studio release: `v0.19.9` / Build `87` / REAL USER PASS  
-Current deployed candidate: `v0.19.10` / Build `88` / REAL USER SMOKE PENDING
+Current accepted Studio release: `v0.19.10` / Build `88` / REAL USER PASS
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -22,25 +21,14 @@ For short current state, read root `PROJECT_STATE.md` first. This file contains 
 
 ```text
 Studio accepted
-  v0.19.9 / Build87 / REAL USER PASS
-  exact tested head 5f155d312b0af7227325a78480bfd424a96e7859
-  runtime CI 31870328730 / SUCCESS / first run
-  runtime merge b9e1f121c7dc111ee6db06fd4d00227426d96ce7
-  runtime Pages 31870370403 / SUCCESS
-  candidate docs merge 453be9e9d72c9d90cd97ad5f57be02821efec12a
-  candidate docs Pages 31870838391 / SUCCESS
-  browser smoke BUILD87 PASS / 2026-08-15
-  Worker deploy NONE
-  Track Manager change NONE
-  R2 migration/write NONE caused by deployment
-
-Studio candidate
-  v0.19.10 / Build88 / DEPLOYED CANDIDATE
+  v0.19.10 / Build88 / REAL USER PASS
   exact tested head 808b0c63fc22f17a04a9c544b934d97c791d3a73
   runtime CI 31871980725 / SUCCESS
   runtime merge 9d4f0a7ba4cd17de1d4d6c69e4abe6bc706c7633
   runtime Pages 31872073050 / SUCCESS
-  browser smoke PENDING
+  candidate docs merge 316ad1b0784d72fb7d29d92c5deaedb56d262e49
+  candidate docs Pages 31872540118 / SUCCESS
+  browser smoke BUILD88 PASS MADAFAKA / 2026-08-15
   Worker deploy NONE
   Track Manager change NONE
   R2 migration/write NONE caused by deployment
@@ -62,7 +50,7 @@ LRC Maker
   6.3.8
 ```
 
-Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable history; this overlay separates the accepted baseline from the current deployed candidate.
+Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable history; this overlay states current accepted production truth only.
 
 ## Restoration checkpoints
 
@@ -138,6 +126,10 @@ Before Phase9 Build88:
 
 After Build88 deployment candidate:
   safety/post-build88-deployed-candidate-20260815-0932
+  safety/post-build88-candidate-docs-closeout-20260815-0942
+
+After Build88 real-user acceptance:
+  safety/post-build88-real-user-pass-20260815-1253
 ```
 
 Earlier accepted safety branches remain preserved in Git history.
@@ -196,7 +188,7 @@ Build86 changes only client-side canonical **Album move** response-loss classifi
 
 Build87 changes only client-side canonical **Album bulk membership / ordered tracklist save** response-loss classification and complete Album + affected Track-cache verification. It does not alter Album create, binary upload/delete, Track Manager, Workers or R2 schema/data.
 
-Build88 candidate changes only the core private Track Manager **GET** transport for bridge health, Track inventory and Track detail. It adds one bounded retry for timeout/transport/selected transient HTTP failures and changes no POST/write retry behavior, Track Manager route, Worker or R2 data/schema.
+Build88 changes only the core private Track Manager **GET** transport for bridge health, Track inventory and Track detail. It adds one bounded retry for timeout/transport/selected transient HTTP failures and changes no POST/write retry behavior, Track Manager route, Worker or R2 data/schema.
 
 ### SonicTrace
 
@@ -413,7 +405,7 @@ Whole-track deletion remains outside the Studio bridge.
 - public fallback is read-only and never verifies a write;
 - no PUT/PATCH/DELETE browser method is introduced merely for convenience.
 
-### Build88 private-read retry boundary — DEPLOYED CANDIDATE
+### Build88 private-read retry boundary — ACCEPTED
 
 The core private read transport is deliberately narrow:
 
@@ -436,7 +428,7 @@ Rules:
 - public fallback remains read-only and is reached only after the private helper ultimately fails;
 - this GET retry policy does **not** authorize retrying any POST, write, upload, delete, catalog rebuild or validation operation.
 
-Build88 changes no Track Manager/backend transaction and requires no Worker or R2 migration.
+Build88 changes no Track Manager/backend transaction and requires no Worker or R2 migration. Build88 is **REAL USER PASS** after explicit normal-browser private-read regression acceptance.
 
 ## Ambiguous-write policy — Phase9 authority
 
@@ -487,11 +479,11 @@ Album **bulk membership / ordered tracklist save only**. Recovered success requi
 
 Build87 is **REAL USER PASS**. Do not generalize it into Album create/upload behavior.
 
-### Build88 candidate scope
+### Build88 accepted scope
 
 Core private **GET retry only**. One retry is allowed only after timeout, transport interruption or the explicit transient HTTP status allowlist. This is not an ambiguous-write recovery contract and must never be used as justification for automatically retrying writes.
 
-Build88 is **DEPLOYED CANDIDATE** pending normal browser acceptance.
+Build88 is **REAL USER PASS** after the explicit 2026-08-15 normal-browser private-read regression verdict. Acceptance did not manufacture a failure branch.
 
 ## Destructive/media verification policy
 
@@ -512,7 +504,7 @@ Build86 acceptance likewise did **not** require deliberately cutting network/Acc
 
 Build87 acceptance likewise did **not** require deliberately cutting network/Access. A harmless reorder of existing Tracks in one safe Album was sufficient.
 
-Build88 acceptance likewise must **not** require deliberately cutting network or invalidating Access merely to prove the transient GET retry branch. Automated guards own that failure-path proof; browser acceptance is a normal private-read regression.
+Build88 acceptance likewise did **not** require deliberately cutting network or invalidating Access merely to prove the transient GET retry branch. Automated guards own that failure-path proof; browser acceptance was a normal private-read regression.
 
 ## Version / deployment discipline
 
@@ -543,4 +535,4 @@ If a regression appears:
 
 ## Stop line
 
-**Build87 is the accepted Studio REAL USER PASS baseline. Build88 is DEPLOYED CANDIDATE with browser smoke pending. Build89 is UNALLOCATED. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**
+**Build88 is the accepted Studio REAL USER PASS baseline. Build89 is UNALLOCATED pending a fresh bounded post-Build88 audit. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**
