@@ -3,8 +3,7 @@
 Date established: 2026-08-08  
 Hardened: 2026-08-09  
 Current-state overlay refreshed: 2026-08-15  
-Current accepted Studio release: `v0.19.12` / Build `90` / REAL USER PASS  
-Current deployed candidate: `v0.19.13` / Build `91` / REAL USER SMOKE PENDING
+Current accepted Studio release: `v0.19.13` / Build `91` / REAL USER PASS
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -22,29 +21,18 @@ For short current state, read root `PROJECT_STATE.md` first. This file contains 
 
 ```text
 Studio accepted
-  v0.19.12 / Build90 / REAL USER PASS
-  exact tested head 48ca1dc25951d65ead05c4f80bd1f9e6bf8c5d01
-  runtime CI 31884568681 / SUCCESS / first run
-  runtime merge 8a851a7d53d3b4f45359c7036011684441bb25bb
-  runtime Pages 31884614863 / SUCCESS
-  candidate docs PR #151
-  candidate docs merge 442b488511d77da15592a37d6e8d2dca0ed30fb8
-  candidate docs Pages 31885123431 / SUCCESS
-  acceptance docs PR #152
-  acceptance docs merge ebc501df90b8a8bf9229da4a61d7784beba13b78
-  acceptance docs Pages 31887090784 / SUCCESS
-  browser smoke BUILD90 PASS MADAFAKA / 2026-08-15
-  Worker deploy NONE
-  Track Manager change NONE
-  R2 migration/write NONE caused by deployment
-
-Studio candidate
-  v0.19.13 / Build91 / DEPLOYED CANDIDATE
+  v0.19.13 / Build91 / REAL USER PASS
   exact tested head b8ee223b2d077e5d14936530be219f78ed7910ac
   runtime CI 31888303536 / SUCCESS / first run
   runtime merge 591b81a3930f1ba6d9f91f6e4f7d6e31550e5cf6
   runtime Pages 31888346988 / SUCCESS
-  browser smoke PENDING
+  candidate docs PR #155
+  candidate docs merge 32a57f50c90f3f7677e3a45ad46eace8bd988b3d
+  candidate docs Pages 31889030115 / SUCCESS
+  acceptance docs PR #156
+  acceptance docs merge PENDING
+  acceptance docs Pages PENDING
+  browser smoke BUILD91 PASS MADAFAKA / 2026-08-15
   Worker deploy NONE
   Track Manager change NONE
   R2 migration/write NONE caused by deployment
@@ -66,7 +54,7 @@ LRC Maker
   6.3.8
 ```
 
-Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable history; this overlay distinguishes current accepted production truth from the currently deployed candidate.
+Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable history; this overlay states current accepted production truth only.
 
 ## Restoration checkpoints
 
@@ -185,6 +173,10 @@ After Build91 implementation before PR:
 
 After Build91 deployment candidate:
   safety/post-build91-deployed-candidate-20260815-1559
+  safety/post-build91-candidate-docs-closeout-20260815-1608
+
+After Build91 real-user acceptance:
+  safety/post-build91-real-user-pass-20260815-1700
 ```
 
 Earlier accepted safety branches remain preserved in Git history.
@@ -334,7 +326,7 @@ SonicTrace save response lost / timeout
 
 Build84 is **REAL USER PASS** after explicit normal-browser regression acceptance.
 
-### Build91 SonicTrace private-read boundary — CANDIDATE
+### Build91 SonicTrace private-read boundary — ACCEPTED
 
 Build91 does not change the save transaction above. It changes only private Track Manager SonicTrace GETs used by normal canonical latest/history state loading, the SonicTrace catalog and Build84 verification/recovery rereads:
 
@@ -358,7 +350,7 @@ Rules:
 - Build84 verification/recovery may survive one transient SonicTrace GET failure but still never retries the save POST;
 - Deep Audio health/analysis XHR and canonical audio download remain out of scope.
 
-Build91 is **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**. Acceptance must be a normal-browser SonicTrace-read regression, not a manufactured network failure.
+Build91 is **REAL USER PASS** after explicit 2026-08-15 normal-browser SonicTrace private-read regression acceptance. The browser smoke did not deliberately break network or Access; automated guards own the transient failure-path proof.
 
 ## Album authority boundary
 
@@ -633,11 +625,11 @@ Canonical Lyrics **GET retry only**. One retry is allowed only after timeout, tr
 
 Build90 is **REAL USER PASS** after explicit 2026-08-15 normal-browser canonical Lyrics-read regression acceptance. Acceptance did not manufacture a failure branch.
 
-### Build91 candidate scope
+### Build91 accepted scope
 
 Private Track Manager SonicTrace **GET retry only** for canonical latest/history state plus the SonicTrace catalog. One retry is allowed only after timeout, transport interruption or the explicit transient HTTP allowlist. This is not authorization to retry `sonictrace-analysis-save-v1`, Deep Audio analysis, canonical audio download or any other write.
 
-Build91 remains **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING** until normal-browser SonicTrace read acceptance.
+Build91 is **REAL USER PASS** after explicit 2026-08-15 normal-browser canonical SonicTrace-read regression acceptance. Acceptance did not manufacture a failure branch.
 
 ## Destructive/media verification policy
 
@@ -664,7 +656,7 @@ Build89 acceptance likewise did **not** require deliberately cutting network or 
 
 Build90 acceptance likewise did **not** require deliberately cutting network or invalidating Access. Automated guards own the transient failure-path proof; browser acceptance was a normal canonical Lyrics-read regression.
 
-Build91 candidate smoke likewise must **not** deliberately cut network or invalidate Access merely to prove the transient GET retry branch. Automated guards own that failure-path proof; browser acceptance should be a normal canonical SonicTrace-read regression.
+Build91 acceptance likewise did **not** require deliberately cutting network or invalidating Access. Automated guards own the transient failure-path proof; browser acceptance was a normal canonical SonicTrace-read regression.
 
 ## Version / deployment discipline
 
@@ -695,4 +687,4 @@ If a regression appears:
 
 ## Stop line
 
-**Build90 is the accepted Studio REAL USER PASS baseline. Build91 is DEPLOYED CANDIDATE · REAL USER SMOKE PENDING. Build92 is UNALLOCATED. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**
+**Build91 is the accepted Studio REAL USER PASS baseline. Build92 is UNALLOCATED pending a fresh bounded post-Build91 audit. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**

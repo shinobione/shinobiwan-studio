@@ -2,16 +2,16 @@
 
 This file is the **current concise changelog**. Detailed per-build records live under [`changelogs/`](changelogs/README.md).
 
-## Current deployed candidate
+## Current accepted release
 
 ### v0.19.13 · Build91 — 2026-08-15
 
 Codename: `studio-focus-slice4-phase9-sonictrace-private-read-transient-retry-truth`  
-Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+Status: **REAL USER PASS — ACCEPTED**
 
 Build91 extends bounded private-read resilience to private Track Manager SonicTrace **GETs only**.
 
-Candidate behavior:
+Accepted behavior:
 
 - non-timeout SonicTrace browser `fetch()` interruption is classified as `SONICTRACE_READ_TRANSPORT`, not falsely as Cloudflare Access;
 - timeout, transport interruption, and HTTP `408/425/429/500/502/503/504` may receive exactly one bounded retry;
@@ -25,9 +25,11 @@ Candidate behavior:
 - no automatic SonicTrace save/analysis retry exists;
 - Deep Audio health/analysis XHR and canonical audio download remain unchanged;
 - Album create/upload and degraded/offline/PWA remain separate future audit families;
+- normal-browser acceptance confirmed deployed Build91, canonical latest/history loading on an existing Track, a normal SonicTrace catalog/Intelligence read and surrounding Track / Albums / Lyrics / SonicTrace navigation sanity;
+- acceptance did not manufacture a timeout/transport/Access failure branch;
 - no Track Manager, Worker, public Worker, R2 schema/data migration, LaunchPAD or LRC Maker change was required.
 
-Exact candidate evidence:
+Exact acceptance evidence:
 
 ```text
 Safety pre               safety/pre-phase9-sonictrace-private-read-retry-build91-20260815-1546
@@ -38,21 +40,26 @@ Validation               31888303536 · SUCCESS · first run
 Runtime merge            591b81a3930f1ba6d9f91f6e4f7d6e31550e5cf6
 Runtime Pages            31888346988 · SUCCESS · exact runtime merge SHA
 Safety post-deploy       safety/post-build91-deployed-candidate-20260815-1559
+Candidate docs PR        #155
+Candidate docs merge     32a57f50c90f3f7677e3a45ad46eace8bd988b3d
+Candidate docs Pages     31889030115 · SUCCESS
+Safety post-acceptance   safety/post-build91-real-user-pass-20260815-1700
+Acceptance docs PR       #156
+Acceptance docs merge    PENDING
+Acceptance docs Pages    PENDING
 Track Manager            v5.23 · unchanged
 Studio bridge            v1.13 · unchanged
 TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
 Public Worker            v2.7 · unchanged
 Worker deploy            NONE
 R2 migration/write       NONE caused by deployment
-Real-user smoke          PENDING
+Real-user smoke          BUILD91 PASS MADAFAKA · 2026-08-15
 Build92                  UNALLOCATED
 ```
 
-Required acceptance is a normal-browser SonicTrace read regression only; no deliberate network/Access interruption is required.
+Detailed accepted record: [`changelogs/CHANGELOG-BUILD91.md`](changelogs/CHANGELOG-BUILD91.md).
 
-Detailed candidate record: [`changelogs/CHANGELOG-BUILD91.md`](changelogs/CHANGELOG-BUILD91.md).
-
-## Current accepted release
+## Accepted predecessor
 
 ### v0.19.12 · Build90 — 2026-08-15
 
@@ -527,6 +534,6 @@ All Phase8/9 health and guidance surfaces continue to preserve the same canonica
 
 ## Next bounded action
 
-Run the normal-browser Build91 SonicTrace private-read regression smoke. Build92 remains **UNALLOCATED** until Build91 is explicitly accepted and a fresh post-Build91 audit proves the next smallest coherent scope.
+Run a fresh post-Build91 Phase9 reliability audit. Build92 remains **UNALLOCATED** until that audit proves the smallest coherent next scope.
 
 `CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS` remains mandatory.
