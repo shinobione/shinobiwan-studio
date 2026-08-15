@@ -3,7 +3,8 @@
 Date established: 2026-08-08  
 Hardened: 2026-08-09  
 Current-state overlay refreshed: 2026-08-15  
-Current accepted Studio release: `v0.19.5` / Build `83` / REAL USER PASS
+Current accepted Studio release: `v0.19.5` / Build `83` / REAL USER PASS  
+Current deployed candidate: `v0.19.6` / Build `84` / REAL USER SMOKE PENDING
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -20,13 +21,18 @@ For short current state, read root `PROJECT_STATE.md` first. This file contains 
 ## Current production overlay
 
 ```text
-Studio
+Studio accepted
   v0.19.5 / Build83 / REAL USER PASS
-  exact tested head beff9fc58c58e36ce2c2082f7bd5c041641a5e12
-  runtime CI 31856653579 / SUCCESS
   runtime merge b168d8cda805e5c50480a3e26c5d52e490fb7ac6
   runtime Pages 31856698097 / SUCCESS
   browser smoke BUILD83 PASS / 2026-08-15
+
+Studio deployed candidate
+  v0.19.6 / Build84 / REAL USER SMOKE PENDING
+  exact tested head 377de51416d4aea258830e55e894707d9f3f6512
+  runtime CI 31858911420 / SUCCESS
+  runtime merge b7cf745e11adee1eb77900a32b9b6ca8ea80e000
+  runtime Pages 31858977765 / SUCCESS
   Worker deploy NONE
   R2 migration/write NONE caused by deployment
 
@@ -47,7 +53,7 @@ LRC Maker
   6.3.8
 ```
 
-Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable history; this overlay states current accepted production truth only.
+Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable history; this overlay states current production truth only.
 
 ## Restoration checkpoints
 
@@ -67,11 +73,15 @@ After Build82 deployment candidate:
 Before Phase9 Build83:
   safety/pre-phase9-lyrics-response-loss-build83-20260815-0319
 
-After Build83 deployment candidate:
-  safety/post-build83-deployed-candidate
-
 After Build83 real-user acceptance:
   safety/post-build83-real-user-pass-20260815-0406
+  safety/post-build83-rup-docs-closeout-20260815-0412
+
+Before Phase9 Build84:
+  safety/pre-phase9-sonictrace-response-loss-build84-20260815-0413
+
+After Build84 deployment candidate:
+  safety/post-build84-deployed-candidate-20260815-0425
 ```
 
 Earlier accepted safety branches remain preserved in Git history.
@@ -118,7 +128,11 @@ public Worker v2.7 unchanged
 
 ### SHINOBIWAN Studio
 
-Studio remains the private orchestrator, never a second canonical write authority. Build83 changes only client-side canonical Lyrics save response-loss classification/recovery. It does not add a Worker, generic write API or direct R2 mutation path.
+Studio remains the private orchestrator, never a second canonical write authority.
+
+Build83 changes only client-side canonical Lyrics save response-loss classification/recovery.
+
+Build84 changes only client-side SonicTrace **save response-loss classification and canonical verification**. It does not alter the Deep Audio analysis computation, the Track Manager route semantics, Workers or R2 schema/data.
 
 ### SonicTrace
 
@@ -138,7 +152,7 @@ recognized timestamps     = synchronized lyrics
 
 Canonical save uses Track Manager only, with manifest revision + lyrics ETag stale guards and private reread verification.
 
-Build83 adds the accepted bounded lost-response recovery rule to the Studio client:
+Build83 accepted bounded lost-response recovery:
 
 ```text
 Lyrics save response lost / timeout
@@ -153,6 +167,44 @@ Lyrics save response lost / timeout
    └─ reread unavailable
         → UNVERIFIED / DO NOT RETRY
 ```
+
+## SonicTrace persistence boundary
+
+```text
+tracks/<slug>/analysis/sonictrace/latest.json
+tracks/<slug>/analysis/sonictrace/history/<analysisId>.json
+```
+
+The deployed Track Manager already owns this write transaction shape:
+
+```text
+write history/<analysisId>.json
+→ write latest.json
+→ reread BOTH
+→ verify exact analysisId
+→ return success
+→ attempt rollback if verification/write fails
+```
+
+Build84 does not change that backend contract. It adds Studio-side truth after a lost HTTP response:
+
+```text
+SonicTrace save response lost / timeout
+→ NEVER blind automatic retry
+→ private canonical reread of latest + history
+   ├─ requested analysisId in BOTH
+   │    → COMMITTED / VERIFIED
+   ├─ requested analysisId in NEITHER
+   │    → NOT COMMITTED / explicit retry may be safe
+   ├─ requested analysisId in only one
+   │    → AMBIGUOUS / DO NOT RETRY
+   └─ reread unavailable
+        → UNVERIFIED / DO NOT RETRY
+```
+
+Before POST, Studio also rejects an already-canonical `analysisId` and a stale source-audio revision. Normal HTTP success requires exact `analysisId` presence in both sidecars before Studio calls the save verified.
+
+Build84 remains **DEPLOYED CANDIDATE**, not REAL USER PASS, until normal-browser regression acceptance is explicit.
 
 ## Album authority boundary
 
@@ -206,7 +258,7 @@ write response lost / timeout
 → classify committed / not committed / ambiguous / unverified
 ```
 
-A retry may be presented as safe only when canonical reread proves the pre-write revision/state is unchanged.
+A retry may be presented as safe only when canonical reread proves the exact operation-specific pre-write state/postcondition allows it.
 
 A lost-response write may be recovered as success only when the operation-specific canonical postcondition is positively verified.
 
@@ -221,7 +273,7 @@ Build82 applies this policy to destructive asset deletion:
 
 For both, recovery requires exact private canonical reread and asset absence; ambiguous/unverified states explicitly forbid blind retry. Normal success also requires verified post-write revision plus asset absence.
 
-Build82 is **REAL USER PASS** after the 2026-08-15 browser regression smoke.
+Build82 is **REAL USER PASS**.
 
 ### Build83 accepted scope
 
@@ -233,9 +285,15 @@ Recovered success requires all of:
 - new Lyrics ETag;
 - exact requested normalized canonical text.
 
-Unchanged revision + ETag is the only response-loss state that may be surfaced as explicitly retry-safe. Any changed-but-unproven or unreadable canonical state remains `DO NOT RETRY`.
+Build83 is **REAL USER PASS** after explicit normal-browser regression acceptance.
 
-Build83 is **REAL USER PASS** after the explicit 2026-08-15 normal-browser regression verdict. Do not generalize it into retries for SonicTrace or broader Album writes; those require their own bounded audit.
+### Build84 candidate scope
+
+Build84 applies the same authority principle to SonicTrace analysis persistence using the unique requested `analysisId` across canonical latest + history.
+
+Recovered success requires the requested ID in both sidecars. Explicit retry safety requires the ID to be absent from both. Partial presence is ambiguous and unsafe to retry.
+
+Build84 is **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**. Do not generalize it into Album-write retry behavior; broader Album writes require their own bounded audit.
 
 ## Destructive/media verification policy
 
@@ -250,7 +308,7 @@ Preferred proof:
 - explicit UI confirmation;
 - disposable Draft asset only if a deliberate destructive browser smoke is truly required.
 
-Build83 acceptance did not require deliberately cutting network/Access during a production Lyrics save just to manufacture response loss.
+Build84 acceptance does **not** require deliberately cutting network/Access during a production SonicTrace save just to manufacture response loss. A normal analysis/save is sufficient for regression acceptance when a new history entry is acceptable.
 
 ## Version / deployment discipline
 
@@ -264,7 +322,7 @@ Treat separately:
 
 For private Track Manager-only Worker changes, prefer `target=admin` and `confirm=DEPLOY`.
 
-Build82 and Build83 required no Worker deployment. Build83 Pages deployment caused no intentional R2/catalog mutation.
+Build82, Build83 and Build84 required no Worker deployment. Build84 Pages deployment caused no intentional R2 schema/data migration.
 
 Docs-only governance/closeout work does not create a new Studio build.
 
@@ -281,4 +339,4 @@ If a regression appears:
 
 ## Stop line
 
-**Build83 is the accepted Studio REAL USER PASS baseline. Phase9 remains active, but Build84 is UNALLOCATED until a fresh bounded audit proves the next smallest reliability scope. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**
+**Build83 is the accepted Studio REAL USER PASS baseline. Build84 is the only current deployed candidate and must receive explicit browser acceptance before any successor build is allocated. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**
