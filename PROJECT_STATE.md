@@ -19,7 +19,7 @@ Runtime Pages           31884614863 · SUCCESS · exact runtime merge SHA
 Candidate docs PR       #151
 Candidate docs merge    442b488511d77da15592a37d6e8d2dca0ed30fb8
 Candidate docs Pages    31885123431 · SUCCESS · exact docs merge SHA
-Acceptance docs PR      PENDING
+Acceptance docs PR      #152
 Acceptance docs merge   PENDING
 Acceptance docs Pages   PENDING
 Real-user smoke         BUILD90 PASS MADAFAKA · 2026-08-15
