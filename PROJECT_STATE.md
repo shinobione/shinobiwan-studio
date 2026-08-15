@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-15 after explicit **`BUILD82 PASS`** real-user browser acceptance.
+Updated: 2026-08-15 after **Build83 deployed candidate** publication. Real-user acceptance is still pending.
 
 This file is the short current checkpoint. It is the first project-state document to read after `AGENTS.md`.
 
@@ -11,20 +11,29 @@ Studio version          v0.19.4
 Studio build            Build82
 Codename                studio-focus-slice4-phase9-destructive-write-ambiguity-guard
 Acceptance              REAL USER PASS
-Production branch       main
 Runtime PR              #126
-Exact tested head       07fbcb4efdcd57e79614825d7c45bccd4ab2d860
-Final runtime CI        31854468795 · SUCCESS
 Runtime merge SHA       7a0d52fcc0bf862478c459f0648afc1c6690b34f
-Runtime Pages           31854528438 · SUCCESS · exact runtime merge SHA
-Candidate docs PR       #127
-Candidate docs CI       31854668980 · SUCCESS
-Candidate docs merge    077ef8bb19920c439971325604a2d30e015e41c1
-Candidate docs Pages    31854709308 · SUCCESS
+Runtime Pages           31854528438 · SUCCESS
 Real-user smoke         BUILD82 PASS · 2026-08-15
 ```
 
-The current repository `main` may advance through docs-only closeouts after the runtime merge. **Production runtime SHA remains `7a0d52fc...` until a later runtime build is actually merged and deployed.**
+Build82 remains the latest **accepted** runtime until Build83 receives explicit real-user browser acceptance.
+
+## Current deployed candidate
+
+```text
+Studio version          v0.19.5
+Studio build            Build83
+Codename                studio-focus-slice4-phase9-lyrics-save-response-loss-truth
+Acceptance              DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Runtime PR              #129
+Exact tested head       beff9fc58c58e36ce2c2082f7bd5c041641a5e12
+Final runtime CI        31856653579 · SUCCESS
+Runtime merge SHA       b168d8cda805e5c50480a3e26c5d52e490fb7ac6
+Runtime Pages           31856698097 · SUCCESS · exact runtime merge SHA
+Worker deploy           NONE
+R2 migration/write      NONE caused by deployment
+```
 
 ## Current ecosystem baseline
 
@@ -39,7 +48,7 @@ Deep Audio              2.0.3-alpha
 LRC Maker               6.3.8
 ```
 
-Build82 did **not** deploy a Worker, change Track Manager, migrate R2 or change the public Worker.
+Build83 changes only Studio client behavior. It does **not** deploy a Worker, change Track Manager, migrate R2, change LaunchPAD, change SonicTrace or change LRC Maker.
 
 ## Program position
 
@@ -51,51 +60,57 @@ Phase 7-C               COMPLETE · program closeout
 Phase 8                 COMPLETE · Build81 closeout accepted
 Phase 9                 ACTIVE
 Phase 9 Slice1          COMPLETE · Build82 REAL USER PASS
+Phase 9 Slice2          Build83 DEPLOYED CANDIDATE · smoke pending
 Phase 10                FUTURE
 Official Phase 11       NONE
 ```
 
 ## Build82 accepted behavior
 
-Build82 hardens only destructive asset deletion ambiguity for:
+Build82 hardens destructive Track and Album asset deletion ambiguity. Lost responses are never blindly retried; private canonical reread classifies committed / not committed / ambiguous / unverified and normal success also requires exact canonical verification.
 
-- Track asset delete;
-- Album asset delete.
+## Build83 candidate behavior
 
-Contract:
+Build83 hardens only the native canonical `lyrics.txt` save response-loss path.
 
 ```text
-write response lost / timeout
+Lyrics save response lost / timeout
 → NEVER blind automatic retry
-→ private canonical reread
-   ├─ new revision + asset absent   → COMMITTED / VERIFIED
-   ├─ same revision + asset present → NOT COMMITTED / explicit retry may be safe
-   ├─ changed but causality unclear → AMBIGUOUS / DO NOT RETRY
-   └─ reread unavailable            → UNVERIFIED / DO NOT RETRY
+→ private canonical reread of lyrics + Track manifest
+   ├─ new revision + new ETag + exact requested normalized text
+   │    → COMMITTED / VERIFIED
+   ├─ same revision + same ETag
+   │    → NOT COMMITTED / explicit retry may be safe
+   ├─ canonical state changed but requested postcondition is not proven
+   │    → AMBIGUOUS / DO NOT RETRY
+   └─ private reread unavailable
+        → UNVERIFIED / DO NOT RETRY
 ```
 
-Normal success also requires exact canonical post-write revision plus asset absence.
+Normal Lyrics save success still requires exact canonical revision + ETag + normalized text verification.
 
 ## Current blockers
 
-**No active blocker after `BUILD82 PASS`.**
+No code/CI/deployment blocker remains for Build83.
 
-The historical `Magnetic Midnight` public-cover palette `Failed to fetch` issue is already fixed since Build62 and remains covered by its regression guard. Do not recreate that fix.
+**Acceptance blocker:** real-user browser smoke is still pending. Do not promote Build83 to REAL USER PASS before that explicit verdict.
+
+The historical `Magnetic Midnight` public-cover palette `Failed to fetch` issue remains resolved since Build62 and covered by regression guards.
 
 ## Exact next action
 
-**Do not pre-allocate Build83.**
+Run the bounded **Build83 real-user Lyrics regression smoke**:
 
-Run a fresh, read-only Phase9 reliability audit and select the smallest coherent next lost-response / degraded-state slice.
+1. hard refresh Studio and verify `v0.19.5 · Build83`;
+2. open a private Track with canonical `lyrics.txt`;
+3. confirm Lyrics loads and canonical revision/ETag are visible;
+4. validate a harmless local edit;
+5. either cancel before save or perform one intentional normal save on a safe Track, then verify canonical reread success;
+6. verify Track navigation / Visuals / Albums remain normal.
 
-Current candidates already identified by Build82 audit:
+Do **not** deliberately sabotage a production write merely to force a timeout/lost-response branch. The ambiguous branches are covered by the Phase9 guards and canonical recovery logic.
 
-1. canonical Lyrics save response-loss truth;
-2. SonicTrace analysis save response-loss truth;
-3. broader guarded Album write families;
-4. later Phase9 themes: Access/CORS hardening, degraded/offline UX and PWA resilience.
-
-The audit must prove the next gap before any new runtime branch/build is opened.
+After explicit PASS: update canonical docs to REAL USER PASS and create the post-acceptance checkpoint. Only then select the next Phase9 slice by fresh audit; SonicTrace analysis save response-loss truth is the next leading candidate, not an automatic commitment.
 
 ## Frozen stop lines
 
@@ -114,6 +129,8 @@ The audit must prove the next gap before any new runtime branch/build is opened.
 ```text
 safety/pre-phase9-destructive-ambiguity-build82-20260815-0216
 safety/post-build82-deployed-candidate-20260815-0248
+safety/pre-phase9-lyrics-response-loss-build83-20260815-0319
+safety/post-build83-deployed-candidate
 ```
 
 ## Acceptance vocabulary
@@ -122,4 +139,4 @@ safety/post-build82-deployed-candidate-20260815-0248
 CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS
 ```
 
-Build82 is now **REAL USER PASS**. Build83 remains **UNUSED**.
+Build82 is **REAL USER PASS**. Build83 is **DEPLOYED CANDIDATE · smoke pending**.
