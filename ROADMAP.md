@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-15 after **Build85 REAL USER PASS**.
+Updated: 2026-08-15 after **Build86 deployed candidate** publication.
 
 This file is the durable roadmap summary. Historical implementation detail belongs in `docs/` and `changelogs/`; do not copy it here unless it changes what is done, active, next or backlogged.
 
@@ -93,25 +93,39 @@ Build85 intentionally does **not** bundle Album create, membership, move or uplo
 
 ## In progress
 
-### Phase 9 — fresh reliability audit
+### Phase 9 Slice5 — Album move response-loss truth
 
-Phase9 remains active, but **Build86 is not allocated**.
+**Build86 · v0.19.8 · DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
 
-The current task is a fresh read-only audit to identify the smallest remaining reliability gap without duplicating existing recovery logic or turning Phase9 into a generic refactor bucket.
+The fresh post-Build85 audit selected Album move as the smallest coherent remaining gap.
+
+Candidate evidence and behavior:
+
+- exact-head CI `31868536718` SUCCESS on first run;
+- runtime PR #138 merged at `866ebf9c2a501d11102ed994717b50f6d8189b0d`;
+- Pages `31868570112` SUCCESS on that exact merge;
+- covers Album→Album move plus `sourceAlbumId:null` authority repair;
+- exact target/source pre-write revisions and exact expected target order/source removal;
+- response-unavailable moves are never blindly retried;
+- exact target/source membership + Track cache + stable non-membership shapes → committed/verified;
+- exact unchanged target/source/Track state → not committed / explicit retry may be safe after fresh reload;
+- partial/mixed state → ambiguous / do not retry;
+- reread unavailable → unverified / do not retry;
+- normal HTTP success also requires exact response revisions + exact target/source tracklists + Track cache verification;
+- no Track Manager, Worker, R2 schema/data migration or cross-product runtime change.
 
 ## Next
 
-Audit these remaining candidates by proven risk / bounded scope, without assuming a build number:
+Complete the **Build86 normal-browser Album move regression smoke**. Do not manufacture a response-loss failure.
 
-1. Album membership response-loss truth;
-2. Album move response-loss truth;
-3. Album asset upload response-loss truth;
-4. Album create response-loss truth;
-5. Access/CORS hardening;
-6. bounded read retries/timeouts;
-7. degraded/offline/PWA resilience.
+**Build87 is unallocated.** Only after explicit Build86 PASS should a fresh read-only audit compare remaining candidates:
 
-Pick **one** coherent slice only after the audit proves the gap and confirms it does not duplicate existing recovery logic.
+1. Album membership bulk-save response-loss truth;
+2. Album asset upload response-loss truth;
+3. Album create response-loss truth;
+4. Access/CORS hardening;
+5. bounded read retries/timeouts;
+6. degraded/offline/PWA resilience.
 
 ## Backlog
 
@@ -140,8 +154,8 @@ There is currently **no official Phase 11**.
 - Do not treat a candidate as accepted until real-user validation exists where required.
 - Do not deliberately damage or interrupt a production write merely to prove an ambiguity guard.
 - Do not generalize one write family's recovery postcondition into another operation family.
-- Do not allocate Build86 before a fresh bounded audit selects its scope.
+- Do not allocate Build87 while Build86 acceptance remains pending.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build85 real-user PASS.
+See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build86 smoke boundary.
