@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-15 after **Build90 deployed candidate** publication. Build89 remains REAL USER PASS.
+Updated: 2026-08-15 after **Build90 REAL USER PASS**.
 
 This file is the durable roadmap summary. Historical implementation detail belongs in `docs/` and `changelogs/`; do not copy it here unless it changes what is done, active, next or backlogged.
 
@@ -213,17 +213,21 @@ Historical runs `31881467538` and `31881538488` were red only because inherited 
 
 ### Phase 9 Slice9 — Lyrics private-read transient retry truth
 
-**Build90 · v0.19.12 · DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+**Build90 · v0.19.12 · REAL USER PASS**
 
 The fresh post-Build89 audit selected the single canonical Lyrics private GET as the smallest coherent remaining reliability gap.
 
-Candidate evidence and behavior:
+Accepted evidence and behavior:
 
 - runtime PR #150;
 - exact tested head `48ca1dc25951d65ead05c4f80bd1f9e6bf8c5d01`;
 - runtime CI `31884568681` SUCCESS **on first run**;
 - runtime merge `8a851a7d53d3b4f45359c7036011684441bb25bb`;
 - Pages `31884614863` SUCCESS on that exact merge;
+- candidate docs PR #151 merged at `442b488511d77da15592a37d6e8d2dca0ed30fb8`;
+- candidate docs Pages `31885123431` SUCCESS;
+- acceptance docs PR #152 opened for the explicit PASS closeout;
+- explicit real-user verdict `BUILD90 PASS MADAFAKA` on 2026-08-15;
 - canonical Lyrics GET transport interruption is typed separately from Access/CORS;
 - timeout / transport / HTTP `408/425/429/500/502/503/504` may receive one bounded retry;
 - Access/CORS, deterministic ordinary 4xx and invalid JSON are never retried;
@@ -232,28 +236,30 @@ Candidate evidence and behavior:
 - Lyrics validate/save POSTs remain unchanged and are never automatically retried;
 - Build83 response-loss truth remains committed / not-committed / ambiguous / unverified with no blind write retry;
 - SonicTrace private reads remain out of scope;
+- normal-browser acceptance confirmed deployed Build90, canonical `lyrics.txt` loading on an existing Track and surrounding Track / Albums / SonicTrace / Lyrics navigation sanity;
+- acceptance did not manufacture a network/Access failure branch;
 - no Track Manager, Worker, R2 schema/data migration or cross-product runtime change.
 
 Build90 intentionally does **not** bundle SonicTrace read retry, Album create/upload or PWA/offline work.
 
 ## In progress
 
-### Phase 9 — Build90 real-user smoke
+### Phase 9 — fresh post-Build90 reliability audit
 
-Build90 is deployed but **not accepted yet**.
+Build90 is accepted. **Build91 is not allocated.**
 
-Required browser smoke is intentionally normal operation only: load an existing Track with canonical `lyrics.txt`, open Lyrics, verify canonical text loads, then check surrounding Track / Albums / SonicTrace navigation. No write is required.
+The current task is a fresh read-only audit to identify the smallest remaining reliability gap without duplicating existing recovery logic or turning Phase9 into a generic refactor bucket.
 
 ## Next
 
-After explicit Build90 acceptance, run a fresh read-only audit. Remaining candidates include:
+Audit these remaining candidates by proven risk / bounded scope, without assuming a build number:
 
 1. SonicTrace private-read transient retry truth;
 2. Album asset upload response-loss truth;
 3. Album create response-loss truth;
 4. degraded/offline/PWA resilience.
 
-Build91 remains **UNALLOCATED** until that audit proves one coherent scope.
+Pick **one** coherent slice only after the audit proves the gap and confirms it does not duplicate existing recovery logic.
 
 ## Backlog
 
@@ -283,8 +289,8 @@ There is currently **no official Phase 11**.
 - Do not deliberately damage or interrupt production merely to prove a retry/ambiguity guard.
 - Do not generalize GET retry into write retry.
 - Do not generalize one write family's recovery postcondition into another operation family.
-- Do not allocate Build91 before Build90 acceptance plus a fresh bounded audit.
+- Do not allocate Build91 before a fresh bounded post-Build90 audit selects its scope.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build90 candidate smoke boundary.
+See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build90 REAL USER PASS boundary.

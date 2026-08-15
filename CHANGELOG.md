@@ -2,16 +2,16 @@
 
 This file is the **current concise changelog**. Detailed per-build records live under [`changelogs/`](changelogs/README.md).
 
-## Current deployed candidate
+## Current accepted release
 
 ### v0.19.12 · Build90 — 2026-08-15
 
 Codename: `studio-focus-slice4-phase9-lyrics-private-read-transient-retry-truth`  
-Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+Status: **REAL USER PASS — ACCEPTED**
 
 Build90 extends bounded private-read resilience to canonical Lyrics **GET only**.
 
-Candidate behavior:
+Accepted behavior:
 
 - non-timeout canonical Lyrics browser `fetch()` interruption is classified as `LYRICS_READ_TRANSPORT`, not falsely as Cloudflare Access;
 - timeout, transport interruption, and HTTP `408/425/429/500/502/503/504` may receive exactly one bounded retry;
@@ -23,9 +23,11 @@ Candidate behavior:
 - `LYRICS_SAVE_TIMEOUT` / `LYRICS_SAVE_TRANSPORT` and Build83 committed / not-committed / ambiguous / unverified recovery remain intact;
 - no automatic Lyrics validation/save retry exists;
 - SonicTrace private reads remain a separate future audit family;
+- normal-browser acceptance confirmed deployed Build90, canonical `lyrics.txt` loading on an existing Track and surrounding Track / Albums / SonicTrace / Lyrics navigation sanity;
+- acceptance did not manufacture a timeout/transport/Access failure branch;
 - no Track Manager, Worker, public Worker, R2 schema/data migration, LaunchPAD, LRC Maker or SonicTrace Deep Audio change was required.
 
-Exact candidate evidence:
+Exact acceptance evidence:
 
 ```text
 Safety pre               safety/pre-phase9-lyrics-private-read-retry-build90-20260815-1419
@@ -36,21 +38,24 @@ Validation               31884568681 · SUCCESS · first run
 Runtime merge            8a851a7d53d3b4f45359c7036011684441bb25bb
 Runtime Pages            31884614863 · SUCCESS · exact runtime merge SHA
 Safety post-deploy       safety/post-build90-deployed-candidate-20260815-1429
+Candidate docs PR        #151
+Candidate docs merge     442b488511d77da15592a37d6e8d2dca0ed30fb8
+Candidate docs Pages     31885123431 · SUCCESS
+Safety post-acceptance   safety/post-build90-real-user-pass-20260815-1512
+Acceptance docs PR       #152
 Track Manager            v5.23 · unchanged
 Studio bridge            v1.13 · unchanged
 TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
 Public Worker            v2.7 · unchanged
 Worker deploy            NONE
 R2 migration/write       NONE caused by deployment
-Real-user smoke          PENDING
+Real-user smoke          BUILD90 PASS MADAFAKA · 2026-08-15
 Build91                  UNALLOCATED
 ```
 
-Required acceptance is a normal-browser Lyrics read regression only; no deliberate network/Access interruption is required.
+Detailed accepted record: [`changelogs/CHANGELOG-BUILD90.md`](changelogs/CHANGELOG-BUILD90.md).
 
-Detailed candidate record: [`changelogs/CHANGELOG-BUILD90.md`](changelogs/CHANGELOG-BUILD90.md).
-
-## Current accepted release
+## Accepted predecessor
 
 ### v0.19.11 · Build89 — 2026-08-15
 
@@ -69,7 +74,6 @@ Accepted behavior:
 - private Album visual discovery and existing canonical Album rereads inherit those GETs;
 - every Album POST/write path remains unchanged;
 - Album create and binary-upload response-loss semantics remain unchanged;
-- Lyrics and SonicTrace private reads remain separate future audit families;
 - normal-browser acceptance confirmed Album inventory, canonical Album detail, private artwork/metadata and surrounding Track / Lyrics / SonicTrace navigation sanity;
 - acceptance did not manufacture a timeout/transport/Access failure branch;
 - no Track Manager, Worker, public Worker, R2 schema/data migration, LaunchPAD, LRC Maker or SonicTrace Deep Audio change was required.
@@ -89,6 +93,9 @@ Candidate docs PR        #148
 Candidate docs merge     a7894dad8f4b4015ca1cba47b12781bab417fdcf
 Candidate docs Pages     31882384329 · SUCCESS
 Safety post-acceptance   safety/post-build89-real-user-pass-20260815-1404
+Acceptance docs PR       #149
+Acceptance docs merge    07bfd3c6b4fa19ccea0656b9ce194f239b7f7c65
+Acceptance docs Pages    31884092117 · SUCCESS
 Track Manager            v5.23 · unchanged
 Studio bridge            v1.13 · unchanged
 TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
@@ -139,6 +146,9 @@ Candidate docs PR        #145
 Candidate docs merge     316ad1b0784d72fb7d29d92c5deaedb56d262e49
 Candidate docs Pages     31872540118 · SUCCESS
 Safety post-acceptance   safety/post-build88-real-user-pass-20260815-1253
+Acceptance docs PR       #146
+Acceptance docs merge    aebb168883c1f291b97e1d309b4028bb1d78861c
+Acceptance docs Pages    31881075352 · SUCCESS
 Track Manager            v5.23 · unchanged
 Studio bridge            v1.13 · unchanged
 TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
@@ -467,6 +477,6 @@ All Phase8/9 health and guidance surfaces continue to preserve the same canonica
 
 ## Next bounded action
 
-Run the normal-browser Build90 Lyrics private-read regression smoke. Build91 remains **UNALLOCATED** until Build90 is explicitly accepted and a fresh post-Build90 audit proves the next smallest coherent scope.
+Run a fresh post-Build90 Phase9 reliability audit. Build91 remains **UNALLOCATED** until that audit proves the smallest coherent next scope.
 
 `CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS` remains mandatory.

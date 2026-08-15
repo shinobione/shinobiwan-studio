@@ -1,6 +1,6 @@
 # Studio v0.19.12 · Build90 — Phase9 Lyrics private-read transient retry truth
 
-Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**.
+Status: **REAL USER PASS · ACCEPTED**.
 
 ## Fresh audit proof
 
@@ -93,6 +93,10 @@ Exact tested head       48ca1dc25951d65ead05c4f80bd1f9e6bf8c5d01
 Final CI                31884568681 · SUCCESS · first run
 Runtime merge           8a851a7d53d3b4f45359c7036011684441bb25bb
 Runtime Pages           31884614863 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #151
+Candidate docs merge    442b488511d77da15592a37d6e8d2dca0ed30fb8
+Candidate docs Pages    31885123431 · SUCCESS
+Acceptance docs PR      #152
 ```
 
 No red intermediary Build90 validation run was required or merged.
@@ -103,6 +107,8 @@ No red intermediary Build90 validation run was required or merged.
 Safety pre              safety/pre-phase9-lyrics-private-read-retry-build90-20260815-1419
 Safety pre-PR           safety/post-build90-prepr-20260815-1424
 Safety post-deploy      safety/post-build90-deployed-candidate-20260815-1429
+Safety candidate docs   safety/post-build90-candidate-docs-closeout-20260815-1440
+Safety post-acceptance  safety/post-build90-real-user-pass-20260815-1512
 Feature branch          phase9/build90-lyrics-private-read-retry
 Worker deploy           NONE
 Track Manager change    NONE
@@ -110,22 +116,30 @@ R2 migration/write      NONE caused by deployment
 Build91                 UNALLOCATED
 ```
 
-## Real-user acceptance boundary — PENDING
+## Real-user acceptance boundary — PASS
 
-Use a normal browser regression only:
-
-- hard refresh and verify `v0.19.12 · Build90`;
-- open a Track that already has canonical `lyrics.txt`;
-- open Lyrics and confirm canonical lyrics load normally;
-- make **no write if none is needed** — Build90 is a read slice;
-- quick Track / Albums / SonicTrace navigation sanity.
-
-Do **not** deliberately cut network or invalidate Cloudflare Access merely to manufacture the retry branch. Automated guards own failure-path classification proof.
-
-Until explicit user verdict:
+The user completed the intended **normal-browser read regression** and returned:
 
 ```text
-Build90 = DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+BUILD90 PASS MADAFAKA
+```
+
+Accepted smoke boundary:
+
+- hard refresh to deployed `v0.19.12 · Build90`;
+- open a Track that already has canonical `lyrics.txt`;
+- open Lyrics and confirm canonical lyrics load normally;
+- no write required because Build90 is a read slice;
+- quick Track / Albums / SonicTrace / Lyrics navigation sanity.
+
+Acceptance intentionally did **not** deliberately cut network or invalidate Cloudflare Access merely to manufacture the retry branch. Automated guards own failure-path classification proof.
+
+Result:
+
+```text
+Build90 = REAL USER PASS · ACCEPTED
+Phase9 Slice9 = COMPLETE
+Build91 = UNALLOCATED
 ```
 
 ## Stop line
@@ -134,6 +148,4 @@ Build90 = DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
 - Never turn Build90 into Lyrics save/validation retry.
 - Do not broaden Build90 into SonicTrace retry.
 - Do not modify Track Manager / Worker / R2 for this slice.
-- Do not merge red CI.
-- Merge only the exact tested head.
-- Do not allocate Build91 before Build90 explicit acceptance plus a fresh audit.
+- Do not allocate Build91 before a fresh bounded post-Build90 audit proves its scope.
