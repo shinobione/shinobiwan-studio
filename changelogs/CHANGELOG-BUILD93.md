@@ -4,7 +4,7 @@ Date: 2026-08-15
 Version: `v0.19.15`  
 Build: `93`  
 Codename: `studio-focus-slice4-phase9-track-metadata-validation-transient-retry-truth`  
-Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+Status: **REAL USER PASS · ACCEPTED**
 
 ## Fresh-audit decision
 
@@ -86,7 +86,21 @@ Runtime PR #162 merged only the exact tested head above.
 
 Runtime merge `6c1ceb7d59971ec6c7e251532054392f02c08157` deployed successfully through Pages run `31898639778` with both build and deploy jobs successful.
 
+Candidate documentation PR #163 passed full CI `31899284370`, merged at `6464659428e34a679c8acfeb481bfaca78e05bc7`, and Pages run `31899342536` deployed that exact docs merge successfully.
+
 No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration, LaunchPAD change, LRC Maker change or SonicTrace runtime change was required.
+
+## Real-user acceptance
+
+The bounded normal-browser smoke completed on 2026-08-15 with the explicit verdict:
+
+```text
+BUILD93 PASS MADAFAKA
+```
+
+Acceptance covered the deployed `v0.19.15 · Build93` candidate in normal browser usage, including the Track metadata Validate path and surrounding product sanity. The transient timeout/transport/HTTP retry branch was **not deliberately manufactured** by cutting network or invalidating Cloudflare Access; automated guards remain the proof for those failure classifications and the two-attempt bound.
+
+Build93 is therefore **REAL USER PASS / ACCEPTED**. Phase9 Slice12 is complete.
 
 ## Safety
 
@@ -103,25 +117,22 @@ Final validation        31898542379 · SUCCESS
 Runtime merge           6c1ceb7d59971ec6c7e251532054392f02c08157
 Runtime Pages           31898639778 · SUCCESS · exact runtime merge SHA
 Safety post-deploy      safety/post-build93-deployed-candidate-20260815-1936
+Candidate docs PR       #163
+Candidate docs CI       31899284370 · SUCCESS
+Candidate docs merge    6464659428e34a679c8acfeb481bfaca78e05bc7
+Candidate docs Pages    31899342536 · SUCCESS · exact docs merge SHA
+Safety post-acceptance  safety/post-build93-real-user-pass-20260815-2010
+Acceptance docs PR      PENDING
+Acceptance docs CI      PENDING
+Acceptance docs merge   PENDING
+Acceptance docs Pages   PENDING
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by implementation/deployment
-Real-user smoke         PENDING
+Real-user smoke         BUILD93 PASS MADAFAKA · 2026-08-15
 Build94                 UNALLOCATED
 ```
 
-## Required real-user acceptance
+## Next boundary
 
-Use a normal browser regression only:
-
-1. hard refresh and verify `v0.19.15 · Build93`;
-2. open one safe existing private canonical Track;
-3. change one harmless reversible metadata field;
-4. click **Validate** and confirm the normalized proposal appears normally without a phantom Access error;
-5. perform one normal explicit **Save** if you want to exercise the complete existing Build92 path;
-6. if saved, confirm `CANONICAL REREAD · VERIFIED` and persistence after reload;
-7. check surrounding Track / Albums / Lyrics / SonicTrace navigation.
-
-Do **not** deliberately cut network or invalidate Cloudflare Access merely to manufacture a transient validation retry. Automated guards own timeout/transport/transient-HTTP classification and attempt-bound proof.
-
-Build93 remains a candidate until explicit real-user browser acceptance. Build94 remains unallocated.
+Build94 remains **UNALLOCATED** until this acceptance-docs closeout is fully merged/deployed and a fresh read-only post-Build93 Phase9 audit proves the smallest coherent next reliability gap. Album create, Album binary upload and degraded/offline/PWA remain candidates, not commitments.
