@@ -1,7 +1,7 @@
 export const studioRelease = {
-  version: '0.19.3',
-  build: 81,
-  codename: 'studio-focus-slice4-phase8-semantic-truth-cleanup',
+  version: '0.19.4',
+  build: 82,
+  codename: 'studio-focus-slice4-phase9-destructive-write-ambiguity-guard',
   releasedAt: '2026-08-15',
 } as const;
 
@@ -23,3 +23,4 @@ export const build77AncestryMarker = "build: 77 · codename: 'studio-focus-slice
 export const build78AncestryMarker = "build: 78 · codename: 'studio-focus-slice4-phase8-album-health-cache-drift-human-ux'";
 export const build79AncestryMarker = "build: 79 · codename: 'studio-focus-slice4-phase8-album-publish-truth'";
 export const build80AncestryMarker = "build: 80 · codename: 'studio-focus-slice4-phase8-duration-evidence-successor-compat'";
+export const build81AncestryMarker = "build: 81 · codename: 'studio-focus-slice4-phase8-semantic-truth-cleanup'";
