@@ -17,6 +17,13 @@ const CATALOG_REBUILD_INTENT = 'catalog-rebuild-v1';
 
 export type Phase4ManageCapability = 'track-create' | 'assets' | 'catalog-rebuild';
 
+type SimpleTransportFailure = {
+  timeoutCode: string;
+  transportCode: string;
+  timeoutMessage: string;
+  transportMessage: string;
+};
+
 export class Phase4AdminError extends Error {
   readonly status: number | null;
   readonly code: string | null;
@@ -117,7 +124,12 @@ async function requireManage(capability: Phase4ManageCapability): Promise<void> 
   if (!manage.includes(capability)) throw new Phase4AdminError(`Track Manager does not advertise ${capability}. This operation stays locked until the required bridge capability is active.`);
 }
 
-async function postSimple<T>(path: string, body: unknown, timeoutMs = 15000): Promise<T> {
+async function postSimple<T>(
+  path: string,
+  body: unknown,
+  timeoutMs = 15000,
+  transportFailure?: SimpleTransportFailure,
+): Promise<T> {
   const controller = new AbortController();
   const timeout = globalThis.setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -136,7 +148,19 @@ async function postSimple<T>(path: string, body: unknown, timeoutMs = 15000): Pr
         signal: controller.signal,
       });
     } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') throw new Phase4AdminError('Track Manager operation timed out. Reload canonical state before retrying.');
+      const timedOut = error instanceof DOMException && error.name === 'AbortError';
+      if (transportFailure) {
+        throw new Phase4AdminError(
+          timedOut ? transportFailure.timeoutMessage : transportFailure.transportMessage,
+          null,
+          timedOut ? transportFailure.timeoutCode : transportFailure.transportCode,
+          null,
+          null,
+          false,
+          error instanceof Error ? error.message : String(error),
+        );
+      }
+      if (timedOut) throw new Phase4AdminError('Track Manager operation timed out. Reload canonical state before retrying.');
       throw new Phase4AdminError('Track Manager operation is unavailable. Authenticate with Cloudflare Access and reload before retrying.');
     }
     if (!isJsonResponse(response)) throw new Phase4AdminError('Cloudflare Access session is not available to this Studio operation.', response.status || null);
@@ -214,66 +238,6 @@ async function uploadViaFetch(
       );
     }
     onProgress?.(100);
-    return payload;
-  } finally {
-    globalThis.clearTimeout(timeout);
-  }
-}
-
-async function deleteViaFetch(
-  url: string,
-  body: unknown,
-): Promise<AssetMutationResponse> {
-  const controller = new AbortController();
-  const timeout = globalThis.setTimeout(() => controller.abort(), 30000);
-  try {
-    let response: Response;
-    try {
-      response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'text/plain;charset=UTF-8',
-        },
-        body: JSON.stringify(body),
-        cache: 'no-store',
-        credentials: 'include',
-        mode: 'cors',
-        signal: controller.signal,
-      });
-    } catch (reason) {
-      const timedOut = reason instanceof DOMException && reason.name === 'AbortError';
-      throw new Phase4AdminError(
-        timedOut
-          ? 'Asset deletion timed out. Studio will reread canonical state before any retry.'
-          : 'Asset deletion transport was interrupted. Studio will reread canonical state before any retry.',
-        null,
-        timedOut ? 'ASSET_DELETE_TIMEOUT' : 'ASSET_DELETE_TRANSPORT',
-        null,
-        null,
-        false,
-        reason instanceof Error ? reason.message : String(reason),
-      );
-    }
-    if (!isJsonResponse(response)) {
-      throw new Phase4AdminError(
-        'Cloudflare Access did not return an authenticated JSON response for asset deletion.',
-        response.status || null,
-        'ACCESS_SESSION_REQUIRED',
-      );
-    }
-    let payload: AssetMutationResponse;
-    try { payload = await response.json() as AssetMutationResponse; }
-    catch { throw new Phase4AdminError('Track Manager returned invalid asset delete JSON.', response.status || null, 'INVALID_ASSET_RESPONSE'); }
-    if (!response.ok || payload.ok === false) {
-      throw new Phase4AdminError(
-        payload.error || `Asset deletion returned HTTP ${response.status}.`,
-        response.status,
-        payload.code || 'ASSET_DELETE_REJECTED',
-        payload.currentUpdatedAt || null,
-        payload.rollback || null,
-      );
-    }
     return payload;
   } finally {
     globalThis.clearTimeout(timeout);
@@ -405,7 +369,7 @@ export async function uploadAdminTrackAsset(
       throw new Phase4AdminError(
         'Canonical state changed while the upload response was unavailable. Reload this track and inspect the asset before any retry.',
         null,
-        'ASSET_UPLOAD_AMBIGUOUS',
+        'ASSET_UPLOAD_AMIGUOUS',
         manifest?.updatedAt || null,
         null,
         false,
@@ -459,10 +423,17 @@ export async function deleteAdminTrackAsset(
 
   let payload: AssetMutationResponse;
   try {
-    payload = await deleteViaFetch(`${baseUrl()}/api/studio/tracks/${encodeURIComponent(trackId)}/assets/${kind}/delete`, {
-      intent: ASSET_DELETE_INTENT,
-      expectedUpdatedAt,
-    });
+    payload = await postSimple<AssetMutationResponse>(
+      `/api/studio/tracks/${encodeURIComponent(trackId)}/assets/${kind}/delete`,
+      { intent: ASSET_DELETE_INTENT, expectedUpdatedAt },
+      30000,
+      {
+        timeoutCode: 'ASSET_DELETE_TIMEOUT',
+        transportCode: 'ASSET_DELETE_TRANSPORT',
+        timeoutMessage: 'Asset deletion timed out. Studio will reread canonical state before any retry.',
+        transportMessage: 'Asset deletion transport was interrupted. Studio will reread canonical state before any retry.',
+      },
+    );
   } catch (reason) {
     if (!(reason instanceof Phase4AdminError) || !['ASSET_DELETE_TIMEOUT', 'ASSET_DELETE_TRANSPORT'].includes(reason.code || '')) throw reason;
     try {
