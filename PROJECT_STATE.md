@@ -1,45 +1,16 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-15 after **Build93 deployed candidate** publication. Build92 remains the accepted real-user baseline.
+Updated: 2026-08-15 after explicit **`BUILD93 PASS MADAFAKA`** real-user browser acceptance. Acceptance-docs closeout is in progress.
 
 This file is the short current checkpoint. It is the first project-state document to read after `AGENTS.md`.
 
 ## Current accepted runtime
 
 ```text
-Studio version          v0.19.14
-Studio build            Build92
-Codename                studio-focus-slice4-phase9-track-metadata-response-loss-truth
-Acceptance              REAL USER PASS
-Runtime PR              #158
-Exact tested head       2b859d831f5fc46eea9853f31c4b86057041128b
-Final runtime CI        31893496536 · SUCCESS
-Historical guard CI     31893447100 · FAILURE · Build80 seam assertion only · never merged
-Runtime merge SHA       d0ca8b3aa4481c3217f79790e347000bfd22823a
-Runtime Pages           31893652679 · SUCCESS · exact runtime merge SHA
-Candidate docs PR       #159
-Candidate docs CI       31894353160 · SUCCESS
-Candidate docs merge    f46b846841e6ef9ce705b2fa3817baecd0aecefa
-Candidate docs Pages    31894411652 · SUCCESS · exact docs merge SHA
-Acceptance docs PR      #160
-Acceptance docs CI      31896013803 · SUCCESS
-Acceptance docs merge   a26c8c0540607c99147c0b6d30b5d3c7ccf6efc9
-Acceptance docs Pages   31896073093 · SUCCESS · exact docs merge SHA
-Real-user smoke         BUILD92 PASS MADAFAKA · 2026-08-15
-Worker deploy           NONE
-Track Manager change    NONE
-R2 migration/write      NONE caused by deployment
-```
-
-Build92 remains the latest **accepted** Studio runtime until Build93 receives explicit real-user browser acceptance.
-
-## Current deployed candidate
-
-```text
 Studio version          v0.19.15
 Studio build            Build93
 Codename                studio-focus-slice4-phase9-track-metadata-validation-transient-retry-truth
-Acceptance              DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Acceptance              REAL USER PASS
 Runtime PR              #162
 Exact tested head       fcbe4c59a3a364d9665eba2ed432f37475116364
 Final runtime CI        31898542379 · SUCCESS
@@ -47,11 +18,21 @@ Historical CI #457      31898251689 · FAILURE · Phase7-C successor cap only ·
 Historical CI #458      31898329621 · FAILURE · Focus Build64 successor cap only · never merged
 Runtime merge SHA       6c1ceb7d59971ec6c7e251532054392f02c08157
 Runtime Pages           31898639778 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #163
+Candidate docs CI       31899284370 · SUCCESS
+Candidate docs merge    6464659428e34a679c8acfeb481bfaca78e05bc7
+Candidate docs Pages    31899342536 · SUCCESS · exact docs merge SHA
+Acceptance docs PR      PENDING
+Acceptance docs CI      PENDING
+Acceptance docs merge   PENDING
+Acceptance docs Pages   PENDING
+Real-user smoke         BUILD93 PASS MADAFAKA · 2026-08-15
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
-Real-user smoke         PENDING
 ```
+
+Build93 is the latest **accepted** Studio runtime. Build92 remains its accepted predecessor.
 
 ## Current ecosystem baseline
 
@@ -98,7 +79,7 @@ Phase 9 Slice8          COMPLETE · Build89 REAL USER PASS
 Phase 9 Slice9          COMPLETE · Build90 REAL USER PASS
 Phase 9 Slice10         COMPLETE · Build91 REAL USER PASS
 Phase 9 Slice11         COMPLETE · Build92 REAL USER PASS
-Phase 9 Slice12         Build93 DEPLOYED CANDIDATE · smoke pending
+Phase 9 Slice12         COMPLETE · Build93 REAL USER PASS
 Phase 10                FUTURE
 Official Phase 11       NONE
 ```
@@ -311,7 +292,7 @@ No Track create, Track asset upload/delete, Album create/upload, Lyrics/SonicTra
 
 The bounded normal-browser smoke received explicit **`BUILD92 PASS MADAFAKA`** on 2026-08-15 after deployed version verification, one harmless reversible metadata edit through Validate → one normal Save, `CANONICAL REREAD · VERIFIED`, persistence after reload, and surrounding Track / Albums / Lyrics / SonicTrace navigation sanity. Acceptance intentionally did **not** cut network, invalidate Cloudflare Access or manufacture a response-loss branch.
 
-## Build93 deployed candidate behavior
+## Build93 accepted behavior
 
 The fresh post-Build92 audit again compared Album asset upload, Album create, degraded/offline/PWA resilience and smaller reliability gaps. The smaller proven gap was the non-mutating Track metadata validation seam already used by both the visible Validate action and Build92 fresh pre-save proposal refresh.
 
@@ -335,31 +316,26 @@ Maximum total attempts are two. Plain and duration-aware validation use the same
 
 Historical CI `31898251689` failed only at the inherited Phase7-C Build69 successor cap. Historical CI `31898329621` then passed Phase7-C, Phase8 and Phase9 Build82→93 and failed only at the inherited Focus Build64 successor cap. Focus64–67 were widened only to recognize v0.19.15/Build93 while retaining functional assertions. Neither red head was merged. Final CI `31898542379` passed the complete repository-native chain on exact head `fcbe4c59a3a364d9665eba2ed432f37475116364`.
 
-Runtime PR #162 merged that exact tested head at `6c1ceb7d59971ec6c7e251532054392f02c08157`. Pages `31898639778` completed build + deploy successfully on that exact merge SHA.
+Runtime PR #162 merged that exact tested head at `6c1ceb7d59971ec6c7e251532054392f02c08157`. Pages `31898639778` completed build + deploy successfully on that exact merge SHA. Candidate docs PR #163 passed CI `31899284370`, merged at `6464659428e34a679c8acfeb481bfaca78e05bc7`, and Pages `31899342536` deployed that exact docs merge successfully.
+
+The bounded normal-browser regression received the explicit verdict **`BUILD93 PASS MADAFAKA`** on 2026-08-15. Acceptance did **not** deliberately cut network or invalidate Cloudflare Access merely to manufacture a transient retry; automated guards own the timeout/transport/transient-HTTP failure-path proof and two-attempt bound.
 
 ## Current blockers
 
-**Build93 real-user browser smoke is pending.**
+**No active code / CI / deploy / real-user acceptance blocker after `BUILD93 PASS MADAFAKA`.**
 
-There is no active code, CI or deploy blocker. The candidate is deployed; acceptance remains separate.
+The only current closure task is this documentation/receipt promotion. Build94 remains unallocated.
 
 The historical `Magnetic Midnight` public-cover palette `Failed to fetch` issue remains resolved since Build62 and covered by regression guards.
 
 ## Exact next action
 
-Run the bounded normal-browser **Build93 Track metadata validation regression smoke**:
+1. finish Build93 acceptance-docs PR / CI / merge / Pages closeout;
+2. create the final immutable post-closeout safety checkpoint;
+3. run a fresh, read-only post-Build93 Phase9 reliability audit;
+4. allocate Build94 **only if** that audit proves a smallest coherent gap.
 
-1. hard refresh Studio and verify `v0.19.15 · Build93`;
-2. open one safe existing private canonical Track;
-3. change one harmless reversible metadata field;
-4. click **Validate** and confirm the normalized proposal appears normally without a phantom Access error;
-5. optionally perform one normal explicit **Save** to traverse the existing Build92 path;
-6. if saved, confirm `CANONICAL REREAD · VERIFIED` and persistence after reload;
-7. quick Track / Albums / Lyrics / SonicTrace navigation sanity.
-
-Do **not** deliberately cut network or invalidate Cloudflare Access merely to manufacture retry behavior. Automated guards own timeout/transport/transient-HTTP failure-path proof.
-
-If clean, explicit verdict may promote Build93 to REAL USER PASS. **Build94 remains UNALLOCATED** until then and until a fresh post-Build93 audit proves the next scope.
+Remaining audit candidates include Album asset upload response-loss truth, Album create response-loss truth, degraded/offline/PWA resilience, and any newly proven smaller bounded reliability gap. None is pre-selected.
 
 ## Frozen stop lines
 
@@ -442,6 +418,9 @@ safety/post-build93-prepr-20260815-1921
 safety/post-build93-prepr-final-20260815-1923
 safety/post-build93-green-premerge-20260815-1931
 safety/post-build93-deployed-candidate-20260815-1936
+safety/post-build93-candidate-docs-prepr-20260815-1946
+safety/post-build93-candidate-docs-closeout-20260815-1949
+safety/post-build93-real-user-pass-20260815-2010
 ```
 
 ## Acceptance vocabulary
@@ -450,4 +429,4 @@ safety/post-build93-deployed-candidate-20260815-1936
 CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS
 ```
 
-Build92 is **REAL USER PASS / ACCEPTED**. Build93 is **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**. Build94 is **UNALLOCATED**.
+Build93 is **REAL USER PASS / ACCEPTED**. Build94 is **UNALLOCATED**.
