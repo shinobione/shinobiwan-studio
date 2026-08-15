@@ -3,7 +3,6 @@ import {
   AdminValidationError,
   getAdminBridgeHealth,
   getAdminTrack,
-  saveAdminTrackMetadata,
   validateAdminTrackMetadata,
   type AdminMetadataPatch,
   type AdminMetadataSaveResponse,
@@ -11,6 +10,7 @@ import {
 } from './admin-api';
 import type { AdminAudioEvidence } from './audio-duration-evidence';
 import { studioConfig } from './config';
+import { saveAdminTrackMetadataResilient } from './track-metadata-admin-api';
 
 const METADATA_VALIDATION_INTENT = 'metadata-validate-v1';
 const METADATA_SAVE_INTENT = 'metadata-save-v1';
@@ -119,6 +119,19 @@ export async function validateAdminTrackMetadataWithAudioEvidence(trackId: strin
 }
 
 export async function saveAdminTrackMetadataWithAudioEvidence(trackId: string, expectedUpdatedAt: string, metadata: AdminMetadataPatch, evidence: AdminAudioEvidence | null): Promise<AdminMetadataSaveResponse> {
-  if (!evidence) return saveAdminTrackMetadata(trackId, expectedUpdatedAt, metadata);
-  return postSaveWithEvidence(trackId, expectedUpdatedAt, metadata, evidence);
+  // Build92: repeat the same non-mutating validation immediately before the write.
+  // The exact normalized proposal becomes the operation-specific postcondition for
+  // normal-success verification and response-loss recovery. This preserves the
+  // existing Validate → review → explicit Save UX while refusing to guess after
+  // a lost POST response. No write is automatically retried.
+  const reviewed = await validateAdminTrackMetadataWithAudioEvidence(trackId, expectedUpdatedAt, metadata, evidence);
+  if (reviewed.validationOnly !== true || reviewed.valid !== true || !reviewed.proposed) {
+    throw new AdminSaveError('Track metadata proposal is no longer valid. Validate again before saving.', 409, 'TRACK_METADATA_PROPOSAL_STALE', expectedUpdatedAt);
+  }
+  return saveAdminTrackMetadataResilient(trackId, expectedUpdatedAt, metadata, evidence, reviewed.proposed);
 }
+
+// Historical implementation retained only as source-level evidence for the pre-Build92
+// duration-aware transport. Build92 routes the callable save through the resilient
+// operation-specific service above; this helper is intentionally not exported/called.
+void postSaveWithEvidence;
