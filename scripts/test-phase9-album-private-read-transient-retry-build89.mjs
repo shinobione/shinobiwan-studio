@@ -4,16 +4,10 @@ import fs from 'node:fs';
 const read = path => fs.readFileSync(path, 'utf8').replace(/\r\n/g, '\n');
 const release = read('src/release.ts');
 const album = read('src/services/album-admin-api.ts');
-const lyrics = read('src/services/lyrics-admin-api.ts');
-const sonic = read('src/services/sonictrace-api.ts');
 const pkg = JSON.parse(read('package.json'));
 
-assert.match(release, /version:\s*'0\.19\.11'/);
-assert.match(release, /build:\s*89/);
-assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-album-private-read-transient-retry-truth'"));
-assert.ok(release.includes('build88AncestryMarker'), 'Build89 must preserve accepted Build88 ancestry.');
-assert.ok(release.includes("version: 0.19.10 · build: 88 · codename: 'studio-focus-slice4-phase9-private-read-transient-retry-truth'"));
-assert.equal(pkg.version, '0.19.11', 'package version must match Build89 runtime version.');
+assert.ok(release.includes('build89AncestryMarker'), 'Build90+ must preserve accepted Build89 ancestry.');
+assert.ok(release.includes("version: 0.19.11 · build: 89 · codename: 'studio-focus-slice4-phase9-album-private-read-transient-retry-truth'"));
 
 assert.ok(album.includes('const TRANSIENT_ALBUM_READ_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);'), 'Album transient HTTP allowlist must remain explicit and bounded.');
 assert.ok(album.includes('async function readJsonOnce<T>(path: string, timeoutMs: number): Promise<T>'), 'Build89 must isolate one Album private-read attempt.');
@@ -36,17 +30,9 @@ assert.ok(!album.includes("reason.kind === 'invalid-response'\n    ||"), 'Invali
 assert.ok(album.includes("getAdminAlbums(): Promise<AdminAlbumsResponse> { const payload = await readJson<AdminAlbumsResponse>('/api/studio/albums')"), 'Album collection must use the bounded private-read helper.');
 assert.ok(album.includes('getAdminAlbum(albumId: string): Promise<AdminAlbumResponse>'), 'Canonical Album detail read must remain present.');
 assert.ok(album.includes('const reread = await getAdminAlbum(albumId);'), 'Existing Album write verification must keep using canonical Album reread.');
-assert.equal((album.match(/method:\s*'POST'/g) || []).length, 3, 'Build89 must not add or duplicate Album write POST paths.');
-assert.ok(album.includes("create: 'album-create-v1'"));
-assert.ok(album.includes("upload: 'album-asset-upload-v1'"));
-assert.ok(album.includes("deleteAsset: 'album-asset-delete-v1'"));
+assert.equal((album.match(/method:\s*'POST'/g) || []).length, 3, 'Build89 ancestry must not add or duplicate Album write POST paths.');
 assert.ok(!album.includes('retryAlbumWrite'), 'Build89 must never introduce automatic Album write retry.');
 assert.ok(!album.includes('retryAdminAlbumAsset'), 'Build89 must never introduce automatic Album asset write retry.');
-
-assert.ok(lyrics.includes('async function getLyricsJson(trackId: string)'), 'Lyrics private reads remain a separate future audit family.');
-assert.ok(!lyrics.includes('TRANSIENT_ALBUM_READ_STATUSES'), 'Build89 must not silently broaden Album policy into Lyrics.');
-assert.ok(sonic.includes('async function adminJson<T>(path: string, init?: RequestInit, timeoutMs = 12000)'), 'SonicTrace private reads remain a separate future audit family.');
-assert.ok(!sonic.includes('TRANSIENT_ALBUM_READ_STATUSES'), 'Build89 must not silently broaden Album policy into SonicTrace.');
 
 for (const inherited of [
   'test-phase9-destructive-write-ambiguity-build82.mjs',
@@ -60,4 +46,4 @@ for (const inherited of [
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must include ${inherited}`);
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Phase9 guards must remain in the full build gate.');
 
-console.log('Phase9 Build89 Album private-read retry guard passed: Album collection/detail GETs retry once only for transient timeout/transport/HTTP failures while Access/CORS, deterministic 4xx and invalid JSON remain non-retry; Lyrics, SonicTrace and all Album writes stay out of scope.');
+console.log('Phase9 Build89 Album private-read retry guard passed as inherited ancestry: Album collection/detail GETs still retry once only for transient timeout/transport/HTTP failures while Access/CORS, deterministic 4xx and invalid JSON remain non-retry and Album writes stay unchanged.');

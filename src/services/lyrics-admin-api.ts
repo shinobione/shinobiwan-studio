@@ -3,6 +3,7 @@ import { studioConfig } from './config';
 
 const LYRICS_VALIDATION_INTENT = 'lyrics-validate-v1';
 const LYRICS_SAVE_INTENT = 'lyrics-save-v1';
+const TRANSIENT_LYRICS_READ_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
 
 type LyricsSaveTransportFailure = {
   timeoutCode: string;
@@ -155,7 +156,15 @@ async function parseJson<T>(response: Response, fallbackMessage: string): Promis
   }
 }
 
-async function getLyricsJson(trackId: string): Promise<AdminLyricsSnapshot> {
+function isTransientLyricsReadError(reason: unknown): reason is AdminLyricsError {
+  return reason instanceof AdminLyricsError && (
+    reason.code === 'LYRICS_READ_TIMEOUT'
+    || reason.code === 'LYRICS_READ_TRANSPORT'
+    || (reason.status !== null && TRANSIENT_LYRICS_READ_STATUSES.has(reason.status))
+  );
+}
+
+async function fetchLyricsJsonOnce(trackId: string): Promise<AdminLyricsSnapshot> {
   const controller = new AbortController();
   const timeout = globalThis.setTimeout(() => controller.abort(), 7000);
   try {
@@ -169,17 +178,66 @@ async function getLyricsJson(trackId: string): Promise<AdminLyricsSnapshot> {
         signal: controller.signal,
       });
     } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') throw new AdminLyricsError('Canonical lyrics read timed out.');
-      throw new AdminLyricsError('Canonical lyrics read is unavailable. Authenticate with Cloudflare Access and retry.');
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        throw new AdminLyricsError('Canonical lyrics read timed out.', null, 'LYRICS_READ_TIMEOUT');
+      }
+      throw new AdminLyricsError(
+        'Canonical lyrics read transport was interrupted.',
+        null,
+        'LYRICS_READ_TRANSPORT',
+        null,
+        null,
+        false,
+        error instanceof Error ? error.message : String(error),
+      );
     }
-    const payload = await parseJson<AdminLyricsSnapshot>(response, 'Track Manager returned invalid lyrics JSON.');
+    if (!isJson(response)) {
+      throw new AdminLyricsError(
+        'Cloudflare Access session is not available to the Studio lyrics client.',
+        response.status || null,
+        'LYRICS_READ_ACCESS_SESSION_REQUIRED',
+      );
+    }
+    let payload: AdminLyricsSnapshot;
+    try {
+      payload = await response.json() as AdminLyricsSnapshot;
+    } catch {
+      throw new AdminLyricsError('Track Manager returned invalid lyrics JSON.', response.status || null, 'LYRICS_READ_INVALID_RESPONSE');
+    }
     if (!response.ok || payload.ok === false) {
-      throw new AdminLyricsError(payload.error || `Lyrics read returned HTTP ${response.status}.`, response.status, payload.code || null);
+      throw new AdminLyricsError(
+        payload.error || `Lyrics read returned HTTP ${response.status}.`,
+        response.status,
+        payload.code || (response.status === 401 || response.status === 403 ? 'LYRICS_READ_ACCESS' : 'LYRICS_READ_HTTP'),
+      );
     }
     return payload;
   } finally {
     globalThis.clearTimeout(timeout);
   }
+}
+
+async function getLyricsJson(trackId: string): Promise<AdminLyricsSnapshot> {
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      return await fetchLyricsJsonOnce(trackId);
+    } catch (reason) {
+      if (attempt === 0 && isTransientLyricsReadError(reason)) continue;
+      if (attempt === 1 && isTransientLyricsReadError(reason)) {
+        throw new AdminLyricsError(
+          'Canonical lyrics read failed after one bounded transient retry.',
+          reason.status,
+          reason.code,
+          null,
+          null,
+          false,
+          reason.technicalDetails || reason.message,
+        );
+      }
+      throw reason;
+    }
+  }
+  throw new AdminLyricsError('Canonical lyrics read failed unexpectedly.', null, 'LYRICS_READ_UNEXPECTED');
 }
 
 async function postLyrics<T extends AdminLyricsValidationResponse | AdminLyricsSaveResponse>(
@@ -415,4 +473,6 @@ export const lyricsAdminService = Object.freeze({
   transport: 'text/plain-simple-request',
   separateLrcRequired: false,
   lostResponsePolicy: 'private-canonical-reread-no-blind-retry',
+  privateReadRetryPolicy: 'one-retry-timeout-transport-transient-http-no-access-retry',
+  privateReadMaxAttempts: 2,
 });
