@@ -19,20 +19,22 @@ Then verify the real GitHub state before mutation.
 ## Current accepted state
 
 ```text
-Studio                v0.19.13 · Build91 · REAL USER PASS
-Codename              studio-focus-slice4-phase9-sonictrace-private-read-transient-retry-truth
-Runtime PR            #154
-Exact tested head     b8ee223b2d077e5d14936530be219f78ed7910ac
-Validation            31888303536 · SUCCESS · first run
-Runtime merge         591b81a3930f1ba6d9f91f6e4f7d6e31550e5cf6
-Runtime Pages         31888346988 · SUCCESS · exact merge SHA
-Candidate docs PR     #155
-Candidate docs merge  32a57f50c90f3f7677e3a45ad46eace8bd988b3d
-Candidate docs Pages  31889030115 · SUCCESS
-Acceptance docs PR    #156
-Acceptance docs merge 80b6c34f2bd8937cbbc4ef5e24899d13a6949731
-Acceptance docs Pages 31892156760 · SUCCESS
-Real-user smoke       BUILD91 PASS MADAFAKA · 2026-08-15
+Studio                v0.19.14 · Build92 · REAL USER PASS
+Codename              studio-focus-slice4-phase9-track-metadata-response-loss-truth
+Runtime PR            #158
+Exact tested head     2b859d831f5fc46eea9853f31c4b86057041128b
+Validation            31893496536 · SUCCESS
+Historical guard CI   31893447100 · FAILURE · Build80 seam assertion only · never merged
+Runtime merge         d0ca8b3aa4481c3217f79790e347000bfd22823a
+Runtime Pages         31893652679 · SUCCESS · exact merge SHA
+Candidate docs PR     #159
+Candidate docs CI     31894353160 · SUCCESS
+Candidate docs merge  f46b846841e6ef9ce705b2fa3817baecd0aecefa
+Candidate docs Pages  31894411652 · SUCCESS
+Acceptance docs PR    PENDING
+Acceptance docs merge PENDING
+Acceptance docs Pages PENDING
+Real-user smoke       BUILD92 PASS MADAFAKA · 2026-08-15
 Track Manager         v5.23 · DEPLOYED
 Studio bridge         v1.13
 TM admin Worker       439a1ce4-e458-427d-9fd6-61e888efd269
@@ -43,26 +45,7 @@ Deep Audio            2.0.3-alpha
 LRC Maker             6.3.8
 ```
 
-**Studio v0.19.13 · Build91 remains the current accepted runtime.** Build91 extends bounded private **GET** retry truth to canonical SonicTrace latest/history state and the SonicTrace catalog. Timeout, transport interruption, and HTTP `408/425/429/500/502/503/504` may receive one bounded retry; Access/CORS, deterministic ordinary 4xx, non-JSON Access gating and invalid JSON are never retried. Build84 `sonictrace-analysis-save-v1` POST/lost-response recovery, Deep Audio analysis, canonical audio download and every write rule remain unchanged. The bounded normal-browser regression received explicit **`BUILD91 PASS MADAFAKA`** on 2026-08-15.
-
-## Current deployed candidate
-
-```text
-Studio                v0.19.14 · Build92 · DEPLOYED CANDIDATE
-Codename              studio-focus-slice4-phase9-track-metadata-response-loss-truth
-Runtime PR            #158
-Exact tested head     2b859d831f5fc46eea9853f31c4b86057041128b
-Validation            31893496536 · SUCCESS
-Historical guard CI   31893447100 · FAILURE · Build80 seam assertion only · never merged
-Runtime merge         d0ca8b3aa4481c3217f79790e347000bfd22823a
-Runtime Pages         31893652679 · SUCCESS · exact merge SHA
-Real-user smoke       PENDING
-Worker deploy         NONE
-Track Manager change  NONE
-R2 migration/write    NONE caused by deployment
-```
-
-**Build92 changes only canonical Track metadata save truth.** The callable save repeats the same non-mutating validation immediately before POST and uses the exact normalized proposal as the operation-specific canonical postcondition, including already-supported derived audio duration when present. Timeout/transport response loss is never retried: a private Track reread classifies committed / not committed / ambiguous / unverified. Normal `saved` and `noChange` responses are also canonically verified. A recovered-after-lost-response result deliberately does **not** fabricate an independently unobservable `catalogRebuilt:true` receipt.
+**Studio v0.19.14 · Build92 is the current accepted runtime.** Build92 protects canonical Track metadata save truth without changing Track Manager authority. Immediately before POST, Studio repeats the same non-mutating validation and anchors the write to the exact normalized reviewed proposal and expected Track revision, including already-supported derived audio duration when present. Timeout/transport response loss is never blindly retried: a private canonical Track reread classifies committed / not committed / ambiguous / unverified. Normal `saved` and `noChange` responses are also canonically verified. A recovered-after-lost-response result deliberately does **not** fabricate an independently unobservable `catalogRebuilt:true` receipt. The bounded normal-browser regression received explicit **`BUILD92 PASS MADAFAKA`** on 2026-08-15.
 
 The repository currently publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
@@ -125,12 +108,12 @@ Phase 9 Slice7      Build88 · REAL USER PASS
 Phase 9 Slice8      Build89 · REAL USER PASS
 Phase 9 Slice9      Build90 · REAL USER PASS
 Phase 9 Slice10     Build91 · REAL USER PASS
-Phase 9 Slice11     Build92 · DEPLOYED CANDIDATE · smoke pending
+Phase 9 Slice11     Build92 · REAL USER PASS
 Build93             UNALLOCATED
 Phase 10            FUTURE
 ```
 
-The immediate next action is a **bounded normal-browser Build92 Track metadata regression smoke**. No Build93 is allocated before Build92 acceptance plus a fresh post-Build92 audit.
+The immediate next action is a **fresh bounded post-Build92 Phase9 reliability audit**. No Build93 is allocated before that audit proves a concrete smallest coherent gap.
 
 ## Frozen authority model
 
@@ -183,6 +166,8 @@ metadata save response unavailable
 Immediately before POST, Studio repeats the same non-mutating validation and anchors the write to that exact proposal and revision. Derived `manifest.duration`, when supported by canonical audio evidence, is part of the reviewed proposal but remains non-editable. Normal HTTP success is also canonically reread and verified.
 
 Track Manager rebuilds the derived catalog inside its transaction. Because the private Track reread proves manifest state rather than independently reading `catalog/index.json`, a recovered lost-response result does not fabricate a catalog-rebuilt receipt. Normal HTTP success retains the server's real receipt.
+
+The accepted Build92 browser smoke covered one harmless reversible metadata edit, Validate → one normal Save, `CANONICAL REREAD · VERIFIED`, persistence after reload, and surrounding Track / Albums / Lyrics / SonicTrace navigation. Acceptance did not manufacture a response-loss branch.
 
 ### Albums
 
@@ -307,7 +292,7 @@ MASTER FINAL 16:9
 
 Release Campaign is provider-agnostic. Google Flow is a convenience shortcut. Campaign drafts remain browser-local and ZIP export remains review-only.
 
-## Build92 candidate receipts
+## Build92 acceptance receipts
 
 ```text
 Safety pre              safety/pre-phase9-track-metadata-response-loss-build92-20260815-1722
@@ -319,14 +304,22 @@ Historical guard CI     31893447100 · FAILURE · Build80 seam assertion only ·
 Runtime merge           d0ca8b3aa4481c3217f79790e347000bfd22823a
 Runtime Pages           31893652679 · SUCCESS · exact runtime merge SHA
 Safety post-deploy      safety/post-build92-deployed-candidate-20260815-1748
+Candidate docs PR       #159
+Candidate docs CI       31894353160 · SUCCESS
+Candidate docs merge    f46b846841e6ef9ce705b2fa3817baecd0aecefa
+Candidate docs Pages    31894411652 · SUCCESS
+Safety post-acceptance  safety/post-build92-real-user-pass-20260815-1819
+Acceptance docs PR      PENDING
+Acceptance docs merge   PENDING
+Acceptance docs Pages   PENDING
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
-Real-user smoke         PENDING
+Real-user smoke         BUILD92 PASS MADAFAKA · 2026-08-15
 Build93                 UNALLOCATED
 ```
 
-Detailed candidate record: [`changelogs/CHANGELOG-BUILD92.md`](changelogs/CHANGELOG-BUILD92.md).
+Detailed accepted record: [`changelogs/CHANGELOG-BUILD92.md`](changelogs/CHANGELOG-BUILD92.md).
 
 ## Build91 acceptance receipts
 
