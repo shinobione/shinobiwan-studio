@@ -2,16 +2,16 @@
 
 This file is the **current concise changelog**. Detailed per-build records live under [`changelogs/`](changelogs/README.md).
 
-## Current deployed candidate
+## Current accepted release
 
 ### v0.19.9 · Build87 — 2026-08-15
 
 Codename: `studio-focus-slice4-phase9-album-membership-response-loss-truth`  
-Status: **DEPLOYED CANDIDATE — REAL USER SMOKE PENDING**
+Status: **REAL USER PASS — ACCEPTED**
 
 Build87 extends Phase9 reliability to canonical Album **bulk membership / ordered tracklist save** only.
 
-Candidate behavior:
+Accepted behavior:
 
 - private pre-read captures the exact Album revision plus every Track in the union of previous/requested `album.trackIds`;
 - timeout, fetch interruption or unreadable JSON response is **never blindly retried**;
@@ -24,9 +24,10 @@ Candidate behavior:
 - partial/mixed changed state = `AMBIGUOUS / DO NOT RETRY`;
 - reread unavailable = `UNVERIFIED / DO NOT RETRY`;
 - normal success also requires exact returned revision/order, complete Album + Track-cache canonical verification and `trackCachesUpdated` agreement when provided;
+- normal-browser acceptance confirmed ordered tracklist persistence, preserved Album cache ownership and surrounding navigation sanity;
 - no Track Manager, Worker, public Worker, R2 schema/data migration, LaunchPAD, LRC Maker or SonicTrace Deep Audio change was required.
 
-Exact candidate evidence:
+Exact acceptance evidence:
 
 ```text
 Safety pre               safety/pre-phase9-album-membership-response-loss-build87-20260815-0837
@@ -37,18 +38,22 @@ Validation               31870328730 · SUCCESS · first run
 Runtime merge            b9e1f121c7dc111ee6db06fd4d00227426d96ce7
 Runtime Pages            31870370403 · SUCCESS · exact runtime merge SHA
 Safety post-deploy       safety/post-build87-deployed-candidate-20260815-0853
+Candidate docs PR        #142
+Candidate docs merge     453be9e9d72c9d90cd97ad5f57be02821efec12a
+Candidate docs Pages     31870838391 · SUCCESS
+Safety post-acceptance   safety/post-build87-real-user-pass-20260815-0903
 Track Manager            v5.23 · unchanged
 Studio bridge            v1.13 · unchanged
 TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
 Public Worker            v2.7 · unchanged
 Worker deploy            NONE
 R2 migration/write       NONE caused by deployment
-Real-user smoke          PENDING
+Real-user smoke          BUILD87 PASS · 2026-08-15
 ```
 
-Detailed candidate record: [`changelogs/CHANGELOG-BUILD87.md`](changelogs/CHANGELOG-BUILD87.md).
+Detailed accepted record: [`changelogs/CHANGELOG-BUILD87.md`](changelogs/CHANGELOG-BUILD87.md).
 
-## Current accepted release
+## Accepted predecessor
 
 ### v0.19.8 · Build86 — 2026-08-15
 
@@ -312,8 +317,8 @@ All Phase8/9 health and guidance surfaces continue to preserve the same canonica
 
 ## Next bounded action
 
-Complete the **Build87 normal-browser Album tracklist reorder regression smoke**. Do not deliberately interrupt a production membership save merely to prove response-loss guards.
+**Build88 is unallocated.**
 
-Build88 remains **UNALLOCATED** until explicit Build87 acceptance and a fresh bounded audit.
+Run a fresh Phase9 reliability audit before selecting another runtime slice. Remaining candidate areas are Album asset upload/create response-loss truth, Access/CORS hardening, bounded read retries/timeouts, and degraded/offline/PWA resilience.
 
 `CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS` remains mandatory.
