@@ -19,20 +19,20 @@ Then verify the real GitHub state before mutation.
 ## Current accepted state
 
 ```text
-Studio                v0.19.12 · Build90 · REAL USER PASS
-Codename              studio-focus-slice4-phase9-lyrics-private-read-transient-retry-truth
-Runtime PR            #150
-Exact tested head     48ca1dc25951d65ead05c4f80bd1f9e6bf8c5d01
-Validation            31884568681 · SUCCESS · first run
-Runtime merge         8a851a7d53d3b4f45359c7036011684441bb25bb
-Runtime Pages         31884614863 · SUCCESS · exact merge SHA
-Candidate docs PR     #151
-Candidate docs merge  442b488511d77da15592a37d6e8d2dca0ed30fb8
-Candidate docs Pages  31885123431 · SUCCESS
-Acceptance docs PR    #152
-Acceptance docs merge ebc501df90b8a8bf9229da4a61d7784beba13b78
-Acceptance docs Pages 31887090784 · SUCCESS
-Real-user smoke       BUILD90 PASS MADAFAKA · 2026-08-15
+Studio                v0.19.13 · Build91 · REAL USER PASS
+Codename              studio-focus-slice4-phase9-sonictrace-private-read-transient-retry-truth
+Runtime PR            #154
+Exact tested head     b8ee223b2d077e5d14936530be219f78ed7910ac
+Validation            31888303536 · SUCCESS · first run
+Runtime merge         591b81a3930f1ba6d9f91f6e4f7d6e31550e5cf6
+Runtime Pages         31888346988 · SUCCESS · exact merge SHA
+Candidate docs PR     #155
+Candidate docs merge  32a57f50c90f3f7677e3a45ad46eace8bd988b3d
+Candidate docs Pages  31889030115 · SUCCESS
+Acceptance docs PR    #156
+Acceptance docs merge PENDING
+Acceptance docs Pages PENDING
+Real-user smoke       BUILD91 PASS MADAFAKA · 2026-08-15
 Track Manager         v5.23 · DEPLOYED
 Studio bridge         v1.13
 TM admin Worker       439a1ce4-e458-427d-9fd6-61e888efd269
@@ -43,25 +43,7 @@ Deep Audio            2.0.3-alpha
 LRC Maker             6.3.8
 ```
 
-**Studio v0.19.12 · Build90 remains the current accepted runtime.** Build90 extends bounded private **GET** retry truth to canonical Lyrics reads only. Timeout, transport interruption, and HTTP `408/425/429/500/502/503/504` may receive one bounded retry; Access/CORS, deterministic ordinary 4xx, non-JSON Access gating and invalid JSON are never retried. Existing Lyrics validation/save POSTs, Build83 lost-response recovery and the no-blind-write-retry rule remain unchanged. The bounded normal-browser regression received explicit **`BUILD90 PASS MADAFAKA`** on 2026-08-15.
-
-## Current deployed candidate
-
-```text
-Studio                v0.19.13 · Build91 · DEPLOYED CANDIDATE
-Codename              studio-focus-slice4-phase9-sonictrace-private-read-transient-retry-truth
-Runtime PR            #154
-Exact tested head     b8ee223b2d077e5d14936530be219f78ed7910ac
-Validation            31888303536 · SUCCESS · first run
-Runtime merge         591b81a3930f1ba6d9f91f6e4f7d6e31550e5cf6
-Runtime Pages         31888346988 · SUCCESS · exact merge SHA
-Real-user smoke       PENDING
-Worker deploy         NONE
-Track Manager change  NONE
-R2 migration/write    NONE caused by deployment
-```
-
-**Build91 changes only private Track Manager SonicTrace GET behavior.** Canonical latest/history state and the SonicTrace catalog may retry once for timeout, transport interruption or HTTP `408/425/429/500/502/503/504`, with at most two total attempts. Access/CORS, deterministic ordinary 4xx, non-JSON Access gating and invalid JSON are never retried. Build84 `sonictrace-analysis-save-v1` POST/lost-response recovery, Deep Audio analysis, canonical audio download and every write rule remain unchanged.
+**Studio v0.19.13 · Build91 is the current accepted runtime.** Build91 extends bounded private **GET** retry truth to canonical SonicTrace latest/history state and the SonicTrace catalog. Timeout, transport interruption, and HTTP `408/425/429/500/502/503/504` may receive one bounded retry; Access/CORS, deterministic ordinary 4xx, non-JSON Access gating and invalid JSON are never retried. Build84 `sonictrace-analysis-save-v1` POST/lost-response recovery, Deep Audio analysis, canonical audio download and every write rule remain unchanged. The bounded normal-browser regression received explicit **`BUILD91 PASS MADAFAKA`** on 2026-08-15.
 
 The repository currently publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
@@ -123,12 +105,12 @@ Phase 9 Slice6      Build87 · REAL USER PASS
 Phase 9 Slice7      Build88 · REAL USER PASS
 Phase 9 Slice8      Build89 · REAL USER PASS
 Phase 9 Slice9      Build90 · REAL USER PASS
-Phase 9 Slice10     Build91 · DEPLOYED CANDIDATE · smoke pending
+Phase 9 Slice10     Build91 · REAL USER PASS
 Build92             UNALLOCATED
 Phase 10            FUTURE
 ```
 
-The immediate next action is a **bounded normal-browser Build91 SonicTrace read regression smoke**. No Build92 is allocated before Build91 acceptance plus a fresh post-Build91 audit.
+The immediate next action is a **fresh bounded post-Build91 Phase9 reliability audit**. No Build92 is allocated before that audit proves a concrete smallest coherent gap.
 
 ## Frozen authority model
 
@@ -271,6 +253,8 @@ save response lost
 
 Build91 changes only the private Track Manager GET helper used by normal canonical latest/history reads, the SonicTrace catalog and Build84 verification/recovery rereads. It does **not** retry the save POST, Deep Audio analysis or canonical audio download.
 
+The bounded normal-browser Build91 smoke confirmed deployed version, normal canonical latest/history loading on an existing Track, a normal SonicTrace catalog/Intelligence read and surrounding Track / Albums / Lyrics / SonicTrace navigation. Acceptance did not manufacture a network or Access failure branch.
+
 ### Release Campaign
 
 ```text
@@ -281,7 +265,7 @@ MASTER FINAL 16:9
 
 Release Campaign is provider-agnostic. Google Flow is a convenience shortcut. Campaign drafts remain browser-local and ZIP export remains review-only.
 
-## Build91 candidate receipts
+## Build91 acceptance receipts
 
 ```text
 Safety pre              safety/pre-phase9-sonictrace-private-read-retry-build91-20260815-1546
@@ -292,14 +276,21 @@ Validation              31888303536 · SUCCESS · first run
 Runtime merge           591b81a3930f1ba6d9f91f6e4f7d6e31550e5cf6
 Runtime Pages           31888346988 · SUCCESS · exact runtime merge SHA
 Safety post-deploy      safety/post-build91-deployed-candidate-20260815-1559
+Candidate docs PR       #155
+Candidate docs merge    32a57f50c90f3f7677e3a45ad46eace8bd988b3d
+Candidate docs Pages    31889030115 · SUCCESS
+Safety post-acceptance  safety/post-build91-real-user-pass-20260815-1700
+Acceptance docs PR      #156
+Acceptance docs merge   PENDING
+Acceptance docs Pages   PENDING
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
-Real-user smoke         PENDING
+Real-user smoke         BUILD91 PASS MADAFAKA · 2026-08-15
 Build92                 UNALLOCATED
 ```
 
-Detailed candidate record: [`changelogs/CHANGELOG-BUILD91.md`](changelogs/CHANGELOG-BUILD91.md).
+Detailed accepted record: [`changelogs/CHANGELOG-BUILD91.md`](changelogs/CHANGELOG-BUILD91.md).
 
 ## Build90 acceptance receipts
 
