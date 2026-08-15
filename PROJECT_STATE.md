@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-15 after explicit **`BUILD88 PASS MADAFAKA`** real-user browser acceptance.
+Updated: 2026-08-15 after **Build89 deployed candidate** publication. Real-user acceptance is pending.
 
 This file is the short current checkpoint. It is the first project-state document to read after `AGENTS.md`.
 
@@ -19,13 +19,33 @@ Runtime Pages           31872073050 · SUCCESS · exact runtime merge SHA
 Candidate docs PR       #145
 Candidate docs merge    316ad1b0784d72fb7d29d92c5deaedb56d262e49
 Candidate docs Pages    31872540118 · SUCCESS · exact docs merge SHA
+Acceptance docs PR      #146
+Acceptance docs merge   aebb168883c1f291b97e1d309b4028bb1d78861c
+Acceptance docs Pages   31881075352 · SUCCESS
 Real-user smoke         BUILD88 PASS MADAFAKA · 2026-08-15
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
 ```
 
-Build88 is now the latest **accepted** Studio runtime.
+Build88 remains the latest **accepted** Studio runtime until Build89 receives explicit real-user browser acceptance.
+
+## Current deployed candidate
+
+```text
+Studio version          v0.19.11
+Studio build            Build89
+Codename                studio-focus-slice4-phase9-album-private-read-transient-retry-truth
+Acceptance              DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Runtime PR              #147
+Exact tested head       8b73d19d8fced35642ee243cff0ac19d983fd0de
+Final runtime CI        31881635973 · SUCCESS
+Runtime merge SHA       b7ae769c66e9adccef79c80467cc8fd0a8534820
+Runtime Pages           31881682269 · SUCCESS · exact runtime merge SHA
+Worker deploy           NONE
+Track Manager change    NONE
+R2 migration/write      NONE caused by deployment
+```
 
 ## Current ecosystem baseline
 
@@ -40,7 +60,9 @@ Deep Audio              2.0.3-alpha
 LRC Maker               6.3.8
 ```
 
-Build88 changes only the Studio core private Track Manager **GET** transport for bridge health, Track inventory and Track detail. It distinguishes transient transport from Access/CORS and permits at most one bounded retry for timeout/transport/selected transient HTTP failures. It does **not** retry writes and does not change Track Manager, Workers, R2 schema/data, LaunchPAD, SonicTrace Deep Audio or LRC Maker.
+Build88 changes only the Studio core private Track Manager **GET** transport for bridge health, Track inventory and Track detail. It distinguishes transient transport from Access/CORS and permits at most one bounded retry for timeout/transport/selected transient HTTP failures. It does **not** retry writes.
+
+Build89 changes only the Studio canonical Album collection/detail private **GET** helper. The same bounded one-retry policy now protects Album inventory/detail/private visual discovery and existing canonical Album rereads, while all Album POST/write transports remain unchanged. Lyrics and SonicTrace private reads remain separate future audit families.
 
 ## Program position
 
@@ -58,6 +80,7 @@ Phase 9 Slice4          COMPLETE · Build85 REAL USER PASS
 Phase 9 Slice5          COMPLETE · Build86 REAL USER PASS
 Phase 9 Slice6          COMPLETE · Build87 REAL USER PASS
 Phase 9 Slice7          COMPLETE · Build88 REAL USER PASS
+Phase 9 Slice8          Build89 DEPLOYED CANDIDATE · smoke pending
 Phase 10                FUTURE
 Official Phase 11       NONE
 ```
@@ -70,87 +93,19 @@ Official Phase 11       NONE
 
 ## Build85 accepted behavior
 
-The fresh post-Build84 audit proved **Album metadata save only** as the smallest coherent remaining Album write-truth gap. The deployed Track Manager already stale-guards, writes, verifies and rolls back this transaction; Build85 changes no backend behavior.
-
-```text
-Album metadata save response lost / timeout
-→ NEVER blind automatic retry
-→ private canonical Album reread
-   ├─ new revision + exact requested metadata + stable non-metadata shape
-   │    → COMMITTED / VERIFIED
-   ├─ original revision unchanged
-   │    → NOT COMMITTED / explicit retry may be safe
-   ├─ revision changed but exact metadata-only postcondition unproven
-   │    → AMBIGUOUS / DO NOT RETRY
-   └─ private reread unavailable
-        → UNVERIFIED / DO NOT RETRY
-```
-
-Stable non-metadata shape includes canonical identity, ordered `trackIds`, assets and `createdAt`, preventing unrelated membership/media drift from being mistaken for metadata-save recovery.
-
-Normal HTTP success also requires exact server-returned revision + requested metadata + stable non-metadata shape before Studio calls the save verified.
-
-The bounded normal-browser smoke confirmed the deployed Build85 path loads an existing canonical Album, performs a harmless metadata edit/save with canonical verification, advances the canonical revision, persists the saved value after reload, and preserves surrounding Albums / Track / Lyrics / SonicTrace navigation.
+Album metadata save lost-response truth is operation-specific: new revision + exact requested metadata + stable non-metadata shape is verified committed; unchanged original revision is not committed/retry-safe; changed but unproven is ambiguous; unreadable canonical state is unverified. No blind retry.
 
 ## Build86 accepted behavior
 
-The fresh post-Build85 audit selected **Album move** as the smallest coherent remaining reliability gap. The deployed Track Manager already stale-guards target/source, computes deterministic target order/source removal, updates the Track compatibility cache, rebuilds catalog, rereads the target/source/Track triplet and rolls back touched state on transaction failure. Build86 changes no backend behavior.
-
-```text
-Album move response unavailable
-→ NEVER blind automatic retry
-→ private canonical target + source? + Track reread
-   ├─ exact new target revision/order
-   │  + exact source revision/removal when source exists
-   │  + Track cache points to target
-   │  + stable non-membership Album/Track shapes
-   │    → COMMITTED / VERIFIED
-   ├─ exact target/source/Track pre-write state unchanged
-   │    → NOT COMMITTED / explicit retry may be safe after fresh reload
-   ├─ partial/mixed/changed state without exact proof
-   │    → AMBIGUOUS / DO NOT RETRY
-   └─ canonical reread unavailable
-        → UNVERIFIED / DO NOT RETRY
-```
-
-Normal HTTP success also requires exact server-returned target/source revisions, exact ordered target/source `trackIds`, Track cache target and stable non-membership shapes.
-
-The bounded normal-browser smoke confirmed one genuine safe Album move, canonical source removal, target insertion/order persistence after reload, Track compatibility-cache convergence to the target Album, and surrounding Track / Visuals / Lyrics / SonicTrace / Albums navigation sanity.
+Album move response-loss truth requires exact target/source membership plus Track compatibility cache and stable shapes. Exact unchanged target/source/Track state is retry-safe not-committed; partial/mixed state is ambiguous. No blind retry.
 
 ## Build87 accepted behavior
 
-The fresh post-Build86 audit selected **Album bulk membership / ordered tracklist save** as the smallest coherent remaining reliability gap. Before Build87, Studio used a generic write transport and normal success only reread the Album manifest; it did not prove every Track compatibility cache affected by membership.
-
-Build87 privately snapshots the Album and every Track in the union of previous/requested `album.trackIds`, then applies operation-specific postconditions:
-
-```text
-Album membership response unavailable
-→ NEVER blind automatic retry
-→ private canonical Album + affected Track-cache reread
-   ├─ new Album revision + exact requested ordered trackIds
-   │  + stable Album non-membership shape
-   │  + every Track cache equals its expected postcondition
-   │  + stable Track non-album shapes
-   │    → COMMITTED / VERIFIED
-   ├─ exact Album + Track pre-write state unchanged
-   │    → NOT COMMITTED / explicit retry may be safe after fresh reload
-   ├─ partial/mixed/changed state without exact proof
-   │    → AMBIGUOUS / DO NOT RETRY
-   └─ canonical reread unavailable
-        → UNVERIFIED / DO NOT RETRY
-```
-
-Requested Tracks must exist. A historically missing prior Track may still be removed safely. Removed Tracks previously cached to the Album converge to transitional `Singles`; unrelated cache claims remain unchanged.
-
-Normal HTTP success also requires exact returned revision/order, exact canonical Album order, every affected Track cache and stable shapes, plus `trackCachesUpdated` agreement when supplied by Track Manager.
-
-The bounded normal-browser smoke received explicit **`BUILD87 PASS MADAFAKA`** on 2026-08-15 after a normal safe Album tracklist regression. Acceptance did not require deliberately interrupting network/Access or manufacturing a response-loss branch.
+Album bulk membership / ordered tracklist save privately verifies the Album plus every affected Track compatibility cache. Requested Tracks must exist; historically missing prior Tracks may be removed. No blind retry after lost response.
 
 ## Build88 accepted behavior
 
 The fresh post-Build87 audit proved the core private read transport as the smallest coherent reliability gap. Before Build88, a non-timeout `fetch()` rejection was mislabeled `access-or-cors`, and the catalog layer could immediately downgrade to public fallback after one transient private failure.
-
-Build88 preserves the existing finite per-attempt timeouts and applies this GET-only classification:
 
 ```text
 timeout                         → retry once max
@@ -162,32 +117,67 @@ non-JSON Access/gating response  → Access/CORS · NO RETRY
 invalid JSON                     → invalid-response · NO RETRY
 ```
 
-There are at most **two total attempts**. A second failure surfaces immediately. Public fallback behavior remains in `catalog-api.ts`; it is consulted only after the private helper ultimately fails. Build88 introduces no generic retry framework and no automatic write retry.
+There are at most **two total attempts**. A second failure surfaces immediately. Build88 introduces no generic retry framework and no automatic write retry.
 
-The bounded normal-browser smoke received explicit **`BUILD88 PASS MADAFAKA`** on 2026-08-15 after Home / Tracks private inventory, normal private Track detail and Albums / Track / Lyrics / SonicTrace navigation regression checks. Acceptance did **not** require deliberately cutting network, invalidating Cloudflare Access, or manufacturing transient failure branches.
+The bounded normal-browser smoke received explicit **`BUILD88 PASS MADAFAKA`** on 2026-08-15 after Home / Tracks private inventory, normal private Track detail and Albums / Track / Lyrics / SonicTrace navigation regression checks. Acceptance did not manufacture network/Access failure branches.
+
+## Build89 deployed candidate behavior
+
+The fresh post-Build88 audit compared Album create, Album upload, broader private-read resilience and degraded/offline/PWA behavior.
+
+The smallest coherent gap was **Album collection/detail private reads**:
+
+- the Album helper already had a finite timeout;
+- non-timeout browser `fetch()` rejection was still mislabeled `access-or-cors`;
+- no bounded transient retry existed;
+- the same helper owns Album inventory, Album detail, private visual discovery and existing canonical Album rereads used by write verification/recovery.
+
+Build89 now applies the same narrow GET-only classification:
+
+```text
+timeout                         → retry once max
+transport/fetch interruption     → retry once max
+HTTP 408/425/429/500/502/503/504 → retry once max
+401/403                         → Access/CORS · NO RETRY
+other deterministic 4xx          → HTTP · NO RETRY
+non-JSON Access/gating response  → Access/CORS · NO RETRY
+invalid JSON                     → invalid-response · NO RETRY
+```
+
+Maximum attempts: **2 total**. A second failure surfaces immediately.
+
+Build89 explicitly does **not** change:
+
+- Album create response-loss semantics;
+- Album binary upload response-loss semantics;
+- any Album POST/write retry behavior;
+- Lyrics private-read behavior;
+- SonicTrace private-read behavior;
+- Track Manager / Workers / R2 schema/data.
+
+Album create remains deferred because absent→present creation lacks a persisted operation identifier/pre-write revision sufficient to prove exact causality after a lost response without a backend contract change. Binary upload remains deferred because Studio lacks an exact precomputable digest/ETag contract for the selected bytes after a lost response.
 
 ## Current blockers
 
-**No active blocker after `BUILD88 PASS MADAFAKA`.**
+**Build89 real-user browser smoke is the only active blocker.**
 
-Historical CI runs `31871834515` and `31871883072` were red only because inherited Phase7-C / Studio Focus successor allowlists stopped at Build87. Those heads were never merged. Final runtime CI `31871980725` passed the complete chain on exact head `808b0c63fc22f17a04a9c544b934d97c791d3a73`.
+Historical CI runs `31881467538` and `31881538488` were red only because inherited Phase7-C / Studio Focus successor allowlists stopped at Build88. Those heads were never merged. Final runtime CI `31881635973` passed the complete chain on exact head `8b73d19d8fced35642ee243cff0ac19d983fd0de`.
 
 The historical `Magnetic Midnight` public-cover palette `Failed to fetch` issue remains resolved since Build62 and covered by regression guards.
 
 ## Exact next action
 
-**Do not allocate Build89 yet.**
+Run the bounded **normal-browser Build89 smoke**:
 
-Run a fresh, read-only Phase9 reliability audit and select the smallest coherent next reliability slice only after proving the gap and confirming existing recovery logic does not already cover it.
+1. hard refresh Studio and verify `v0.19.11 · Build89`;
+2. open **Albums** and verify the normal private Album inventory loads;
+3. open at least one canonical Album detail;
+4. verify private artwork / metadata load normally;
+5. quick Track / Lyrics / SonicTrace navigation sanity.
 
-Remaining audit candidates include:
+Do **not** deliberately cut network or invalidate Cloudflare Access merely to manufacture the retry branch. Automated guards own the failure-path classification proof.
 
-1. Album asset upload response-loss truth;
-2. Album create response-loss truth;
-3. broader private-read resilience outside the Build88 core GETs;
-4. degraded/offline/PWA resilience.
-
-No candidate above is an automatic commitment or pre-allocated build.
+**Do not allocate Build90 while Build89 acceptance is pending.**
 
 ## Frozen stop lines
 
@@ -236,6 +226,10 @@ safety/pre-phase9-private-read-retry-build88-20260815-0916
 safety/post-build88-deployed-candidate-20260815-0932
 safety/post-build88-candidate-docs-closeout-20260815-0942
 safety/post-build88-real-user-pass-20260815-1253
+safety/post-build88-rup-docs-closeout-20260815-1304
+safety/pre-phase9-album-private-read-retry-build89-20260815-1307
+safety/post-build89-prepr-20260815-1310
+safety/post-build89-deployed-candidate-20260815-1319
 ```
 
 ## Acceptance vocabulary
@@ -244,4 +238,4 @@ safety/post-build88-real-user-pass-20260815-1253
 CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS
 ```
 
-Build88 is **REAL USER PASS**. Build89 is **UNALLOCATED**.
+Build88 is **REAL USER PASS**. Build89 is **DEPLOYED CANDIDATE**. Build90 is **UNALLOCATED**.
