@@ -8,9 +8,12 @@ const saveService = read('src/services/track-metadata-admin-api.ts');
 const panel = read('src/components/MetadataValidationPanel.tsx');
 const pkg = JSON.parse(read('package.json'));
 
-assert.ok(release.includes('build93AncestryMarker'), 'Build94+ must preserve accepted Build93 ancestry.');
-assert.ok(release.includes("version: 0.19.15 · build: 93 · codename: 'studio-focus-slice4-phase9-track-metadata-validation-transient-retry-truth'"));
-assert.ok(['0.19.15', '0.19.16'].includes(pkg.version), 'Build93 guard accepts only Build93 and its bounded Build94 successor.');
+assert.match(release, /version:\s*'0\.19\.15'/);
+assert.match(release, /build:\s*93/);
+assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-track-metadata-validation-transient-retry-truth'"));
+assert.ok(release.includes('build92AncestryMarker'), 'Build93 must preserve accepted Build92 ancestry.');
+assert.ok(release.includes("version: 0.19.14 · build: 92 · codename: 'studio-focus-slice4-phase9-track-metadata-response-loss-truth'"));
+assert.equal(pkg.version, '0.19.15', 'package version must match Build93 runtime version.');
 
 assert.ok(duration.includes("const METADATA_VALIDATION_INTENT = 'metadata-validate-v1';"), 'Build93 must preserve the canonical non-mutating metadata validation intent.');
 assert.ok(duration.includes('const TRANSIENT_METADATA_VALIDATION_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);'), 'Validation transient HTTP allowlist must stay explicit and bounded.');
@@ -61,4 +64,4 @@ for (const inherited of [
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must include ${inherited}`);
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Phase9 guards must remain in the full build gate.');
 
-console.log(`Phase9 Build93 Track metadata validation retry guard passed as accepted ancestry under ${pkg.version}: visible and pre-save metadata-validate-v1 paths still retry once only for transient failures while Build92 save stays at zero automatic write retries.`);
+console.log('Phase9 Build93 Track metadata validation retry guard passed: visible and pre-save metadata-validate-v1 paths retry once only for transient timeout/transport/HTTP failures, while Access/invalid responses remain non-retry and Build92 save stays at zero automatic write retries.');
