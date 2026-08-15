@@ -1,6 +1,6 @@
 # Studio v0.19.7 · Build85 — Phase9 Album metadata save response-loss truth
 
-Status: **IMPLEMENTATION CANDIDATE · CI PENDING**.
+Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**.
 
 ## Fresh audit proof
 
@@ -22,7 +22,7 @@ expectedUpdatedAt stale guard
 → rollback Album + touched Track caches on failure
 ```
 
-No Track Manager or Worker change is required for the Studio client to classify a lost metadata response from canonical state.
+No Track Manager or Worker change was required for the Studio client to classify a lost metadata response from canonical state.
 
 Broader Album writes remain separate audit families:
 
@@ -44,10 +44,11 @@ It does not change:
 - Album cross-release move;
 - Album asset upload or deletion;
 - Track Manager source or deployment;
-- Studio bridge or Cloudflare Workers;
-- R2 schema/data migration;
+- the Studio bridge;
+- Cloudflare Workers;
+- R2 schema/data;
 - LaunchPAD;
-- SonicTrace Deep Audio;
+- SonicTrace Deep Audio computation;
 - LRC Maker.
 
 ## Lost-response contract
@@ -89,33 +90,53 @@ Album Management now distinguishes:
 
 After any error, the existing Album mutation wrapper reloads canonical state before the next operator decision.
 
-## Validation target
+## Validation / deployment
 
 Build85 adds `scripts/test-phase9-album-metadata-response-loss-build85.mjs` and extends `check:phase9` while keeping Build82, Build83 and Build84 guards inherited.
 
-Expected candidate validation:
+Final runtime evidence:
 
 ```text
 Safety pre              safety/pre-phase9-album-metadata-response-loss-build85-20260815-0555
-Runtime PR              PENDING
-Exact tested head       PENDING
-Final CI                PENDING
-Runtime merge           PENDING
-Runtime Pages           PENDING
-Worker deploy           NONE planned
+Runtime PR              #135
+Exact tested head       4bbfb93dfc9333eb1e8fc3a35b62699611e69367
+Final CI                31863267911 · SUCCESS · first run
+Runtime merge           1199f6a0e26da88e54f64a369985c2a72267e5a5
+Runtime Pages           31863313848 · SUCCESS · exact runtime merge SHA
+Safety post-deploy      safety/post-build85-deployed-candidate-20260815-0602
+Worker deploy           NONE
+Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
-Real-user smoke         PENDING after deployment
+Real-user smoke         PENDING
 ```
+
+Historical Studio Focus / Phase7-C guards were widened only for the bounded `v0.19.7 / Build85` successor while preserving their functional assertions and accepted Build81→82→83→84 ancestry requirements.
+
+The exact Build85 feature head passed the complete repository-native chain including Phase9 guards, Studio Focus guards, TypeScript and Vite production build **on the first CI run**.
 
 ## Safety / rollback
 
-Runtime rollback is Studio-only. No backend or R2 migration rollback is expected because Build85 adds no Worker deployment and no schema/data migration.
+Runtime rollback is a Studio-only revert of PR #135. No Worker or R2 migration rollback is required because this slice introduced no backend deployment or schema/data migration.
 
 A deliberately interrupted production metadata save is **not** required merely to prove the lost-response branches. Guarded source validation plus a normal browser metadata-save regression is the intended acceptance path.
 
+## Real-user acceptance boundary
+
+Pending normal-browser smoke:
+
+1. verify `v0.19.7 · Build85` after hard refresh;
+2. open a safe existing canonical Album;
+3. note its current revision;
+4. edit one harmless metadata field;
+5. perform a normal **Save metadata**;
+6. confirm **`Album metadata saved and canonically verified.`**;
+7. confirm revision advance + value persistence after canonical reload;
+8. confirm surrounding Albums / Track / Lyrics / SonicTrace navigation remains healthy.
+
+Do not deliberately cut network/Access merely to manufacture response loss.
+
 ## Stop line
 
-- Do not generalize Build85 logic into Album membership/move/upload without a fresh operation-specific audit.
-- Do not merge red CI.
-- Merge only the exact tested runtime head.
-- Keep runtime merge, Pages deployment and real-user acceptance as separate states.
+- Build85 must not be promoted to REAL USER PASS until explicit browser acceptance is recorded.
+- No successor build is allocated while Build85 acceptance is pending.
+- Do not generalize Build85 logic into Album membership/move/upload/create without a fresh operation-specific audit.

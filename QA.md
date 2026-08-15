@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-08-15 after explicit **Build84 REAL USER PASS**.
+Updated: 2026-08-15 after **Build85 deployed candidate** publication. Real-user acceptance remains pending.
 
 This file records what has actually been validated, what automated guards cover, and what remains unproven. It is not a full test-history dump.
 
@@ -14,155 +14,141 @@ Runtime PR              #132
 Exact tested head       377de51416d4aea258830e55e894707d9f3f6512
 Final CI                31858911420 · SUCCESS
 Runtime merge           b7cf745e11adee1eb77900a32b9b6ca8ea80e000
-Pages                   31858977765 · SUCCESS · exact runtime merge SHA
-Candidate docs PR       #133
-Candidate docs merge    ea93441094173b3c05a1e08b22f7c53ef87f3783
-Candidate docs Pages    31859213261 · SUCCESS
-Worker deploy           NONE
-R2 migration/write      NONE caused by deployment
+Pages                   31858977765 · SUCCESS
 Real-user verdict       BUILD84 PASS · 2026-08-15
 ```
 
-## Build84 automated coverage — GREEN
+## Current deployed candidate
 
-Final validation run `31858911420` passed the complete repository-native chain on the exact runtime head, including:
+```text
+Version                 v0.19.7
+Build                   Build85
+Status                  DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Runtime PR              #135
+Exact tested head       4bbfb93dfc9333eb1e8fc3a35b62699611e69367
+Final CI                31863267911 · SUCCESS
+Runtime merge           1199f6a0e26da88e54f64a369985c2a72267e5a5
+Pages                   31863313848 · SUCCESS · exact runtime merge SHA
+Worker deploy           NONE
+Track Manager change    NONE
+R2 migration/write      NONE caused by deployment
+Real-user verdict       PENDING
+```
+
+## Build85 automated coverage — GREEN
+
+Final validation run `31863267911` passed the complete repository-native chain on the exact runtime head **on the first run**, including:
 
 - private-read contract;
 - Phase5 algorithms;
 - Phase6 Lyrics contract;
 - C3 / Deep Audio / Album / parity guards;
 - PHASE UX guards;
-- Phase7 guards;
-- Phase8 guards;
+- Phase7 and Phase8 guards;
 - inherited Phase9 Build82 destructive-write ambiguity guard;
 - inherited Phase9 Build83 canonical Lyrics response-loss guard;
-- new Phase9 Build84 SonicTrace response-loss guard;
+- inherited Phase9 Build84 SonicTrace response-loss guard;
+- new Phase9 Build85 Album metadata response-loss guard;
 - Studio Focus inherited regression guards;
 - TypeScript typecheck;
 - Vite production build.
 
-Build84 specifically guards:
+No red intermediary Build85 CI run was merged or required.
+
+Build85 specifically guards:
 
 ```text
-SonicTrace save response lost / timeout
+Album metadata save response lost / timeout
 → NEVER blind automatic retry
-→ private canonical reread of latest + history
-   ├─ requested analysisId present in BOTH
+→ private canonical Album reread
+   ├─ new revision + exact requested metadata + stable non-metadata shape
    │    → COMMITTED / VERIFIED
-   ├─ requested analysisId absent from BOTH
+   ├─ original revision unchanged
    │    → NOT COMMITTED / explicit retry may be safe
-   ├─ requested analysisId present in only one
+   ├─ revision changed but exact metadata-only postcondition not proven
    │    → AMBIGUOUS / DO NOT RETRY
    └─ private reread unavailable
         → UNVERIFIED / DO NOT RETRY
 ```
 
-Additional Build84 guarantees:
+Additional Build85 guarantees:
 
-- before POST, Studio rereads canonical SonicTrace state;
-- already-canonical `analysisId` is rejected;
-- stale canonical audio source evidence is rejected;
-- normal HTTP save success is not called verified unless the requested `analysisId` is in both canonical latest + history;
-- recovered lost-response success explicitly states that Studio did not retry the write.
+- before POST, Studio privately rereads the canonical Album;
+- exact `expectedUpdatedAt` is required and stale pre-write state is rejected;
+- only timeout/transport-loss failures enter recovery;
+- stable non-metadata shape checks canonical identity, ordered `trackIds`, assets and `createdAt`;
+- normal HTTP success is not called verified unless the reread has the exact server-returned revision, requested metadata and stable non-metadata shape;
+- recovered success explicitly states that Studio did not retry the write;
+- existing Album mutation UI reloads canonical state after errors before another operator decision.
 
-The Track Manager backend was audited read-only and already writes history first, then latest, rereads both, and attempts rollback on verification failure. No backend mutation was needed for Build84.
+The deployed Track Manager backend was audited read-only and already stale-guards, writes the proposed Album manifest, updates title-dependent Track compatibility caches when needed, rebuilds catalog, rereads/verifies and rolls back touched state on failure. No backend mutation was needed for Build85.
+
+## Build85 real-user smoke — PENDING
+
+The required acceptance smoke is intentionally a **normal-browser regression**, not a manufactured failure test:
+
+1. hard refresh Studio and verify `v0.19.7 · Build85`;
+2. open a safe existing canonical Album;
+3. note the current revision;
+4. edit one harmless metadata field such as heading, description or accent;
+5. perform one normal **Save metadata**;
+6. verify **`Album metadata saved and canonically verified.`**;
+7. confirm the canonical revision advances and the saved value survives reload;
+8. sanity-check normal Albums / Track / Lyrics / SonicTrace navigation.
+
+Do not cut network, invalidate Access or otherwise sabotage a production save merely to force timeout/partial-write branches.
+
+Until explicit user verdict:
+
+```text
+Build85 != REAL USER PASS
+```
 
 ## Build84 real-user smoke — PASS
 
-The required acceptance smoke was intentionally a **normal-browser regression**, not a manufactured failure test.
-
-The user completed the bounded smoke and returned the explicit verdict:
+Accepted predecessor:
 
 ```text
-BUILD84 PASS
+Version                 v0.19.6
+Build                   Build84
+Status                  REAL USER PASS
+Runtime PR              #132
+Exact tested head       377de51416d4aea258830e55e894707d9f3f6512
+Final CI                31858911420 · SUCCESS
+Runtime merge           b7cf745e11adee1eb77900a32b9b6ca8ea80e000
+Pages                   31858977765 · SUCCESS
+Real-user verdict       BUILD84 PASS · 2026-08-15
 ```
 
-The accepted smoke boundary covered:
-
-- hard refresh to the deployed `v0.19.6 · Build84` runtime;
-- private Track / canonical master-audio path;
-- normal SonicTrace latest/history loading;
-- normal SonicTrace scan and review flow;
-- one intentional normal analysis save;
-- canonical save verification through `latest.json` + `history/<analysisId>.json`;
-- latest/history state update;
-- surrounding Track / Visuals / Lyrics / Albums navigation regression sanity.
-
-Acceptance intentionally did **not** require cutting network, invalidating Access or sabotaging a production save merely to force timeout/partial-write branches. Those failure paths remain protected by typed classification, source guards and private canonical reread logic.
-
-Result:
-
-```text
-Build84 = REAL USER PASS
-```
-
-No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration or cross-repository runtime change was required to reach acceptance.
-
-## Build83 automated coverage
-
-Final validation run `31856653579` passed the complete repository-native chain, including the inherited Build82 guard and the Build83 canonical Lyrics response-loss guard.
-
-Build83 guards:
-
-```text
-Lyrics save response lost / timeout
-→ NEVER blind automatic retry
-→ private canonical reread of Lyrics + Track manifest
-   ├─ new revision + new ETag + exact requested normalized text
-   │    → COMMITTED / VERIFIED
-   ├─ same revision + same ETag
-   │    → NOT COMMITTED / explicit retry may be safe
-   ├─ changed state but exact requested postcondition is not proven
-   │    → AMBIGUOUS / DO NOT RETRY
-   └─ private reread unavailable
-        → UNVERIFIED / DO NOT RETRY
-```
-
-Useful red Build83 runs before the final head were **not merged**:
-
-```text
-31856480932  inherited Phase7-C successor allowlist rejected v0.19.5
-31856531103  new guard was too syntax-literal about typed retrySafe=true
-31856568244  Build83 guard passed; inherited Build64 successor allowlist then rejected v0.19.5
-31856653579  SUCCESS · final exact tested head
-```
+The accepted smoke covered normal SonicTrace latest/history loading, normal scan/save with canonical verification and surrounding Track / Visuals / Lyrics / Albums navigation. Acceptance did not require manufactured network failure.
 
 ## Build83 real-user smoke — PASS
 
-The requested bounded normal-browser Lyrics regression smoke received the user's explicit verdict:
-
 ```text
-BUILD83 PASS
+Version                 v0.19.5
+Build                   Build83
+Status                  REAL USER PASS
+Final CI                31856653579 · SUCCESS
+Runtime merge           b168d8cda805e5c50480a3e26c5d52e490fb7ac6
+Pages                   31856698097 · SUCCESS
+Real-user verdict       BUILD83 PASS · 2026-08-15
 ```
 
-Acceptance intentionally did **not** require cutting the network, invalidating Access or sabotaging a production write merely to force a timeout/lost-response branch.
+Build83 protects canonical `lyrics.txt` response-loss truth through private Lyrics + Track reread and exact revision + ETag + normalized-text postconditions.
 
 ## Build82 real-user smoke — PASS
-
-Accepted predecessor:
 
 ```text
 Version                 v0.19.4
 Build                   Build82
 Status                  REAL USER PASS
-Runtime PR              #126
-Exact tested head       07fbcb4efdcd57e79614825d7c45bccd4ab2d860
 Final CI                31854468795 · SUCCESS
 Runtime merge           7a0d52fcc0bf862478c459f0648afc1c6690b34f
 Pages                   31854528438 · SUCCESS
 Real-user verdict       BUILD82 PASS · 2026-08-15
 ```
 
-Validated in the user browser after hard refresh:
-
-- Studio reports `v0.19.4 · Build82`;
-- normal Track workspace/navigation remains functional;
-- Visuals loads existing covers/previews/asset cards normally;
-- delete controls and confirmations remain present without requiring destructive use;
-- Albums / Album Health / Album editor remain functional;
-- Album Assets loads canonical cover/thumbnail and their controls;
-- System/private status remains coherent;
-- no regression requiring a Track Manager, Worker, public Worker or R2 change was observed.
+Build82 protects Track/Album asset deletion response-loss truth without requiring destructive production smoke.
 
 ## Current ecosystem validation baseline
 
@@ -170,13 +156,14 @@ Validated in the user browser after hard refresh:
 LaunchPAD public        2026.08.12.102 · REAL USER PASS
 Track Manager           v5.23 · deployed protected authority
 Studio bridge           v1.13
+TM admin Worker         439a1ce4-e458-427d-9fd6-61e888efd269
 Public Worker           v2.7 · unchanged
 SonicTrace              V2-E Build08 · REAL USER PASS
 Deep Audio              2.0.3-alpha
 LRC Maker               6.3.8
 ```
 
-Build84 does not supersede those products' independent validation histories.
+Build85 does not supersede those products' independent validation histories.
 
 ## Core contracts that must remain guarded
 
@@ -190,10 +177,10 @@ Build84 does not supersede those products' independent validation histories.
 
 ### SonicTrace
 
-- `latest.json` + append-only `history/<analysisId>.json` are the durable canonical analysis sidecars;
+- `latest.json` + append-only `history/<analysisId>.json` are durable canonical analysis sidecars;
 - source audio is not persisted in the analysis directory;
-- one save is identified by the exact requested `analysisId`;
-- partial latest/history presence after response loss is ambiguous, never automatic success or automatic failure;
+- one save is identified by exact `analysisId`;
+- partial latest/history presence after response loss is ambiguous;
 - public fallback never verifies SonicTrace writes.
 
 ### Albums
@@ -201,12 +188,14 @@ Build84 does not supersede those products' independent validation histories.
 - `albums/<album-id>/manifest.json` is canonical;
 - ordered `album.trackIds` is sole membership/artistic-order authority;
 - Track-side Album metadata is compatibility/cache data;
-- generic Track metadata writes do not independently mutate Album membership.
+- generic Track metadata writes do not independently mutate Album membership;
+- Build85 response-loss recovery applies to **Album metadata save only**;
+- membership, move, create and upload require their own operation-specific audits before similar recovery can be added.
 
 ### Writes / ambiguity
 
 - public fallback never verifies a canonical write;
-- a lost write response is never treated as automatic failure or automatic success;
+- a lost response is never automatic failure or automatic success;
 - no blind retry after response loss;
 - canonical reread must prove exact operation-specific postconditions.
 
@@ -226,16 +215,13 @@ Git history shows the public-cover credential/fetch path was corrected in Build6
 
 ## Known open QA gaps / next audits
 
-No Build84 acceptance blocker remains.
+Current acceptance gap:
 
-Before any successor runtime work, perform a fresh bounded Phase9 audit. Remaining candidate areas include:
+1. Build85 normal-browser Album metadata regression smoke.
 
-1. broader guarded Album write response-loss truth;
-2. Access/CORS hardening;
-3. bounded read retries/timeouts;
-4. degraded/offline and PWA resilience scenarios.
+Do not allocate Build86 while Build85 acceptance remains pending.
 
-These are **not yet accepted fixes** and do not imply Build85. Build85 remains unallocated until a fresh bounded audit proves a concrete scope.
+After an explicit Build85 PASS, run a fresh bounded audit before any successor runtime work. Candidate areas include Album membership/move/upload/create response-loss truth, Access/CORS hardening, bounded read retries/timeouts and degraded/offline/PWA resilience.
 
 ## Standard validation commands
 
