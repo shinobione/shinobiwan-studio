@@ -4,7 +4,7 @@ Date: 2026-08-16
 Version: `v0.19.19`  
 Build: `97`  
 Codename: `studio-focus-slice4-phase9-track-create-success-verification-truth`  
-Status: **IMPLEMENTED CANDIDATE · CI PENDING**
+Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
 
 ## Fresh-audit decision
 
@@ -47,15 +47,46 @@ Build97 does **not** add:
 
 Create lost-response policy remains explicit: `not-covered-no-operation-id-no-blind-retry`, with `maxAutomaticTrackCreateRetries: 0`.
 
-## Safety
+## Runtime receipts
 
 ```text
 Accepted base main      b4cc1cbc0ca73cfe8da9f839dd41447b9b9f28cb
 Safety pre              safety/pre-phase9-track-create-success-verification-build97-20260816
-Feature branch          phase9/build97-track-create-success-verification
-Worker deploy           NONE planned
+Safety pre-PR           safety/post-build97-prepr-20260816
+Safety green pre-merge  safety/post-build97-green-premerge-20260816
+Runtime PR              #179
+Exact tested head       31facc9eb124d3068f4f870dcfa78e38284e2f6a
+Full CI                 31914980387 · SUCCESS · run #493
+Runtime merge           0519d3ad1c364ee34188e17ecb9d10c3f0308c54
+Runtime Pages           31915029686 · SUCCESS · build + deploy · run #186
+Safety post-deploy      safety/post-build97-deployed-candidate-20260816
+Worker deploy           NONE
 Track Manager change    NONE
-R2 migration/write      NONE caused by implementation
+R2 migration/write      NONE caused by implementation/deployment
 ```
 
-CI, merge, Pages and real-user acceptance remain separate states.
+Historical tooling note: the first temporary Build97 one-shot definition was invalid YAML and failed before any job/product mutation. The corrected bounded one-shot later succeeded and self-removed. No temporary workflow is present in the runtime diff.
+
+## Human acceptance boundary
+
+Build97 is **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**.
+
+The changed behavior is the normal successful **New Track** create path. A throwaway canonical Track must not be created merely for smoke: Track IDs are canonical and whole-Track deletion remains unavailable in Studio. Human acceptance should therefore use the next genuine Track the artist actually intends to create.
+
+The safe real-user smoke is the normal create path only:
+
+```text
+real intended New Track
+→ create canonical draft
+→ create verification must pass
+→ intake may continue to assets
+→ reload canonical Track
+→ identity / metadata remain coherent
+```
+
+Do **not** deliberately cut network or invalidate Cloudflare Access to manufacture a lost-response branch. Build97 does not claim Track create response-loss recovery.
+
+```text
+Build97 = DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Build98 = UNALLOCATED
+```
