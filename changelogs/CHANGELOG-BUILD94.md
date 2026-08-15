@@ -4,7 +4,7 @@ Date: 2026-08-15
 Version: `v0.19.16`  
 Build: `94`  
 Codename: `studio-focus-slice4-phase9-lyrics-validation-transient-retry-truth`  
-Status: **IMPLEMENTED CANDIDATE · CI PENDING**
+Status: **REAL USER PASS · ACCEPTED**
 
 ## Fresh-audit decision
 
@@ -48,7 +48,7 @@ lyrics-save-v1 response unavailable
 → committed / not-committed / ambiguous / unverified
 ```
 
-Build94 makes the zero automatic save retry boundary explicit as `maxAutomaticSaveRetries: 0`.
+Build94 keeps the zero automatic save retry boundary explicit as `maxAutomaticSaveRetries: 0`.
 
 ## Guard
 
@@ -67,15 +67,56 @@ Build94 makes the zero automatic save retry boundary explicit as `maxAutomaticSa
 - zero automatic Lyrics save retry;
 - inherited Phase9 Build82→Build93 gate.
 
-## Safety
+The clean Build94 v2 exact-head CI also carries the inherited successor-guard alignment discovered during the reverted first attempt: private-read contract, Phase7-C Build69, Build90 Lyrics private-read and Studio Focus Build64–67 recognize Build94 while retaining their functional assertions.
+
+## Red-merge rollback and clean reconstruction
+
+The first Build94 candidate was merged before the inherited full-gate incompatibilities were fully resolved. Pages `31902471804` failed on the inherited private-read Lyrics POST count guard. Rather than stacking a hotfix onto a red runtime, the candidate was rolled back.
 
 ```text
-Accepted base main      ce9667cc80dbdc07ef74d9c0068d15b2b0ec2201
-Safety pre              safety/pre-phase9-lyrics-validation-retry-build94-20260815-2010
-Feature branch          phase9/build94-lyrics-validation-retry
-Worker deploy           NONE planned
-Track Manager change    NONE
-R2 migration/write      NONE caused by implementation
+Original runtime PR      #166
+Original head            5f453868cc8cd2878e6964e3e747f841a5dde4c0
+Original merge           5bcb2f4fd3b4fd3bbc4442d7cd9705211c733d35
+Failed Pages             31902471804
+Rollback main            6c9c677b2f6299d13949642b712f2bf39b48b676
+Rollback Pages           31907580912 · SUCCESS
+Superseded hotfix PR     #167 · CLOSED / SUPERSEDED
 ```
 
-CI, merge, Pages and real-user acceptance remain separate future states.
+The rollback restored byte-identical accepted Build93 content. Build94 v2 was then reconstructed cleanly from that restored accepted tree with all inherited guard compatibility included before merge.
+
+## Accepted runtime receipts
+
+```text
+Clean feature branch     phase9/build94-lyrics-validation-retry-v2
+Reapply commit/head      81298582163505a11378fe1094f800f1f3d437b5
+Runtime PR               #169
+Full CI                  31907745153 · SUCCESS
+Runtime merge            fe636560de9ca5f3f33aae76dddc5474ba990f17
+Runtime Pages            31907784289 · SUCCESS · build + deploy
+Safety post-deploy       safety/post-build94-deployed-candidate-20260815-2338
+Safety post-acceptance   safety/post-build94-real-user-pass-20260815-2346
+Worker deploy            NONE
+Track Manager change     NONE
+R2 migration/write       NONE caused by implementation/deployment
+Real-user smoke          BUILD94 PASS MADAFAKA · 2026-08-15
+Build95                  UNALLOCATED pending fresh post-Build94 audit
+```
+
+## Real-user acceptance
+
+The bounded normal-browser smoke received explicit **`BUILD94 PASS MADAFAKA`** on 2026-08-15.
+
+The human smoke covered the deployed `v0.19.16 · Build94` runtime, normal canonical Lyrics loading on an existing Track, the visible non-mutating **Validate** path, unchanged canonical lyrics after reload, and surrounding Track / Albums / SonicTrace / Lyrics navigation sanity.
+
+Acceptance deliberately did **not** cut network, invalidate Cloudflare Access or manufacture timeout/transport/transient-HTTP branches merely to trigger the retry. Automated guards own retry classification and the maximum-two-attempt proof.
+
+No Lyrics save was required for this validation-only slice. Build83 lost-response recovery and the zero automatic Lyrics save retry boundary remain unchanged.
+
+## Closeout truth
+
+```text
+CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS
+```
+
+Build94 has now crossed all three states and is **REAL USER PASS / ACCEPTED**. Build95 remains unallocated until acceptance-docs CI/merge/Pages closeout is complete and a fresh read-only post-Build94 Phase9 audit proves the next smallest coherent gap.
