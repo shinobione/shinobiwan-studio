@@ -19,29 +19,21 @@ Then verify the real GitHub state before mutation.
 ## Current accepted state
 
 ```text
-Studio accepted        v0.19.5 · Build83 · REAL USER PASS
-Accepted codename      studio-focus-slice4-phase9-lyrics-save-response-loss-truth
-Accepted runtime merge b168d8cda805e5c50480a3e26c5d52e490fb7ac6
-Accepted runtime Pages 31856698097 · SUCCESS
-
-Studio candidate       v0.19.6 · Build84 · DEPLOYED CANDIDATE · SMOKE PENDING
-Candidate codename     studio-focus-slice4-phase9-sonictrace-save-response-loss-truth
-Candidate runtime merge b7cf745e11adee1eb77900a32b9b6ca8ea80e000
-Candidate runtime Pages 31858977765 · SUCCESS
-
-Track Manager          v5.23 · DEPLOYED
-Studio bridge          v1.13
-TM admin Worker        439a1ce4-e458-427d-9fd6-61e888efd269
-Public Worker          v2.7 · unchanged
-LaunchPAD public       2026.08.12.102 · REAL USER PASS
-SonicTrace             V2-E Build08 · REAL USER PASS
-Deep Audio             2.0.3-alpha
-LRC Maker              6.3.8
+Studio                v0.19.6 · Build84 · REAL USER PASS
+Codename              studio-focus-slice4-phase9-sonictrace-save-response-loss-truth
+Runtime merge         b7cf745e11adee1eb77900a32b9b6ca8ea80e000
+Runtime Pages         31858977765 · SUCCESS
+Track Manager         v5.23 · DEPLOYED
+Studio bridge         v1.13
+TM admin Worker       439a1ce4-e458-427d-9fd6-61e888efd269
+Public Worker         v2.7 · unchanged
+LaunchPAD public      2026.08.12.102 · REAL USER PASS
+SonicTrace            V2-E Build08 · REAL USER PASS
+Deep Audio            2.0.3-alpha
+LRC Maker             6.3.8
 ```
 
-**Studio v0.19.5 · Build83 remains the current accepted runtime.**
-
-**Studio v0.19.6 · Build84 is currently deployed on Pages as a candidate, not yet accepted.** It extends Phase9 reliability to the canonical SonicTrace analysis save path. A lost save response is never blindly retried; the exact requested `analysisId` is privately reread across canonical `latest.json` plus append-only history and classified as committed, not committed, ambiguous or unverified.
+**Studio v0.19.6 · Build84 is the current accepted runtime.** Build84 extends Phase9 reliability to the canonical SonicTrace analysis save path. A lost save response is never blindly retried; the exact requested `analysisId` is privately reread across canonical `latest.json` plus append-only history and classified as committed, not committed, ambiguous or unverified. The required normal browser regression smoke received explicit **`BUILD84 PASS`** on 2026-08-15.
 
 The repository currently publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
@@ -96,11 +88,12 @@ Phase 8             COMPLETE · Build81 closeout
 Phase 9             ACTIVE
 Phase 9 Slice1      Build82 · REAL USER PASS
 Phase 9 Slice2      Build83 · REAL USER PASS
-Phase 9 Slice3      Build84 · DEPLOYED CANDIDATE · smoke pending
+Phase 9 Slice3      Build84 · REAL USER PASS
+Build85             UNALLOCATED
 Phase 10            FUTURE
 ```
 
-The current next action is the bounded **Build84 SonicTrace browser regression smoke**. No successor build is allocated while Build84 remains a candidate.
+The immediate next action is a **fresh bounded Phase9 reliability audit**, not another preselected runtime build. Remaining candidates include broader guarded Album-write response-loss truth, Access/CORS hardening, bounded read retries/timeouts, and degraded/offline/PWA resilience.
 
 ## Frozen authority model
 
@@ -156,15 +149,15 @@ tracks/<slug>/analysis/sonictrace/history/<analysisId>.json
 
 Source audio is not persisted in analysis sidecars.
 
-Build84 candidate failure contract:
+Build84 accepted failure contract:
 
 ```text
 save response lost
 → private canonical reread of latest + history
-   ├─ requested analysisId in both   → COMMITTED / VERIFIED
-   ├─ requested analysisId in neither→ NOT COMMITTED / retry may be safe
-   ├─ requested analysisId in one    → AMBIGUOUS / DO NOT RETRY
-   └─ reread unavailable             → UNVERIFIED / DO NOT RETRY
+   ├─ requested analysisId in both    → COMMITTED / VERIFIED
+   ├─ requested analysisId in neither → NOT COMMITTED / retry may be safe
+   ├─ requested analysisId in one     → AMBIGUOUS / DO NOT RETRY
+   └─ reread unavailable              → UNVERIFIED / DO NOT RETRY
 ```
 
 Normal save success also requires the exact requested `analysisId` in both canonical sidecars before Studio calls the save verified.
@@ -179,7 +172,7 @@ MASTER FINAL 16:9
 
 Release Campaign is provider-agnostic. Google Flow is a convenience shortcut. Campaign drafts remain browser-local and ZIP export remains review-only.
 
-## Build84 candidate receipts
+## Build84 acceptance receipts
 
 ```text
 Runtime PR              #132
@@ -187,25 +180,31 @@ Exact tested head       377de51416d4aea258830e55e894707d9f3f6512
 Validation              31858911420 · SUCCESS
 Runtime merge           b7cf745e11adee1eb77900a32b9b6ca8ea80e000
 Runtime Pages           31858977765 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #133
+Candidate docs merge    ea93441094173b3c05a1e08b22f7c53ef87f3783
+Candidate docs Pages    31859213261 · SUCCESS
+Safety post-acceptance  safety/post-build84-real-user-pass-20260815-0435
+Real-user smoke         BUILD84 PASS · 2026-08-15
 Worker deploy           NONE
 R2 migration/write      NONE caused by deployment
-Real-user smoke         PENDING
 ```
 
 Detailed record: [`changelogs/CHANGELOG-BUILD84.md`](changelogs/CHANGELOG-BUILD84.md).
 
-## Build83 accepted receipts
+## Accepted predecessors
+
+Build83 remains the accepted Phase9 Slice2 predecessor:
 
 ```text
+Studio                  v0.19.5 · Build83 · REAL USER PASS
 Runtime PR              #129
-Exact tested head       beff9fc58c58e36ce2c2082f7bd5c041641a5e12
 Validation              31856653579 · SUCCESS
 Runtime merge           b168d8cda805e5c50480a3e26c5d52e490fb7ac6
 Runtime Pages           31856698097 · SUCCESS
 Real-user smoke         BUILD83 PASS · 2026-08-15
-Worker deploy           NONE
-R2 migration/write      NONE caused by deployment
 ```
+
+Build82 remains the accepted Phase9 Slice1 predecessor. See `CHANGELOG.md` and the detailed per-build records for historical receipts.
 
 ## Documentation
 

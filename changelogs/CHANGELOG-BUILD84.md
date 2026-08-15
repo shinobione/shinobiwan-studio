@@ -1,6 +1,6 @@
 # Studio v0.19.6 · Build84 — Phase9 SonicTrace save response-loss truth
 
-Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**.
+Status: **REAL USER PASS — ACCEPTED**.
 
 ## Audit proof
 
@@ -51,7 +51,7 @@ SonicTrace save response lost / timeout
 
 Before the POST, Studio also rereads canonical SonicTrace state to reject an already-persisted `analysisId` and reject a stale canonical audio source revision.
 
-Normal HTTP success now also requires canonical reread proving the requested `analysisId` in both latest and history before Studio calls the save verified.
+Normal HTTP success also requires canonical reread proving the requested `analysisId` in both latest and history before Studio calls the save verified.
 
 ## UX truth
 
@@ -76,44 +76,50 @@ Final CI                31858911420 · SUCCESS
 Runtime merge           b7cf745e11adee1eb77900a32b9b6ca8ea80e000
 Runtime Pages           31858977765 · SUCCESS · exact runtime merge SHA
 Safety post-deploy      safety/post-build84-deployed-candidate-20260815-0425
+Candidate docs PR       #133
+Candidate docs merge    ea93441094173b3c05a1e08b22f7c53ef87f3783
+Candidate docs Pages    31859213261 · SUCCESS
+Safety post-acceptance  safety/post-build84-real-user-pass-20260815-0435
 Worker deploy           NONE
 R2 migration/write      NONE caused by deployment
-Real-user smoke         PENDING
+Real-user smoke         BUILD84 PASS · 2026-08-15
 ```
 
 `check:phase9` keeps:
 
 1. Build82 destructive asset-delete ambiguity guard;
 2. Build83 canonical Lyrics save response-loss guard as inherited ancestry;
-3. new `test-phase9-sonictrace-response-loss-build84.mjs`.
+3. Build84 SonicTrace response-loss guard.
 
 Historical Studio Focus / Phase7-C guards were widened only for the bounded v0.19.6 successor while preserving their functional assertions and Build81→82→83 ancestry requirements.
 
 The exact Build84 feature head passed the complete repository-native chain including Phase9, Studio Focus, TypeScript and Vite production build.
 
+## Real-user acceptance — PASS
+
+The bounded normal-browser smoke received the explicit verdict:
+
+```text
+BUILD84 PASS
+```
+
+Acceptance covered the deployed `v0.19.6 · Build84` runtime, normal private SonicTrace latest/history reads, a normal analysis/review/save path, canonical save verification through latest + history, updated analysis state, and surrounding Track / Visuals / Lyrics / Albums navigation sanity.
+
+The smoke intentionally did **not** cut network/Access or manufacture a partial production write merely to exercise lost-response branches. Those branches remain covered by the Build84 typed classification, source guard and private canonical reread contract.
+
+Result:
+
+```text
+Build84 = REAL USER PASS
+```
+
 ## Safety / rollback
 
-Runtime rollback is a Studio-only revert of PR #132. No Worker or R2 migration rollback is required because this slice introduced no backend deployment or schema/data migration.
-
-A deliberately interrupted production SonicTrace save is not required merely to prove the ambiguity branches. Normal browser regression plus guarded source/type/build validation remains the preferred acceptance path.
-
-## Real-user acceptance boundary
-
-Pending normal-browser smoke:
-
-1. verify `v0.19.6 · Build84` after hard refresh;
-2. load a private Track with canonical master audio;
-3. confirm SonicTrace latest/history reads normally;
-4. perform a normal scan;
-5. save one intentional analysis if the new history entry is acceptable;
-6. confirm the receipt **`Analysis saved and canonically verified in latest + history.`**;
-7. confirm latest/history and surrounding Studio navigation remain healthy.
-
-Do not deliberately cut network/Access merely to manufacture response loss.
+Runtime rollback remains a Studio-only revert of PR #132. No Worker or R2 migration rollback is required because this slice introduced no backend deployment or schema/data migration.
 
 ## Stop line
 
-- Build84 must not be promoted to REAL USER PASS until explicit browser acceptance is recorded.
-- No successor build is allocated while Build84 acceptance is pending.
+- Build84 is the accepted Phase9 Slice3 runtime.
+- Build85 is **UNALLOCATED** until a fresh bounded Phase9 audit proves the next smallest coherent reliability gap.
 - No automatic retry policy is generalized to Album or other write families.
-- Remaining Album writes stay a later Phase9 audit candidate.
+- Broader Album writes, Access/CORS and degraded/offline/PWA resilience remain audit candidates, not commitments.
