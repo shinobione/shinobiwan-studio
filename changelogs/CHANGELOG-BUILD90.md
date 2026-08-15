@@ -1,6 +1,6 @@
 # Studio v0.19.12 · Build90 — Phase9 Lyrics private-read transient retry truth
 
-Status: **IMPLEMENTATION CANDIDATE · CI PENDING**.
+Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**.
 
 ## Fresh audit proof
 
@@ -9,7 +9,7 @@ Build90 was allocated only after Build89 received explicit `BUILD89 PASS MADAFAK
 The audit confirmed:
 
 - canonical Lyrics private read is one bounded Track Manager GET behind `getLyricsJson()`;
-- the existing 7s timeout exists, but a non-timeout browser `fetch()` rejection is still mislabeled as a Cloudflare Access/authentication problem and receives no retry;
+- the existing 7s timeout exists, but a non-timeout browser `fetch()` rejection was still mislabeled as a Cloudflare Access/authentication problem and received no retry;
 - Lyrics validation/save POSTs are already isolated behind `postLyrics()` and Build83 lost-response recovery is operation-specific and mature;
 - `rereadLyricsTruth()` already uses canonical Lyrics GET + Build88-hardened Track GET, so hardening only the Lyrics GET also strengthens verification/recovery rereads without retrying a write;
 - SonicTrace private reads remain a broader family because `adminJson()` serves state/latest/history plus the catalog while the module also owns external health, audio download and save/recovery;
@@ -65,9 +65,9 @@ Build90 does **not** change:
 - LaunchPAD, LRC Maker or SonicTrace Deep Audio;
 - any user-facing layout or workflow.
 
-## Validation target
+## Validation evidence
 
-Build90 adds `scripts/test-phase9-lyrics-private-read-transient-retry-build90.mjs` and converts Build89 to immutable accepted ancestry.
+Build90 adds `scripts/test-phase9-lyrics-private-read-transient-retry-build90.mjs` and keeps Build89 as immutable accepted ancestry.
 
 The guard requires:
 
@@ -83,30 +83,50 @@ The guard requires:
 - SonicTrace remains untouched as a separate future audit family;
 - Build82→Build90 remain in the full Phase9 gate.
 
-Known historical successor guards are widened only through bounded `v0.19.12 / Build90` compatibility while keeping all functional assertions intact.
+Known historical successor guards were widened only through bounded `v0.19.12 / Build90` compatibility while keeping all functional assertions intact.
+
+Final exact-head validation:
+
+```text
+Runtime PR              #150
+Exact tested head       48ca1dc25951d65ead05c4f80bd1f9e6bf8c5d01
+Final CI                31884568681 · SUCCESS · first run
+Runtime merge           8a851a7d53d3b4f45359c7036011684441bb25bb
+Runtime Pages           31884614863 · SUCCESS · exact runtime merge SHA
+```
+
+No red intermediary Build90 validation run was required or merged.
 
 ## Safety
 
 ```text
 Safety pre              safety/pre-phase9-lyrics-private-read-retry-build90-20260815-1419
+Safety pre-PR           safety/post-build90-prepr-20260815-1424
+Safety post-deploy      safety/post-build90-deployed-candidate-20260815-1429
 Feature branch          phase9/build90-lyrics-private-read-retry
-Worker deploy           NONE planned
-Track Manager change    NONE planned
+Worker deploy           NONE
+Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
 Build91                 UNALLOCATED
 ```
 
-## Real-user acceptance boundary
+## Real-user acceptance boundary — PENDING
 
-After deployment, use a normal browser regression only:
+Use a normal browser regression only:
 
 - hard refresh and verify `v0.19.12 · Build90`;
 - open a Track that already has canonical `lyrics.txt`;
 - open Lyrics and confirm canonical lyrics load normally;
-- optionally make **no write at all** — Build90 is a read slice;
+- make **no write if none is needed** — Build90 is a read slice;
 - quick Track / Albums / SonicTrace navigation sanity.
 
 Do **not** deliberately cut network or invalidate Cloudflare Access merely to manufacture the retry branch. Automated guards own failure-path classification proof.
+
+Until explicit user verdict:
+
+```text
+Build90 = DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+```
 
 ## Stop line
 

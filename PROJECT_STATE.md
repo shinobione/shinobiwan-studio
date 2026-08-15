@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-15 after explicit **`BUILD89 PASS MADAFAKA`** real-user browser acceptance.
+Updated: 2026-08-15 after **Build90 deployed candidate** publication. Build89 remains the accepted real-user baseline.
 
 This file is the short current checkpoint. It is the first project-state document to read after `AGENTS.md`.
 
@@ -19,13 +19,33 @@ Runtime Pages           31881682269 · SUCCESS · exact runtime merge SHA
 Candidate docs PR       #148
 Candidate docs merge    a7894dad8f4b4015ca1cba47b12781bab417fdcf
 Candidate docs Pages    31882384329 · SUCCESS · exact docs merge SHA
+Acceptance docs PR      #149
+Acceptance docs merge   07bfd3c6b4fa19ccea0656b9ce194f239b7f7c65
+Acceptance docs Pages   31884092117 · SUCCESS · exact docs merge SHA
 Real-user smoke         BUILD89 PASS MADAFAKA · 2026-08-15
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
 ```
 
-Build89 is now the latest **accepted** Studio runtime.
+Build89 remains the latest **accepted** Studio runtime until Build90 receives explicit real-user browser acceptance.
+
+## Current deployed candidate
+
+```text
+Studio version          v0.19.12
+Studio build            Build90
+Codename                studio-focus-slice4-phase9-lyrics-private-read-transient-retry-truth
+Acceptance              DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Runtime PR              #150
+Exact tested head       48ca1dc25951d65ead05c4f80bd1f9e6bf8c5d01
+Final runtime CI        31884568681 · SUCCESS · first run
+Runtime merge SHA       8a851a7d53d3b4f45359c7036011684441bb25bb
+Runtime Pages           31884614863 · SUCCESS · exact runtime merge SHA
+Worker deploy           NONE
+Track Manager change    NONE
+R2 migration/write      NONE caused by deployment
+```
 
 ## Current ecosystem baseline
 
@@ -44,6 +64,8 @@ Build88 changes only the Studio core private Track Manager **GET** transport for
 
 Build89 changes only canonical Album collection/detail private **GET** behavior. The same helper also serves private Album visual discovery and existing canonical Album rereads. It adds no Album POST/write retry, no Track Manager/Worker change and no R2 schema/data migration.
 
+Build90 changes only canonical Lyrics private **GET** behavior. The same GET is used by normal Lyrics loading and by Build83 canonical save verification/recovery rereads. It adds no Lyrics validate/save POST retry, no SonicTrace read change, no Track Manager/Worker change and no R2 schema/data migration.
+
 ## Program position
 
 ```text
@@ -61,6 +83,7 @@ Phase 9 Slice5          COMPLETE · Build86 REAL USER PASS
 Phase 9 Slice6          COMPLETE · Build87 REAL USER PASS
 Phase 9 Slice7          COMPLETE · Build88 REAL USER PASS
 Phase 9 Slice8          COMPLETE · Build89 REAL USER PASS
+Phase 9 Slice9          Build90 DEPLOYED CANDIDATE · smoke pending
 Phase 10                FUTURE
 Official Phase 11       NONE
 ```
@@ -193,29 +216,51 @@ Build89 deliberately does **not** change Album create/upload response-loss seman
 
 The bounded normal-browser smoke received explicit **`BUILD89 PASS MADAFAKA`** on 2026-08-15 after Albums private inventory, canonical Album detail, artwork/metadata loading and surrounding Track / Lyrics / SonicTrace navigation checks. Acceptance did **not** deliberately cut network, invalidate Cloudflare Access or manufacture a transient failure branch.
 
+## Build90 deployed candidate behavior
+
+The fresh post-Build89 audit compared Lyrics private reads, SonicTrace private reads, Album create/upload and degraded/offline/PWA work. The smallest coherent gap was the single canonical Lyrics GET behind `getLyricsJson()`.
+
+Before Build90, canonical Lyrics reads had a finite 7-second timeout but any non-timeout browser `fetch()` rejection was still presented as a Cloudflare Access/authentication problem and received no retry. The POST validation/save transport was already separate and remains untouched.
+
+Build90 applies the bounded GET-only classification:
+
+```text
+timeout                         → retry once max
+transport/fetch interruption     → retry once max
+HTTP 408/425/429/500/502/503/504 → retry once max
+401/403                         → Access/CORS · NO RETRY
+other deterministic 4xx          → HTTP · NO RETRY
+non-JSON Access/gating response  → Access/CORS · NO RETRY
+invalid JSON                     → invalid-response · NO RETRY
+```
+
+There are at most **two total attempts**. A second transient failure surfaces immediately.
+
+Build83 write truth remains unchanged: `lyrics-validate-v1` / `lyrics-save-v1` POSTs are not retried, `LYRICS_SAVE_TIMEOUT` / `LYRICS_SAVE_TRANSPORT` remain intact, and lost saves still classify committed / not committed / ambiguous / unverified through private canonical Lyrics + Track reread. The only improvement is that the Lyrics side of that reread may survive one transient GET failure.
+
+SonicTrace private reads, Album create/upload semantics, Track Manager, Workers and R2 schema/data remain unchanged.
+
 ## Current blockers
 
-**No active blocker after `BUILD89 PASS MADAFAKA`.**
+**Build90 real-user browser smoke is pending.**
 
-Historical CI runs `31881467538` and `31881538488` were red only because inherited Phase7-C / Studio Focus successor allowlists stopped at Build88. Those heads were never merged. Final runtime CI `31881635973` passed the complete chain on exact head `8b73d19d8fced35642ee243cff0ac19d983fd0de`.
+Runtime CI `31884568681` passed the complete chain **on the first run** on exact head `48ca1dc25951d65ead05c4f80bd1f9e6bf8c5d01`. Runtime Pages `31884614863` deployed exact merge `8a851a7d53d3b4f45359c7036011684441bb25bb` successfully.
 
 The historical `Magnetic Midnight` public-cover palette `Failed to fetch` issue remains resolved since Build62 and covered by regression guards.
 
 ## Exact next action
 
-**Do not allocate Build90 yet.**
+Run the bounded normal-browser **Build90 Lyrics private-read regression smoke**:
 
-Run a fresh, read-only Phase9 reliability audit and select the smallest coherent next reliability slice only after proving the gap and confirming existing recovery logic does not already cover it.
+1. hard refresh Studio and verify `v0.19.12 · Build90`;
+2. open a Track that already has canonical `lyrics.txt`;
+3. open **Lyrics** and confirm canonical lyrics load normally;
+4. no write is required — Build90 is a read-only reliability slice;
+5. quick Track / Albums / SonicTrace navigation sanity.
 
-Remaining audit candidates include:
+Do **not** deliberately cut network or invalidate Cloudflare Access merely to manufacture transient retry behavior. Automated guards own the failure-path proof.
 
-1. Lyrics private-read transient retry truth;
-2. SonicTrace private-read transient retry truth;
-3. Album asset upload response-loss truth;
-4. Album create response-loss truth;
-5. degraded/offline/PWA resilience.
-
-No candidate above is an automatic commitment or pre-allocated build.
+If clean, explicit verdict may promote Build90 to REAL USER PASS. **Build91 remains UNALLOCATED** until then and until a fresh post-Build90 audit proves the next scope.
 
 ## Frozen stop lines
 
@@ -270,6 +315,10 @@ safety/post-build89-prepr-20260815-1310
 safety/post-build89-deployed-candidate-20260815-1319
 safety/post-build89-candidate-docs-closeout-20260815-1336
 safety/post-build89-real-user-pass-20260815-1404
+safety/post-build89-rup-docs-closeout-20260815-1416
+safety/pre-phase9-lyrics-private-read-retry-build90-20260815-1419
+safety/post-build90-prepr-20260815-1424
+safety/post-build90-deployed-candidate-20260815-1429
 ```
 
 ## Acceptance vocabulary
@@ -278,4 +327,4 @@ safety/post-build89-real-user-pass-20260815-1404
 CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS
 ```
 
-Build89 is **REAL USER PASS**. Build90 is **UNALLOCATED**.
+Build89 is **REAL USER PASS**. Build90 is **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**. Build91 is **UNALLOCATED**.

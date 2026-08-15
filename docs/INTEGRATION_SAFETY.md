@@ -3,7 +3,8 @@
 Date established: 2026-08-08  
 Hardened: 2026-08-09  
 Current-state overlay refreshed: 2026-08-15  
-Current accepted Studio release: `v0.19.11` / Build `89` / REAL USER PASS
+Current accepted Studio release: `v0.19.11` / Build `89` / REAL USER PASS  
+Current deployed candidate: `v0.19.12` / Build `90` / REAL USER SMOKE PENDING
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -28,7 +29,20 @@ Studio accepted
   runtime Pages 31881682269 / SUCCESS
   candidate docs merge a7894dad8f4b4015ca1cba47b12781bab417fdcf
   candidate docs Pages 31882384329 / SUCCESS
+  acceptance docs merge 07bfd3c6b4fa19ccea0656b9ce194f239b7f7c65
+  acceptance docs Pages 31884092117 / SUCCESS
   browser smoke BUILD89 PASS MADAFAKA / 2026-08-15
+  Worker deploy NONE
+  Track Manager change NONE
+  R2 migration/write NONE caused by deployment
+
+Studio candidate
+  v0.19.12 / Build90 / DEPLOYED CANDIDATE
+  exact tested head 48ca1dc25951d65ead05c4f80bd1f9e6bf8c5d01
+  runtime CI 31884568681 / SUCCESS / first run
+  runtime merge 8a851a7d53d3b4f45359c7036011684441bb25bb
+  runtime Pages 31884614863 / SUCCESS
+  browser smoke PENDING
   Worker deploy NONE
   Track Manager change NONE
   R2 migration/write NONE caused by deployment
@@ -50,7 +64,7 @@ LRC Maker
   6.3.8
 ```
 
-Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable history; this overlay states current accepted production truth only.
+Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable history; this overlay distinguishes current accepted production truth from the currently deployed candidate.
 
 ## Restoration checkpoints
 
@@ -144,6 +158,16 @@ After Build89 deployment candidate:
 
 After Build89 real-user acceptance:
   safety/post-build89-real-user-pass-20260815-1404
+  safety/post-build89-rup-docs-closeout-20260815-1416
+
+Before Phase9 Build90:
+  safety/pre-phase9-lyrics-private-read-retry-build90-20260815-1419
+
+After Build90 implementation before PR:
+  safety/post-build90-prepr-20260815-1424
+
+After Build90 deployment candidate:
+  safety/post-build90-deployed-candidate-20260815-1429
 ```
 
 Earlier accepted safety branches remain preserved in Git history.
@@ -206,6 +230,8 @@ Build88 changes only the core private Track Manager **GET** transport for bridge
 
 Build89 changes only canonical Album collection/detail private **GET** behavior. The same helper also serves private Album visual discovery and existing canonical Album rereads. Build89 changes no Album POST/write transport, no Track Manager route, no Worker and no R2 data/schema.
 
+Build90 changes only canonical Lyrics private **GET** behavior. It adds one bounded retry for timeout/transport/selected transient HTTP failures. It changes no `lyrics-validate-v1` or `lyrics-save-v1` POST behavior, no Build83 lost-response recovery rule, no SonicTrace read behavior, no Track Manager route, no Worker and no R2 data/schema.
+
 ### SonicTrace
 
 SonicTrace remains the audio-intelligence compute engine. R2 sidecars hold durable catalog-linked analysis. No duplicate canonical WAV is stored in analysis persistence.
@@ -239,6 +265,31 @@ Lyrics save response lost / timeout
    └─ reread unavailable
         → UNVERIFIED / DO NOT RETRY
 ```
+
+### Build90 Lyrics private-read boundary — CANDIDATE
+
+Build90 does not change the save transaction above. It changes only the canonical Lyrics GET used by normal loading and by the Lyrics side of Build83 verification/recovery rereads:
+
+```text
+timeout                         → one retry max
+transport/fetch interruption     → one retry max
+HTTP 408/425/429/500/502/503/504 → one retry max
+401/403                         → Access/CORS · NO RETRY
+other deterministic 4xx          → HTTP · NO RETRY
+non-JSON Access/gating response  → Access/CORS · NO RETRY
+invalid JSON                     → invalid-response · NO RETRY
+```
+
+Rules:
+
+- maximum two total attempts;
+- the existing finite 7-second per-attempt timeout remains;
+- a transport blip must not be mislabeled as Access;
+- Access/CORS and invalid responses must not be hammered with automatic retries;
+- `rereadLyricsTruth()` may survive one transient Lyrics GET failure but still never retries the save POST;
+- SonicTrace private reads remain out of scope.
+
+Build90 is **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**. Acceptance must be a normal browser Lyrics-read regression, not a manufactured network failure.
 
 ## SonicTrace persistence boundary
 
@@ -413,7 +464,7 @@ Rules:
 - existing guarded Album write verification/recovery rereads inherit the canonical detail GET;
 - no Album POST/write is retried by Build89;
 - Album create and binary upload remain unchanged future audit families;
-- Lyrics and SonicTrace private reads remain separate audit families.
+- Lyrics and SonicTrace private reads remained separate audit families at Build89.
 
 Build89 is **REAL USER PASS** after explicit 2026-08-15 normal-browser Album private-read regression acceptance. The browser smoke did not deliberately break network or Access; automated guards own the transient failure-path proof.
 
@@ -529,9 +580,15 @@ Build88 is **REAL USER PASS** after the explicit 2026-08-15 normal-browser priva
 
 ### Build89 accepted scope
 
-Canonical Album collection/detail **GET retry only**. One retry is allowed only after timeout, transport interruption or the explicit transient HTTP allowlist. It changes no Album write retry rule and does not generalize to Lyrics/SonicTrace private reads.
+Canonical Album collection/detail **GET retry only**. One retry is allowed only after timeout, transport interruption or the explicit transient HTTP allowlist. It changes no Album write retry rule and did not generalize to Lyrics/SonicTrace private reads.
 
 Build89 is **REAL USER PASS** after the explicit 2026-08-15 normal-browser Album private-read regression verdict. Acceptance did not manufacture a failure branch.
+
+### Build90 candidate scope
+
+Canonical Lyrics **GET retry only**. One retry is allowed only after timeout, transport interruption or the explicit transient HTTP allowlist. This is not authorization to retry `lyrics-validate-v1`, `lyrics-save-v1`, or any other write.
+
+Build90 remains **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING** until normal-browser Lyrics read acceptance.
 
 ## Destructive/media verification policy
 
@@ -556,6 +613,8 @@ Build88 acceptance likewise did **not** require deliberately cutting network or 
 
 Build89 acceptance likewise did **not** require deliberately cutting network or invalidating Access. Automated guards own the transient failure-path proof; browser acceptance was a normal Album private-read regression.
 
+Build90 candidate smoke likewise must **not** deliberately cut network or invalidate Access merely to prove the transient GET retry branch. Automated guards own that failure-path proof; browser acceptance should be a normal canonical Lyrics-read regression.
+
 ## Version / deployment discipline
 
 Treat separately:
@@ -568,7 +627,7 @@ Treat separately:
 
 For private Track Manager-only Worker changes, prefer `target=admin` and `confirm=DEPLOY`.
 
-Build82, Build83, Build84, Build85, Build86, Build87, Build88 and Build89 required no Worker deployment. Build89 Pages deployment caused no intentional R2 schema/data migration.
+Build82, Build83, Build84, Build85, Build86, Build87, Build88, Build89 and Build90 required no Worker deployment. Build90 Pages deployment caused no intentional R2 schema/data migration.
 
 Docs-only governance/closeout work does not create a new Studio build.
 
@@ -585,4 +644,4 @@ If a regression appears:
 
 ## Stop line
 
-**Build89 is the accepted Studio REAL USER PASS baseline. Build90 is UNALLOCATED pending a fresh bounded post-Build89 audit. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**
+**Build89 is the accepted Studio REAL USER PASS baseline. Build90 is DEPLOYED CANDIDATE · REAL USER SMOKE PENDING. Build91 is UNALLOCATED. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**
