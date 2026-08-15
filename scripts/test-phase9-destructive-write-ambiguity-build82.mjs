@@ -43,9 +43,14 @@ for (const marker of [
   'ALBUM_ASSET_DELETE_AMBIGUOUS',
   'ALBUM_ASSET_DELETE_UNVERIFIED',
   'recoveredAfterTransportFailure: true',
-  'retrySafe: true',
   'Do not retry',
 ]) assert.ok(albums.includes(marker), `Album asset delete ambiguity contract missing ${marker}`);
+assert.ok(albums.includes('readonly retrySafe = false'), 'AlbumAdminError must carry retry safety as typed state.');
+assert.match(
+  albums,
+  /'ALBUM_ASSET_DELETE_NOT_COMMITTED'[\s\S]{0,260}?true,[\s\S]{0,120}?reason\.technicalDetails/,
+  'Album NOT_COMMITTED classification must explicitly set retrySafe=true.',
+);
 assert.ok(albums.includes('async function deleteAlbumAssetRequest('), 'Album delete must use a dedicated bounded transport.');
 assert.ok(albums.includes('globalThis.setTimeout(() => controller.abort(), 30000)'), 'Album delete transport must have a finite timeout.');
 assert.ok(albums.includes('const before = await getAdminAlbum(albumId);'), 'Album delete must capture canonical pre-write state.');
