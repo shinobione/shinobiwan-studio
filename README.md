@@ -19,10 +19,10 @@ Then verify the real GitHub state before mutation.
 ## Current accepted state
 
 ```text
-Studio                v0.19.7 · Build85 · REAL USER PASS
-Codename              studio-focus-slice4-phase9-album-metadata-response-loss-truth
-Runtime merge         1199f6a0e26da88e54f64a369985c2a72267e5a5
-Runtime Pages         31863313848 · SUCCESS
+Studio                v0.19.8 · Build86 · REAL USER PASS
+Codename              studio-focus-slice4-phase9-album-move-response-loss-truth
+Runtime merge         866ebf9c2a501d11102ed994717b50f6d8189b0d
+Runtime Pages         31868570112 · SUCCESS
 Track Manager         v5.23 · DEPLOYED
 Studio bridge         v1.13
 TM admin Worker       439a1ce4-e458-427d-9fd6-61e888efd269
@@ -33,25 +33,7 @@ Deep Audio            2.0.3-alpha
 LRC Maker             6.3.8
 ```
 
-**Studio v0.19.7 · Build85 remains the current accepted runtime.** Build85 extends Phase9 response-loss truth to canonical Album metadata save only. A lost metadata response is never blindly retried; Studio privately rereads the exact pre-write revision, requested metadata and stable non-metadata Album shape before classifying committed, not committed, ambiguous or unverified. The required normal-browser regression received explicit **`BUILD85 PASS`** on 2026-08-15.
-
-## Current deployed candidate
-
-```text
-Studio                v0.19.8 · Build86 · DEPLOYED CANDIDATE
-Codename              studio-focus-slice4-phase9-album-move-response-loss-truth
-Runtime PR            #138
-Exact tested head     0d99d17631e3f72a360f404a1269cc05cda33dd8
-Validation            31868536718 · SUCCESS · first run
-Runtime merge         866ebf9c2a501d11102ed994717b50f6d8189b0d
-Runtime Pages         31868570112 · SUCCESS
-Real-user smoke       PENDING
-Worker deploy         NONE
-Track Manager change  NONE
-R2 migration/write    NONE caused by deployment
-```
-
-Build86 hardens the canonical Album **move** path against lost responses for both Album→Album movement and the existing `sourceAlbumId:null` authority repair. It remains a candidate until explicit browser acceptance.
+**Studio v0.19.8 · Build86 is the current accepted runtime.** Build86 extends Phase9 response-loss truth to canonical Album move only. A lost move response is never blindly retried; Studio privately rereads the target Album, optional source Album and Track compatibility cache before classifying committed, not committed, ambiguous or unverified. The required normal-browser regression received explicit **`BUILD86 PASS`** on 2026-08-15.
 
 The repository currently publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
@@ -108,12 +90,12 @@ Phase 9 Slice1      Build82 · REAL USER PASS
 Phase 9 Slice2      Build83 · REAL USER PASS
 Phase 9 Slice3      Build84 · REAL USER PASS
 Phase 9 Slice4      Build85 · REAL USER PASS
-Phase 9 Slice5      Build86 · DEPLOYED CANDIDATE · smoke pending
+Phase 9 Slice5      Build86 · REAL USER PASS
 Build87             UNALLOCATED
 Phase 10            FUTURE
 ```
 
-The immediate next action is the bounded Build86 normal-browser Album move regression smoke. No successor is allocated before explicit Build86 acceptance and a fresh post-acceptance audit.
+The immediate next action is a **fresh bounded Phase9 reliability audit**, not another preselected runtime build. Remaining candidates include Album bulk membership/upload/create response-loss truth, Access/CORS hardening, bounded read retries/timeouts, and degraded/offline/PWA resilience.
 
 ## Frozen authority model
 
@@ -154,7 +136,7 @@ metadata save response lost
 
 Normal metadata success also requires exact response revision + requested metadata + stable non-metadata shape. Build85 does **not** apply this contract to Album create, membership, move or upload.
 
-Build86 candidate failure contract for **Album move only**:
+Build86 accepted failure contract for **Album move only**:
 
 ```text
 move response unavailable
@@ -224,7 +206,7 @@ MASTER FINAL 16:9
 
 Release Campaign is provider-agnostic. Google Flow is a convenience shortcut. Campaign drafts remain browser-local and ZIP export remains review-only.
 
-## Build86 candidate receipts
+## Build86 acceptance receipts
 
 ```text
 Safety pre              safety/pre-phase9-album-move-response-loss-build86-20260815-0757
@@ -234,10 +216,14 @@ Validation              31868536718 · SUCCESS · first run
 Runtime merge           866ebf9c2a501d11102ed994717b50f6d8189b0d
 Runtime Pages           31868570112 · SUCCESS · exact runtime merge SHA
 Safety post-deploy      safety/post-build86-deployed-candidate-20260815-0808
+Candidate docs PR       #139
+Candidate docs merge    9a03c33f6ecb472ab49c3631dd9688e3c6f03bf7
+Candidate docs Pages    31869026213 · SUCCESS
+Safety post-acceptance  safety/post-build86-real-user-pass-20260815-0823
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
-Real-user smoke         PENDING
+Real-user smoke         BUILD86 PASS · 2026-08-15
 ```
 
 Detailed record: [`changelogs/CHANGELOG-BUILD86.md`](changelogs/CHANGELOG-BUILD86.md).
