@@ -29,6 +29,9 @@ Runtime Pages         31872073050 · SUCCESS
 Candidate docs PR     #145
 Candidate docs merge  316ad1b0784d72fb7d29d92c5deaedb56d262e49
 Candidate docs Pages  31872540118 · SUCCESS
+Acceptance docs PR    #146
+Acceptance docs merge aebb168883c1f291b97e1d309b4028bb1d78861c
+Acceptance docs Pages 31881075352 · SUCCESS
 Real-user smoke       BUILD88 PASS MADAFAKA · 2026-08-15
 Track Manager         v5.23 · DEPLOYED
 Studio bridge         v1.13
@@ -40,7 +43,25 @@ Deep Audio            2.0.3-alpha
 LRC Maker             6.3.8
 ```
 
-**Studio v0.19.10 · Build88 is the current accepted runtime.** Build88 changes only the core private **GET** transport used by Track Manager bridge health, Track inventory and Track detail. Timeout, transport interruption, and HTTP `408/425/429/500/502/503/504` may receive **one** bounded retry; Access/CORS, deterministic ordinary 4xx and invalid JSON are never retried. Public fallback is unchanged and is only reached after the private helper ultimately fails. **No write retry was introduced.** The bounded normal-browser regression received explicit **`BUILD88 PASS MADAFAKA`** on 2026-08-15.
+**Studio v0.19.10 · Build88 remains the current accepted runtime.** Build88 changes only the core private **GET** transport used by Track Manager bridge health, Track inventory and Track detail. Timeout, transport interruption, and HTTP `408/425/429/500/502/503/504` may receive **one** bounded retry; Access/CORS, deterministic ordinary 4xx and invalid JSON are never retried. Public fallback is unchanged. **No write retry was introduced.** The bounded normal-browser regression received explicit **`BUILD88 PASS MADAFAKA`** on 2026-08-15.
+
+## Current deployed candidate
+
+```text
+Studio                v0.19.11 · Build89 · DEPLOYED CANDIDATE
+Codename              studio-focus-slice4-phase9-album-private-read-transient-retry-truth
+Runtime PR            #147
+Exact tested head     8b73d19d8fced35642ee243cff0ac19d983fd0de
+Validation            31881635973 · SUCCESS
+Runtime merge         b7ae769c66e9adccef79c80467cc8fd0a8534820
+Runtime Pages         31881682269 · SUCCESS
+Real-user smoke       PENDING
+Worker deploy         NONE
+Track Manager change  NONE
+R2 migration/write    NONE caused by deployment
+```
+
+Build89 applies the same bounded GET-only retry truth to canonical Album collection/detail reads. The helper also serves private Album visual discovery and existing canonical Album rereads used by guarded verification/recovery. **Album POST/write transports are unchanged.** Lyrics and SonicTrace private reads remain separate future audit families.
 
 The repository currently publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
@@ -100,11 +121,12 @@ Phase 9 Slice4      Build85 · REAL USER PASS
 Phase 9 Slice5      Build86 · REAL USER PASS
 Phase 9 Slice6      Build87 · REAL USER PASS
 Phase 9 Slice7      Build88 · REAL USER PASS
-Build89             UNALLOCATED
+Phase 9 Slice8      Build89 · DEPLOYED CANDIDATE · smoke pending
+Build90             UNALLOCATED
 Phase 10            FUTURE
 ```
 
-The immediate next action is a **fresh bounded post-Build88 Phase9 reliability audit**. No successor is allocated before that audit proves a concrete smallest coherent gap.
+The immediate next action is the bounded normal-browser **Build89 Album private-read smoke**. Do not allocate Build90 while acceptance is pending.
 
 ## Frozen authority model
 
@@ -122,7 +144,7 @@ The immediate next action is a **fresh bounded post-Build88 Phase9 reliability a
 
 ### Private reads
 
-Build88 accepted core-read contract:
+Build88 accepted core Track-read contract and Build89 candidate Album-read contract use the same bounded classification:
 
 ```text
 timeout                         → retry once max
@@ -134,7 +156,7 @@ non-JSON Access/gating response  → Access/CORS · NO RETRY
 invalid JSON                     → invalid-response · NO RETRY
 ```
 
-The contract is GET-only and capped at two total attempts. It does not change POST/write recovery or public fallback authority.
+The contract is GET-only and capped at two total attempts. Build88 applies it to health/Tracks. Build89 applies it to Album collection/detail reads. Neither build authorizes POST/write retry.
 
 ### Albums
 
@@ -149,52 +171,35 @@ Build85 accepted failure contract for **metadata save only**:
 ```text
 metadata save response lost
 → private canonical Album reread
-   ├─ new revision + exact metadata + stable non-metadata shape
-   │    → COMMITTED / VERIFIED
-   ├─ original revision unchanged
-   │    → NOT COMMITTED / retry may be safe
-   ├─ revision changed but exact postcondition unproven
-   │    → AMBIGUOUS / DO NOT RETRY
-   └─ reread unavailable
-        → UNVERIFIED / DO NOT RETRY
+   ├─ new revision + exact metadata + stable non-metadata shape → COMMITTED / VERIFIED
+   ├─ original revision unchanged                              → NOT COMMITTED / retry may be safe
+   ├─ revision changed but exact postcondition unproven        → AMBIGUOUS / DO NOT RETRY
+   └─ reread unavailable                                       → UNVERIFIED / DO NOT RETRY
 ```
-
-Normal metadata success also requires exact response revision + requested metadata + stable non-metadata shape. Build85 does **not** apply this contract to Album create, membership, move or upload.
 
 Build86 accepted failure contract for **Album move only**:
 
 ```text
 move response unavailable
 → private target + source? + Track reread
-   ├─ exact target/source membership + Track cache + stable shapes
-   │    → COMMITTED / VERIFIED
-   ├─ exact pre-write target/source/Track state unchanged
-   │    → NOT COMMITTED / retry may be safe after fresh reload
-   ├─ partial/mixed changed state
-   │    → AMBIGUOUS / DO NOT RETRY
-   └─ reread unavailable
-        → UNVERIFIED / DO NOT RETRY
+   ├─ exact target/source membership + Track cache + stable shapes → COMMITTED / VERIFIED
+   ├─ exact pre-write target/source/Track state unchanged          → NOT COMMITTED / retry may be safe
+   ├─ partial/mixed changed state                                  → AMBIGUOUS / DO NOT RETRY
+   └─ reread unavailable                                           → UNVERIFIED / DO NOT RETRY
 ```
-
-Build86 does not generalize this contract to Album bulk membership, create or upload.
 
 Build87 accepted failure contract for **Album bulk membership / ordered tracklist save only**:
 
 ```text
 membership response unavailable
 → private Album + union(previous, requested) Track reread
-   ├─ new Album revision + exact requested ordered trackIds
-   │  + exact expected Track caches + stable non-membership shapes
-   │    → COMMITTED / VERIFIED
-   ├─ exact pre-write Album + Track state unchanged
-   │    → NOT COMMITTED / retry may be safe after fresh reload
-   ├─ partial/mixed changed state
-   │    → AMBIGUOUS / DO NOT RETRY
-   └─ reread unavailable
-        → UNVERIFIED / DO NOT RETRY
+   ├─ new Album revision + exact order + expected Track caches → COMMITTED / VERIFIED
+   ├─ exact pre-write Album + Track state unchanged            → NOT COMMITTED / retry may be safe
+   ├─ partial/mixed changed state                              → AMBIGUOUS / DO NOT RETRY
+   └─ reread unavailable                                       → UNVERIFIED / DO NOT RETRY
 ```
 
-Requested Tracks must exist. A historically missing prior Track can still be removed. Removed Tracks whose cache claimed the Album converge to transitional `Singles`; unrelated cache claims remain unchanged. Build87 does not generalize this contract to Album create or binary upload.
+Build89 does not change any of those write contracts. Album create and binary upload remain separate future audit families requiring stronger causality/digest proof before lost-response recovery can be safely added.
 
 ### Lyrics
 
@@ -249,6 +254,25 @@ MASTER FINAL 16:9
 
 Release Campaign is provider-agnostic. Google Flow is a convenience shortcut. Campaign drafts remain browser-local and ZIP export remains review-only.
 
+## Build89 candidate receipts
+
+```text
+Safety pre              safety/pre-phase9-album-private-read-retry-build89-20260815-1307
+Safety pre-PR           safety/post-build89-prepr-20260815-1310
+Runtime PR              #147
+Exact tested head       8b73d19d8fced35642ee243cff0ac19d983fd0de
+Validation              31881635973 · SUCCESS
+Runtime merge           b7ae769c66e9adccef79c80467cc8fd0a8534820
+Runtime Pages           31881682269 · SUCCESS · exact runtime merge SHA
+Safety post-deploy      safety/post-build89-deployed-candidate-20260815-1319
+Worker deploy           NONE
+Track Manager change    NONE
+R2 migration/write      NONE caused by deployment
+Real-user smoke         PENDING
+```
+
+Detailed candidate record: [`changelogs/CHANGELOG-BUILD89.md`](changelogs/CHANGELOG-BUILD89.md).
+
 ## Build88 acceptance receipts
 
 ```text
@@ -262,6 +286,9 @@ Safety post-deploy      safety/post-build88-deployed-candidate-20260815-0932
 Candidate docs PR       #145
 Candidate docs merge    316ad1b0784d72fb7d29d92c5deaedb56d262e49
 Candidate docs Pages    31872540118 · SUCCESS
+Acceptance docs PR      #146
+Acceptance docs merge   aebb168883c1f291b97e1d309b4028bb1d78861c
+Acceptance docs Pages   31881075352 · SUCCESS
 Safety post-acceptance  safety/post-build88-real-user-pass-20260815-1253
 Worker deploy           NONE
 Track Manager change    NONE
@@ -274,84 +301,19 @@ Detailed record: [`changelogs/CHANGELOG-BUILD88.md`](changelogs/CHANGELOG-BUILD8
 ## Build87 acceptance receipts
 
 ```text
-Safety pre              safety/pre-phase9-album-membership-response-loss-build87-20260815-0837
-Safety pre-PR           safety/post-build87-prepr-20260815-0844
 Runtime PR              #141
 Exact tested head       5f155d312b0af7227325a78480bfd424a96e7859
 Validation              31870328730 · SUCCESS · first run
 Runtime merge           b9e1f121c7dc111ee6db06fd4d00227426d96ce7
-Runtime Pages           31870370403 · SUCCESS · exact runtime merge SHA
-Safety post-deploy      safety/post-build87-deployed-candidate-20260815-0853
-Candidate docs PR       #142
-Candidate docs merge    453be9e9d72c9d90cd97ad5f57be02821efec12a
-Candidate docs Pages    31870838391 · SUCCESS
-Safety post-acceptance  safety/post-build87-real-user-pass-20260815-0903
-Worker deploy           NONE
-Track Manager change    NONE
-R2 migration/write      NONE caused by deployment
+Runtime Pages           31870370403 · SUCCESS
 Real-user smoke         BUILD87 PASS · 2026-08-15
 ```
 
 Detailed record: [`changelogs/CHANGELOG-BUILD87.md`](changelogs/CHANGELOG-BUILD87.md).
 
-## Build86 acceptance receipts
-
-```text
-Safety pre              safety/pre-phase9-album-move-response-loss-build86-20260815-0757
-Runtime PR              #138
-Exact tested head       0d99d17631e3f72a360f404a1269cc05cda33dd8
-Validation              31868536718 · SUCCESS · first run
-Runtime merge           866ebf9c2a501d11102ed994717b50f6d8189b0d
-Runtime Pages           31868570112 · SUCCESS · exact runtime merge SHA
-Safety post-deploy      safety/post-build86-deployed-candidate-20260815-0808
-Candidate docs PR       #139
-Candidate docs merge    9a03c33f6ecb472ab49c3631dd9688e3c6f03bf7
-Candidate docs Pages    31869026213 · SUCCESS
-Safety post-acceptance  safety/post-build86-real-user-pass-20260815-0823
-Worker deploy           NONE
-Track Manager change    NONE
-R2 migration/write      NONE caused by deployment
-Real-user smoke         BUILD86 PASS · 2026-08-15
-```
-
-Detailed record: [`changelogs/CHANGELOG-BUILD86.md`](changelogs/CHANGELOG-BUILD86.md).
-
-## Build85 acceptance receipts
-
-```text
-Safety pre              safety/pre-phase9-album-metadata-response-loss-build85-20260815-0555
-Runtime PR              #135
-Exact tested head       4bbfb93dfc9333eb1e8fc3a35b62699611e69367
-Validation              31863267911 · SUCCESS · first run
-Runtime merge           1199f6a0e26da88e54f64a369985c2a72267e5a5
-Runtime Pages           31863313848 · SUCCESS · exact runtime merge SHA
-Candidate docs PR       #136
-Candidate docs merge    40917edc6a341ca7d19907d8afe59123f44c8d03
-Candidate docs Pages    31863566190 · SUCCESS
-Safety post-deploy      safety/post-build85-deployed-candidate-20260815-0602
-Safety post-acceptance  safety/post-build85-real-user-pass-20260815-0748
-Worker deploy           NONE
-Track Manager change    NONE
-R2 migration/write      NONE caused by deployment
-Real-user smoke         BUILD85 PASS · 2026-08-15
-```
-
-Detailed record: [`changelogs/CHANGELOG-BUILD85.md`](changelogs/CHANGELOG-BUILD85.md).
-
 ## Accepted predecessors
 
-Build84 remains the accepted Phase9 Slice3 predecessor:
-
-```text
-Studio                  v0.19.6 · Build84 · REAL USER PASS
-Runtime PR              #132
-Validation              31858911420 · SUCCESS
-Runtime merge           b7cf745e11adee1eb77900a32b9b6ca8ea80e000
-Runtime Pages           31858977765 · SUCCESS
-Real-user smoke         BUILD84 PASS · 2026-08-15
-```
-
-Build83 and Build82 remain accepted Phase9 predecessors. See `CHANGELOG.md` and detailed per-build records for historical receipts.
+Build86, Build85, Build84, Build83 and Build82 remain accepted Phase9 predecessors. See `CHANGELOG.md` and detailed per-build records for historical receipts.
 
 ## Documentation
 
