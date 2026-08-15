@@ -1,37 +1,26 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-08-15 after **Build84 deployed candidate** publication. Real-user acceptance remains pending.
+Updated: 2026-08-15 after explicit **Build84 REAL USER PASS**.
 
 This file records what has actually been validated, what automated guards cover, and what remains unproven. It is not a full test-history dump.
 
 ## Current accepted Studio runtime
 
 ```text
-Version                 v0.19.5
-Build                   Build83
-Status                  REAL USER PASS
-Runtime PR              #129
-Exact tested head       beff9fc58c58e36ce2c2082f7bd5c041641a5e12
-Final CI                31856653579 · SUCCESS
-Runtime merge           b168d8cda805e5c50480a3e26c5d52e490fb7ac6
-Pages                   31856698097 · SUCCESS
-Real-user verdict       BUILD83 PASS · 2026-08-15
-```
-
-## Current deployed candidate
-
-```text
 Version                 v0.19.6
 Build                   Build84
-Status                  DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Status                  REAL USER PASS
 Runtime PR              #132
 Exact tested head       377de51416d4aea258830e55e894707d9f3f6512
 Final CI                31858911420 · SUCCESS
 Runtime merge           b7cf745e11adee1eb77900a32b9b6ca8ea80e000
 Pages                   31858977765 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #133
+Candidate docs merge    ea93441094173b3c05a1e08b22f7c53ef87f3783
+Candidate docs Pages    31859213261 · SUCCESS
 Worker deploy           NONE
 R2 migration/write      NONE caused by deployment
-Real-user verdict       PENDING
+Real-user verdict       BUILD84 PASS · 2026-08-15
 ```
 
 ## Build84 automated coverage — GREEN
@@ -78,26 +67,36 @@ Additional Build84 guarantees:
 
 The Track Manager backend was audited read-only and already writes history first, then latest, rereads both, and attempts rollback on verification failure. No backend mutation was needed for Build84.
 
-## Build84 real-user smoke — PENDING
+## Build84 real-user smoke — PASS
 
-The required acceptance smoke is intentionally a **normal-browser regression**, not a manufactured failure test:
+The required acceptance smoke was intentionally a **normal-browser regression**, not a manufactured failure test.
 
-1. hard refresh Studio and verify `v0.19.6 · Build84`;
-2. open a private Track with canonical master audio;
-3. verify SonicTrace latest/history state loads normally;
-4. run a normal SonicTrace analysis on a safe Track;
-5. review the generated `analysisId`;
-6. perform one intentional normal **Save analysis** if the resulting history entry is acceptable;
-7. verify **`Analysis saved and canonically verified in latest + history.`**;
-8. confirm latest/history updated and normal Track / Visuals / Lyrics / Albums navigation remains healthy.
-
-Do not cut network, invalidate Access or otherwise sabotage a production save merely to force timeout/partial-write branches.
-
-Until explicit user verdict:
+The user completed the bounded smoke and returned the explicit verdict:
 
 ```text
-Build84 != REAL USER PASS
+BUILD84 PASS
 ```
+
+The accepted smoke boundary covered:
+
+- hard refresh to the deployed `v0.19.6 · Build84` runtime;
+- private Track / canonical master-audio path;
+- normal SonicTrace latest/history loading;
+- normal SonicTrace scan and review flow;
+- one intentional normal analysis save;
+- canonical save verification through `latest.json` + `history/<analysisId>.json`;
+- latest/history state update;
+- surrounding Track / Visuals / Lyrics / Albums navigation regression sanity.
+
+Acceptance intentionally did **not** require cutting network, invalidating Access or sabotaging a production save merely to force timeout/partial-write branches. Those failure paths remain protected by typed classification, source guards and private canonical reread logic.
+
+Result:
+
+```text
+Build84 = REAL USER PASS
+```
+
+No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration or cross-repository runtime change was required to reach acceptance.
 
 ## Build83 automated coverage
 
@@ -227,18 +226,16 @@ Git history shows the public-cover credential/fetch path was corrected in Build6
 
 ## Known open QA gaps / next audits
 
-Current acceptance gap:
+No Build84 acceptance blocker remains.
 
-1. Build84 normal-browser SonicTrace regression smoke.
+Before any successor runtime work, perform a fresh bounded Phase9 audit. Remaining candidate areas include:
 
-Do not allocate a successor build while Build84 acceptance remains pending.
+1. broader guarded Album write response-loss truth;
+2. Access/CORS hardening;
+3. bounded read retries/timeouts;
+4. degraded/offline and PWA resilience scenarios.
 
-After an explicit Build84 PASS, run a fresh bounded audit before any successor runtime work. Remaining candidate areas include:
-
-- broader guarded Album write response-loss truth;
-- Access/CORS hardening;
-- bounded read retries/timeouts;
-- degraded/offline and PWA resilience scenarios.
+These are **not yet accepted fixes** and do not imply Build85. Build85 remains unallocated until a fresh bounded audit proves a concrete scope.
 
 ## Standard validation commands
 
