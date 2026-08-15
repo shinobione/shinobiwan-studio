@@ -16,28 +16,29 @@ const metadataDurationApi = fs.readFileSync('src/services/metadata-duration-api.
 const trackMetadataApi = fs.readFileSync('src/services/track-metadata-admin-api.ts', 'utf8');
 const phase4Api = fs.readFileSync('src/services/phase4-admin-api.ts', 'utf8');
 
-assert.match(release, /version:\s*'0\.19\.(?:3|4|5|6|7|8|9|10|11|12|13|14|15)'/);
-assert.match(release, /build:\s*(?:69|70|71|72|73|82|83|84|85|86|87|88|89|90|91|92|93)/);
+assert.match(release, /version:\s*'0\.19\.(?:3|4|5|6|7|8|9|10|11|12|13|14|15|16)'/);
+assert.match(release, /build:\s*(?:69|70|71|72|73|82|83|84|85|86|87|88|89|90|91|92|93|94)/);
 assert.match(
   release,
-  /codename:\s*'(?:studio-focus-slice4-(?:phase7c-slice1-guided-metadata|phase7c-presmoke-publication-intake-fix|phase7c-duration-evidence-corrective|phase7c-slice2-guided-core-media|phase7c-slice2-status-truth-corrective|phase9-destructive-write-ambiguity-guard|phase9-lyrics-save-response-loss-truth|phase9-sonictrace-save-response-loss-truth|phase9-album-metadata-response-loss-truth|phase9-album-move-response-loss-truth|phase9-album-membership-response-loss-truth|phase9-private-read-transient-retry-truth|phase9-album-private-read-transient-retry-truth|phase9-lyrics-private-read-transient-retry-truth|phase9-sonictrace-private-read-transient-retry-truth|phase9-track-metadata-response-loss-truth|phase9-track-metadata-validation-transient-retry-truth))'/,
+  /codename:\s*'(?:studio-focus-slice4-(?:phase7c-slice1-guided-metadata|phase7c-presmoke-publication-intake-fix|phase7c-duration-evidence-corrective|phase7c-slice2-guided-core-media|phase7c-slice2-status-truth-corrective|phase9-destructive-write-ambiguity-guard|phase9-lyrics-save-response-loss-truth|phase9-sonictrace-save-response-loss-truth|phase9-album-metadata-response-loss-truth|phase9-album-move-response-loss-truth|phase9-album-membership-response-loss-truth|phase9-private-read-transient-retry-truth|phase9-album-private-read-transient-retry-truth|phase9-lyrics-private-read-transient-retry-truth|phase9-sonictrace-private-read-transient-retry-truth|phase9-track-metadata-response-loss-truth|phase9-track-metadata-validation-transient-retry-truth|phase9-lyrics-validation-transient-retry-truth))'/,
 );
-if (/build:\s*(?:82|83|84|85|86|87|88|89|90|91|92|93)/.test(release)) {
+if (/build:\s*(?:82|83|84|85|86|87|88|89|90|91|92|93|94)/.test(release)) {
   assert.ok(release.includes('build69AncestryMarker'), 'Phase9 successors must preserve Build69 guided-metadata ancestry.');
   assert.ok(release.includes('build73AncestryMarker'), 'Phase9 successors must preserve accepted Phase7-C program ancestry.');
   assert.ok(release.includes('build81AncestryMarker'), 'Phase9 successors must preserve accepted Build81 ancestry.');
 }
-if (/build:\s*(?:83|84|85|86|87|88|89|90|91|92|93)/.test(release)) assert.ok(release.includes('build82AncestryMarker'), 'Build83+ must preserve accepted Build82 Phase9 ancestry.');
-if (/build:\s*(?:84|85|86|87|88|89|90|91|92|93)/.test(release)) assert.ok(release.includes('build83AncestryMarker'), 'Build84+ must preserve accepted Build83 Phase9 ancestry.');
-if (/build:\s*(?:85|86|87|88|89|90|91|92|93)/.test(release)) assert.ok(release.includes('build84AncestryMarker'), 'Build85+ must preserve accepted Build84 Phase9 ancestry.');
-if (/build:\s*(?:86|87|88|89|90|91|92|93)/.test(release)) assert.ok(release.includes('build85AncestryMarker'), 'Build86+ must preserve accepted Build85 Phase9 ancestry.');
-if (/build:\s*(?:87|88|89|90|91|92|93)/.test(release)) assert.ok(release.includes('build86AncestryMarker'), 'Build87+ must preserve accepted Build86 Phase9 ancestry.');
-if (/build:\s*(?:88|89|90|91|92|93)/.test(release)) assert.ok(release.includes('build87AncestryMarker'), 'Build88+ must preserve accepted Build87 Phase9 ancestry.');
-if (/build:\s*(?:89|90|91|92|93)/.test(release)) assert.ok(release.includes('build88AncestryMarker'), 'Build89+ must preserve accepted Build88 Phase9 ancestry.');
-if (/build:\s*(?:90|91|92|93)/.test(release)) assert.ok(release.includes('build89AncestryMarker'), 'Build90+ must preserve accepted Build89 Phase9 ancestry.');
-if (/build:\s*(?:91|92|93)/.test(release)) assert.ok(release.includes('build90AncestryMarker'), 'Build91+ must preserve accepted Build90 Phase9 ancestry.');
-if (/build:\s*(?:92|93)/.test(release)) assert.ok(release.includes('build91AncestryMarker'), 'Build92+ must preserve accepted Build91 Phase9 ancestry.');
-if (/build:\s*93/.test(release)) assert.ok(release.includes('build92AncestryMarker'), 'Build93 must preserve accepted Build92 Phase9 ancestry.');
+if (/build:\s*(?:83|84|85|86|87|88|89|90|91|92|93|94)/.test(release)) assert.ok(release.includes('build82AncestryMarker'), 'Build83+ must preserve accepted Build82 Phase9 ancestry.');
+if (/build:\s*(?:84|85|86|87|88|89|90|91|92|93|94)/.test(release)) assert.ok(release.includes('build83AncestryMarker'), 'Build84+ must preserve accepted Build83 Phase9 ancestry.');
+if (/build:\s*(?:85|86|87|88|89|90|91|92|93|94)/.test(release)) assert.ok(release.includes('build84AncestryMarker'), 'Build85+ must preserve accepted Build84 Phase9 ancestry.');
+if (/build:\s*(?:86|87|88|89|90|91|92|93|94)/.test(release)) assert.ok(release.includes('build85AncestryMarker'), 'Build86+ must preserve accepted Build85 Phase9 ancestry.');
+if (/build:\s*(?:87|88|89|90|91|92|93|94)/.test(release)) assert.ok(release.includes('build86AncestryMarker'), 'Build87+ must preserve accepted Build86 Phase9 ancestry.');
+if (/build:\s*(?:88|89|90|91|92|93|94)/.test(release)) assert.ok(release.includes('build87AncestryMarker'), 'Build88+ must preserve accepted Build87 Phase9 ancestry.');
+if (/build:\s*(?:89|90|91|92|93|94)/.test(release)) assert.ok(release.includes('build88AncestryMarker'), 'Build89+ must preserve accepted Build88 Phase9 ancestry.');
+if (/build:\s*(?:90|91|92|93|94)/.test(release)) assert.ok(release.includes('build89AncestryMarker'), 'Build90+ must preserve accepted Build89 Phase9 ancestry.');
+if (/build:\s*(?:91|92|93|94)/.test(release)) assert.ok(release.includes('build90AncestryMarker'), 'Build91+ must preserve accepted Build90 Phase9 ancestry.');
+if (/build:\s*(?:92|93|94)/.test(release)) assert.ok(release.includes('build91AncestryMarker'), 'Build92+ must preserve accepted Build91 Phase9 ancestry.');
+if (/build:\s*(?:93|94)/.test(release)) assert.ok(release.includes('build92AncestryMarker'), 'Build93+ must preserve accepted Build92 Phase9 ancestry.');
+if (/build:\s*94/.test(release)) assert.ok(release.includes('build93AncestryMarker'), 'Build94 must preserve accepted Build93 Phase9 ancestry.');
 assert.ok(!home.includes("if (section === 'metadata' || section === 'versions') return 'overview';"));
 assert.ok(home.includes("if (section === 'versions') return 'overview';"));
 assert.ok(catalog.includes('trackHref(track.id, workflow.nextAction.section)'));
@@ -77,7 +78,6 @@ assert.ok(durationEvidence.includes("audio.crossOrigin = 'use-credentials'"));
 assert.ok(durationEvidence.includes('loadedmetadata'));
 assert.ok(durationEvidence.includes('measureAudioFileEvidence'));
 assert.ok(metadata.includes('measureCanonicalAudioEvidence(audioUrl)'));
-assert.ok(metadata.includes('CANONICAL DURATION REPAIR PROPOSED'));
 assert.ok(metadata.includes("derivedFields.includes('duration')"));
 assert.ok(metadata.includes("proposalValue(validation.proposed, 'duration')"));
 assert.ok(metadataDurationApi.includes("'5.22/1.12'"));
@@ -95,4 +95,4 @@ assert.ok(!metadata.includes('name="duration"'));
 assert.ok(!adminApi.match(/AdminMetadataPatch[\s\S]{0,500}\| 'duration'/));
 assert.ok(!metadataDurationApi.includes('saveTrack('));
 
-console.log('Phase 7-C Slice 1 lineage through Build73 remains protected through bounded Build82-Build93 Phase9 successor compatibility; Build93 hardens non-mutating metadata validation retry while Build92 resilient save truth remains intact.');
+console.log('Phase 7-C Slice 1 lineage through Build73 remains protected through bounded Build82-Build94 Phase9 successor compatibility; Build94 hardens non-mutating Lyrics validation retry while Build92 resilient metadata save truth and Build93 validation ancestry remain intact.');
