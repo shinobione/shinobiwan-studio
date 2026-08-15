@@ -30,8 +30,8 @@ Candidate docs PR     #155
 Candidate docs merge  32a57f50c90f3f7677e3a45ad46eace8bd988b3d
 Candidate docs Pages  31889030115 · SUCCESS
 Acceptance docs PR    #156
-Acceptance docs merge PENDING
-Acceptance docs Pages PENDING
+Acceptance docs merge 80b6c34f2bd8937cbbc4ef5e24899d13a6949731
+Acceptance docs Pages 31892156760 · SUCCESS
 Real-user smoke       BUILD91 PASS MADAFAKA · 2026-08-15
 Track Manager         v5.23 · DEPLOYED
 Studio bridge         v1.13
@@ -43,7 +43,26 @@ Deep Audio            2.0.3-alpha
 LRC Maker             6.3.8
 ```
 
-**Studio v0.19.13 · Build91 is the current accepted runtime.** Build91 extends bounded private **GET** retry truth to canonical SonicTrace latest/history state and the SonicTrace catalog. Timeout, transport interruption, and HTTP `408/425/429/500/502/503/504` may receive one bounded retry; Access/CORS, deterministic ordinary 4xx, non-JSON Access gating and invalid JSON are never retried. Build84 `sonictrace-analysis-save-v1` POST/lost-response recovery, Deep Audio analysis, canonical audio download and every write rule remain unchanged. The bounded normal-browser regression received explicit **`BUILD91 PASS MADAFAKA`** on 2026-08-15.
+**Studio v0.19.13 · Build91 remains the current accepted runtime.** Build91 extends bounded private **GET** retry truth to canonical SonicTrace latest/history state and the SonicTrace catalog. Timeout, transport interruption, and HTTP `408/425/429/500/502/503/504` may receive one bounded retry; Access/CORS, deterministic ordinary 4xx, non-JSON Access gating and invalid JSON are never retried. Build84 `sonictrace-analysis-save-v1` POST/lost-response recovery, Deep Audio analysis, canonical audio download and every write rule remain unchanged. The bounded normal-browser regression received explicit **`BUILD91 PASS MADAFAKA`** on 2026-08-15.
+
+## Current deployed candidate
+
+```text
+Studio                v0.19.14 · Build92 · DEPLOYED CANDIDATE
+Codename              studio-focus-slice4-phase9-track-metadata-response-loss-truth
+Runtime PR            #158
+Exact tested head     2b859d831f5fc46eea9853f31c4b86057041128b
+Validation            31893496536 · SUCCESS
+Historical guard CI   31893447100 · FAILURE · Build80 seam assertion only · never merged
+Runtime merge         d0ca8b3aa4481c3217f79790e347000bfd22823a
+Runtime Pages         31893652679 · SUCCESS · exact merge SHA
+Real-user smoke       PENDING
+Worker deploy         NONE
+Track Manager change  NONE
+R2 migration/write    NONE caused by deployment
+```
+
+**Build92 changes only canonical Track metadata save truth.** The callable save repeats the same non-mutating validation immediately before POST and uses the exact normalized proposal as the operation-specific canonical postcondition, including already-supported derived audio duration when present. Timeout/transport response loss is never retried: a private Track reread classifies committed / not committed / ambiguous / unverified. Normal `saved` and `noChange` responses are also canonically verified. A recovered-after-lost-response result deliberately does **not** fabricate an independently unobservable `catalogRebuilt:true` receipt.
 
 The repository currently publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
@@ -106,11 +125,12 @@ Phase 9 Slice7      Build88 · REAL USER PASS
 Phase 9 Slice8      Build89 · REAL USER PASS
 Phase 9 Slice9      Build90 · REAL USER PASS
 Phase 9 Slice10     Build91 · REAL USER PASS
-Build92             UNALLOCATED
+Phase 9 Slice11     Build92 · DEPLOYED CANDIDATE · smoke pending
+Build93             UNALLOCATED
 Phase 10            FUTURE
 ```
 
-The immediate next action is a **fresh bounded post-Build91 Phase9 reliability audit**. No Build92 is allocated before that audit proves a concrete smallest coherent gap.
+The immediate next action is a **bounded normal-browser Build92 Track metadata regression smoke**. No Build93 is allocated before Build92 acceptance plus a fresh post-Build92 audit.
 
 ## Frozen authority model
 
@@ -141,6 +161,28 @@ invalid JSON                     → invalid-response · NO RETRY
 ```
 
 The contract is GET-only and capped at two total attempts. Build88 applies it to bridge health / Track inventory / Track detail; Build89 to canonical Album collection/detail; Build90 to canonical Lyrics read; Build91 to private SonicTrace canonical latest/history state plus the SonicTrace catalog. None authorizes POST/write retry.
+
+### Track metadata
+
+Build92 protects the existing `metadata-save-v1` write without changing Track Manager authority or validation semantics:
+
+```text
+metadata save response unavailable
+→ NEVER blind automatic retry
+→ private canonical Track reread
+   ├─ new revision + exact reviewed normalized proposal
+   │    → COMMITTED / VERIFIED
+   ├─ original revision unchanged
+   │    → NOT COMMITTED / explicit retry safe after reconnect
+   ├─ changed revision but exact reviewed proposal unproven
+   │    → AMBIGUOUS / DO NOT RETRY
+   └─ reread unavailable
+        → UNVERIFIED / DO NOT RETRY
+```
+
+Immediately before POST, Studio repeats the same non-mutating validation and anchors the write to that exact proposal and revision. Derived `manifest.duration`, when supported by canonical audio evidence, is part of the reviewed proposal but remains non-editable. Normal HTTP success is also canonically reread and verified.
+
+Track Manager rebuilds the derived catalog inside its transaction. Because the private Track reread proves manifest state rather than independently reading `catalog/index.json`, a recovered lost-response result does not fabricate a catalog-rebuilt receipt. Normal HTTP success retains the server's real receipt.
 
 ### Albums
 
@@ -229,7 +271,7 @@ The bounded normal-browser Build90 smoke confirmed the deployed version, normal 
 
 ### Audio duration
 
-`manifest.duration` is a derived canonical fact from the current master audio, never a free-form metadata field.
+`manifest.duration` is a derived canonical fact from the current master audio, never a free-form metadata field. Build92 includes that derived value in the exact reviewed proposal when duration evidence is present; it does not make duration editable.
 
 ### SonicTrace
 
@@ -265,6 +307,27 @@ MASTER FINAL 16:9
 
 Release Campaign is provider-agnostic. Google Flow is a convenience shortcut. Campaign drafts remain browser-local and ZIP export remains review-only.
 
+## Build92 candidate receipts
+
+```text
+Safety pre              safety/pre-phase9-track-metadata-response-loss-build92-20260815-1722
+Safety pre-PR           safety/post-build92-prepr-20260815-1740
+Runtime PR              #158
+Exact tested head       2b859d831f5fc46eea9853f31c4b86057041128b
+Validation              31893496536 · SUCCESS
+Historical guard CI     31893447100 · FAILURE · Build80 seam assertion only · never merged
+Runtime merge           d0ca8b3aa4481c3217f79790e347000bfd22823a
+Runtime Pages           31893652679 · SUCCESS · exact runtime merge SHA
+Safety post-deploy      safety/post-build92-deployed-candidate-20260815-1748
+Worker deploy           NONE
+Track Manager change    NONE
+R2 migration/write      NONE caused by deployment
+Real-user smoke         PENDING
+Build93                 UNALLOCATED
+```
+
+Detailed candidate record: [`changelogs/CHANGELOG-BUILD92.md`](changelogs/CHANGELOG-BUILD92.md).
+
 ## Build91 acceptance receipts
 
 ```text
@@ -281,13 +344,12 @@ Candidate docs merge    32a57f50c90f3f7677e3a45ad46eace8bd988b3d
 Candidate docs Pages    31889030115 · SUCCESS
 Safety post-acceptance  safety/post-build91-real-user-pass-20260815-1700
 Acceptance docs PR      #156
-Acceptance docs merge   PENDING
-Acceptance docs Pages   PENDING
+Acceptance docs merge   80b6c34f2bd8937cbbc4ef5e24899d13a6949731
+Acceptance docs Pages   31892156760 · SUCCESS
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
 Real-user smoke         BUILD91 PASS MADAFAKA · 2026-08-15
-Build92                 UNALLOCATED
 ```
 
 Detailed accepted record: [`changelogs/CHANGELOG-BUILD91.md`](changelogs/CHANGELOG-BUILD91.md).
