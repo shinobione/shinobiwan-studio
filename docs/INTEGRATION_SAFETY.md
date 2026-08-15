@@ -3,7 +3,7 @@
 Date established: 2026-08-08  
 Hardened: 2026-08-09  
 Current-state overlay refreshed: 2026-08-15  
-Current accepted Studio release: `v0.19.15` / Build `93` / REAL USER PASS
+Current accepted Studio release: `v0.19.16` / Build `94` / REAL USER PASS
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -21,25 +21,25 @@ For short current state, read root `PROJECT_STATE.md` first. This file contains 
 
 ```text
 Studio accepted
-  v0.19.15 / Build93 / REAL USER PASS
-  exact tested head fcbe4c59a3a364d9665eba2ed432f37475116364
-  final runtime CI 31898542379 / SUCCESS
-  historical CI #457 31898251689 / FAILURE / Phase7-C successor cap only / never merged
-  historical CI #458 31898329621 / FAILURE / Focus Build64 successor cap only / never merged
-  runtime merge 6c1ceb7d59971ec6c7e251532054392f02c08157
-  runtime Pages 31898639778 / SUCCESS
-  candidate docs PR #163
-  candidate docs CI 31899284370 / SUCCESS
-  candidate docs merge 6464659428e34a679c8acfeb481bfaca78e05bc7
-  candidate docs Pages 31899342536 / SUCCESS
-  acceptance docs PR #164
-  acceptance docs CI 31901050237 / SUCCESS
-  acceptance docs merge 8df0417ee4d96de1e1b386c0fb15af60dcdbc661
-  acceptance docs Pages 31901109789 / SUCCESS
-  browser smoke BUILD93 PASS MADAFAKA / 2026-08-15
+  v0.19.16 / Build94 / REAL USER PASS
+  exact tested head 81298582163505a11378fe1094f800f1f3d437b5
+  final runtime CI 31907745153 / SUCCESS
+  runtime merge fe636560de9ca5f3f33aae76dddc5474ba990f17
+  runtime Pages 31907784289 / SUCCESS
+  browser smoke BUILD94 PASS MADAFAKA / 2026-08-15
+  safety post-deploy safety/post-build94-deployed-candidate-20260815-2338
+  safety post-acceptance safety/post-build94-real-user-pass-20260815-2346
   Worker deploy NONE
   Track Manager change NONE
-  R2 migration/write NONE caused by deployment
+  R2 migration/write NONE caused by implementation/deployment
+
+Build94 safety history
+  original PR #166 / merge 5bcb2f4fd3b4fd3bbc4442d7cd9705211c733d35
+  original Pages 31902471804 / FAILURE / inherited guard incompatibility
+  rollback main 6c9c677b2f6299d13949642b712f2bf39b48b676 / byte-identical accepted Build93 tree
+  rollback Pages 31907580912 / SUCCESS
+  hotfix PR #167 CLOSED / SUPERSEDED
+  clean runtime PR #169
 
 LaunchPAD
   2026.08.12.102 / REAL USER PASS
@@ -220,6 +220,12 @@ After Build93 real-user acceptance:
   safety/post-build93-real-user-pass-20260815-2010
   safety/post-build93-rup-docs-prepr-20260815-2010
   safety/post-build93-rup-docs-closeout-20260815-2010
+
+Build94 deployed-candidate checkpoint:
+  safety/post-build94-deployed-candidate-20260815-2338
+
+Build94 explicit real-user acceptance checkpoint:
+  safety/post-build94-real-user-pass-20260815-2346
 ```
 
 Earlier accepted safety branches remain preserved in Git history.
@@ -282,13 +288,15 @@ Build88 changes only the core private Track Manager **GET** transport for bridge
 
 Build89 changes only canonical Album collection/detail private **GET** behavior. The same helper also serves private Album visual discovery and existing canonical Album rereads. Build89 changes no Album POST/write transport, no Track Manager route, no Worker and no R2 data/schema.
 
-Build90 changes only canonical Lyrics private **GET** behavior. It adds one bounded retry for timeout/transport/selected transient HTTP failures. It changes no `lyrics-validate-v1` or `lyrics-save-v1` POST behavior, no Build83 lost-response recovery rule, no Track Manager route, no Worker and no R2 data/schema.
+Build90 changes only canonical Lyrics private **GET** behavior. It adds one bounded retry for timeout/transport/selected transient HTTP failures. It changes no `lyrics-validate-v1` or `lyrics-save-v1` POST behavior at Build90, no Build83 lost-response recovery rule, no Track Manager route, no Worker and no R2 data/schema.
 
 Build91 changes only private Track Manager SonicTrace **GET** behavior for canonical latest/history state and the SonicTrace catalog. It adds one bounded retry for timeout/transport/selected transient HTTP failures. It changes no `sonictrace-analysis-save-v1` POST behavior, no Build84 lost-response recovery rule, no Deep Audio health/analysis XHR, no canonical audio download behavior, no Track Manager route, no Worker and no R2 data/schema.
 
 Build92 changes only Studio-side canonical Track **metadata save response-loss truth**. It repeats non-mutating validation immediately before the write, anchors the save to the exact reviewed proposal + revision, and classifies a lost timeout/transport response through private canonical Track reread. It changes no Track Manager route, Worker, R2 schema/data, Track create/assets, Album writes, Lyrics/SonicTrace writes or PWA/offline behavior.
 
 Build93 changes only Studio-side non-mutating Track **metadata validation transient retry truth**. It permits at most one retry for timeout/transport/selected transient HTTP failures in `metadata-validate-v1`, including visible Validate and Build92 fresh pre-save validation. It does not change `metadata-save-v1`, Track Manager, Workers, R2 schema/data or any other operation family. Build93 is **REAL USER PASS** after explicit normal-browser acceptance.
+
+Build94 changes only Studio-side non-mutating canonical Lyrics **validation transient retry truth**. It permits at most one retry for timeout/transport/selected transient HTTP failures in `lyrics-validate-v1`, with maximum two total attempts and finite 9-second timeout per attempt. It does **not** change `lyrics-save-v1`, Build83 save response-loss recovery, Track Manager, Workers, R2 schema/data or any other operation family. Build94 is **REAL USER PASS** after explicit normal-browser acceptance.
 
 ### SonicTrace
 
@@ -347,6 +355,35 @@ Rules:
 - `rereadLyricsTruth()` may survive one transient Lyrics GET failure but still never retries the save POST.
 
 Build90 is **REAL USER PASS** after explicit 2026-08-15 normal-browser Lyrics-read regression acceptance. The browser smoke did not deliberately break network or Access; automated guards own the transient failure-path proof.
+
+### Build94 Lyrics validation retry boundary — ACCEPTED
+
+Build94 changes only non-mutating `lyrics-validate-v1` and does not change the canonical save transaction above.
+
+```text
+lyrics-validate-v1 attempt 1
+├─ timeout                            → one retry max
+├─ transport/fetch interruption       → one retry max
+├─ HTTP 408/425/429/500/502/503/504  → one retry max
+├─ Access / deterministic ordinary 4xx → NO RETRY
+├─ invalid JSON / invalid proposal    → NO RETRY
+└─ success                            → return validation result
+
+attempt 2 failure → surface immediately
+```
+
+Rules:
+
+- maximum two total attempts;
+- finite 9-second timeout remains per attempt;
+- visible Lyrics Validate uses the hardened wrapper;
+- Access/session gating and invalid response must not be hammered with automatic retries;
+- this is safe only because validation is non-mutating;
+- `lyrics-save-v1` remains at zero automatic retries;
+- Build83 lost-response classification/recovery remains unchanged;
+- this policy must not be generalized to Lyrics save, Track/Album mutations, SonicTrace save/compute or any other write.
+
+Build94 is **REAL USER PASS** after explicit **`BUILD94 PASS MADAFAKA`** on 2026-08-15. Browser acceptance was a normal Lyrics validation regression; it did **not** deliberately cut network or invalidate Cloudflare Access merely to manufacture retry behavior. Automated guards own the transient failure-path proof.
 
 ## Track metadata write boundary
 
@@ -724,25 +761,25 @@ Build87 is **REAL USER PASS**. Do not generalize it into Album create/upload beh
 
 Core private **GET retry only**. One retry is allowed only after timeout, transport interruption or the explicit transient HTTP status allowlist. This is not an ambiguous-write recovery contract and must never be used as justification for automatically retrying writes.
 
-Build88 is **REAL USER PASS** after the explicit 2026-08-15 normal-browser private-read regression verdict. Acceptance did not manufacture a failure branch.
+Build88 is **REAL USER PASS** after explicit normal-browser private-read regression acceptance. Acceptance did not manufacture a failure branch.
 
 ### Build89 accepted scope
 
 Canonical Album collection/detail **GET retry only**. One retry is allowed only after timeout, transport interruption or the explicit transient HTTP allowlist. It changes no Album write retry rule.
 
-Build89 is **REAL USER PASS** after the explicit 2026-08-15 normal-browser Album private-read regression verdict. Acceptance did not manufacture a failure branch.
+Build89 is **REAL USER PASS** after explicit normal-browser Album private-read regression acceptance. Acceptance did not manufacture a failure branch.
 
 ### Build90 accepted scope
 
-Canonical Lyrics **GET retry only**. One retry is allowed only after timeout, transport interruption or the explicit transient HTTP allowlist. This is not authorization to retry `lyrics-validate-v1`, `lyrics-save-v1`, or any other write.
+Canonical Lyrics **GET retry only**. One retry is allowed only after timeout, transport interruption or the explicit transient HTTP allowlist. Build90 itself did not authorize retrying `lyrics-validate-v1`, `lyrics-save-v1`, or any other write.
 
-Build90 is **REAL USER PASS** after explicit 2026-08-15 normal-browser canonical Lyrics-read regression acceptance. Acceptance did not manufacture a failure branch.
+Build90 is **REAL USER PASS** after explicit normal-browser canonical Lyrics-read regression acceptance. Acceptance did not manufacture a failure branch.
 
 ### Build91 accepted scope
 
 Private Track Manager SonicTrace **GET retry only** for canonical latest/history state plus the SonicTrace catalog. One retry is allowed only after timeout, transport interruption or the explicit transient HTTP allowlist. This is not authorization to retry `sonictrace-analysis-save-v1`, Deep Audio analysis, canonical audio download or any other write.
 
-Build91 is **REAL USER PASS** after explicit 2026-08-15 normal-browser canonical SonicTrace-read regression acceptance. Acceptance did not manufacture a failure branch.
+Build91 is **REAL USER PASS** after explicit normal-browser canonical SonicTrace-read regression acceptance. Acceptance did not manufacture a failure branch.
 
 ### Build92 accepted scope
 
@@ -750,7 +787,7 @@ Canonical Track **metadata save response-loss truth only**. Recovery is entered 
 
 Build92 must not be generalized into Track create, asset upload/delete, Album create/upload or any other write family. A recovered Track manifest does not independently prove the derived catalog rebuild receipt, so Build92 does not fabricate one.
 
-Build92 is **REAL USER PASS** after explicit 2026-08-15 normal-browser Track metadata validation/save acceptance. Acceptance did not manufacture a response-loss branch.
+Build92 is **REAL USER PASS** after explicit normal-browser Track metadata validation/save acceptance. Acceptance did not manufacture a response-loss branch.
 
 ### Build93 accepted scope
 
@@ -758,7 +795,15 @@ Canonical Track **metadata validation transient retry only**. `metadata-validate
 
 Build93 must not be used as justification for retrying `metadata-save-v1` or another write. Build92 save response-loss truth remains unchanged and still has zero automatic write retries.
 
-Build93 is **REAL USER PASS** after explicit 2026-08-15 normal-browser acceptance. The user did not deliberately cut network or invalidate Access to manufacture a failure branch.
+Build93 is **REAL USER PASS** after explicit normal-browser acceptance. The user did not deliberately cut network or invalidate Access to manufacture a failure branch.
+
+### Build94 accepted scope
+
+Canonical Lyrics **validation transient retry only**. `lyrics-validate-v1` is non-mutating, so timeout, transport interruption or the explicit transient HTTP allowlist may receive one retry. Access/session gating, deterministic ordinary 4xx and invalid JSON/proposal do not retry. Maximum attempts are two total with finite 9-second timeout per attempt.
+
+Build94 must not be used as justification for retrying `lyrics-save-v1` or another write. Build83 save response-loss truth remains unchanged and `lyrics-save-v1` remains at zero automatic retries.
+
+Build94 is **REAL USER PASS** after explicit normal-browser acceptance. The user did not deliberately cut network or invalidate Access to manufacture a failure branch.
 
 ## Destructive/media verification policy
 
@@ -791,6 +836,8 @@ Build92 acceptance likewise did **not** deliberately cut network or invalidate A
 
 Build93 acceptance likewise did **not** deliberately cut network or invalidate Access merely to prove transient validation retry. Automated guards own timeout/transport/transient-HTTP classification and attempt-bound proof; browser acceptance was a normal harmless Track metadata validation regression.
 
+Build94 acceptance likewise did **not** deliberately cut network or invalidate Access merely to prove transient Lyrics validation retry. Automated guards own timeout/transport/transient-HTTP classification and attempt-bound proof; browser acceptance was a normal Lyrics validation regression with no save required.
+
 ## Version / deployment discipline
 
 Treat separately:
@@ -803,7 +850,7 @@ Treat separately:
 
 For private Track Manager-only Worker changes, prefer `target=admin` and `confirm=DEPLOY`.
 
-Build82, Build83, Build84, Build85, Build86, Build87, Build88, Build89, Build90, Build91, Build92 and Build93 required no Worker deployment. Build93 Pages deployment caused no intentional R2 schema/data migration.
+Build82 through Build94 required no Worker deployment. Build94 Pages deployment caused no intentional R2 schema/data migration.
 
 Docs-only governance/closeout work does not create a new Studio build.
 
@@ -818,6 +865,8 @@ If a regression appears:
 5. use immutable safety branches only when normal revert is insufficient;
 6. independently verify LaunchPAD, Track Manager, SonicTrace, LRC Maker and Studio before resuming.
 
+Build94 itself demonstrates this rule: the first red Pages merge was rolled back to byte-identical accepted Build93 content before the clean v2 candidate was reconstructed and revalidated.
+
 ## Stop line
 
-**Build93 is the accepted Studio REAL USER PASS baseline. Build94 is UNALLOCATED pending a fresh bounded post-Build93 audit. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**
+**Build94 is the accepted Studio REAL USER PASS baseline. Build95 is UNALLOCATED until Build94 acceptance-docs closeout is green and a fresh bounded post-Build94 audit proves the next smallest coherent scope. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**
