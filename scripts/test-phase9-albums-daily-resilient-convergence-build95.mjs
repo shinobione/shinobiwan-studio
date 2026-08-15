@@ -11,14 +11,21 @@ const membership = read('src/services/album-membership-admin-api.ts');
 const move = read('src/services/album-move-admin-api.ts');
 const pkg = JSON.parse(read('package.json'));
 
-assert.ok(release.includes("version: '0.19.17'"), 'Build95 must publish Studio v0.19.17.');
-assert.ok(release.includes('build: 95'), 'Build95 release identity is missing.');
-assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-albums-daily-resilient-service-convergence'"), 'Build95 codename mismatch.');
-assert.ok(release.includes('build94AncestryMarker'), 'Build95 must preserve accepted Build94 ancestry.');
+assert.ok(['0.19.17', '0.19.18'].includes(pkg.version), 'Build95 guard accepts Build95 and its bounded Build96 successor.');
+assert.ok(release.includes('build94AncestryMarker'), 'Build95+ must preserve accepted Build94 ancestry.');
 assert.ok(
   release.includes("version: 0.19.16 · build: 94 · codename: 'studio-focus-slice4-phase9-lyrics-validation-transient-retry-truth'"),
   'Build94 accepted runtime identity must remain immutable in ancestry.',
 );
+if (pkg.version === '0.19.17') {
+  assert.ok(release.includes("version: '0.19.17'"), 'Build95 runtime version mismatch.');
+  assert.ok(release.includes('build: 95'), 'Build95 release identity is missing.');
+  assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-albums-daily-resilient-service-convergence'"), 'Build95 codename mismatch.');
+}
+if (pkg.version === '0.19.18') {
+  assert.ok(release.includes('build95AncestryMarker'), 'Build96 must preserve accepted Build95 ancestry.');
+  assert.ok(release.includes("version: 0.19.17 · build: 95 · codename: 'studio-focus-slice4-phase9-albums-daily-resilient-service-convergence'"), 'Build95 accepted runtime identity must remain immutable in ancestry.');
+}
 
 // Prove this is the actual daily Albums route, not only a legacy/advanced editor.
 assert.ok(app.includes("import { AlbumHealthWorkspace } from './components/AlbumHealthWorkspace';"), 'App must retain AlbumHealthWorkspace as the daily Albums shell.');
@@ -84,4 +91,4 @@ for (const inherited of [
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must retain ${inherited}`);
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Phase9 guards must remain in the full build gate.');
 
-console.log('Phase9 Build95 daily Albums resilient-service convergence guard passed: the actual Albums route now consumes accepted Build85/86/87 mutation truth without widening create/upload/delete scope.');
+console.log('Phase9 Build95 daily Albums resilient-service convergence guard passed as accepted ancestry: the actual Albums route now consumes accepted Build85/86/87 mutation truth without widening create/upload/delete scope.');
