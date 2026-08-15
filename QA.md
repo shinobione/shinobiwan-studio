@@ -1,44 +1,27 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-08-15 after **Build87 deployed candidate** publication. Real-user acceptance remains pending.
+Updated: 2026-08-15 after explicit **Build87 REAL USER PASS**.
 
 This file records what has actually been validated, what automated guards cover, and what remains unproven. It is not a full test-history dump.
 
 ## Current accepted Studio runtime
 
 ```text
-Version                 v0.19.8
-Build                   Build86
-Status                  REAL USER PASS
-Runtime PR              #138
-Exact tested head       0d99d17631e3f72a360f404a1269cc05cda33dd8
-Final CI                31868536718 · SUCCESS · first run
-Runtime merge           866ebf9c2a501d11102ed994717b50f6d8189b0d
-Pages                   31868570112 · SUCCESS · exact runtime merge SHA
-Candidate docs PR       #139
-Candidate docs merge    9a03c33f6ecb472ab49c3631dd9688e3c6f03bf7
-Candidate docs Pages    31869026213 · SUCCESS
-Worker deploy           NONE
-Track Manager change    NONE
-R2 migration/write      NONE caused by deployment
-Real-user verdict       BUILD86 PASS · 2026-08-15
-```
-
-## Current deployed candidate
-
-```text
 Version                 v0.19.9
 Build                   Build87
-Status                  DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Status                  REAL USER PASS
 Runtime PR              #141
 Exact tested head       5f155d312b0af7227325a78480bfd424a96e7859
 Final CI                31870328730 · SUCCESS · first run
 Runtime merge           b9e1f121c7dc111ee6db06fd4d00227426d96ce7
 Pages                   31870370403 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #142
+Candidate docs merge    453be9e9d72c9d90cd97ad5f57be02821efec12a
+Candidate docs Pages    31870838391 · SUCCESS
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
-Real-user verdict       PENDING
+Real-user verdict       BUILD87 PASS · 2026-08-15
 ```
 
 ## Build87 automated coverage — GREEN
@@ -100,26 +83,36 @@ Additional Build87 guarantees:
 
 The deployed Track Manager backend was audited read-only and already owns stale guards, ownership-conflict validation, deterministic membership/cache updates, catalog rebuild and rollback. No backend mutation was needed for Build87.
 
-## Build87 real-user smoke — PENDING
+## Build87 real-user smoke — PASS
 
-The required acceptance smoke is intentionally a **normal-browser regression**, not a manufactured failure test:
+The required acceptance smoke was intentionally a **normal-browser regression**, not a manufactured failure test.
 
-1. hard refresh Studio and verify `v0.19.9 · Build87`;
-2. open **Albums** and choose a safe canonical Album with at least two existing Tracks;
-3. reorder two existing Tracks using ↑ / ↓ only;
-4. use normal **Save tracklist**;
-5. expect **`Album tracklist saved and canonically verified across Album + Track caches.`**;
-6. reload/reopen the Album and verify order persistence;
-7. open one or two reordered Tracks and verify their compatibility cache still points to the same Album;
-8. quick Track / Visuals / Lyrics / SonicTrace / Albums regression sanity.
-
-Do not cut network, invalidate Access or sabotage a production membership save merely to force response-loss branches.
-
-Until explicit user verdict:
+The user completed the bounded smoke and returned the explicit verdict:
 
 ```text
-Build87 != REAL USER PASS
+BUILD87 PASS MADAFAKA
 ```
+
+The accepted smoke boundary covered:
+
+- hard refresh to the deployed `v0.19.9 · Build87` runtime;
+- opening a safe canonical Album with at least two existing Tracks;
+- harmless reordering of existing Tracks using the Album tracklist controls;
+- one normal **Save tracklist**;
+- verified receipt **`Album tracklist saved and canonically verified across Album + Track caches.`**;
+- ordered tracklist persistence after canonical reload;
+- reordered Tracks retaining the same Album compatibility-cache ownership;
+- surrounding Track / Visuals / Lyrics / SonicTrace / Albums navigation regression sanity.
+
+Acceptance intentionally did **not** require cutting network, invalidating Access or sabotaging a production membership save merely to force timeout/partial-write branches. Those failure paths remain protected by typed classification, stale guards and private canonical Album + Track-cache reread logic.
+
+Result:
+
+```text
+Build87 = REAL USER PASS
+```
+
+No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration or cross-repository runtime change was required to reach acceptance.
 
 ## Build86 automated coverage — GREEN
 
@@ -396,13 +389,11 @@ Git history shows the public-cover credential/fetch path was corrected in Build6
 
 ## Known open QA gaps / next audits
 
-Current acceptance gap:
+No Build87 acceptance blocker remains.
 
-1. Build87 normal-browser Album tracklist reorder regression smoke.
+Before any successor runtime work, perform a fresh bounded Phase9 audit. Candidate areas include Album asset upload response-loss truth, Album create response-loss truth, Access/CORS hardening, bounded read retries/timeouts and degraded/offline/PWA resilience.
 
-Do not allocate Build88 while Build87 acceptance remains pending.
-
-After explicit Build87 PASS, perform a fresh bounded Phase9 audit. Remaining candidates include Album asset upload, Album create, Access/CORS, bounded read retries/timeouts and degraded/offline/PWA resilience.
+**Build88 is unallocated** until a fresh bounded audit proves a concrete scope.
 
 ## Standard validation commands
 
