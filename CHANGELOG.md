@@ -4,6 +4,56 @@ This file is the **current concise changelog**. Detailed per-build records live 
 
 ## Current accepted release
 
+### v0.19.18 · Build96 — 2026-08-16
+
+Codename: `studio-focus-slice4-phase9-album-create-success-verification-truth`  
+Status: **REAL USER PASS — ACCEPTED**
+
+Build96 tightens only normal successful Album create verification. After Track Manager reports create success, Studio's private canonical reread must now prove both the exact response/canonical revision and every metadata key supplied to create before returning `clientVerified=true`.
+
+Accepted behavior:
+
+- exact requested create metadata is compared with canonical Album state;
+- existing `metadataMismatch()` / `verify(... expectedMetadata ...)` truth is reused;
+- both focused and legacy create surfaces continue rejecting unverified success;
+- create response-loss recovery remains explicitly out of scope without operation identity;
+- maximum automatic create retries remains zero;
+- Album binary upload semantics are unchanged;
+- explicit real-user verdict **`Build 96 SMOKED 💨`** on 2026-08-16;
+- no Track Manager, Worker, public Worker, R2 schema/data migration, LaunchPAD or LRC Maker change was required.
+
+Exact acceptance evidence:
+
+```text
+Safety pre               safety/pre-phase9-album-create-success-verification-build96-20260816
+Safety pre-PR            safety/post-build96-prepr-20260816
+Safety green pre-merge   safety/post-build96-green-premerge-20260816
+Studio PR                #175
+Exact tested head        8ee5711d57f3a3986bf1e054b637f8ee3d5f7efe
+Historical CI #488       31912907163 · FAILURE · new guard variable-name assumption only · never merged
+Validation               31912951430 · SUCCESS
+Runtime merge            1cb14c3ad96087cd9f8fc7de62119b8b5be0ee94
+Runtime Pages            31913006240 · SUCCESS
+Candidate docs PR        #176
+Candidate docs CI        31913104842 · SUCCESS
+Candidate docs merge     dbb8bab680ab3cad5ef8f11fa276f3e9bb3dd43a
+Candidate docs Pages     31913138348 · SUCCESS
+Safety post-deploy       safety/post-build96-deployed-candidate-20260816
+Safety post-acceptance   safety/post-build96-real-user-pass-20260816
+Track Manager            v5.23 · unchanged
+Studio bridge            v1.13 · unchanged
+TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
+Public Worker            v2.7 · unchanged
+Worker deploy            NONE
+R2 migration/write       NONE caused by implementation/deployment
+Real-user smoke          Build 96 SMOKED 💨 · 2026-08-16
+Build97                  UNALLOCATED pending acceptance-docs closeout + fresh audit
+```
+
+Detailed accepted record: [`changelogs/CHANGELOG-BUILD96.md`](changelogs/CHANGELOG-BUILD96.md).
+
+## Accepted predecessor
+
 ### v0.19.17 · Build95 — 2026-08-15
 
 Codename: `studio-focus-slice4-phase9-albums-daily-resilient-service-convergence`  

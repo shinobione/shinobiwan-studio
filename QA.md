@@ -1,35 +1,66 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-08-16 after explicit **Build95 REAL USER PASS** and completed acceptance-docs CI/merge/Pages closeout.
+Updated: 2026-08-16 after explicit **Build96 REAL USER PASS**; acceptance-docs closeout in progress.
 
 This file records what has actually been validated, what automated guards cover, and what remains unproven. It is not a full test-history dump.
 
 ## Current accepted Studio runtime
 
 ```text
-Version                 v0.19.17
-Build                   Build95
+Version                 v0.19.18
+Build                   Build96
 Status                  REAL USER PASS
-Runtime PR              #171
-Exact tested head       f7d4ccfbfdebf7dba6cf419ca9eca1c862a16d4b
-Final CI                31911514334 · SUCCESS
-Runtime merge           0ad5e48f17c658c6b85c2ae405d32e874d2306d6
-Pages                   31911568069 · SUCCESS · exact runtime merge SHA
-Candidate docs PR       #172
-Candidate docs CI       31911702567 · SUCCESS
-Candidate docs merge    1bff0a18588b274a6cb0200cb6bd90b377b0c1af
-Candidate docs Pages    31911746874 · SUCCESS
-Acceptance docs PR      #173
-Acceptance docs CI      31912389047 · SUCCESS
-Acceptance docs merge   f6738d56eddcadc2810c7d5413700e14b20f71a3
-Acceptance docs Pages   31912432617 · SUCCESS
-Safety post-deploy      safety/post-build95-deployed-candidate-20260815
-Safety post-acceptance  safety/post-build95-real-user-pass-20260816
+Runtime PR              #175
+Exact tested head       8ee5711d57f3a3986bf1e054b637f8ee3d5f7efe
+Final CI                31912951430 · SUCCESS
+Runtime merge           1cb14c3ad96087cd9f8fc7de62119b8b5be0ee94
+Pages                   31913006240 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #176
+Candidate docs CI       31913104842 · SUCCESS
+Candidate docs merge    dbb8bab680ab3cad5ef8f11fa276f3e9bb3dd43a
+Candidate docs Pages    31913138348 · SUCCESS
+Acceptance docs         IN PROGRESS
+Safety post-deploy      safety/post-build96-deployed-candidate-20260816
+Safety post-acceptance  safety/post-build96-real-user-pass-20260816
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by implementation/deployment
-Real-user verdict       BUILD95 PASS MADAFAKA · 2026-08-16
+Real-user verdict       Build 96 SMOKED 💨 · 2026-08-16
 ```
+
+## Build96 automated coverage — GREEN
+
+Final validation run `31912951430` passed the complete repository-native chain on exact head `8ee5711d57f3a3986bf1e054b637f8ee3d5f7efe`, including the new Build96 Album create success-verification guard plus all inherited Phase9 and Studio Focus guards, TypeScript typecheck and Vite production build.
+
+Historical run `31912907163` failed only inside the newly-added Build96 guard because it assumed both create surfaces used the local variable name `result`; the legacy surface uses `r`. The guard alone was corrected to require semantic `if (!<variable>.clientVerified)` behavior. No runtime/product code changed for that red run.
+
+Build96 specifically proves:
+
+- normal `album-create-v1` success retains the existing Track Manager write transport;
+- canonical reread must match the exact returned revision;
+- every metadata key supplied to create must match canonical state;
+- both existing create surfaces reject an unverified create result;
+- create response-loss recovery remains explicitly out of scope;
+- maximum automatic create retries is zero;
+- Album binary upload verification semantics remain unchanged.
+
+## Build96 real-user smoke — PASS
+
+The user performed the intended real create-path verification and returned the explicit verdict:
+
+```text
+Build 96 SMOKED 💨
+```
+
+Acceptance used a real Album / EP / collection the artist actually intended to create, avoiding a throwaway immutable canonical ID. The successful path verified deployed `v0.19.18 · Build96` and canonical persistence of the requested create metadata. No network cut, Cloudflare invalidation or lost-response branch was manufactured.
+
+Result:
+
+```text
+Build96 = REAL USER PASS
+```
+
+No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration or cross-repository runtime change was required.
 
 ## Build95 automated coverage — GREEN
 

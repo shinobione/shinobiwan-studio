@@ -3,7 +3,7 @@
 Date established: 2026-08-08  
 Hardened: 2026-08-09  
 Current-state overlay refreshed: 2026-08-16  
-Current accepted Studio release: `v0.19.17` / Build `95` / REAL USER PASS
+Current accepted Studio release: `v0.19.18` / Build `96` / REAL USER PASS
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -21,19 +21,24 @@ For short current state, read root `PROJECT_STATE.md` first. This file contains 
 
 ```text
 Studio accepted
-  v0.19.17 / Build95 / REAL USER PASS
-  exact tested head f7d4ccfbfdebf7dba6cf419ca9eca1c862a16d4b
-  final runtime CI 31911514334 / SUCCESS
-  runtime merge 0ad5e48f17c658c6b85c2ae405d32e874d2306d6
-  runtime Pages 31911568069 / SUCCESS
-  candidate docs PR #172 / CI 31911702567 / merge 1bff0a18588b274a6cb0200cb6bd90b377b0c1af / Pages 31911746874 SUCCESS
-  acceptance docs PR #173 / CI 31912389047 / merge f6738d56eddcadc2810c7d5413700e14b20f71a3 / Pages 31912432617 SUCCESS
-  browser smoke BUILD95 PASS MADAFAKA / 2026-08-16
-  safety post-deploy safety/post-build95-deployed-candidate-20260815
-  safety post-acceptance safety/post-build95-real-user-pass-20260816
+  v0.19.18 / Build96 / REAL USER PASS
+  exact tested head 8ee5711d57f3a3986bf1e054b637f8ee3d5f7efe
+  final runtime CI 31912951430 / SUCCESS
+  runtime merge 1cb14c3ad96087cd9f8fc7de62119b8b5be0ee94
+  runtime Pages 31913006240 / SUCCESS
+  candidate docs PR #176 / CI 31913104842 / merge dbb8bab680ab3cad5ef8f11fa276f3e9bb3dd43a / Pages 31913138348 SUCCESS
+  acceptance docs IN PROGRESS
+  browser smoke Build 96 SMOKED 💨 / 2026-08-16
+  safety post-deploy safety/post-build96-deployed-candidate-20260816
+  safety post-acceptance safety/post-build96-real-user-pass-20260816
   Worker deploy NONE
   Track Manager change NONE
   R2 migration/write NONE caused by implementation/deployment
+
+Build95 accepted predecessor
+  runtime PR #171 / CI 31911514334 / merge 0ad5e48f17c658c6b85c2ae405d32e874d2306d6 / Pages 31911568069 SUCCESS
+  acceptance docs PR #173 / CI 31912389047 / merge f6738d56eddcadc2810c7d5413700e14b20f71a3 / Pages 31912432617 SUCCESS
+  browser smoke BUILD95 PASS MADAFAKA / 2026-08-16
 
 Build94 safety history
   original PR #166 / merge 5bcb2f4fd3b4fd3bbc4442d7cd9705211c733d35
@@ -67,6 +72,13 @@ Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable 
 Most relevant current references:
 
 ```text
+After Build96 deployment candidate:
+  safety/post-build96-deployed-candidate-20260816
+  safety/post-build96-candidate-docs-closeout-20260816
+
+After Build96 real-user acceptance:
+  safety/post-build96-real-user-pass-20260816
+
 Accepted Build81 runtime/docs:
   safety/post-build81-real-user-pass-20260815-0159
   safety/post-build81-rup-docs-closeout-20260815-0208

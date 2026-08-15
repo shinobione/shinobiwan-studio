@@ -19,22 +19,19 @@ Then verify the real GitHub state before mutation.
 ## Current accepted state
 
 ```text
-Studio                v0.19.17 · Build95 · REAL USER PASS
-Codename              studio-focus-slice4-phase9-albums-daily-resilient-service-convergence
-Runtime PR            #171
-Exact tested head     f7d4ccfbfdebf7dba6cf419ca9eca1c862a16d4b
-Validation            31911514334 · SUCCESS
-Runtime merge         0ad5e48f17c658c6b85c2ae405d32e874d2306d6
-Runtime Pages         31911568069 · SUCCESS · exact runtime merge SHA
-Candidate docs PR     #172
-Candidate docs CI     31911702567 · SUCCESS
-Candidate docs merge  1bff0a18588b274a6cb0200cb6bd90b377b0c1af
-Candidate docs Pages  31911746874 · SUCCESS
-Acceptance docs PR    #173
-Acceptance docs CI    31912389047 · SUCCESS
-Acceptance docs merge f6738d56eddcadc2810c7d5413700e14b20f71a3
-Acceptance docs Pages 31912432617 · SUCCESS
-Real-user smoke       BUILD95 PASS MADAFAKA · 2026-08-16
+Studio                v0.19.18 · Build96 · REAL USER PASS
+Codename              studio-focus-slice4-phase9-album-create-success-verification-truth
+Runtime PR            #175
+Exact tested head     8ee5711d57f3a3986bf1e054b637f8ee3d5f7efe
+Validation            31912951430 · SUCCESS
+Runtime merge         1cb14c3ad96087cd9f8fc7de62119b8b5be0ee94
+Runtime Pages         31913006240 · SUCCESS · exact runtime merge SHA
+Candidate docs PR     #176
+Candidate docs CI     31913104842 · SUCCESS
+Candidate docs merge  dbb8bab680ab3cad5ef8f11fa276f3e9bb3dd43a
+Candidate docs Pages  31913138348 · SUCCESS
+Acceptance docs       IN PROGRESS
+Real-user smoke       Build 96 SMOKED 💨 · 2026-08-16
 Track Manager         v5.23 · DEPLOYED
 Studio bridge         v1.13
 TM admin Worker       439a1ce4-e458-427d-9fd6-61e888efd269
@@ -45,9 +42,11 @@ Deep Audio            2.0.3-alpha
 LRC Maker             6.3.8
 ```
 
-**Studio v0.19.17 · Build95 is the current accepted runtime.** Build95 closes a wiring gap in the real daily Albums route: metadata save, ordered membership save and Album move now consume the already accepted Build85/86/87 resilient services instead of the older generic mutations.
+**Studio v0.19.18 · Build96 is the current accepted runtime.** Build95 remains its accepted predecessor. Build95 closes a wiring gap in the real daily Albums route: metadata save, ordered membership save and Album move now consume the already accepted Build85/86/87 resilient services instead of the older generic mutations.
 
 Build95 does **not** add a new recovery algorithm. Album create, binary upload and asset delete remain on their existing operation-specific paths. No Track Manager/Worker/R2 schema or data migration was introduced.
+
+Build96 tightens only **normal successful Album create verification**: after Track Manager reports create success, Studio rereads the canonical Album and now requires both the exact returned/canonical revision and every metadata key supplied to create to match before `clientVerified=true`. Create response-loss recovery remains out of scope, `maxAutomaticCreateRetries` remains `0`, and Album binary upload semantics are unchanged.
 
 The bounded normal-browser acceptance received explicit **`BUILD95 PASS MADAFAKA`** on 2026-08-16. The smoke covered the normal Albums surface, a harmless metadata save with persistence, a safe ordered tracklist save with persistence, coherent Move UI presence, and surrounding Albums / Track / Lyrics / SonicTrace navigation. No network/Cloudflare failure was deliberately manufactured.
 
@@ -118,11 +117,12 @@ Phase 9 Slice11     Build92 · REAL USER PASS
 Phase 9 Slice12     Build93 · REAL USER PASS
 Phase 9 Slice13     Build94 · REAL USER PASS
 Phase 9 Slice14     Build95 · REAL USER PASS
-Build96             UNALLOCATED
+Phase 9 Slice15     Build96 · REAL USER PASS
+Build97             UNALLOCATED
 Phase 10            FUTURE
 ```
 
-The immediate next action is a **fresh read-only post-Build95 Phase9 reliability audit**. Build96 remains unallocated until that audit proves the smallest coherent next gap.
+The immediate next action is a **fresh read-only post-Build96 Phase9 reliability audit** after acceptance-docs closeout. Build97 remains unallocated until that audit proves the smallest coherent next gap.
 
 ## Frozen authority model
 

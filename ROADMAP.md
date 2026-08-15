@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-16 after **Build95 REAL USER PASS** and completed acceptance-docs closeout.
+Updated: 2026-08-16 after **Build96 REAL USER PASS**; acceptance-docs closeout in progress.
 
 This file is the durable roadmap summary. Historical implementation detail belongs in `docs/` and `changelogs/`; do not copy it here unless it changes what is done, active, next or backlogged.
 
@@ -393,27 +393,45 @@ Accepted evidence and behavior:
 - acceptance did not manufacture network/Access/lost-response failure;
 - no Track Manager, Worker, R2 schema/data migration or cross-product runtime change.
 
+### Phase 9 Slice15 — Album create normal-success verification truth
+
+**Build96 · v0.19.18 · REAL USER PASS**
+
+The fresh post-Build95 audit selected normal successful Album create verification as the smallest coherent reliability gap.
+
+Accepted evidence and behavior:
+
+- runtime PR #175;
+- exact tested head `8ee5711d57f3a3986bf1e054b637f8ee3d5f7efe`;
+- historical CI `31912907163` failed only because the new Build96 guard was too literal about a legacy UI local variable name; it was never merged and required zero runtime changes;
+- final runtime CI `31912951430` SUCCESS;
+- runtime merge `1cb14c3ad96087cd9f8fc7de62119b8b5be0ee94`;
+- runtime Pages `31913006240` SUCCESS build + deploy;
+- candidate docs PR #176 / CI `31913104842` / merge `dbb8bab680ab3cad5ef8f11fa276f3e9bb3dd43a` / Pages `31913138348` SUCCESS;
+- normal create success now requires exact canonical revision plus every requested metadata key/value before `clientVerified=true`;
+- the existing `metadataMismatch()` / `verify(... expectedMetadata ...)` truth model is reused;
+- create lost-response recovery remains out of scope without persisted operation identity;
+- maximum automatic create retries remains zero;
+- Album binary upload semantics remain unchanged;
+- explicit real-user verdict **`Build 96 SMOKED 💨`** on 2026-08-16;
+- acceptance used a real intended canonical Album/EP/collection and did not manufacture a network/Access/lost-response branch;
+- no Track Manager, Worker, R2 schema/data migration or cross-product runtime change.
+
 ## In progress
 
-### Post-Build95 fresh reliability audit
+### Build96 acceptance-docs closeout
 
-Build95 runtime, candidate-docs and seven-document acceptance closeouts are complete. No new implementation slice is allocated yet.
+Build96 runtime, candidate docs and real-user acceptance are complete. Seven-document acceptance closeout is the only active administrative step.
 
-**Build96 remains UNALLOCATED.**
+**Build97 remains UNALLOCATED.**
 
 ## Next
 
-After Build95 acceptance-docs closeout, run a fresh read-only post-Build95 Phase9 reliability audit. Audit remaining candidates by proven risk / bounded scope, without assuming a build number:
+After Build96 acceptance-docs closeout, run a fresh read-only post-Build96 Phase9 reliability audit. Re-evaluate remaining candidates by proven risk and bounded scope, including Album asset upload response-loss/digest truth, Album create lost-response causality with operation identity, degraded/offline/PWA resilience, Deep Audio duplicate-compute safety, and any newly proven smaller gap.
 
-1. Album asset upload response-loss truth;
-2. Album create response-loss truth;
-3. degraded/offline/PWA resilience;
-4. Deep Audio transport/compute behavior, with duplicate-compute causality explicitly considered;
-5. any newly proven smaller bounded reliability gap found by the fresh audit.
+Pick **one** coherent slice only after the audit proves it.
 
-Pick **one** coherent slice only after the audit proves the gap and confirms it does not duplicate existing recovery logic.
-
-**Build96 remains UNALLOCATED.**
+**Build97 remains UNALLOCATED.**
 
 ## Backlog
 
