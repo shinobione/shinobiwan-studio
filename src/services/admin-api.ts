@@ -3,8 +3,9 @@ import { studioConfig } from './config';
 const METADATA_VALIDATION_INTENT = 'metadata-validate-v1';
 const METADATA_SAVE_INTENT = 'metadata-save-v1';
 const ALLOWED_BRIDGE_WRITE_CAPABILITIES = new Set(['metadata', 'lyrics', 'lyrics-sync', 'sonictrace-analysis']);
+const TRANSIENT_ADMIN_READ_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
 
-export type AdminReadFailureKind = 'access-or-cors' | 'http' | 'timeout' | 'invalid-response';
+export type AdminReadFailureKind = 'access-or-cors' | 'http' | 'timeout' | 'transport' | 'invalid-response';
 export type AdminAssetKind = 'audio' | 'cover' | 'thumbnail' | 'video' | 'lyrics';
 
 export class AdminReadError extends Error {
@@ -235,7 +236,15 @@ function isWorkerJsonResponse(response: Response): boolean {
   return contentType.toLowerCase().includes('application/json');
 }
 
-async function fetchAdminJson<T>(path: string, timeoutMs = 4500): Promise<T> {
+function isTransientAdminReadError(reason: unknown): reason is AdminReadError {
+  return reason instanceof AdminReadError && (
+    reason.kind === 'timeout'
+    || reason.kind === 'transport'
+    || (reason.kind === 'http' && reason.status !== null && TRANSIENT_ADMIN_READ_STATUSES.has(reason.status))
+  );
+}
+
+async function fetchAdminJsonOnce<T>(path: string, timeoutMs: number): Promise<T> {
   const controller = new AbortController();
   const timeout = globalThis.setTimeout(() => controller.abort(), timeoutMs);
 
@@ -254,12 +263,15 @@ async function fetchAdminJson<T>(path: string, timeoutMs = 4500): Promise<T> {
         throw new AdminReadError('timeout', 'Track Manager private read timed out.');
       }
       throw new AdminReadError(
-        'access-or-cors',
-        'Private Track Manager read is unavailable. Authenticate with Cloudflare Access or use the public fallback.',
+        'transport',
+        'Track Manager private read transport was interrupted.',
       );
     }
 
     if (!isWorkerJsonResponse(response)) {
+      if (TRANSIENT_ADMIN_READ_STATUSES.has(response.status)) {
+        throw new AdminReadError('http', `Track Manager private read returned transient HTTP ${response.status} without JSON.`, response.status);
+      }
       throw new AdminReadError(
         'access-or-cors',
         'Cloudflare Access session is not available to Studio. Public catalog fallback remains active.',
@@ -282,6 +294,29 @@ async function fetchAdminJson<T>(path: string, timeoutMs = 4500): Promise<T> {
   } finally {
     globalThis.clearTimeout(timeout);
   }
+}
+
+async function fetchAdminJson<T>(path: string, timeoutMs = 4500): Promise<T> {
+  let firstTransientFailure: AdminReadError | null = null;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      return await fetchAdminJsonOnce<T>(path, timeoutMs);
+    } catch (reason) {
+      if (attempt === 0 && isTransientAdminReadError(reason)) {
+        firstTransientFailure = reason;
+        continue;
+      }
+      if (firstTransientFailure && reason instanceof AdminReadError) {
+        throw new AdminReadError(
+          reason.kind,
+          `Track Manager private read failed after one bounded transient retry. ${reason.message}`,
+          reason.status,
+        );
+      }
+      throw reason;
+    }
+  }
+  throw new AdminReadError('transport', 'Track Manager private read retry loop ended unexpectedly.');
 }
 
 async function postAdminValidation<T>(path: string, body: unknown, timeoutMs = 7000): Promise<T> {
@@ -491,6 +526,8 @@ export const adminService = Object.freeze({
   metadataWriteIntent: METADATA_SAVE_INTENT,
   metadataWriteTransport: 'text/plain-simple-request',
   recognizedWriteCapabilities: ['metadata', 'lyrics', 'lyrics-sync', 'sonictrace-analysis'] as const,
+  privateReadRetryPolicy: 'one-retry-timeout-transport-transient-http-no-access-retry',
+  privateReadMaxAttempts: 2,
   validationEnabled: true,
   writesEnabled: true,
   writeCapabilities: ['metadata'] as const,

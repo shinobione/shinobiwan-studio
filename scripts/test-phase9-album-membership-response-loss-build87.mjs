@@ -7,12 +7,9 @@ const membership = read('src/services/album-membership-admin-api.ts');
 const albums = read('src/components/AlbumManager.tsx');
 const pkg = JSON.parse(read('package.json'));
 
-assert.match(release, /version:\s*'0\.19\.9'/);
-assert.match(release, /build:\s*87/);
-assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-album-membership-response-loss-truth'"));
-assert.ok(release.includes('build86AncestryMarker'), 'Build87 must inherit accepted Build86 ancestry.');
-assert.ok(release.includes("version: 0.19.8 · build: 86 · codename: 'studio-focus-slice4-phase9-album-move-response-loss-truth'"));
-assert.equal(pkg.version, '0.19.9', 'package version must match Build87 runtime version.');
+assert.ok(release.includes('build87AncestryMarker'), 'Successor builds must preserve accepted Build87 ancestry.');
+assert.ok(release.includes("version: 0.19.9 · build: 87 · codename: 'studio-focus-slice4-phase9-album-membership-response-loss-truth'"), 'Build87 accepted runtime identity must remain immutable in ancestry.');
+assert.ok(release.includes('build86AncestryMarker'), 'Build87 ancestry must preserve accepted Build86 ancestry.');
 
 for (const marker of [
   'ALBUM_MEMBERSHIP_TIMEOUT',
@@ -68,4 +65,4 @@ for (const inherited of [
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must include ${inherited}`);
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Phase9 guards must remain in the full build gate.');
 
-console.log('Phase9 Build87 Album membership response-loss guard passed: ordered Album membership + every affected Track cache classify committed/not-committed/ambiguous/unverified without blind retry, while missing stale Track refs remain safely removable.');
+console.log('Phase9 Build87 Album membership response-loss guard passed: accepted ordered Album membership + every affected Track cache contract remains inherited under the current successor runtime.');
