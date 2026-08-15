@@ -1,6 +1,6 @@
 # Studio v0.19.13 · Build91 — Phase9 SonicTrace private-read transient retry truth
 
-Status: **IMPLEMENTED · PRE-PR CANDIDATE**.
+Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**.
 
 ## Fresh audit proof
 
@@ -65,7 +65,7 @@ Build91 does **not** change:
 - LaunchPAD or LRC Maker;
 - any user-facing layout or workflow.
 
-## Validation contract
+## Validation evidence
 
 Build91 adds `scripts/test-phase9-sonictrace-private-read-transient-retry-build91.mjs` and keeps Build90 as immutable accepted ancestry.
 
@@ -84,17 +84,50 @@ The guard requires:
 - no automatic SonicTrace save/analysis retry helper exists;
 - Build82→Build91 remain in the full Phase9 gate.
 
-Known historical successor guards are widened only through bounded `v0.19.13 / Build91` compatibility while keeping all functional assertions intact.
+Known historical successor guards were widened only through bounded `v0.19.13 / Build91` compatibility while keeping all functional assertions intact.
+
+Final exact-head validation and deploy:
+
+```text
+Runtime PR              #154
+Exact tested head       b8ee223b2d077e5d14936530be219f78ed7910ac
+Final CI                31888303536 · SUCCESS · first run
+Runtime merge           591b81a3930f1ba6d9f91f6e4f7d6e31550e5cf6
+Runtime Pages           31888346988 · SUCCESS · exact runtime merge SHA
+```
+
+No red intermediary Build91 validation run was required or merged.
 
 ## Safety
 
 ```text
 Safety pre              safety/pre-phase9-sonictrace-private-read-retry-build91-20260815-1546
+Safety pre-PR           safety/post-build91-prepr-20260815-1555
+Safety post-deploy      safety/post-build91-deployed-candidate-20260815-1559
 Feature branch          phase9/build91-sonictrace-private-read-retry
 Worker deploy           NONE
 Track Manager change    NONE
-R2 migration/write      NONE caused by implementation
+R2 migration/write      NONE caused by deployment
 Build92                 UNALLOCATED
+```
+
+## Real-user acceptance boundary — PENDING
+
+Use a normal browser regression only:
+
+- hard refresh and verify `v0.19.13 · Build91`;
+- open a Track that already has canonical SonicTrace analysis;
+- open SonicTrace and confirm canonical latest/history state loads normally;
+- open a Studio surface that consumes the SonicTrace catalog and confirm it loads normally;
+- make **no write** — Build91 is a read slice;
+- quick Track / Albums / Lyrics / SonicTrace navigation sanity.
+
+Do **not** deliberately cut network or invalidate Cloudflare Access merely to manufacture the retry branch. Automated guards own failure-path classification proof.
+
+Until explicit user verdict:
+
+```text
+Build91 = DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
 ```
 
 ## Stop line
@@ -105,4 +138,4 @@ Build92                 UNALLOCATED
 - Do not modify Track Manager / Worker / R2 for this slice.
 - Do not merge red CI.
 - Merge only the exact tested head.
-- Build92 remains unallocated pending Build91 acceptance plus a fresh audit.
+- Do not allocate Build92 before Build91 explicit acceptance plus a fresh audit.
