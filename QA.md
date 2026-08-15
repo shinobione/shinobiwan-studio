@@ -1,40 +1,45 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-08-15 after **Build83 deployed candidate** publication. Real-user acceptance remains pending.
+Updated: 2026-08-15 after explicit **Build83 REAL USER PASS**.
 
 This file records what has actually been validated, what automated guards cover, and what remains unproven. It is not a full test-history dump.
 
 ## Current accepted Studio runtime
 
 ```text
-Version                 v0.19.4
-Build                   Build82
-Status                  REAL USER PASS
-Runtime PR              #126
-Exact tested head       07fbcb4efdcd57e79614825d7c45bccd4ab2d860
-Final CI                31854468795 · SUCCESS
-Runtime merge           7a0d52fcc0bf862478c459f0648afc1c6690b34f
-Pages                   31854528438 · SUCCESS
-Real-user verdict       BUILD82 PASS · 2026-08-15
-```
-
-Build82 remains the latest **accepted** Studio runtime until Build83 receives explicit browser acceptance.
-
-## Current deployed candidate
-
-```text
 Version                 v0.19.5
 Build                   Build83
-Status                  DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Status                  REAL USER PASS
 Runtime PR              #129
 Exact tested head       beff9fc58c58e36ce2c2082f7bd5c041641a5e12
 Final CI                31856653579 · SUCCESS
 Runtime merge           b168d8cda805e5c50480a3e26c5d52e490fb7ac6
 Pages                   31856698097 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #130
+Candidate docs merge    afc526a59e5a2715929d200a32abbd49195b50bf
+Candidate docs Pages    31856972224 · SUCCESS
 Worker deploy           NONE
 R2 migration/write      NONE caused by deployment
-Real-user verdict       PENDING
+Real-user verdict       BUILD83 PASS · 2026-08-15
 ```
+
+## Build83 real-user smoke — PASS
+
+The requested bounded normal-browser Lyrics regression smoke received the user's explicit verdict:
+
+```text
+BUILD83 PASS
+```
+
+The acceptance exercise was deliberately **not** defined as a forced lost-response/destructive production test. The required acceptance boundary was normal Studio/Lyrics regression behavior after hard refresh, with canonical private-read/validation behavior and surrounding workspace sanity checks; the response-loss branches remain primarily protected by source guards, typed classification and private canonical reread logic.
+
+Result:
+
+```text
+Build83 = REAL USER PASS
+```
+
+No Worker deployment, Track Manager change, public Worker change, R2 migration or cross-repository change was required to reach acceptance.
 
 ## Build83 automated coverage
 
@@ -82,47 +87,21 @@ Useful red runs before the final Build83 head were **not merged**:
 
 The fixes to historical guards only widened bounded successor compatibility to v0.19.5 / Build83 while preserving their functional assertions and accepted ancestry.
 
-## Build83 real-user smoke — PENDING
-
-Required normal browser regression smoke:
-
-1. hard refresh Studio and verify `v0.19.5 · Build83`;
-2. open a PRIVATE READ Track with canonical `lyrics.txt`;
-3. verify canonical Lyrics text, manifest revision and Lyrics ETag load correctly;
-4. make a harmless local edit and run `Validate lyrics`;
-5. confirm `VALID PROPOSAL / PREVIEW · NOT SAVED` appears;
-6. safest non-mutating path: Reset/cancel after validation; or, if a safe intentional edit is available, perform one ordinary save and verify `CANONICAL REREAD · VERIFIED`;
-7. sanity-check Track navigation, Visuals and Albums for obvious regression.
-
-Do **not** deliberately cut the network, invalidate Access or sabotage a production write merely to force a timeout/lost-response branch. Those ambiguity branches are primarily protected by source guards, typed classification and canonical reread logic.
-
-Until explicit PASS exists:
+## Accepted predecessor — Build82
 
 ```text
-Build83 = DEPLOYED CANDIDATE
-Build82 = latest REAL USER PASS
+Version                 v0.19.4
+Build                   Build82
+Status                  REAL USER PASS
+Runtime PR              #126
+Exact tested head       07fbcb4efdcd57e79614825d7c45bccd4ab2d860
+Final CI                31854468795 · SUCCESS
+Runtime merge           7a0d52fcc0bf862478c459f0648afc1c6690b34f
+Pages                   31854528438 · SUCCESS
+Real-user verdict       BUILD82 PASS · 2026-08-15
 ```
 
-## Build82 real-user smoke — PASS
-
-Validated in the user browser after hard refresh:
-
-- Studio reports `v0.19.4 · Build82`;
-- normal Track workspace/navigation remains functional;
-- Visuals loads existing covers/previews/asset cards normally;
-- delete controls and confirmations remain present without requiring destructive use;
-- Albums / Album Health / Album editor remain functional;
-- Album Assets loads canonical cover/thumbnail and their controls;
-- System/private status remains coherent;
-- no regression requiring a Track Manager, Worker, public Worker or R2 change was observed.
-
-Result:
-
-```text
-BUILD82 PASS
-```
-
-A deliberate lost-response destructive production test was **not** required for Build82 acceptance either.
+Build82 hardened Track and Album destructive asset-delete response-loss truth. A deliberate lost-response destructive production test was not required for Build82 acceptance either.
 
 ## Current ecosystem validation baseline
 
@@ -178,18 +157,16 @@ Git history shows the public-cover credential/fetch path was corrected in Build6
 
 ## Known open QA gaps / next audits
 
-Immediate:
+No Build83 acceptance blocker remains.
 
-1. Build83 normal browser Lyrics regression smoke and explicit PASS/FAIL.
+Before any successor runtime work, perform a fresh bounded Phase9 audit. Leading candidates are:
 
-Only after Build83 acceptance, perform a fresh bounded audit. Leading candidates remain:
+1. SonicTrace analysis save response-loss commit-state truth;
+2. broader guarded Album write response-loss truth;
+3. Access/CORS hardening;
+4. degraded/offline and PWA resilience scenarios.
 
-2. SonicTrace analysis save response-loss commit-state truth;
-3. broader guarded Album write response-loss truth;
-4. Access/CORS hardening;
-5. degraded/offline and PWA resilience scenarios.
-
-These are not pre-allocated builds.
+These are **not** pre-allocated builds. Build84 remains unallocated until an audit proves a concrete scope.
 
 ## Standard validation commands
 
