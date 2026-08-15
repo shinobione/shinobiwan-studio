@@ -7,11 +7,12 @@ const sonic = read('src/services/sonictrace-api.ts');
 const ui = read('src/components/SonicTracePanel.tsx');
 const pkg = JSON.parse(read('package.json'));
 
-assert.match(release, /version:\s*'0\.19\.6'/);
-assert.match(release, /build:\s*84/);
-assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-sonictrace-save-response-loss-truth'"));
-assert.ok(release.includes('build83AncestryMarker'), 'Build84 must inherit accepted Build83 ancestry.');
-assert.equal(pkg.version, '0.19.6', 'package version must match Build84 runtime version.');
+assert.ok(release.includes('build84AncestryMarker'), 'Successor builds must preserve accepted Build84 ancestry.');
+assert.ok(
+  release.includes("version: 0.19.6 · build: 84 · codename: 'studio-focus-slice4-phase9-sonictrace-save-response-loss-truth'"),
+  'Build84 accepted runtime identity must remain immutable in ancestry.',
+);
+assert.ok(release.includes('build83AncestryMarker'), 'Build84 ancestry must preserve accepted Build83 ancestry.');
 
 for (const marker of [
   'SONICTRACE_SAVE_TIMEOUT',
@@ -48,4 +49,4 @@ assert.ok(pkg.scripts['check:phase9']?.includes('test-phase9-lyrics-response-los
 assert.ok(pkg.scripts['check:phase9']?.includes('test-phase9-sonictrace-response-loss-build84.mjs'), 'Build84 guard must run in check:phase9.');
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Phase9 guards must remain in the full build gate.');
 
-console.log('Phase9 Build84 SonicTrace response-loss guard passed: exact analysisId presence across canonical latest + history classifies committed/not-committed/ambiguous/unverified with no blind retry, and normal success is canonically verified.');
+console.log('Phase9 Build84 SonicTrace response-loss guard passed as inherited ancestry: exact analysisId presence across canonical latest + history still classifies committed/not-committed/ambiguous/unverified with no blind retry.');

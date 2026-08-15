@@ -7,13 +7,14 @@ const pkg = JSON.parse(read('package.json'));
 const adapter = read('src/legacy-track-type-display-auto.ts');
 const lyrics = read('src/components/LyricsEditorPanel.tsx');
 
-assert.ok(['0.19.3', '0.19.4', '0.19.5', '0.19.6'].includes(pkg.version), 'Build65 guard only accepts the validated v0.19.3-v0.19.6 Studio successor line.');
-assert.match(release, /version:\s*'0\.19\.(?:3|4|5|6)'/);
+assert.ok(['0.19.3', '0.19.4', '0.19.5', '0.19.6', '0.19.7'].includes(pkg.version), 'Build65 guard only accepts the validated v0.19.3-v0.19.7 Studio successor line.');
+assert.match(release, /version:\s*'0\.19\.(?:3|4|5|6|7)'/);
 assert.match(release, /build:\s*65/);
 assert.match(release, /codename:\s*'studio-focus-slice4-lyrics-crash-corrective'/);
-if (/build:\s*(?:82|83|84)/.test(release)) assert.ok(release.includes('build81AncestryMarker'), 'Phase9 successors must preserve accepted Build81 ancestry.');
-if (/build:\s*(?:83|84)/.test(release)) assert.ok(release.includes('build82AncestryMarker'), 'Build83+ must preserve accepted Build82 Phase9 ancestry.');
-if (/build:\s*84/.test(release)) assert.ok(release.includes('build83AncestryMarker'), 'Build84 must preserve accepted Build83 Phase9 ancestry.');
+if (/build:\s*(?:82|83|84|85)/.test(release)) assert.ok(release.includes('build81AncestryMarker'), 'Phase9 successors must preserve accepted Build81 ancestry.');
+if (/build:\s*(?:83|84|85)/.test(release)) assert.ok(release.includes('build82AncestryMarker'), 'Build83+ must preserve accepted Build82 Phase9 ancestry.');
+if (/build:\s*(?:84|85)/.test(release)) assert.ok(release.includes('build83AncestryMarker'), 'Build84+ must preserve accepted Build83 Phase9 ancestry.');
+if (/build:\s*85/.test(release)) assert.ok(release.includes('build84AncestryMarker'), 'Build85 must preserve accepted Build84 Phase9 ancestry.');
 
 for (const required of [
   "heading.textContent?.trim() !== 'Add lyrics to begin'",
@@ -37,4 +38,4 @@ assert.ok(!adapter.includes('fetch('), 'Presentation adapter must not add networ
 assert.ok(!adapter.includes('saveAdminTrackMetadata'), 'Presentation adapter must not add canonical writes.');
 assert.ok(!adapter.includes('uploadAdminTrackAsset'), 'Presentation adapter must not own asset writes.');
 
-console.log(`Studio ${pkg.version} Build65 guard passed through the bounded v0.19.6 Phase9 successor: missing-lyrics presentation remains idempotent and AssetsManager owns guarded TXT upload.`);
+console.log(`Studio ${pkg.version} Build65 guard passed through the bounded v0.19.7 Phase9 successor: missing-lyrics presentation remains idempotent and AssetsManager owns guarded TXT upload.`);
