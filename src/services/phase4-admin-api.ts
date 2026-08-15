@@ -274,6 +274,20 @@ export function phase4ErrorPresentation(reason: unknown): Phase4ErrorPresentatio
   return { title: 'Track Manager operation failed', message: reason.message, nextAction: reason.retrySafe ? 'Canonical state is unchanged; an explicit retry is safe.' : 'Reload canonical state before another write.', retrySafe: reason.retrySafe, technicalDetails: [code, reason.status ? `HTTP ${reason.status}` : '', reason.technicalDetails].filter(Boolean).join(' · ') };
 }
 
+function stableCreateManifestJson(value: unknown): string {
+  function normalize(input: unknown): unknown {
+    if (Array.isArray(input)) return input.map(normalize);
+    if (!input || typeof input !== 'object') return input;
+    const record = input as Record<string, unknown>;
+    return Object.keys(record).sort().reduce<Record<string, unknown>>((result, key) => {
+      const normalized = normalize(record[key]);
+      if (normalized !== undefined) result[key] = normalized;
+      return result;
+    }, {});
+  }
+  return JSON.stringify(normalize(value));
+}
+
 export async function createAdminTrack(slug: string, metadata: AdminMetadataPatch): Promise<TrackCreateResponse> {
   if (!validTrackId(slug)) throw new Phase4AdminError('Track ID must be lower-case kebab-case.');
   await requireManage('track-create');
@@ -282,10 +296,17 @@ export async function createAdminTrack(slug: string, metadata: AdminMetadataPatc
     slug,
     metadata,
   });
-  if (!payload.created || payload.trackId !== slug) throw new Phase4AdminError('Track Manager returned an invalid create response.');
+  const responseManifest = payload.track;
+  if (!payload.created || payload.trackId !== slug || !responseManifest?.updatedAt || responseManifest.slug !== slug || responseManifest.status !== 'draft') {
+    throw new Phase4AdminError('Track Manager returned an invalid create response.');
+  }
   const reread = await getAdminTrack(slug);
-  const clientVerified = reread.track?.manifest?.slug === slug && reread.track?.manifest?.status === 'draft';
-  return { ...payload, track: reread.track?.manifest || payload.track, clientVerified };
+  const canonicalManifest = reread.track?.manifest;
+  const clientVerified = Boolean(
+    canonicalManifest?.updatedAt === responseManifest.updatedAt
+    && stableCreateManifestJson(canonicalManifest) === stableCreateManifestJson(responseManifest),
+  );
+  return { ...payload, track: canonicalManifest || responseManifest, clientVerified };
 }
 
 export async function uploadAdminTrackAsset(
@@ -542,5 +563,8 @@ export const phase4AdminService = Object.freeze({
   uploadTransport: 'multipart-formdata-simple-request',
   jsonTransport: 'text/plain-simple-request',
   wholeTrackDeleteEnabled: false,
+  trackCreateSuccessVerificationPolicy: 'server-normalized-manifest-plus-private-reread-exact-match',
+  trackCreateLostResponsePolicy: 'not-covered-no-operation-id-no-blind-retry',
+  maxAutomaticTrackCreateRetries: 0,
   phase5Enabled: false,
 });
