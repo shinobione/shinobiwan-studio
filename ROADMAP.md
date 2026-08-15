@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-15 after **Build87 REAL USER PASS**.
+Updated: 2026-08-15 after **Build88 deployed candidate** publication.
 
 This file is the durable roadmap summary. Historical implementation detail belongs in `docs/` and `changelogs/`; do not copy it here unless it changes what is done, active, next or backlogged.
 
@@ -150,23 +150,42 @@ Build87 intentionally does **not** bundle Album create or binary upload.
 
 ## In progress
 
-### Phase 9 — fresh reliability audit
+### Phase 9 Slice7 — core private-read transient retry truth
 
-Phase9 remains active, but **Build88 is not allocated**.
+**Build88 · v0.19.10 · DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
 
-The current task is a fresh read-only audit to identify the smallest remaining reliability gap without duplicating existing recovery logic or turning Phase9 into a generic refactor bucket.
+The fresh post-Build87 audit selected the core private Track Manager GET path as the smallest coherent reliability gap.
+
+Candidate evidence and behavior:
+
+- runtime PR #144;
+- exact tested head `808b0c63fc22f17a04a9c544b934d97c791d3a73`;
+- final runtime CI `31871980725` SUCCESS;
+- runtime merge `9d4f0a7ba4cd17de1d4d6c69e4abe6bc706c7633`;
+- Pages `31872073050` SUCCESS on that exact merge;
+- non-timeout fetch interruption is now `transport`, not fake `access-or-cors`;
+- timeout / transport / HTTP `408/425/429/500/502/503/504` may receive one bounded retry;
+- 401/403, deterministic ordinary 4xx, non-JSON Access/gating responses and invalid JSON are never retried;
+- maximum two total attempts;
+- public fallback remains unchanged and occurs only after the private helper ultimately fails;
+- no POST/write retry behavior changed;
+- no Track Manager, Worker, R2 schema/data migration or cross-product runtime change.
+
+Historical validation runs `31871834515` and `31871883072` were red only because inherited successor allowlists capped the runtime at Build87. They were never merge candidates. The final exact head passed the complete chain.
+
+Build88 intentionally does **not** bundle Album create/upload or PWA/service-worker work.
 
 ## Next
 
-Audit these remaining candidates by proven risk / bounded scope, without assuming a build number:
+Complete the **Build88 normal-browser private-read regression smoke**:
 
-1. Album asset upload response-loss truth;
-2. Album create response-loss truth;
-3. Access/CORS hardening;
-4. bounded read retries/timeouts;
-5. degraded/offline/PWA resilience.
+1. hard refresh and verify `v0.19.10 · Build88`;
+2. Home / Tracks should load the normal private inventory, including Draft Tracks when present;
+3. open a Track and verify normal private canonical detail;
+4. quick Albums / Lyrics / SonicTrace navigation sanity;
+5. do not deliberately cut network or invalidate Access merely to manufacture the retry path.
 
-Pick **one** coherent slice only after the audit proves the gap and confirms it does not duplicate existing recovery logic.
+**Build89 is unallocated.** Only after explicit Build88 PASS should another fresh read-only audit compare remaining candidates such as Album asset upload, Album create, broader read resilience and degraded/offline/PWA behavior.
 
 ## Backlog
 
@@ -193,10 +212,11 @@ There is currently **no official Phase 11**.
 - Do not reopen completed phases merely because their historical docs are verbose or old.
 - Do not use a new phase/build as a bucket for opportunistic refactors.
 - Do not treat a candidate as accepted until real-user validation exists where required.
-- Do not deliberately damage or interrupt a production write merely to prove an ambiguity guard.
+- Do not deliberately damage or interrupt production merely to prove a retry/ambiguity guard.
+- Do not generalize GET retry into write retry.
 - Do not generalize one write family's recovery postcondition into another operation family.
-- Do not allocate Build88 before a fresh bounded audit selects its scope.
+- Do not allocate Build89 while Build88 acceptance remains pending.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build87 real-user PASS.
+See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build88 smoke boundary.

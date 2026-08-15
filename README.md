@@ -40,7 +40,25 @@ Deep Audio            2.0.3-alpha
 LRC Maker             6.3.8
 ```
 
-**Studio v0.19.9 · Build87 is the current accepted runtime.** Build87 extends Phase9 response-loss truth to canonical Album **bulk membership / ordered tracklist save** only. A lost membership response is never blindly retried; Studio privately rereads the Album and every affected Track compatibility cache before classifying committed, not committed, ambiguous or unverified. The bounded normal-browser regression received explicit **`BUILD87 PASS MADAFAKA`** on 2026-08-15.
+**Studio v0.19.9 · Build87 remains the current accepted runtime.** Build87 extends Phase9 response-loss truth to canonical Album **bulk membership / ordered tracklist save** only. A lost membership response is never blindly retried; Studio privately rereads the Album and every affected Track compatibility cache before classifying committed, not committed, ambiguous or unverified. The bounded normal-browser regression received explicit **`BUILD87 PASS MADAFAKA`** on 2026-08-15.
+
+## Current deployed candidate
+
+```text
+Studio                v0.19.10 · Build88 · DEPLOYED CANDIDATE
+Codename              studio-focus-slice4-phase9-private-read-transient-retry-truth
+Runtime PR            #144
+Exact tested head     808b0c63fc22f17a04a9c544b934d97c791d3a73
+Validation            31871980725 · SUCCESS
+Runtime merge         9d4f0a7ba4cd17de1d4d6c69e4abe6bc706c7633
+Runtime Pages         31872073050 · SUCCESS
+Real-user smoke       PENDING
+Worker deploy         NONE
+Track Manager change  NONE
+R2 migration/write    NONE caused by deployment
+```
+
+Build88 changes only the core private **GET** transport used by Track Manager bridge health, Track inventory and Track detail. Timeout, transport interruption, and HTTP `408/425/429/500/502/503/504` may receive **one** bounded retry; Access/CORS, deterministic ordinary 4xx and invalid JSON are never retried. Public fallback is unchanged and is only reached after the private helper ultimately fails. **No write retry was introduced.**
 
 The repository currently publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
@@ -99,11 +117,12 @@ Phase 9 Slice3      Build84 · REAL USER PASS
 Phase 9 Slice4      Build85 · REAL USER PASS
 Phase 9 Slice5      Build86 · REAL USER PASS
 Phase 9 Slice6      Build87 · REAL USER PASS
-Build88             UNALLOCATED
+Phase 9 Slice7      Build88 · DEPLOYED CANDIDATE · smoke pending
+Build89             UNALLOCATED
 Phase 10            FUTURE
 ```
 
-The immediate next action is a **fresh bounded Phase9 reliability audit**, not another preselected runtime build. Remaining candidates include Album asset upload/create response-loss truth, Access/CORS hardening, bounded read retries/timeouts, and degraded/offline/PWA resilience.
+The immediate next action is the bounded Build88 normal-browser private-read regression smoke. No successor is allocated before explicit Build88 acceptance and a fresh post-acceptance audit.
 
 ## Frozen authority model
 
@@ -118,6 +137,22 @@ The immediate next action is a **fresh bounded Phase9 reliability audit**, not a
 - public fallback is read-only and never verifies canonical writes.
 
 ## Canonical contracts
+
+### Private reads
+
+Build88 candidate core-read contract:
+
+```text
+timeout                         → retry once max
+transport/fetch interruption     → retry once max
+HTTP 408/425/429/500/502/503/504 → retry once max
+401/403                         → Access/CORS · NO RETRY
+other deterministic 4xx          → HTTP · NO RETRY
+non-JSON Access/gating response  → Access/CORS · NO RETRY
+invalid JSON                     → invalid-response · NO RETRY
+```
+
+The contract is GET-only and capped at two total attempts. It does not change POST/write recovery or public fallback authority.
 
 ### Albums
 
@@ -231,6 +266,24 @@ MASTER FINAL 16:9
 ```
 
 Release Campaign is provider-agnostic. Google Flow is a convenience shortcut. Campaign drafts remain browser-local and ZIP export remains review-only.
+
+## Build88 candidate receipts
+
+```text
+Safety pre              safety/pre-phase9-private-read-retry-build88-20260815-0916
+Runtime PR              #144
+Exact tested head       808b0c63fc22f17a04a9c544b934d97c791d3a73
+Validation              31871980725 · SUCCESS
+Runtime merge           9d4f0a7ba4cd17de1d4d6c69e4abe6bc706c7633
+Runtime Pages           31872073050 · SUCCESS · exact runtime merge SHA
+Safety post-deploy      safety/post-build88-deployed-candidate-20260815-0932
+Worker deploy           NONE
+Track Manager change    NONE
+R2 migration/write      NONE caused by deployment
+Real-user smoke         PENDING
+```
+
+Detailed record: [`changelogs/CHANGELOG-BUILD88.md`](changelogs/CHANGELOG-BUILD88.md).
 
 ## Build87 acceptance receipts
 

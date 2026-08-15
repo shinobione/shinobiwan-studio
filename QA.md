@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-08-15 after explicit **Build87 REAL USER PASS**.
+Updated: 2026-08-15 after **Build88 deployed candidate** publication. Real-user acceptance remains pending.
 
 This file records what has actually been validated, what automated guards cover, and what remains unproven. It is not a full test-history dump.
 
@@ -22,6 +22,86 @@ Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
 Real-user verdict       BUILD87 PASS · 2026-08-15
+```
+
+## Current deployed candidate
+
+```text
+Version                 v0.19.10
+Build                   Build88
+Status                  DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Runtime PR              #144
+Exact tested head       808b0c63fc22f17a04a9c544b934d97c791d3a73
+Final CI                31871980725 · SUCCESS
+Runtime merge           9d4f0a7ba4cd17de1d4d6c69e4abe6bc706c7633
+Pages                   31872073050 · SUCCESS · exact runtime merge SHA
+Worker deploy           NONE
+Track Manager change    NONE
+R2 migration/write      NONE caused by deployment
+Real-user verdict       PENDING
+```
+
+## Build88 automated coverage — GREEN
+
+Final validation run `31871980725` passed the complete repository-native chain on the exact runtime head, including:
+
+- private-read contract;
+- Phase5 algorithms;
+- Phase6 Lyrics contract;
+- C3 / Deep Audio / Album / parity guards;
+- PHASE UX guards;
+- Phase7 and Phase8 guards;
+- inherited Phase9 Build82 destructive-write ambiguity guard;
+- inherited Phase9 Build83 canonical Lyrics response-loss guard;
+- inherited Phase9 Build84 SonicTrace response-loss guard;
+- inherited Phase9 Build85 Album metadata response-loss guard;
+- inherited Phase9 Build86 Album move response-loss guard;
+- inherited Phase9 Build87 Album membership response-loss guard;
+- new Phase9 Build88 private-read transient retry guard;
+- Studio Focus inherited regression guards through bounded Build88 successor compatibility;
+- TypeScript typecheck;
+- Vite production build.
+
+Historical runs `31871834515` and `31871883072` were red only because inherited Phase7-C / Studio Focus successor allowlists stopped at `0.19.9 / Build87`. Those heads were never merged. The final exact head `808b0c63fc22f17a04a9c544b934d97c791d3a73` passed the full chain.
+
+Build88 specifically guards the common core private GET path:
+
+```text
+timeout                         → one retry max
+transport/fetch interruption     → one retry max
+HTTP 408/425/429/500/502/503/504 → one retry max
+401/403                         → Access/CORS · NO RETRY
+other deterministic 4xx          → HTTP · NO RETRY
+non-JSON Access/gating response  → Access/CORS · NO RETRY
+invalid JSON                     → invalid-response · NO RETRY
+```
+
+Additional Build88 guarantees:
+
+- non-timeout browser `fetch()` rejection is typed as `transport`, not falsely presented as `access-or-cors`;
+- maximum attempts are exactly two total;
+- a second failure surfaces immediately rather than starting a loop/backoff framework;
+- public catalog fallback remains unchanged and is reached only after the private helper ultimately fails;
+- the bounded retry applies only to private bridge health, Track inventory and Track detail GETs;
+- metadata validation/save POST transports remain unchanged;
+- no automatic write retry exists;
+- no Album create/upload behavior changed;
+- no Worker, Track Manager or R2 schema/data mutation was required.
+
+## Build88 real-user smoke — PENDING
+
+The required acceptance smoke is intentionally a **normal-browser regression**, not a manufactured network-failure test:
+
+1. hard refresh Studio and verify `v0.19.10 · Build88`;
+2. open **Home / Tracks** and verify the normal private inventory loads, including Draft Tracks when present;
+3. open one Track and verify normal private canonical detail loads;
+4. quick **Albums → Track → Lyrics → SonicTrace** navigation sanity;
+5. do **not** cut network, expire Access or otherwise manufacture the retry branch.
+
+Until explicit user verdict:
+
+```text
+Build88 != REAL USER PASS
 ```
 
 ## Build87 automated coverage — GREEN
@@ -335,9 +415,18 @@ Deep Audio              2.0.3-alpha
 LRC Maker               6.3.8
 ```
 
-Build87 does not supersede those products' independent validation histories.
+Build88 does not supersede those products' independent validation histories.
 
 ## Core contracts that must remain guarded
+
+### Private reads
+
+- bridge health, Track inventory and Track detail remain private-first;
+- timeout/transport/selected transient HTTP failures may receive one retry only;
+- Access/CORS, deterministic ordinary 4xx and invalid-response failures receive no retry;
+- maximum attempts are two total;
+- public fallback remains read-only and happens only after private reads ultimately fail;
+- private GET retry must never become automatic POST/write retry.
 
 ### Lyrics
 
@@ -371,7 +460,8 @@ Build87 does not supersede those products' independent validation histories.
 - public fallback never verifies a canonical write;
 - a lost response is never automatic failure or automatic success;
 - no blind retry after response loss;
-- canonical reread must prove exact operation-specific postconditions.
+- canonical reread must prove exact operation-specific postconditions;
+- Build88 does not alter any write retry rule.
 
 ### Release Campaign
 
@@ -389,11 +479,13 @@ Git history shows the public-cover credential/fetch path was corrected in Build6
 
 ## Known open QA gaps / next audits
 
-No Build87 acceptance blocker remains.
+Current acceptance gap:
 
-Before any successor runtime work, perform a fresh bounded Phase9 audit. Candidate areas include Album asset upload response-loss truth, Album create response-loss truth, Access/CORS hardening, bounded read retries/timeouts and degraded/offline/PWA resilience.
+1. Build88 normal-browser private-read regression smoke.
 
-**Build88 is unallocated** until a fresh bounded audit proves a concrete scope.
+Do not allocate Build89 while Build88 acceptance remains pending.
+
+After explicit Build88 PASS, perform a fresh bounded Phase9 audit. Remaining candidates include Album asset upload, Album create, broader read resilience and degraded/offline/PWA behavior.
 
 ## Standard validation commands
 
