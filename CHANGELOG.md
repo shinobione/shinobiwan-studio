@@ -2,16 +2,16 @@
 
 This file is the **current concise changelog**. Detailed per-build records live under [`changelogs/`](changelogs/README.md).
 
-## Current deployed candidate
+## Current accepted release
 
 ### v0.19.11 · Build89 — 2026-08-15
 
 Codename: `studio-focus-slice4-phase9-album-private-read-transient-retry-truth`  
-Status: **DEPLOYED CANDIDATE — REAL USER SMOKE PENDING**
+Status: **REAL USER PASS — ACCEPTED**
 
 Build89 extends bounded private-read resilience to canonical Album collection/detail **GETs only**.
 
-Candidate behavior:
+Accepted behavior:
 
 - non-timeout Album browser `fetch()` interruption is classified as `transport`, not falsely as `access-or-cors`;
 - timeout, transport interruption, and HTTP `408/425/429/500/502/503/504` may receive exactly one bounded retry;
@@ -22,9 +22,11 @@ Candidate behavior:
 - every Album POST/write path remains unchanged;
 - Album create and binary-upload response-loss semantics remain unchanged;
 - Lyrics and SonicTrace private reads remain separate future audit families;
+- normal-browser acceptance confirmed Album inventory, canonical Album detail, private artwork/metadata and surrounding Track / Lyrics / SonicTrace navigation sanity;
+- acceptance did not manufacture a timeout/transport/Access failure branch;
 - no Track Manager, Worker, public Worker, R2 schema/data migration, LaunchPAD, LRC Maker or SonicTrace Deep Audio change was required.
 
-Exact candidate evidence:
+Exact acceptance evidence:
 
 ```text
 Safety pre               safety/pre-phase9-album-private-read-retry-build89-20260815-1307
@@ -35,20 +37,24 @@ Validation               31881635973 · SUCCESS
 Runtime merge            b7ae769c66e9adccef79c80467cc8fd0a8534820
 Runtime Pages            31881682269 · SUCCESS · exact runtime merge SHA
 Safety post-deploy       safety/post-build89-deployed-candidate-20260815-1319
+Candidate docs PR        #148
+Candidate docs merge     a7894dad8f4b4015ca1cba47b12781bab417fdcf
+Candidate docs Pages     31882384329 · SUCCESS
+Safety post-acceptance   safety/post-build89-real-user-pass-20260815-1404
 Track Manager            v5.23 · unchanged
 Studio bridge            v1.13 · unchanged
 TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
 Public Worker            v2.7 · unchanged
 Worker deploy            NONE
 R2 migration/write       NONE caused by deployment
-Real-user smoke          PENDING
+Real-user smoke          BUILD89 PASS MADAFAKA · 2026-08-15
 ```
 
 Historical CI runs `31881467538` and `31881538488` were red only because inherited Phase7-C / Studio Focus successor allowlists stopped at Build88. Those heads were never merged. Final exact-head CI `31881635973` passed the complete repository-native chain.
 
-Detailed candidate record: [`changelogs/CHANGELOG-BUILD89.md`](changelogs/CHANGELOG-BUILD89.md).
+Detailed accepted record: [`changelogs/CHANGELOG-BUILD89.md`](changelogs/CHANGELOG-BUILD89.md).
 
-## Current accepted release
+## Accepted predecessor
 
 ### v0.19.10 · Build88 — 2026-08-15
 
@@ -413,6 +419,6 @@ All Phase8/9 health and guidance surfaces continue to preserve the same canonica
 
 ## Next bounded action
 
-Perform the normal-browser Build89 Album private-read regression smoke. Build90 remains **UNALLOCATED** until Build89 receives explicit acceptance and a fresh audit proves the next smallest coherent scope.
+Run a fresh post-Build89 Phase9 reliability audit. Build90 remains **UNALLOCATED** until that audit proves the smallest coherent next scope.
 
 `CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS` remains mandatory.

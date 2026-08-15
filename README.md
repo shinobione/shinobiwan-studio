@@ -19,20 +19,17 @@ Then verify the real GitHub state before mutation.
 ## Current accepted state
 
 ```text
-Studio                v0.19.10 · Build88 · REAL USER PASS
-Codename              studio-focus-slice4-phase9-private-read-transient-retry-truth
-Runtime PR            #144
-Exact tested head     808b0c63fc22f17a04a9c544b934d97c791d3a73
-Validation            31871980725 · SUCCESS
-Runtime merge         9d4f0a7ba4cd17de1d4d6c69e4abe6bc706c7633
-Runtime Pages         31872073050 · SUCCESS
-Candidate docs PR     #145
-Candidate docs merge  316ad1b0784d72fb7d29d92c5deaedb56d262e49
-Candidate docs Pages  31872540118 · SUCCESS
-Acceptance docs PR    #146
-Acceptance docs merge aebb168883c1f291b97e1d309b4028bb1d78861c
-Acceptance docs Pages 31881075352 · SUCCESS
-Real-user smoke       BUILD88 PASS MADAFAKA · 2026-08-15
+Studio                v0.19.11 · Build89 · REAL USER PASS
+Codename              studio-focus-slice4-phase9-album-private-read-transient-retry-truth
+Runtime PR            #147
+Exact tested head     8b73d19d8fced35642ee243cff0ac19d983fd0de
+Validation            31881635973 · SUCCESS
+Runtime merge         b7ae769c66e9adccef79c80467cc8fd0a8534820
+Runtime Pages         31881682269 · SUCCESS
+Candidate docs PR     #148
+Candidate docs merge  a7894dad8f4b4015ca1cba47b12781bab417fdcf
+Candidate docs Pages  31882384329 · SUCCESS
+Real-user smoke       BUILD89 PASS MADAFAKA · 2026-08-15
 Track Manager         v5.23 · DEPLOYED
 Studio bridge         v1.13
 TM admin Worker       439a1ce4-e458-427d-9fd6-61e888efd269
@@ -43,25 +40,7 @@ Deep Audio            2.0.3-alpha
 LRC Maker             6.3.8
 ```
 
-**Studio v0.19.10 · Build88 remains the current accepted runtime.** Build88 changes only the core private **GET** transport used by Track Manager bridge health, Track inventory and Track detail. Timeout, transport interruption, and HTTP `408/425/429/500/502/503/504` may receive **one** bounded retry; Access/CORS, deterministic ordinary 4xx and invalid JSON are never retried. Public fallback is unchanged and is only reached after the private helper ultimately fails. **No write retry was introduced.** The bounded normal-browser regression received explicit **`BUILD88 PASS MADAFAKA`** on 2026-08-15.
-
-## Current deployed candidate
-
-```text
-Studio                v0.19.11 · Build89 · DEPLOYED CANDIDATE
-Codename              studio-focus-slice4-phase9-album-private-read-transient-retry-truth
-Runtime PR            #147
-Exact tested head     8b73d19d8fced35642ee243cff0ac19d983fd0de
-Validation            31881635973 · SUCCESS
-Runtime merge         b7ae769c66e9adccef79c80467cc8fd0a8534820
-Runtime Pages         31881682269 · SUCCESS
-Real-user smoke       PENDING
-Worker deploy         NONE
-Track Manager change  NONE
-R2 migration/write    NONE caused by deployment
-```
-
-Build89 applies the same bounded GET-only retry truth to canonical Album collection/detail reads. The same helper also powers private Album visual discovery and existing canonical Album rereads used by guarded verification/recovery. **Every Album POST/write transport remains unchanged.** Lyrics and SonicTrace private reads remain separate future audit families.
+**Studio v0.19.11 · Build89 is the current accepted runtime.** Build89 extends the bounded private **GET** retry truth from Build88 to canonical Album collection/detail reads. Timeout, transport interruption, and HTTP `408/425/429/500/502/503/504` may receive **one** bounded retry; Access/CORS, deterministic ordinary 4xx and invalid JSON are never retried. The same Album helper also powers private visual discovery and canonical Album rereads. **No Album POST/write retry was introduced.** The bounded normal-browser regression received explicit **`BUILD89 PASS MADAFAKA`** on 2026-08-15.
 
 The repository currently publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
@@ -121,12 +100,12 @@ Phase 9 Slice4      Build85 · REAL USER PASS
 Phase 9 Slice5      Build86 · REAL USER PASS
 Phase 9 Slice6      Build87 · REAL USER PASS
 Phase 9 Slice7      Build88 · REAL USER PASS
-Phase 9 Slice8      Build89 · DEPLOYED CANDIDATE · smoke pending
+Phase 9 Slice8      Build89 · REAL USER PASS
 Build90             UNALLOCATED
 Phase 10            FUTURE
 ```
 
-The immediate next action is the bounded normal-browser **Build89 Album private-read smoke**. Build90 remains unallocated while Build89 acceptance is pending.
+The immediate next action is a **fresh bounded post-Build89 Phase9 reliability audit**. No successor is allocated before that audit proves a concrete smallest coherent gap.
 
 ## Frozen authority model
 
@@ -144,7 +123,7 @@ The immediate next action is the bounded normal-browser **Build89 Album private-
 
 ### Private reads
 
-Build88 accepted core-read contract and Build89 candidate Album-read contract use the same bounded classification:
+Build88 accepted core-read contract and Build89 accepted Album-read contract use the same bounded classification:
 
 ```text
 timeout                         → retry once max
@@ -273,7 +252,7 @@ MASTER FINAL 16:9
 
 Release Campaign is provider-agnostic. Google Flow is a convenience shortcut. Campaign drafts remain browser-local and ZIP export remains review-only.
 
-## Build89 candidate receipts
+## Build89 acceptance receipts
 
 ```text
 Safety pre              safety/pre-phase9-album-private-read-retry-build89-20260815-1307
@@ -284,13 +263,17 @@ Validation              31881635973 · SUCCESS
 Runtime merge           b7ae769c66e9adccef79c80467cc8fd0a8534820
 Runtime Pages           31881682269 · SUCCESS · exact runtime merge SHA
 Safety post-deploy      safety/post-build89-deployed-candidate-20260815-1319
+Candidate docs PR       #148
+Candidate docs merge    a7894dad8f4b4015ca1cba47b12781bab417fdcf
+Candidate docs Pages    31882384329 · SUCCESS
+Safety post-acceptance  safety/post-build89-real-user-pass-20260815-1404
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
-Real-user smoke         PENDING
+Real-user smoke         BUILD89 PASS MADAFAKA · 2026-08-15
 ```
 
-Detailed candidate record: [`changelogs/CHANGELOG-BUILD89.md`](changelogs/CHANGELOG-BUILD89.md).
+Detailed accepted record: [`changelogs/CHANGELOG-BUILD89.md`](changelogs/CHANGELOG-BUILD89.md).
 
 ## Build88 acceptance receipts
 

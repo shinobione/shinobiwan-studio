@@ -1,6 +1,6 @@
 # Studio v0.19.11 · Build89 — Phase9 Album private-read transient retry truth
 
-Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**.
+Status: **REAL USER PASS · ACCEPTED**.
 
 ## Fresh audit proof
 
@@ -93,6 +93,9 @@ Exact tested head       8b73d19d8fced35642ee243cff0ac19d983fd0de
 Final CI                31881635973 · SUCCESS
 Runtime merge           b7ae769c66e9adccef79c80467cc8fd0a8534820
 Runtime Pages           31881682269 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #148
+Candidate docs merge    a7894dad8f4b4015ca1cba47b12781bab417fdcf
+Candidate docs Pages    31882384329 · SUCCESS · exact docs merge SHA
 ```
 
 ## Safety
@@ -101,6 +104,8 @@ Runtime Pages           31881682269 · SUCCESS · exact runtime merge SHA
 Safety pre              safety/pre-phase9-album-private-read-retry-build89-20260815-1307
 Safety pre-PR           safety/post-build89-prepr-20260815-1310
 Safety post-deploy      safety/post-build89-deployed-candidate-20260815-1319
+Safety candidate docs   safety/post-build89-candidate-docs-closeout-20260815-1336
+Safety post-acceptance  safety/post-build89-real-user-pass-20260815-1404
 Feature branch          phase9/build89-album-private-read-retry
 Worker deploy           NONE
 Track Manager change    NONE
@@ -108,19 +113,23 @@ R2 migration/write      NONE caused by deployment
 Build90                 UNALLOCATED
 ```
 
-## Real-user acceptance boundary
+## Real-user acceptance — PASS
 
-Use a normal browser regression only:
+The accepted smoke was a normal browser regression only:
 
-- hard refresh and verify `v0.19.11 · Build89`;
-- open Albums and verify the normal private Album inventory;
-- open at least one canonical Album detail;
-- verify private artwork/metadata load normally;
-- quick Track / Lyrics / SonicTrace navigation sanity.
+- hard refresh to `v0.19.11 · Build89`;
+- Albums loaded the normal private Album inventory;
+- at least one canonical Album detail opened successfully;
+- private artwork/metadata loaded normally;
+- Track / Lyrics / SonicTrace navigation sanity remained clean.
 
-Do **not** deliberately cut network or invalidate Cloudflare Access merely to manufacture the retry branch. Automated guards own the failure-path classification proof.
+The user returned the explicit verdict:
 
-Until explicit real-user verdict, Build89 remains **DEPLOYED CANDIDATE**.
+```text
+BUILD89 PASS MADAFAKA
+```
+
+Acceptance did **not** deliberately cut network, invalidate Cloudflare Access or manufacture timeout/transport/transient-HTTP branches. Automated guards own the failure-path classification proof.
 
 ## Stop line
 
@@ -130,4 +139,4 @@ Until explicit real-user verdict, Build89 remains **DEPLOYED CANDIDATE**.
 - Do not modify Track Manager / Worker / R2 for this slice.
 - Do not merge red CI.
 - Merge only the exact tested head.
-- Do not allocate Build90 before Build89 explicit acceptance plus a fresh audit.
+- Do not allocate Build90 before a fresh post-Build89 audit proves the next smallest coherent scope.

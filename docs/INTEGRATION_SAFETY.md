@@ -3,8 +3,7 @@
 Date established: 2026-08-08  
 Hardened: 2026-08-09  
 Current-state overlay refreshed: 2026-08-15  
-Current accepted Studio release: `v0.19.10` / Build `88` / REAL USER PASS  
-Current deployed candidate: `v0.19.11` / Build `89` / REAL USER SMOKE PENDING
+Current accepted Studio release: `v0.19.11` / Build `89` / REAL USER PASS
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -22,26 +21,14 @@ For short current state, read root `PROJECT_STATE.md` first. This file contains 
 
 ```text
 Studio accepted
-  v0.19.10 / Build88 / REAL USER PASS
-  exact tested head 808b0c63fc22f17a04a9c544b934d97c791d3a73
-  runtime CI 31871980725 / SUCCESS
-  runtime merge 9d4f0a7ba4cd17de1d4d6c69e4abe6bc706c7633
-  runtime Pages 31872073050 / SUCCESS
-  candidate docs merge 316ad1b0784d72fb7d29d92c5deaedb56d262e49
-  candidate docs Pages 31872540118 / SUCCESS
-  acceptance docs merge aebb168883c1f291b97e1d309b4028bb1d78861c
-  acceptance docs Pages 31881075352 / SUCCESS
-  browser smoke BUILD88 PASS MADAFAKA / 2026-08-15
-  Worker deploy NONE
-  Track Manager change NONE
-  R2 migration/write NONE caused by deployment
-
-Studio deployed candidate
-  v0.19.11 / Build89 / REAL USER SMOKE PENDING
+  v0.19.11 / Build89 / REAL USER PASS
   exact tested head 8b73d19d8fced35642ee243cff0ac19d983fd0de
   runtime CI 31881635973 / SUCCESS
   runtime merge b7ae769c66e9adccef79c80467cc8fd0a8534820
   runtime Pages 31881682269 / SUCCESS
+  candidate docs merge a7894dad8f4b4015ca1cba47b12781bab417fdcf
+  candidate docs Pages 31882384329 / SUCCESS
+  browser smoke BUILD89 PASS MADAFAKA / 2026-08-15
   Worker deploy NONE
   Track Manager change NONE
   R2 migration/write NONE caused by deployment
@@ -63,7 +50,7 @@ LRC Maker
   6.3.8
 ```
 
-Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable history; this overlay distinguishes accepted production truth from the current deployed candidate.
+Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable history; this overlay states current accepted production truth only.
 
 ## Restoration checkpoints
 
@@ -153,6 +140,10 @@ After Build89 implementation before PR:
 
 After Build89 deployment candidate:
   safety/post-build89-deployed-candidate-20260815-1319
+  safety/post-build89-candidate-docs-closeout-20260815-1336
+
+After Build89 real-user acceptance:
+  safety/post-build89-real-user-pass-20260815-1404
 ```
 
 Earlier accepted safety branches remain preserved in Git history.
@@ -400,7 +391,7 @@ Normal success also requires exact response revision/order, exact canonical Albu
 
 Build87 is **REAL USER PASS** after explicit 2026-08-15 normal-browser Album tracklist regression acceptance.
 
-### Build89 Album private-read boundary — DEPLOYED CANDIDATE
+### Build89 Album private-read boundary — ACCEPTED
 
 Build89 changes no Album backend transaction. It changes only canonical Album GET classification:
 
@@ -424,7 +415,7 @@ Rules:
 - Album create and binary upload remain unchanged future audit families;
 - Lyrics and SonicTrace private reads remain separate audit families.
 
-Build89 requires a normal-browser Album regression before promotion to REAL USER PASS. Do not deliberately break network or Access merely to force the retry branch.
+Build89 is **REAL USER PASS** after explicit 2026-08-15 normal-browser Album private-read regression acceptance. The browser smoke did not deliberately break network or Access; automated guards own the transient failure-path proof.
 
 ## Studio write boundary
 
@@ -536,9 +527,11 @@ Core private **GET retry only**. One retry is allowed only after timeout, transp
 
 Build88 is **REAL USER PASS** after the explicit 2026-08-15 normal-browser private-read regression verdict. Acceptance did not manufacture a failure branch.
 
-### Build89 candidate scope
+### Build89 accepted scope
 
 Canonical Album collection/detail **GET retry only**. One retry is allowed only after timeout, transport interruption or the explicit transient HTTP allowlist. It changes no Album write retry rule and does not generalize to Lyrics/SonicTrace private reads.
+
+Build89 is **REAL USER PASS** after the explicit 2026-08-15 normal-browser Album private-read regression verdict. Acceptance did not manufacture a failure branch.
 
 ## Destructive/media verification policy
 
@@ -561,7 +554,7 @@ Build87 acceptance likewise did **not** require deliberately cutting network/Acc
 
 Build88 acceptance likewise did **not** require deliberately cutting network or invalidating Access merely to prove the transient GET retry branch. Automated guards own that failure-path proof; browser acceptance was a normal private-read regression.
 
-Build89 acceptance likewise must remain a normal Album private-read regression; automated guards own the transient failure-path proof.
+Build89 acceptance likewise did **not** require deliberately cutting network or invalidating Access. Automated guards own the transient failure-path proof; browser acceptance was a normal Album private-read regression.
 
 ## Version / deployment discipline
 
@@ -592,4 +585,4 @@ If a regression appears:
 
 ## Stop line
 
-**Build88 is the accepted Studio REAL USER PASS baseline. Build89 is the deployed candidate pending normal-browser Album smoke. Build90 is UNALLOCATED. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**
+**Build89 is the accepted Studio REAL USER PASS baseline. Build90 is UNALLOCATED pending a fresh bounded post-Build89 audit. Track Manager v5.23 / bridge v1.13 remains the sole deployed protected write authority.**
