@@ -8,12 +8,8 @@ const duration = read('src/services/metadata-duration-api.ts');
 const admin = read('src/services/admin-api.ts');
 const pkg = JSON.parse(read('package.json'));
 
-assert.match(release, /version:\s*'0\.19\.14'/);
-assert.match(release, /build:\s*92/);
-assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-track-metadata-response-loss-truth'"));
-assert.ok(release.includes('build91AncestryMarker'), 'Build92 must preserve accepted Build91 ancestry.');
-assert.ok(release.includes("version: 0.19.13 · build: 91 · codename: 'studio-focus-slice4-phase9-sonictrace-private-read-transient-retry-truth'"));
-assert.equal(pkg.version, '0.19.14', 'package version must match Build92 runtime version.');
+assert.ok(release.includes('build92AncestryMarker'), 'Build93+ must preserve accepted Build92 ancestry.');
+assert.ok(release.includes("version: 0.19.14 · build: 92 · codename: 'studio-focus-slice4-phase9-track-metadata-response-loss-truth'"));
 
 assert.ok(service.includes("const METADATA_SAVE_INTENT = 'metadata-save-v1';"), 'Build92 must preserve the canonical Track metadata save intent.');
 assert.equal((service.match(/method:\s*'POST'/g) || []).length, 1, 'Build92 resilient service must own exactly one metadata save POST transport.');
@@ -80,4 +76,4 @@ for (const inherited of [
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must include ${inherited}`);
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Phase9 guards must remain in the full build gate.');
 
-console.log('Phase9 Build92 Track metadata response-loss guard passed: exact reviewed proposal + canonical Track revision classify committed/not-committed/ambiguous/unverified with zero automatic write retries, duration evidence included, and normal success also canonically verified.');
+console.log('Phase9 Build92 Track metadata response-loss guard passed as inherited ancestry: exact reviewed proposal + canonical Track revision classify committed/not-committed/ambiguous/unverified with zero automatic write retries, duration evidence included, and normal success also canonically verified.');
