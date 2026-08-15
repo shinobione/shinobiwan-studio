@@ -126,6 +126,8 @@ Runtime merge `d0ca8b3aa4481c3217f79790e347000bfd22823a` deployed successfully t
 
 Candidate docs PR #159 passed full validation `31894353160`, merged at `f46b846841e6ef9ce705b2fa3817baecd0aecefa`, and deployed successfully through Pages run `31894411652`.
 
+Acceptance docs PR #160 passed full validation `31896013803`, merged at `a26c8c0540607c99147c0b6d30b5d3c7ccf6efc9`, and deployed successfully through Pages run `31896073093`.
+
 ## Real-user acceptance — PASS
 
 The bounded acceptance was intentionally a **normal-browser metadata regression**, not a manufactured response-loss test.
@@ -165,9 +167,11 @@ Candidate docs CI       31894353160 · SUCCESS
 Candidate docs merge    f46b846841e6ef9ce705b2fa3817baecd0aecefa
 Candidate docs Pages    31894411652 · SUCCESS · exact candidate-docs merge SHA
 Safety post-acceptance  safety/post-build92-real-user-pass-20260815-1819
-Acceptance docs PR      PENDING
-Acceptance docs merge   PENDING
-Acceptance docs Pages   PENDING
+Acceptance docs PR      #160
+Acceptance docs CI      31896013803 · SUCCESS
+Acceptance docs merge   a26c8c0540607c99147c0b6d30b5d3c7ccf6efc9
+Acceptance docs Pages   31896073093 · SUCCESS · exact acceptance-docs merge SHA
+Safety RUP docs         safety/post-build92-rup-docs-closeout-20260815-1841
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by implementation/deployment

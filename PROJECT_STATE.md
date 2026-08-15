@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-15 after explicit **`BUILD92 PASS MADAFAKA`** real-user browser acceptance. Acceptance-docs closeout is in progress.
+Updated: 2026-08-15 after explicit **`BUILD92 PASS MADAFAKA`** real-user browser acceptance and published acceptance-docs closeout.
 
 This file is the short current checkpoint. It is the first project-state document to read after `AGENTS.md`.
 
@@ -21,9 +21,10 @@ Candidate docs PR       #159
 Candidate docs CI       31894353160 · SUCCESS
 Candidate docs merge    f46b846841e6ef9ce705b2fa3817baecd0aecefa
 Candidate docs Pages    31894411652 · SUCCESS · exact docs merge SHA
-Acceptance docs PR      PENDING
-Acceptance docs merge   PENDING
-Acceptance docs Pages   PENDING
+Acceptance docs PR      #160
+Acceptance docs CI      31896013803 · SUCCESS
+Acceptance docs merge   a26c8c0540607c99147c0b6d30b5d3c7ccf6efc9
+Acceptance docs Pages   31896073093 · SUCCESS · exact docs merge SHA
 Real-user smoke         BUILD92 PASS MADAFAKA · 2026-08-15
 Worker deploy           NONE
 Track Manager change    NONE
@@ -291,7 +292,7 @@ The bounded normal-browser smoke received explicit **`BUILD92 PASS MADAFAKA`** o
 
 **No active code / CI / deploy / acceptance blocker after `BUILD92 PASS MADAFAKA`.**
 
-Runtime CI `31893496536` passed the full repository-native chain on exact head `2b859d831f5fc46eea9853f31c4b86057041128b`. Historical run `31893447100` was red only because the inherited Build80 duration-evidence guard still expected validation and save compatibility checks in the same source file; the guard was updated to follow the unchanged contract across the validation wrapper and new resilient save service. No runtime code was changed to repair that red run. Runtime Pages `31893652679` deployed exact merge `d0ca8b3aa4481c3217f79790e347000bfd22823a` successfully. Candidate docs CI `31894353160` passed and candidate docs Pages `31894411652` deployed exact candidate-docs merge `f46b846841e6ef9ce705b2fa3817baecd0aecefa` successfully.
+Runtime CI `31893496536` passed the full repository-native chain on exact head `2b859d831f5fc46eea9853f31c4b86057041128b`. Historical run `31893447100` was red only because the inherited Build80 duration-evidence guard still expected validation and save compatibility checks in the same source file; the guard was updated to follow the unchanged contract across the validation wrapper and new resilient save service. No runtime code was changed to repair that red run. Runtime Pages `31893652679` deployed exact merge `d0ca8b3aa4481c3217f79790e347000bfd22823a` successfully. Candidate docs CI `31894353160` passed and candidate docs Pages `31894411652` deployed exact candidate-docs merge `f46b846841e6ef9ce705b2fa3817baecd0aecefa` successfully. Acceptance docs CI `31896013803` passed and acceptance docs Pages `31896073093` deployed exact acceptance-docs merge `a26c8c0540607c99147c0b6d30b5d3c7ccf6efc9` successfully.
 
 The historical `Magnetic Midnight` public-cover palette `Failed to fetch` issue remains resolved since Build62 and covered by regression guards.
 
@@ -383,6 +384,7 @@ safety/post-build92-prepr-20260815-1740
 safety/post-build92-deployed-candidate-20260815-1748
 safety/post-build92-candidate-docs-closeout-20260815-1803
 safety/post-build92-real-user-pass-20260815-1819
+safety/post-build92-rup-docs-closeout-20260815-1841
 ```
 
 ## Acceptance vocabulary
