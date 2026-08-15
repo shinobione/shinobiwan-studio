@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-15 after explicit **`BUILD86 PASS`** real-user browser acceptance.
+Updated: 2026-08-15 after **Build87 deployed candidate** publication. Real-user acceptance is pending.
 
 This file is the short current checkpoint. It is the first project-state document to read after `AGENTS.md`.
 
@@ -25,7 +25,24 @@ Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
 ```
 
-Build86 is now the latest **accepted** Studio runtime.
+Build86 remains the latest **accepted** Studio runtime until Build87 receives explicit real-user browser acceptance.
+
+## Current deployed candidate
+
+```text
+Studio version          v0.19.9
+Studio build            Build87
+Codename                studio-focus-slice4-phase9-album-membership-response-loss-truth
+Acceptance              DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Runtime PR              #141
+Exact tested head       5f155d312b0af7227325a78480bfd424a96e7859
+Final runtime CI        31870328730 · SUCCESS · first run
+Runtime merge SHA       b9e1f121c7dc111ee6db06fd4d00227426d96ce7
+Runtime Pages           31870370403 · SUCCESS · exact runtime merge SHA
+Worker deploy           NONE
+Track Manager change    NONE
+R2 migration/write      NONE caused by deployment
+```
 
 ## Current ecosystem baseline
 
@@ -42,6 +59,8 @@ LRC Maker               6.3.8
 
 Build86 changes only Studio client-side canonical **Album move** response-loss classification and verification. It covers Album→Album move plus the existing `sourceAlbumId:null` authority repair. It does **not** change Album bulk membership save, create, upload/delete, Track Manager, Workers, R2 schema/data, LaunchPAD, SonicTrace Deep Audio or LRC Maker.
 
+Build87 changes only Studio client-side canonical **Album bulk membership / ordered tracklist save** response-loss classification and verification across the Album plus every affected Track compatibility cache. It does **not** change Album create, binary upload, Track Manager, Workers, R2 schema/data, LaunchPAD, SonicTrace Deep Audio or LRC Maker.
+
 ## Program position
 
 ```text
@@ -56,6 +75,7 @@ Phase 9 Slice2          COMPLETE · Build83 REAL USER PASS
 Phase 9 Slice3          COMPLETE · Build84 REAL USER PASS
 Phase 9 Slice4          COMPLETE · Build85 REAL USER PASS
 Phase 9 Slice5          COMPLETE · Build86 REAL USER PASS
+Phase 9 Slice6          Build87 DEPLOYED CANDIDATE · smoke pending
 Phase 10                FUTURE
 Official Phase 11       NONE
 ```
@@ -115,28 +135,57 @@ Normal HTTP success also requires exact server-returned target/source revisions,
 
 The bounded normal-browser smoke confirmed one genuine safe Album move, canonical source removal, target insertion/order persistence after reload, Track compatibility-cache convergence to the target Album, and surrounding Track / Visuals / Lyrics / SonicTrace / Albums navigation sanity.
 
+## Build87 candidate behavior
+
+The fresh post-Build86 audit selected **Album bulk membership / ordered tracklist save** as the smallest coherent remaining reliability gap. Before Build87, Studio used a generic write transport and normal success only reread the Album manifest; it did not prove every Track compatibility cache affected by membership.
+
+Build87 privately snapshots the Album and every Track in the union of previous/requested `album.trackIds`, then applies operation-specific postconditions:
+
+```text
+Album membership response unavailable
+→ NEVER blind automatic retry
+→ private canonical Album + affected Track-cache reread
+   ├─ new Album revision + exact requested ordered trackIds
+   │  + stable Album non-membership shape
+   │  + every Track cache equals its expected postcondition
+   │  + stable Track non-album shapes
+   │    → COMMITTED / VERIFIED
+   ├─ exact Album + Track pre-write state unchanged
+   │    → NOT COMMITTED / explicit retry may be safe after fresh reload
+   ├─ partial/mixed/changed state without exact proof
+   │    → AMBIGUOUS / DO NOT RETRY
+   └─ canonical reread unavailable
+        → UNVERIFIED / DO NOT RETRY
+```
+
+Requested Tracks must exist. A historically missing prior Track may still be removed safely. Removed Tracks previously cached to the Album converge to transitional `Singles`; unrelated cache claims remain unchanged.
+
+Normal HTTP success also requires exact returned revision/order, exact canonical Album order, every affected Track cache and stable shapes, plus `trackCachesUpdated` agreement when supplied by Track Manager.
+
 ## Current blockers
 
-**No active blocker after `BUILD86 PASS`.**
+No code/CI/deployment blocker remains for Build87.
+
+**Acceptance blocker:** normal real-user browser smoke is pending. Do not promote Build87 to REAL USER PASS before an explicit verdict.
 
 The historical `Magnetic Midnight` public-cover palette `Failed to fetch` issue remains resolved since Build62 and covered by regression guards.
 
 ## Exact next action
 
-**Do not allocate Build87 yet.**
+Run the bounded **Build87 Album tracklist regression smoke**:
 
-Run a fresh, read-only Phase9 reliability audit and select the smallest coherent next reliability slice only after proving the gap and confirming existing recovery logic does not already cover it.
+1. hard refresh Studio and verify `v0.19.9 · Build87`;
+2. open **Albums** and select a safe canonical Album with at least two Tracks;
+3. reorder two existing Tracks using ↑ / ↓ only;
+4. perform one normal **Save tracklist**;
+5. expect `Album tracklist saved and canonically verified across Album + Track caches.`;
+6. reload/reopen the Album and verify the order persists;
+7. open one or two reordered Tracks and verify they still claim the same Album;
+8. quick regression: Track → Visuals → Lyrics → SonicTrace → Albums.
 
-Remaining audit candidates include:
+Do **not** deliberately cut network/Access to manufacture response loss.
 
-1. Album bulk membership response-loss truth;
-2. Album asset upload response-loss truth;
-3. Album create response-loss truth;
-4. Access/CORS hardening;
-5. bounded read retries/timeouts;
-6. degraded/offline/PWA resilience.
-
-No candidate above is an automatic commitment or pre-allocated build.
+After explicit Build87 PASS, close Slice6 and run another fresh bounded audit before allocating any successor. **Build88 is UNALLOCATED.**
 
 ## Frozen stop lines
 
@@ -173,6 +222,10 @@ safety/pre-phase9-album-move-response-loss-build86-20260815-0757
 safety/post-build86-deployed-candidate-20260815-0808
 safety/post-build86-candidate-docs-closeout-20260815-0818
 safety/post-build86-real-user-pass-20260815-0823
+safety/post-build86-rup-docs-closeout-20260815-0828
+safety/pre-phase9-album-membership-response-loss-build87-20260815-0837
+safety/post-build87-prepr-20260815-0844
+safety/post-build87-deployed-candidate-20260815-0853
 ```
 
 ## Acceptance vocabulary
@@ -181,4 +234,4 @@ safety/post-build86-real-user-pass-20260815-0823
 CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS
 ```
 
-Build86 is **REAL USER PASS**. Build87 is **UNALLOCATED**.
+Build86 is **REAL USER PASS**. Build87 is **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**. Build88 is **UNALLOCATED**.

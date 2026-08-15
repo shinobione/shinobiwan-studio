@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-08-15 after explicit **Build86 REAL USER PASS**.
+Updated: 2026-08-15 after **Build87 deployed candidate** publication. Real-user acceptance remains pending.
 
 This file records what has actually been validated, what automated guards cover, and what remains unproven. It is not a full test-history dump.
 
@@ -22,6 +22,103 @@ Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by deployment
 Real-user verdict       BUILD86 PASS · 2026-08-15
+```
+
+## Current deployed candidate
+
+```text
+Version                 v0.19.9
+Build                   Build87
+Status                  DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Runtime PR              #141
+Exact tested head       5f155d312b0af7227325a78480bfd424a96e7859
+Final CI                31870328730 · SUCCESS · first run
+Runtime merge           b9e1f121c7dc111ee6db06fd4d00227426d96ce7
+Pages                   31870370403 · SUCCESS · exact runtime merge SHA
+Worker deploy           NONE
+Track Manager change    NONE
+R2 migration/write      NONE caused by deployment
+Real-user verdict       PENDING
+```
+
+## Build87 automated coverage — GREEN
+
+Final validation run `31870328730` passed the complete repository-native chain on the exact runtime head **on the first run**, including:
+
+- private-read contract;
+- Phase5 algorithms;
+- Phase6 Lyrics contract;
+- C3 / Deep Audio / Album / parity guards;
+- PHASE UX guards;
+- Phase7 and Phase8 guards;
+- inherited Phase9 Build82 destructive-write ambiguity guard;
+- inherited Phase9 Build83 canonical Lyrics response-loss guard;
+- inherited Phase9 Build84 SonicTrace response-loss guard;
+- inherited Phase9 Build85 Album metadata response-loss guard;
+- inherited Phase9 Build86 Album move response-loss guard;
+- new Phase9 Build87 Album membership response-loss guard;
+- missing-prior-Track cleanup behavior;
+- Studio Focus inherited regression guards;
+- TypeScript typecheck;
+- Vite production build.
+
+No red intermediary Build87 CI run was merged or required.
+
+Build87 specifically guards:
+
+```text
+Album membership response unavailable
+→ NEVER blind automatic retry
+→ private canonical Album + affected Track-cache reread
+   ├─ new Album revision + exact requested ordered trackIds
+   │  + stable Album non-membership shape
+   │  + every Track cache equals its expected postcondition
+   │  + only Tracks requiring cache mutation changed revision
+   │  + Track non-album shapes remain stable
+   │    → COMMITTED / VERIFIED
+   ├─ exact Album + Track pre-write state unchanged
+   │    → NOT COMMITTED / explicit retry may be safe after fresh reload
+   ├─ partial/mixed/changed state
+   │    → AMBIGUOUS / DO NOT RETRY
+   └─ reread unavailable
+        → UNVERIFIED / DO NOT RETRY
+```
+
+Additional Build87 guarantees:
+
+- exact Album revision is checked before POST;
+- the snapshot/reread covers the union of previous and requested Track IDs;
+- requested Tracks must exist;
+- a historically missing prior Track can still be removed safely;
+- requested Track cache must converge to the Album;
+- removed Track whose cache claimed the Album must converge to transitional `Singles`;
+- removed Track whose cache did not claim the Album must remain cache-stable;
+- Album non-membership and Track non-Album shapes must remain stable;
+- Tracks that require no cache mutation remain revision-stable;
+- normal HTTP success verifies exact returned Album revision/order, every affected Track cache and server `trackCachesUpdated` when supplied;
+- recovered success explicitly states that Studio did not retry the write.
+
+The deployed Track Manager backend was audited read-only and already owns stale guards, ownership-conflict validation, deterministic membership/cache updates, catalog rebuild and rollback. No backend mutation was needed for Build87.
+
+## Build87 real-user smoke — PENDING
+
+The required acceptance smoke is intentionally a **normal-browser regression**, not a manufactured failure test:
+
+1. hard refresh Studio and verify `v0.19.9 · Build87`;
+2. open **Albums** and choose a safe canonical Album with at least two existing Tracks;
+3. reorder two existing Tracks using ↑ / ↓ only;
+4. use normal **Save tracklist**;
+5. expect **`Album tracklist saved and canonically verified across Album + Track caches.`**;
+6. reload/reopen the Album and verify order persistence;
+7. open one or two reordered Tracks and verify their compatibility cache still points to the same Album;
+8. quick Track / Visuals / Lyrics / SonicTrace / Albums regression sanity.
+
+Do not cut network, invalidate Access or sabotage a production membership save merely to force response-loss branches.
+
+Until explicit user verdict:
+
+```text
+Build87 != REAL USER PASS
 ```
 
 ## Build86 automated coverage — GREEN
@@ -245,7 +342,7 @@ Deep Audio              2.0.3-alpha
 LRC Maker               6.3.8
 ```
 
-Build86 does not supersede those products' independent validation histories.
+Build87 does not supersede those products' independent validation histories.
 
 ## Core contracts that must remain guarded
 
@@ -273,7 +370,8 @@ Build86 does not supersede those products' independent validation histories.
 - generic Track metadata writes do not independently mutate Album membership;
 - Build85 response-loss recovery applies to **Album metadata save only**;
 - Build86 response-loss recovery applies to **`album-track-move-v1` only**;
-- bulk membership, create and upload require their own operation-specific audits before similar recovery can be added.
+- Build87 response-loss recovery applies to **bulk membership / ordered tracklist save only**;
+- create and binary upload require their own operation-specific audits before similar recovery can be added.
 
 ### Writes / ambiguity
 
@@ -298,11 +396,13 @@ Git history shows the public-cover credential/fetch path was corrected in Build6
 
 ## Known open QA gaps / next audits
 
-No Build86 acceptance blocker remains.
+Current acceptance gap:
 
-Before any successor runtime work, perform a fresh bounded Phase9 audit. Candidate areas include Album bulk membership/upload/create response-loss truth, Access/CORS hardening, bounded read retries/timeouts and degraded/offline/PWA resilience.
+1. Build87 normal-browser Album tracklist reorder regression smoke.
 
-**Build87 is unallocated** until a fresh bounded audit proves a concrete scope.
+Do not allocate Build88 while Build87 acceptance remains pending.
+
+After explicit Build87 PASS, perform a fresh bounded Phase9 audit. Remaining candidates include Album asset upload, Album create, Access/CORS, bounded read retries/timeouts and degraded/offline/PWA resilience.
 
 ## Standard validation commands
 
