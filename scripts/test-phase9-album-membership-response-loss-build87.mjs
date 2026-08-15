@@ -31,6 +31,11 @@ assert.ok(membership.includes('album.updatedAt !== expectedUpdatedAt'), 'Members
 assert.ok(membership.includes('const unionTrackIds = [...new Set([...album.trackIds, ...expectedTrackIds])];'), 'Membership recovery must cover the union of previous and requested Track caches.');
 assert.ok(membership.includes("if (requested.has(trackId)) return { id: album.id, title: album.title };"), 'Requested Tracks must converge to the canonical Album cache.');
 assert.ok(membership.includes("return { id: 'singles', title: 'Singles' };"), 'Removed Tracks owned by the Album must converge to transitional Singles cache.');
+assert.ok(membership.includes('reason instanceof AdminReadError && reason.status === 404'), 'A missing prior Track must be represented explicitly rather than turning every cleanup into a read failure.');
+assert.ok(membership.includes('if (requested.has(trackId)) {'), 'Missing Tracks may never be introduced into the requested canonical tracklist.');
+assert.ok(membership.includes("'ALBUM_TRACK_MISSING'"), 'Requested missing Track must lock the membership write with an explicit code.');
+assert.ok(membership.includes('return { trackId, before: null, expectedAlbum: null, shouldChange: false };'), 'A missing prior Track that is being removed must remain removable without a fake cache write.');
+assert.ok(membership.includes('delete stable.updatedBy;'), 'Track stable-shape verification must ignore updatedBy, which Track Manager changes with a legitimate cache write.');
 assert.ok(membership.includes('async function postAlbumMembership('), 'Build87 must isolate Album membership transport with timeout classification.');
 assert.ok(membership.includes("LOST_RESPONSE_CODES.has(reason.code || '')"), 'Only timeout/transport/invalid-response ambiguity may enter canonical membership recovery.');
 assert.ok(membership.includes('const after = await readMembershipState(albumId, trackedIds);'), 'Lost response must reread canonical Album + all affected Track caches.');
@@ -63,4 +68,4 @@ for (const inherited of [
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must include ${inherited}`);
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Phase9 guards must remain in the full build gate.');
 
-console.log('Phase9 Build87 Album membership response-loss guard passed: ordered Album membership + every affected Track cache classify committed/not-committed/ambiguous/unverified without blind retry.');
+console.log('Phase9 Build87 Album membership response-loss guard passed: ordered Album membership + every affected Track cache classify committed/not-committed/ambiguous/unverified without blind retry, while missing stale Track refs remain safely removable.');
