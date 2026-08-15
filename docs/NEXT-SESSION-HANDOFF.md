@@ -1,26 +1,24 @@
-# NEXT SESSION HANDOFF — Build81 REAL USER PASS
+# NEXT SESSION HANDOFF — Build82 Phase9 Slice1 deployed candidate
 
-Updated: 2026-08-15 after explicit **BUILD81 PASS** browser validation.
+Updated: 2026-08-15 after exact-head CI and exact merge-SHA Pages deployment.
 
 ## Start here
 
 Before modifying anything, verify real GitHub/deployment state again.
 
-Current accepted release truth:
+Current release truth:
 
 ```text
-Studio                    v0.19.3 · Build81 · REAL USER PASS
-Codename                  studio-focus-slice4-phase8-semantic-truth-cleanup
-Build81 tested head       bdc79b8dd3fffb41c8368990d50fd733afe87fe3
-Build81 CI                31850313391 · SUCCESS
-Build81 runtime merge     20d587fe1b1d1a5405cd346571c8d5a0eb1d2fa4
-Build81 runtime Pages     31850382728 · SUCCESS · exact runtime merge SHA
-Build81 candidate docs    b151eadcec376f8bbebc0378f7e51d92c62b0a31
-Build81 candidate Pages   31850596471 · SUCCESS
-Build81 browser smoke     BUILD81 PASS · 2026-08-15
-Build81 safety pre        safety/pre-build81-semantic-truth-20260815-0113
-Build81 safety post       safety/post-build81-deployed-candidate-20260815-0129
-Build81 safety post-RUP   safety/post-build81-real-user-pass-20260815-0159
+Studio accepted baseline  v0.19.3 · Build81 · REAL USER PASS
+Studio current candidate  v0.19.4 · Build82 · DEPLOYED CANDIDATE
+Build82 codename          studio-focus-slice4-phase9-destructive-write-ambiguity-guard
+Build82 tested head       07fbcb4efdcd57e79614825d7c45bccd4ab2d860
+Build82 final CI          31854468795 · SUCCESS
+Build82 runtime merge     7a0d52fcc0bf862478c459f0648afc1c6690b34f
+Build82 Pages             31854528438 · SUCCESS · exact runtime merge SHA
+Build82 safety pre        safety/pre-phase9-destructive-ambiguity-build82-20260815-0216
+Build82 safety post       safety/post-build82-deployed-candidate-20260815-0248
+Build82 browser smoke     PENDING
 Track Manager             v5.23 · DEPLOYED
 Studio bridge             v1.13
 TM Worker Version ID      439a1ce4-e458-427d-9fd6-61e888efd269
@@ -29,66 +27,101 @@ LaunchPAD public          2026.08.12.102 · REAL USER PASS
 SonicTrace                V2-E Build08 · REAL USER PASS
 Deep Audio                2.0.3-alpha
 LRC Maker                 6.3.8
-Next build                Build82 · UNUSED
 ```
 
 `CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS`.
 
-## What Build81 proved
+## Phase8 closeout
 
-### Sonic wording truth
+Build81 is the accepted Phase8 closeout baseline:
 
-The Track production stage and full analysis context now use:
+- `Sound` → `Sonic` semantic truth;
+- Release Campaign provider selector removed because it did not alter prompt behavior;
+- Release Campaign is provider-agnostic and remains browser-local/review-only;
+- Google Flow is a convenience shortcut only.
 
-```text
-Sonic
-TRACK / SONIC
-```
+The old `Magnetic Midnight` `Extract colors` / `Failed to fetch` report was re-audited before Build82. Git history proves it was already fixed in Build62 by public/private media credential selection and is protected by `test-studio-focus-build62.mjs`. No duplicate Build82 fix was made.
 
-The old `Sound` wording is gone from the audited Track Workspace path. SonicTrace readiness, routing and analysis behavior were not changed.
+## Why Phase9 starts with Build82
 
-### Release Campaign provider truth
+Fresh reliability audit found a real lost-response ambiguity on destructive asset deletion.
 
-The old mutable `Premium provider` selector was decorative: its value did not alter MASTER, 1:1, 9:16 or motion prompt builders.
+Before Build82, Track upload already recovered a lost response through private canonical reread, but Track delete and Album delete could not establish whether the destructive write had committed.
 
-Build81 now states the real behavior:
-
-```text
-External image handoff
-PROVIDER-AGNOSTIC
-```
-
-Google Flow remains a convenience shortcut only. Prompts remain provider-agnostic. Existing browser-local drafts keep restoring their prompts, images and copy.
-
-### Release Campaign contract preserved
+Build82 applies this invariant to those two delete families only:
 
 ```text
-MASTER FINAL 16:9
-├── 1:1 independently anchored to MASTER
-└── 9:16 independently anchored to MASTER
+capture pre-write private revision + asset state
+→ existing guarded delete
+→ response lost / timeout
+→ NO automatic retry
+→ private canonical reread
+   ├─ new revision + asset absent   = committed / verified
+   ├─ same revision + asset present = not committed / explicit retry may be safe
+   ├─ changed state unclear         = ambiguous / do not retry
+   └─ reread unavailable            = unverified / do not retry
 ```
 
-- 9:16 never derives from 1:1;
-- New MASTER concept is non-destructive;
-- drafts remain browser-local;
-- ZIP remains review-only;
-- `canonicalWrite: false` remains true;
-- no Track Manager/R2 writer was introduced.
+A normal success response also requires exact post-write revision + asset absence verification.
 
-## Accepted lineage
+## Scope and authority
+
+Build82 changes only Studio clients and guards/docs:
+
+- Track asset delete recovery in `phase4-admin-api.ts`;
+- Album asset delete recovery in `album-admin-api.ts`;
+- Phase9 regression guard;
+- bounded v0.19.4 successor updates to inherited guards;
+- roadmap/safety/audit/changelog.
+
+No Track Manager source changed. No Worker was deployed. No new write route exists. No R2 migration occurred. Public fallback remains read-only and cannot verify writes.
+
+## CI history worth retaining
+
+The red candidate runs were useful and none was merged:
 
 ```text
-Phase 7-A   Build46   REAL USER PASS
-Phase 7-B   Build51   REAL USER PASS
-Phase 7-C   Build71   Slice1 REAL USER PASS
-Phase 7-C   Build73   Slice2/program REAL USER PASS
-Phase 8     Build74   Content Health Truth REAL USER PASS
-Phase 8     Build75   Health Drill-down REAL USER PASS
-Phase 8     Build80   cumulative Album Health/publication REAL USER PASS
-Phase 8     Build81   semantic truth cleanup REAL USER PASS
+31853871778  private-read guard rejected accidental third Phase4 POST transport
+31854043923  inherited Build69 exact v0.19.3 pin
+31854129202  Phase9 source guard too literal about Album retrySafe syntax
+31854193885  inherited Build64 exact v0.19.3 pin
+31854313889  real TypeScript return-union error
+31854468795  SUCCESS · full chain
 ```
 
-Builds76–79 remain historical candidates/superseded corrective steps, not retroactive RUPs.
+The final runtime head is `07fbcb4e...`; only that exact tested head was merged.
+
+## Required Build82 smoke
+
+Do **not** delete an important production WAV/cover/video merely to test reliability code.
+
+Recommended smoke:
+
+1. hard refresh Studio and verify `v0.19.4 · Build82`;
+2. open a normal Track and confirm Track/Visuals/Lyrics/Release still load;
+3. open Visuals and confirm existing asset cards/previews/delete confirmation UI still render normally;
+4. open Albums and confirm Album Health + Albums editor still load;
+5. open an Album Assets tab and confirm cover/thumbnail controls still render normally;
+6. verify System status remains private/healthy where expected;
+7. only if an intentionally disposable Draft cover/thumbnail already exists and deletion is genuinely desired, perform one normal delete and verify the canonical asset disappears after reread. Do not manufacture a destructive production test merely for acceptance.
+
+The lost-response branches are primarily protected by source guards + typecheck because deliberately cutting transport around a destructive production write is not a responsible smoke test.
+
+If the normal browser regression smoke is clean, explicit acceptance can be recorded as:
+
+```text
+BUILD82 PASS
+```
+
+## Phase9 follow-up candidates
+
+Do not pre-allocate Build83. After Build82 acceptance, re-audit the smallest next reliability slice. Current proven candidates include transport-loss ambiguity on:
+
+- canonical Lyrics save;
+- SonicTrace analysis save;
+- broader Album write families.
+
+Other Phase9 themes remain Access/CORS hardening, degraded/offline UX and PWA resilience.
 
 ## Frozen architecture
 
@@ -102,70 +135,15 @@ Builds76–79 remain historical candidates/superseded corrective steps, not retr
 - canonical `trackId` = R2 slug everywhere.
 - public fallback is read-only and never verifies canonical writes.
 
-### Canonical Albums
-
-```text
-albums/<album-id>/manifest.json
-```
-
-Ordered `album.trackIds` is sole membership/order authority. Track-side Album metadata is compatibility cache only.
-
-### Canonical lyrics
-
-```text
-tracks/<slug>/lyrics.txt = unique canonical lyrics source
-recognized timestamps    = synchronization authority
-.lrc                      = optional export / compatibility only
-```
-
-### Canonical audio duration
-
-`manifest.duration` is derived from the canonical master audio. It is not free-form metadata. Duration-aware metadata paths must use an explicitly validated bridge pair and retain capability, stale-revision and private-reread guards.
-
-## What comes next
-
-Do **not** allocate Build82 automatically.
-
-The first remaining focused issue is the **asset-selection error previously observed on `Magnetic Midnight`**. It must be reproduced before any fix is designed.
-
-Fresh audit should determine whether the failure belongs to:
-
-- canonical Visual asset selection/upload;
-- Release Campaign browser-local image import;
-- file decoding/dimension inspection;
-- IndexedDB/browser-local draft persistence;
-- Track Manager asset mutation/stale revision handling;
-- or another bounded path.
-
-Capture the exact visible error and runtime route first. Do not widen write authority while investigating.
-
-## Rolling premium interaction backlog
-
-Still retained:
-
-- tactile press/release feedback;
-- restrained glow/focus transitions;
-- coherent hover/active states;
-- smooth reduced-motion-safe transitions.
-
-## Later roadmap
-
-**Phase 9 — Security / reliability / PWA**: Access/CORS hardening, retries/timeouts, anti-loss/ambiguous-write behavior, degraded/offline UX, PWA resilience.
-
-**Phase 10 — Progressive extraction**: potential extraction of mature LRC/SonicTrace/catalog engines while Studio remains orchestrator.
-
-There is currently no official Phase 11.
-
 ## Files to read before next mutation
 
 - `README.md`
 - `docs/ROADMAP-CURRENT.md`
 - `docs/NEXT-SESSION-HANDOFF.md`
-- `changelogs/CHANGELOG-PHASE8-BUILD81.md`
-- `changelogs/CHANGELOG-PHASE8-BUILD80.md`
-- `docs/PHASE-7-C-GUIDED-ACTIONS-CONTRACT.md`
+- `docs/PHASE-9-SLICE1-DESTRUCTIVE-WRITE-AUDIT.md`
+- `changelogs/CHANGELOG-PHASE9-BUILD82.md`
 - `docs/INTEGRATION_SAFETY.md`
 
 ## Stop line
 
-**Build81 is the accepted REAL USER PASS baseline. TM v5.23 / bridge1.13 remains deployed. Build82 is unused: reproduce the next real issue before runtime mutation.**
+**Build81 remains the accepted REAL USER PASS baseline. Build82 is deployed candidate only until explicit browser PASS.**
