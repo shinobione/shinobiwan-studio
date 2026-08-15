@@ -4,7 +4,7 @@ Date: 2026-08-15
 Version: `v0.19.14`  
 Build: `92`  
 Codename: `studio-focus-slice4-phase9-track-metadata-response-loss-truth`  
-Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+Status: **REAL USER PASS · ACCEPTED**
 
 ## Fresh-audit decision
 
@@ -124,6 +124,30 @@ Final full validation `31893496536` passed the complete repository-native chain 
 
 Runtime merge `d0ca8b3aa4481c3217f79790e347000bfd22823a` deployed successfully through Pages run `31893652679`.
 
+Candidate docs PR #159 passed full validation `31894353160`, merged at `f46b846841e6ef9ce705b2fa3817baecd0aecefa`, and deployed successfully through Pages run `31894411652`.
+
+## Real-user acceptance — PASS
+
+The bounded acceptance was intentionally a **normal-browser metadata regression**, not a manufactured response-loss test.
+
+The user returned the explicit verdict on 2026-08-15:
+
+```text
+BUILD92 PASS MADAFAKA
+```
+
+Accepted smoke boundary:
+
+- deployed `v0.19.14 · Build92` verified in the browser;
+- one safe existing private canonical Track opened;
+- one harmless reversible metadata change reviewed through the normal **Validate** flow;
+- one normal explicit **Save** performed;
+- canonical reread verification succeeded (`CANONICAL REREAD · VERIFIED`);
+- the metadata change persisted after canonical reload;
+- surrounding Track / Albums / Lyrics / SonicTrace navigation remained sane.
+
+Acceptance intentionally did **not** cut network, invalidate Cloudflare Access, or manufacture timeout/transport/ambiguous-write branches. Those failure paths remain protected by automated Build92 classification guards.
+
 ## Safety
 
 ```text
@@ -136,25 +160,19 @@ Historical guard CI     31893447100 · FAILURE · Build80 seam assertion only ·
 Runtime merge           d0ca8b3aa4481c3217f79790e347000bfd22823a
 Runtime Pages           31893652679 · SUCCESS · exact runtime merge SHA
 Safety post-deploy      safety/post-build92-deployed-candidate-20260815-1748
+Candidate docs PR       #159
+Candidate docs CI       31894353160 · SUCCESS
+Candidate docs merge    f46b846841e6ef9ce705b2fa3817baecd0aecefa
+Candidate docs Pages    31894411652 · SUCCESS · exact candidate-docs merge SHA
+Safety post-acceptance  safety/post-build92-real-user-pass-20260815-1819
+Acceptance docs PR      PENDING
+Acceptance docs merge   PENDING
+Acceptance docs Pages   PENDING
 Worker deploy           NONE
 Track Manager change    NONE
 R2 migration/write      NONE caused by implementation/deployment
-Real-user smoke         PENDING
+Real-user smoke         BUILD92 PASS MADAFAKA · 2026-08-15
 Build93                 UNALLOCATED
 ```
 
-## Required real-user acceptance
-
-Use a normal browser regression only:
-
-1. hard refresh and verify `v0.19.14 · Build92`;
-2. open one safe existing private canonical Track;
-3. change one harmless reversible metadata field such as mood, tag or era;
-4. run **Validate**, review the normalized proposal, then perform one normal explicit **Save**;
-5. confirm `CANONICAL REREAD · VERIFIED`;
-6. reload and confirm the harmless edit persisted;
-7. check surrounding Track / Albums / Lyrics / SonicTrace navigation.
-
-Do **not** deliberately cut network or invalidate Cloudflare Access to manufacture a lost response. Automated guards own the failure-path proof.
-
-Build92 remains a candidate until explicit real-user browser acceptance. Build93 remains unallocated.
+Build92 is **REAL USER PASS / ACCEPTED**. Build93 remains unallocated until a fresh bounded post-Build92 audit selects a concrete next scope.
