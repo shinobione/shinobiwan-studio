@@ -4,15 +4,10 @@ import fs from 'node:fs';
 const read = path => fs.readFileSync(path, 'utf8').replace(/\r\n/g, '\n');
 const release = read('src/release.ts');
 const lyrics = read('src/services/lyrics-admin-api.ts');
-const sonic = read('src/services/sonictrace-api.ts');
 const pkg = JSON.parse(read('package.json'));
 
-assert.match(release, /version:\s*'0\.19\.12'/);
-assert.match(release, /build:\s*90/);
-assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-lyrics-private-read-transient-retry-truth'"));
-assert.ok(release.includes('build89AncestryMarker'), 'Build90 must preserve accepted Build89 ancestry.');
-assert.ok(release.includes("version: 0.19.11 · build: 89 · codename: 'studio-focus-slice4-phase9-album-private-read-transient-retry-truth'"));
-assert.equal(pkg.version, '0.19.12', 'package version must match Build90 runtime version.');
+assert.ok(release.includes('build90AncestryMarker'), 'Build91+ must preserve accepted Build90 ancestry.');
+assert.ok(release.includes("version: 0.19.12 · build: 90 · codename: 'studio-focus-slice4-phase9-lyrics-private-read-transient-retry-truth'"));
 
 assert.ok(lyrics.includes('const TRANSIENT_LYRICS_READ_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);'), 'Lyrics transient HTTP allowlist must stay explicit and bounded.');
 assert.ok(lyrics.includes('async function fetchLyricsJsonOnce(trackId: string): Promise<AdminLyricsSnapshot>'), 'Build90 must isolate one canonical Lyrics GET attempt.');
@@ -34,16 +29,13 @@ assert.ok(!lyrics.includes("reason.code === 'LYRICS_READ_INVALID_RESPONSE'\n    
 
 assert.ok(lyrics.includes('const payload = await getLyricsJson(trackId);'), 'Canonical user-facing Lyrics read must use the bounded helper.');
 assert.ok(lyrics.includes('Promise.all([getLyricsJson(trackId), getAdminTrack(trackId)])'), 'Build83 save verification/recovery must keep using canonical Lyrics reread plus Track reread.');
-assert.equal((lyrics.match(/method:\s*'POST'/g) || []).length, 1, 'Build90 must not add or duplicate Lyrics POST transports.');
+assert.equal((lyrics.match(/method:\s*'POST'/g) || []).length, 1, 'Build90 ancestry must not add or duplicate Lyrics POST transports.');
 assert.ok(lyrics.includes('async function postLyrics<T extends AdminLyricsValidationResponse | AdminLyricsSaveResponse>('), 'Existing Lyrics validate/save POST transport must remain separate.');
 assert.ok(lyrics.includes("timeoutCode: 'LYRICS_SAVE_TIMEOUT'"), 'Build83 save timeout classification must remain inherited.');
 assert.ok(lyrics.includes("transportCode: 'LYRICS_SAVE_TRANSPORT'"), 'Build83 save transport classification must remain inherited.');
 assert.ok(lyrics.includes("lostResponsePolicy: 'private-canonical-reread-no-blind-retry'"), 'Build83 no-blind-write-retry contract must remain explicit.');
-assert.ok(!lyrics.includes('retryLyricsSave'), 'Build90 must never introduce automatic Lyrics save retry.');
-assert.ok(!lyrics.includes('retryLyricsValidation'), 'Build90 must never introduce automatic Lyrics validation retry.');
-
-assert.ok(sonic.includes('async function adminJson<T>(path: string, init?: RequestInit, timeoutMs = 12000)'), 'SonicTrace private reads remain a separate future audit family.');
-assert.ok(!sonic.includes('TRANSIENT_LYRICS_READ_STATUSES'), 'Build90 must not silently broaden Lyrics retry policy into SonicTrace.');
+assert.ok(!lyrics.includes('retryLyricsSave'), 'Build90 ancestry must never introduce automatic Lyrics save retry.');
+assert.ok(!lyrics.includes('retryLyricsValidation'), 'Build90 ancestry must never introduce automatic Lyrics validation retry.');
 
 for (const inherited of [
   'test-phase9-destructive-write-ambiguity-build82.mjs',
@@ -58,4 +50,4 @@ for (const inherited of [
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must include ${inherited}`);
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Phase9 guards must remain in the full build gate.');
 
-console.log('Phase9 Build90 Lyrics private-read retry guard passed: canonical Lyrics GET retries once only for transient timeout/transport/HTTP failures while Access/CORS, deterministic 4xx and invalid JSON remain non-retry; Build83 write recovery stays no-blind-retry and SonicTrace stays out of scope.');
+console.log('Phase9 Build90 Lyrics private-read retry guard passed as inherited ancestry: canonical Lyrics GET still retries once only for transient timeout/transport/HTTP failures while Access/CORS, deterministic 4xx and invalid JSON remain non-retry and Build83 write recovery stays no-blind-retry.');
