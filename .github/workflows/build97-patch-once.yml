@@ -1,0 +1,200 @@
+name: Build97 bounded patch one-shot
+
+on:
+  push:
+    branches:
+      - phase9/build97-track-create-success-verification
+
+permissions:
+  contents: write
+
+jobs:
+  patch-build97:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: phase9/build97-track-create-success-verification
+          fetch-depth: 0
+      - name: Apply bounded Build97 patch
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re, json
+
+          def read(path): return Path(path).read_text(encoding='utf-8')
+          def write(path,text): Path(path).write_text(text,encoding='utf-8')
+          def rep(text,old,new,label,count=1):
+              if text.count(old) < count: raise SystemExit(f'missing marker {label}')
+              return text.replace(old,new,count)
+
+          # Runtime: Track create normal-success verification only.
+          p='src/services/phase4-admin-api.ts'; t=read(p)
+          helper='''function stableCreateManifestJson(value: unknown): string {\n  function normalize(input: unknown): unknown {\n    if (Array.isArray(input)) return input.map(normalize);\n    if (!input || typeof input !== 'object') return input;\n    const record = input as Record<string, unknown>;\n    return Object.keys(record).sort().reduce<Record<string, unknown>>((result, key) => {\n      const normalized = normalize(record[key]);\n      if (normalized !== undefined) result[key] = normalized;\n      return result;\n    }, {});\n  }\n  return JSON.stringify(normalize(value));\n}\n\n'''
+          anchor='export async function createAdminTrack(slug: string, metadata: AdminMetadataPatch): Promise<TrackCreateResponse> {'
+          if helper.strip() not in t: t=rep(t,anchor,helper+anchor,'phase4 helper anchor')
+          old='''export async function createAdminTrack(slug: string, metadata: AdminMetadataPatch): Promise<TrackCreateResponse> {\n  if (!validTrackId(slug)) throw new Phase4AdminError('Track ID must be lower-case kebab-case.');\n  await requireManage('track-create');\n  const payload = await postSimple<TrackCreateResponse>('/api/studio/tracks/create', {\n    intent: TRACK_CREATE_INTENT,\n    slug,\n    metadata,\n  });\n  if (!payload.created || payload.trackId !== slug) throw new Phase4AdminError('Track Manager returned an invalid create response.');\n  const reread = await getAdminTrack(slug);\n  const clientVerified = reread.track?.manifest?.slug === slug && reread.track?.manifest?.status === 'draft';\n  return { ...payload, track: reread.track?.manifest || payload.track, clientVerified };\n}'''
+          new='''export async function createAdminTrack(slug: string, metadata: AdminMetadataPatch): Promise<TrackCreateResponse> {\n  if (!validTrackId(slug)) throw new Phase4AdminError('Track ID must be lower-case kebab-case.');\n  await requireManage('track-create');\n  const payload = await postSimple<TrackCreateResponse>('/api/studio/tracks/create', {\n    intent: TRACK_CREATE_INTENT,\n    slug,\n    metadata,\n  });\n  const responseManifest = payload.track;\n  if (!payload.created || payload.trackId !== slug || !responseManifest?.updatedAt || responseManifest.slug !== slug || responseManifest.status !== 'draft') {\n    throw new Phase4AdminError('Track Manager returned an invalid create response.');\n  }\n  const reread = await getAdminTrack(slug);\n  const canonicalManifest = reread.track?.manifest;\n  const clientVerified = Boolean(\n    canonicalManifest?.updatedAt === responseManifest.updatedAt\n    && stableCreateManifestJson(canonicalManifest) === stableCreateManifestJson(responseManifest),\n  );\n  return { ...payload, track: canonicalManifest || responseManifest, clientVerified };\n}'''
+          t=rep(t,old,new,'phase4 create function')
+          t=rep(t,"  wholeTrackDeleteEnabled: false,\n  phase5Enabled: false,","  wholeTrackDeleteEnabled: false,\n  trackCreateSuccessVerificationPolicy: 'server-normalized-manifest-plus-private-reread-exact-match',\n  trackCreateLostResponsePolicy: 'not-covered-no-operation-id-no-blind-retry',\n  maxAutomaticTrackCreateRetries: 0,\n  phase5Enabled: false,",'phase4 service policy')
+          write(p,t)
+
+          # Release identity + ancestry.
+          p='src/release.ts'; t=read(p)
+          t=rep(t,"  version: '0.19.18',\n  build: 96,\n  codename: 'studio-focus-slice4-phase9-album-create-success-verification-truth',","  version: '0.19.19',\n  build: 97,\n  codename: 'studio-focus-slice4-phase9-track-create-success-verification-truth',",'release identity')
+          marker="export const build95AncestryMarker = \"version: 0.19.17 · build: 95 · codename: 'studio-focus-slice4-phase9-albums-daily-resilient-service-convergence'\";"
+          t=rep(t,marker,marker+"\nexport const build96AncestryMarker = \"version: 0.19.18 · build: 96 · codename: 'studio-focus-slice4-phase9-album-create-success-verification-truth'\";",'release Build96 ancestry')
+          write(p,t)
+
+          # package + Phase9 gate.
+          p='package.json'; data=json.loads(read(p)); data['version']='0.19.19'
+          phase9=data['scripts']['check:phase9']
+          guard='node scripts/test-phase9-track-create-success-verification-build97.mjs'
+          if guard not in phase9: data['scripts']['check:phase9']=phase9+' && '+guard
+          write(p,json.dumps(data,ensure_ascii=False,indent=2)+'\n')
+
+          # Build97 guard.
+          guard_text=r'''import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+const read = path => fs.readFileSync(path, 'utf8').replace(/\r\n/g, '\n');
+const release = read('src/release.ts');
+const phase4 = read('src/services/phase4-admin-api.ts');
+const intake = read('src/components/TrackCreatePanel.tsx');
+const albumApi = read('src/services/album-admin-api.ts');
+const pkg = JSON.parse(read('package.json'));
+
+assert.equal(pkg.version, '0.19.19', 'Build97 package version must be v0.19.19.');
+assert.ok(release.includes("version: '0.19.19'"), 'Build97 release version mismatch.');
+assert.ok(release.includes('build: 97'), 'Build97 release identity is missing.');
+assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-track-create-success-verification-truth'"), 'Build97 codename mismatch.');
+assert.ok(release.includes('build96AncestryMarker'), 'Build97 must preserve accepted Build96 ancestry.');
+assert.ok(release.includes("version: 0.19.18 · build: 96 · codename: 'studio-focus-slice4-phase9-album-create-success-verification-truth'"), 'Accepted Build96 identity must remain immutable in ancestry.');
+
+// Track Manager normalizes create metadata and returns the normalized manifest it already reread server-side.
+// Build97 compares that authoritative response shape with Studio's second private canonical reread.
+assert.ok(phase4.includes("const payload = await postSimple<TrackCreateResponse>('/api/studio/tracks/create', {"), 'Track create must retain the existing Track Manager transport and intent.');
+assert.ok(phase4.includes('const responseManifest = payload.track;'), 'Build97 must anchor normal-success verification to the server-normalized create manifest.');
+assert.ok(phase4.includes("!responseManifest?.updatedAt || responseManifest.slug !== slug || responseManifest.status !== 'draft'"), 'Create response must prove the exact trackId, draft state and canonical revision before verification.');
+assert.ok(phase4.includes('const canonicalManifest = reread.track?.manifest;'), 'Build97 must retain a second private canonical Track reread.');
+assert.ok(phase4.includes('canonicalManifest?.updatedAt === responseManifest.updatedAt'), 'Track create verification must require the exact server/canonical revision.');
+assert.ok(phase4.includes('stableCreateManifestJson(canonicalManifest) === stableCreateManifestJson(responseManifest)'), 'Track create verification must compare the complete normalized response/canonical manifest shape.');
+assert.ok(phase4.includes('function stableCreateManifestJson(value: unknown): string'), 'Build97 must use deterministic whole-manifest comparison independent of key order.');
+assert.ok(!phase4.includes("const clientVerified = reread.track?.manifest?.slug === slug && reread.track?.manifest?.status === 'draft';"), 'Legacy slug+draft-only create verification must not return.');
+
+assert.ok(phase4.includes("trackCreateSuccessVerificationPolicy: 'server-normalized-manifest-plus-private-reread-exact-match'"));
+assert.ok(phase4.includes("trackCreateLostResponsePolicy: 'not-covered-no-operation-id-no-blind-retry'"), 'Build97 must not pretend create response-loss causality is solved.');
+assert.ok(phase4.includes('maxAutomaticTrackCreateRetries: 0'), 'Track create must retain zero automatic retries.');
+assert.ok(!phase4.includes('retryAdminTrackCreate'), 'Build97 must not add a Track create retry helper.');
+
+// The real intake already refuses to continue to asset writes when create verification is false.
+assert.ok(intake.includes('const result = await createAdminTrack(effectiveSlug, metadataPatch(resolution, \'draft\'));'), 'Daily New Track intake must keep using the shared create service.');
+assert.ok(intake.includes("if (!result.clientVerified) throw new Phase4AdminError('The draft was created but its canonical reread could not be verified."), 'Daily New Track intake must stop before uploads when create verification fails.');
+
+// Keep neighboring operation boundaries immutable.
+assert.ok(phase4.includes("const clientVerified = manifest?.updatedAt === payload.updatedAt && manifest?.assets?.[kind] === payload.filename && asset?.present === true && durationVerified;"), 'Track asset upload normal-success verification must remain unchanged.');
+assert.ok(albumApi.includes("createSuccessVerificationPolicy: 'canonical-reread-revision-plus-requested-metadata'"), 'Accepted Build96 Album create verification must remain intact.');
+assert.ok(albumApi.includes('maxAutomaticCreateRetries: 0'), 'Accepted Build96 Album create retry boundary must remain intact.');
+
+for (const inherited of [
+  'test-phase9-destructive-write-ambiguity-build82.mjs',
+  'test-phase9-lyrics-response-loss-build83.mjs',
+  'test-phase9-sonictrace-response-loss-build84.mjs',
+  'test-phase9-album-metadata-response-loss-build85.mjs',
+  'test-phase9-album-move-response-loss-build86.mjs',
+  'test-phase9-album-membership-response-loss-build87.mjs',
+  'test-phase9-private-read-transient-retry-build88.mjs',
+  'test-phase9-album-private-read-transient-retry-build89.mjs',
+  'test-phase9-lyrics-private-read-transient-retry-build90.mjs',
+  'test-phase9-sonictrace-private-read-transient-retry-build91.mjs',
+  'test-phase9-track-metadata-response-loss-build92.mjs',
+  'test-phase9-track-metadata-validation-transient-retry-build93.mjs',
+  'test-phase9-lyrics-validation-transient-retry-build94.mjs',
+  'test-phase9-albums-daily-resilient-convergence-build95.mjs',
+  'test-phase9-album-create-success-verification-build96.mjs',
+  'test-phase9-track-create-success-verification-build97.mjs',
+]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must retain ${inherited}`);
+assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Build97 must remain inside the repository-native full build gate.');
+
+console.log('Phase9 Build97 Track create success-verification guard passed: normal success now proves the complete server-normalized create manifest against Studio private canonical reread while create lost-response recovery stays out of scope with zero automatic retries.');
+'''
+          write('scripts/test-phase9-track-create-success-verification-build97.mjs', guard_text)
+
+          changelog='''# SHINOBIWAN Studio — Build97\n\nDate: 2026-08-16  \nVersion: `v0.19.19`  \nBuild: `97`  \nCodename: `studio-focus-slice4-phase9-track-create-success-verification-truth`  \nStatus: **IMPLEMENTED CANDIDATE · CI PENDING**\n\n## Fresh-audit decision\n\nThe post-Build96 read-only audit compared remaining reliability seams after Build96 final acceptance closeout.\n\n- Track asset upload normal success already verifies response revision + manifest asset pointer + canonical asset presence, plus returned duration when applicable.\n- Album binary upload still lacks digest/operation identity for exact-byte or lost-response claims.\n- Full Track/Album create lost-response causality still lacks a persisted operation identifier and remains unsafe for blind retry.\n- Deep Audio automatic retry remains unsafe while duplicate expensive compute cannot be excluded.\n\nThe smallest proven gap is **normal successful Track create verification**. Track Manager already normalizes the requested metadata, writes the draft, rebuilds catalog, rereads the manifest server-side and returns that normalized reread as `payload.track`. Studio then performs a second private canonical reread, but before Build97 it accepted success when only `slug` and `draft` matched.\n\n## Build97 scope\n\n```text\ntrack-create-v1 HTTP success\n→ require server response trackId + draft + canonical revision\n→ private canonical Track reread\n→ require exact response/canonical updatedAt\n→ require deterministic whole normalized manifest equality\n   ├─ exact → clientVerified=true\n   └─ mismatch → clientVerified=false; intake stops before asset writes\n```\n\nThe comparison deliberately anchors to Track Manager's **normalized response manifest**, not raw UI input. This preserves legitimate server normalization such as list deduplication, tag fallback, color normalization and canonical defaults.\n\n## Explicit non-goals\n\nBuild97 does **not** add:\n\n- Track create response-loss recovery;\n- any automatic Track create retry;\n- operation IDs;\n- Track Manager / Worker changes;\n- R2 schema/data changes;\n- Track asset upload algorithm changes;\n- Album create/upload changes;\n- metadata/Lyrics/SonicTrace/Deep Audio behavior changes;\n- LaunchPAD or LRC Maker changes.\n\nCreate lost-response policy remains explicit: `not-covered-no-operation-id-no-blind-retry`, with `maxAutomaticTrackCreateRetries: 0`.\n\n## Safety\n\n```text\nAccepted base main      b4cc1cbc0ca73cfe8da9f839dd41447b9b9f28cb\nSafety pre              safety/pre-phase9-track-create-success-verification-build97-20260816\nFeature branch          phase9/build97-track-create-success-verification\nWorker deploy           NONE planned\nTrack Manager change    NONE\nR2 migration/write      NONE caused by implementation\n```\n\nCI, merge, Pages and real-user acceptance remain separate states.\n'''
+          write('changelogs/CHANGELOG-BUILD97.md',changelog)
+
+          # Build96 guard -> bounded Build97 successor.
+          p='scripts/test-phase9-album-create-success-verification-build96.mjs'; t=read(p)
+          old_top='''assert.equal(pkg.version, '0.19.18', 'Build96 package version must be v0.19.18.');\nassert.ok(release.includes("version: '0.19.18'"), 'Build96 release version mismatch.');\nassert.ok(release.includes('build: 96'), 'Build96 release identity is missing.');\nassert.ok(release.includes("codename: 'studio-focus-slice4-phase9-album-create-success-verification-truth'"), 'Build96 codename mismatch.');\nassert.ok(release.includes('build95AncestryMarker'), 'Build96 must preserve accepted Build95 ancestry.');\nassert.ok(release.includes("version: 0.19.17 · build: 95 · codename: 'studio-focus-slice4-phase9-albums-daily-resilient-service-convergence'"), 'Accepted Build95 identity must remain immutable in ancestry.');'''
+          new_top='''assert.ok(['0.19.18', '0.19.19'].includes(pkg.version), 'Build96 guard accepts Build96 and its bounded Build97 successor.');\nassert.ok(release.includes('build95AncestryMarker'), 'Build96+ must preserve accepted Build95 ancestry.');\nassert.ok(release.includes("version: 0.19.17 · build: 95 · codename: 'studio-focus-slice4-phase9-albums-daily-resilient-service-convergence'"), 'Accepted Build95 identity must remain immutable in ancestry.');\nif (pkg.version === '0.19.18') {\n  assert.ok(release.includes("version: '0.19.18'"), 'Build96 release version mismatch.');\n  assert.ok(release.includes('build: 96'), 'Build96 release identity is missing.');\n  assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-album-create-success-verification-truth'"), 'Build96 codename mismatch.');\n}\nif (pkg.version === '0.19.19') {\n  assert.ok(release.includes('build96AncestryMarker'), 'Build97 must preserve accepted Build96 ancestry.');\n  assert.ok(release.includes("version: 0.19.18 · build: 96 · codename: 'studio-focus-slice4-phase9-album-create-success-verification-truth'"), 'Accepted Build96 identity must remain immutable in ancestry.');\n}'''
+          t=rep(t,old_top,new_top,'Build96 guard successor top')
+          t=rep(t,"  'test-phase9-album-create-success-verification-build96.mjs',","  'test-phase9-album-create-success-verification-build96.mjs',\n  'test-phase9-track-create-success-verification-build97.mjs',",'Build96 guard inherited list')
+          t=t.replace('Build96 must remain inside','Build96/Build97 line must remain inside')
+          write(p,t)
+
+          # Build95 guard.
+          p='scripts/test-phase9-albums-daily-resilient-convergence-build95.mjs'; t=read(p)
+          t=rep(t,"assert.ok(['0.19.17', '0.19.18'].includes(pkg.version), 'Build95 guard accepts Build95 and its bounded Build96 successor.');","assert.ok(['0.19.17', '0.19.18', '0.19.19'].includes(pkg.version), 'Build95 guard accepts Build95 and its bounded Build96/Build97 successors.');",'Build95 version cap')
+          t=rep(t,"if (pkg.version === '0.19.18') {\n  assert.ok(release.includes('build95AncestryMarker'), 'Build96 must preserve accepted Build95 ancestry.');","if (['0.19.18', '0.19.19'].includes(pkg.version)) {\n  assert.ok(release.includes('build95AncestryMarker'), 'Build96+ must preserve accepted Build95 ancestry.');",'Build95 ancestry condition')
+          t=rep(t,"}\n\n// Prove this is the actual daily Albums route, not only a legacy/advanced editor.","}\nif (pkg.version === '0.19.19') assert.ok(release.includes('build96AncestryMarker'), 'Build97 must preserve accepted Build96 ancestry while inheriting Build95 daily Albums truth.');\n\n// Prove this is the actual daily Albums route, not only a legacy/advanced editor.",'Build95 Build97 ancestry')
+          write(p,t)
+
+          # Build94 guard.
+          p='scripts/test-phase9-lyrics-validation-transient-retry-build94.mjs'; t=read(p)
+          t=rep(t,"assert.ok(['0.19.16', '0.19.17', '0.19.18'].includes(pkg.version), 'Build94 guard accepts Build94 and its bounded Build95/Build96 successors.');","assert.ok(['0.19.16', '0.19.17', '0.19.18', '0.19.19'].includes(pkg.version), 'Build94 guard accepts Build94 and its bounded Build95/Build96/Build97 successors.');",'Build94 version cap')
+          t=rep(t,"if (pkg.version === '0.19.18') assert.ok(release.includes('build95AncestryMarker'), 'Build96 must preserve accepted Build95 ancestry while inheriting Build94 validation truth.');","if (['0.19.18', '0.19.19'].includes(pkg.version)) assert.ok(release.includes('build95AncestryMarker'), 'Build96+ must preserve accepted Build95 ancestry while inheriting Build94 validation truth.');\nif (pkg.version === '0.19.19') assert.ok(release.includes('build96AncestryMarker'), 'Build97 must preserve accepted Build96 ancestry while inheriting Build94 validation truth.');",'Build94 successor ancestry')
+          write(p,t)
+
+          # Build93 guard.
+          p='scripts/test-phase9-track-metadata-validation-transient-retry-build93.mjs'; t=read(p)
+          t=rep(t,"assert.ok(['0.19.15', '0.19.16', '0.19.17', '0.19.18'].includes(pkg.version), 'Build93 guard accepts Build93 and its bounded Build94/Build95/Build96 successors.');","assert.ok(['0.19.15', '0.19.16', '0.19.17', '0.19.18', '0.19.19'].includes(pkg.version), 'Build93 guard accepts Build93 and its bounded Build94/Build95/Build96/Build97 successors.');",'Build93 version cap')
+          t=rep(t,"if (['0.19.17', '0.19.18'].includes(pkg.version)) assert.ok(release.includes('build94AncestryMarker'), 'Build95+ must preserve accepted Build94 ancestry while inheriting Build93 validation truth.');","if (['0.19.17', '0.19.18', '0.19.19'].includes(pkg.version)) assert.ok(release.includes('build94AncestryMarker'), 'Build95+ must preserve accepted Build94 ancestry while inheriting Build93 validation truth.');",'Build93 Build94 ancestry')
+          t=rep(t,"if (pkg.version === '0.19.18') assert.ok(release.includes('build95AncestryMarker'), 'Build96 must preserve accepted Build95 ancestry while inheriting Build93 validation truth.');","if (['0.19.18', '0.19.19'].includes(pkg.version)) assert.ok(release.includes('build95AncestryMarker'), 'Build96+ must preserve accepted Build95 ancestry while inheriting Build93 validation truth.');\nif (pkg.version === '0.19.19') assert.ok(release.includes('build96AncestryMarker'), 'Build97 must preserve accepted Build96 ancestry while inheriting Build93 validation truth.');",'Build93 successor ancestry')
+          write(p,t)
+
+          # Build69 and Focus64-67 known bounded successor caps.
+          successor_files=['scripts/test-phase7-c-guided-metadata-build69.mjs','scripts/test-studio-focus-build64-foundation-repair.mjs','scripts/test-studio-focus-build65-lyrics-crash-corrective.mjs','scripts/test-studio-focus-build66-asset-identity-lyrics-continuity.mjs','scripts/test-studio-focus-build67-lyrics-source-anchor.mjs']
+          for p in successor_files:
+              t=read(p)
+              if p.endswith('build69.mjs'):
+                  t=t.replace("|17|18)'/","|17|18|19)'/",1)
+                  t=t.replace('|95|96)/','|95|96|97)/')
+                  t=t.replace('|96)/','|96|97)/')
+                  t=t.replace("phase9-album-create-success-verification-truth))'","phase9-album-create-success-verification-truth|phase9-track-create-success-verification-truth))'",1)
+                  t=t.replace("if (/build:\\s*(?:94|95)/.test(release))","if (/build:\\s*(?:94|95|96|97)/.test(release))")
+                  t=t.replace("if (/build:\\s*(?:95|96|97)/.test(release)) assert.ok(release.includes('build94AncestryMarker')","if (/build:\\s*(?:95|96|97)/.test(release)) assert.ok(release.includes('build94AncestryMarker')")
+                  t=t.replace("if (/build:\\s*96/.test(release)) assert.ok(release.includes('build95AncestryMarker'), 'Build96 must preserve accepted Build95 Phase9 ancestry.');","if (/build:\\s*(?:96|97)/.test(release)) assert.ok(release.includes('build95AncestryMarker'), 'Build96+ must preserve accepted Build95 Phase9 ancestry.');\nif (/build:\\s*97/.test(release)) assert.ok(release.includes('build96AncestryMarker'), 'Build97 must preserve accepted Build96 Phase9 ancestry.');")
+              else:
+                  t=t.replace("'0.19.18'].includes(pkg.version)","'0.19.18', '0.19.19'].includes(pkg.version)",1)
+                  t=t.replace('v0.19.3-v0.19.18','v0.19.3-v0.19.19',1)
+                  t=t.replace("|17|18)'/","|17|18|19)'/",1)
+                  t=t.replace('|95|96)/','|95|96|97)/')
+                  t=t.replace('|96)/','|96|97)/')
+                  t=t.replace("if (/build:\\s*(?:94|95)/.test(release))","if (/build:\\s*(?:94|95|96|97)/.test(release))")
+                  t=t.replace("if (/build:\\s*96/.test(release)) assert.ok(release.includes('build95AncestryMarker'), 'Build96 must preserve accepted Build95 Phase9 ancestry.');","if (/build:\\s*(?:96|97)/.test(release)) assert.ok(release.includes('build95AncestryMarker'), 'Build96+ must preserve accepted Build95 Phase9 ancestry.');\nif (/build:\\s*97/.test(release)) assert.ok(release.includes('build96AncestryMarker'), 'Build97 must preserve accepted Build96 Phase9 ancestry.');")
+              write(p,t)
+
+          expected=[
+            'src/services/phase4-admin-api.ts','src/release.ts','package.json',
+            'scripts/test-phase9-track-create-success-verification-build97.mjs','changelogs/CHANGELOG-BUILD97.md',
+            'scripts/test-phase9-album-create-success-verification-build96.mjs','scripts/test-phase9-albums-daily-resilient-convergence-build95.mjs',
+            'scripts/test-phase9-lyrics-validation-transient-retry-build94.mjs','scripts/test-phase9-track-metadata-validation-transient-retry-build93.mjs',
+            'scripts/test-phase7-c-guided-metadata-build69.mjs','scripts/test-studio-focus-build64-foundation-repair.mjs',
+            'scripts/test-studio-focus-build65-lyrics-crash-corrective.mjs','scripts/test-studio-focus-build66-asset-identity-lyrics-continuity.mjs',
+            'scripts/test-studio-focus-build67-lyrics-source-anchor.mjs'
+          ]
+          if len(expected)!=14: raise SystemExit('expected scope count mismatch')
+          PY
+      - name: Verify and commit final branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/build97-patch-once.yml
+          git config user.name 'ShinoBiWan'
+          git config user.email 'shinobione@users.noreply.github.com'
+          git add src/services/phase4-admin-api.ts src/release.ts package.json scripts/test-phase9-track-create-success-verification-build97.mjs changelogs/CHANGELOG-BUILD97.md scripts/test-phase9-album-create-success-verification-build96.mjs scripts/test-phase9-albums-daily-resilient-convergence-build95.mjs scripts/test-phase9-lyrics-validation-transient-retry-build94.mjs scripts/test-phase9-track-metadata-validation-transient-retry-build93.mjs scripts/test-phase7-c-guided-metadata-build69.mjs scripts/test-studio-focus-build64-foundation-repair.mjs scripts/test-studio-focus-build65-lyrics-crash-corrective.mjs scripts/test-studio-focus-build66-asset-identity-lyrics-continuity.mjs scripts/test-studio-focus-build67-lyrics-source-anchor.mjs .github/workflows/build97-patch-once.yml
+          files=$(git diff --cached --name-only | grep -v '^$' | wc -l)
+          test "$files" -eq 15
+          git commit -m 'Phase9 Build97 Track create success verification truth'
+          git push origin HEAD:phase9/build97-track-create-success-verification
