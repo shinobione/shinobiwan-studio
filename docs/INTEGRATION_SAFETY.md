@@ -3,7 +3,8 @@
 Date established: 2026-08-08  
 Hardened: 2026-08-09  
 Current-state overlay refreshed: 2026-08-15  
-Current accepted Studio release: `v0.19.4` / Build `82` / REAL USER PASS
+Current accepted Studio release: `v0.19.4` / Build `82` / REAL USER PASS  
+Current deployed Studio candidate: `v0.19.5` / Build `83` / REAL USER SMOKE PENDING
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -20,11 +21,20 @@ For short current state, read root `PROJECT_STATE.md` first. This file contains 
 ## Current production overlay
 
 ```text
-Studio
+Studio accepted
   v0.19.4 / Build82 / REAL USER PASS
   runtime merge 7a0d52fcc0bf862478c459f0648afc1c6690b34f
   runtime Pages 31854528438 / SUCCESS
   browser smoke BUILD82 PASS / 2026-08-15
+
+Studio deployed candidate
+  v0.19.5 / Build83 / REAL USER SMOKE PENDING
+  exact tested head beff9fc58c58e36ce2c2082f7bd5c041641a5e12
+  runtime CI 31856653579 / SUCCESS
+  runtime merge b168d8cda805e5c50480a3e26c5d52e490fb7ac6
+  runtime Pages 31856698097 / SUCCESS
+  Worker deploy NONE
+  R2 migration/write NONE caused by deployment
 
 LaunchPAD
   2026.08.12.102 / REAL USER PASS
@@ -43,7 +53,7 @@ LRC Maker
   6.3.8
 ```
 
-Historical Phase6/Phase7/Phase8 checkpoints remain immutable history; this overlay states current production truth only.
+Historical Phase6/Phase7/Phase8 checkpoints remain immutable history; this overlay states current production/deployed-candidate truth only.
 
 ## Restoration checkpoints
 
@@ -59,6 +69,12 @@ Before Phase9 Build82:
 
 After Build82 deployment candidate:
   safety/post-build82-deployed-candidate-20260815-0248
+
+Before Phase9 Build83:
+  safety/pre-phase9-lyrics-response-loss-build83-20260815-0319
+
+After Build83 deployment candidate:
+  safety/post-build83-deployed-candidate
 ```
 
 Earlier accepted safety branches remain preserved in Git history.
@@ -103,6 +119,19 @@ Worker Version ID 439a1ce4-e458-427d-9fd6-61e888efd269
 public Worker v2.7 unchanged
 ```
 
+### SHINOBIWAN Studio
+
+Studio remains the private orchestrator. Build83 changes only client-side Lyrics write ambiguity classification/recovery; it does not add a backend write authority, Worker deployment or R2 migration.
+
+Build83 failure rule:
+
+```text
+lost Lyrics save response
+→ no blind retry
+→ private canonical reread
+→ exact operation-specific commit-state classification
+```
+
 ### SonicTrace
 
 SonicTrace remains the audio-intelligence compute engine. R2 sidecars hold durable catalog-linked analysis. No duplicate canonical WAV is stored in analysis persistence.
@@ -119,117 +148,29 @@ recognized timestamps     = synchronized lyrics
 .lrc                       = optional export/compatibility only
 ```
 
-Canonical save uses Track Manager only, with manifest revision + lyrics ETag stale guards and private reread verification.
+A Studio Lyrics save remains protected by Track Manager stale/revision/ETag semantics and private canonical reread. If the HTTP response is lost, Build83 may call the operation committed only when private reread proves the exact requested normalized text at a new manifest revision and new Lyrics ETag. Unchanged revision + ETag may be retry-safe; changed-but-unproven or unreadable state must not be retried blindly.
 
 ## Album authority boundary
 
 ```text
-albums/<album-id>/manifest.json
-ordered album.trackIds = sole membership + artistic-order authority
+albums/<album-id>/manifest.json = canonical Album object
+album.trackIds                  = sole membership / artistic-order authority
+track.album                     = compatibility/cache only
 ```
 
-Track-side `album` metadata is compatibility cache only. Generic Track metadata writes must never mutate Album membership independently of guarded Album operations.
+Generic Track metadata must not independently create, move or reorder Album membership.
 
-## Studio write boundary
+## Ambiguous write rule
 
-Studio uses specialized, domain-scoped routes. Never create a generic arbitrary cross-origin `saveTrack()` or generic R2 writer.
+For any write where the request may have reached the protected authority but the response is lost:
 
-Existing families include:
+- do not infer failure from transport failure;
+- do not infer success from intent;
+- do not automatically retry unless canonical reread proves the exact operation did not commit and retry is safe;
+- use operation-specific canonical postconditions;
+- if causality remains unclear, expose `AMBIGUOUS / DO NOT RETRY`;
+- if canonical reread is unavailable, expose `UNVERIFIED / DO NOT RETRY`.
 
-```text
-metadata validate/save
-canonical lyrics validate/save
-track create
-per-asset upload/delete
-explicit catalog rebuild
-SonicTrace sidecar save/read
-Album metadata/membership/media guarded operations
-```
+## Current acceptance boundary
 
-Whole-track deletion remains outside the Studio bridge.
-
-## Cloudflare Access / CORS safety
-
-- no Cloudflare Access secret in GitHub Pages;
-- no R2 credential in GitHub Pages;
-- exact Studio origin remains `https://shinobione.github.io`;
-- credentialed CORS never uses `*`;
-- browser JSON-like control POSTs use established `text/plain;charset=UTF-8` simple-request transport where required;
-- multipart uploads use browser-generated `FormData` without forced `Content-Type`;
-- every private operation is capability/Access gated;
-- public fallback is read-only and never verifies a write;
-- no PUT/PATCH/DELETE browser method is introduced merely for convenience.
-
-## Ambiguous-write policy — Phase9 authority
-
-A lost HTTP response does **not** prove whether a write committed.
-
-For any write hardened under Phase9:
-
-```text
-write response lost / timeout
-→ NEVER automatic retry
-→ private canonical reread
-→ classify committed / not committed / ambiguous / unverified
-```
-
-A retry may be presented as safe only when canonical reread proves the pre-write revision/state is unchanged.
-
-A lost-response write may be recovered as success only when the operation-specific canonical postcondition is positively verified.
-
-Public fallback can never perform this verification.
-
-### Build82 accepted scope
-
-Build82 applies this policy only to destructive asset deletion:
-
-- Track asset delete;
-- Album asset delete.
-
-For both, recovery requires exact private canonical reread and asset absence; ambiguous/unverified states explicitly forbid blind retry. Normal success also requires verified post-write revision plus asset absence.
-
-Build82 is **REAL USER PASS** after the 2026-08-15 browser regression smoke.
-
-Do not silently generalize Build82 into retries for metadata, lyrics, SonicTrace or other Album writes. Those require separate bounded audits.
-
-## Destructive/media verification policy
-
-Do not mutate a real production WAV, cover, video, Album cover or lyrics object merely to prove destructive/media code can mutate it.
-
-Preferred proof:
-
-- source-scope guard;
-- typecheck/build;
-- stale checks;
-- canonical reread logic;
-- explicit UI confirmation;
-- disposable Draft asset only if a deliberate destructive browser smoke is truly required.
-
-## Version / deployment discipline
-
-Treat separately:
-
-1. code merged;
-2. GitHub Pages deployed;
-3. Worker deployed;
-4. R2/catalog data changed;
-5. real-user acceptance recorded.
-
-For private Track Manager-only Worker changes, prefer `target=admin` and `confirm=DEPLOY`. Build82 required no Worker deployment.
-
-Docs-only governance/closeout work does not create a new Studio build.
-
-## Rollback principle
-
-If a regression appears:
-
-1. stop the next integration step;
-2. do not compensate with unrelated media/catalog edits;
-3. revert the responsible PR first where possible;
-4. redeploy only the affected Worker from known-good source if backend-only;
-5. use immutable safety branches only when normal revert is insufficient;
-6. independently verify LaunchPAD, Track Manager, SonicTrace, LRC Maker and Studio before resuming.
-
-## Stop line
-
-**Build82 is the accepted Studio REAL USER PASS baseline. Phase9 is active. Build83 remains UNUSED until a fresh bounded audit proves the smallest next reliability scope. Track Manager v5.23 / bridge1.13 remains the sole deployed protected write authority.**
+Build82 is accepted. Build83 is deployed but pending normal browser regression smoke. A lost-response production fault injection is **not** required for Build83 acceptance; do not manufacture destructive or ambiguous conditions against important production Lyrics merely to demonstrate the guard.
