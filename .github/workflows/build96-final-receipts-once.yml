@@ -1,0 +1,76 @@
+name: Build96 final receipts one-shot
+
+on:
+  push:
+    branches:
+      - docs/build96-final-receipts
+
+permissions:
+  contents: write
+
+jobs:
+  patch-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: docs/build96-final-receipts
+          fetch-depth: 0
+      - name: Apply final Build96 receipts
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          def rw(path, old, new, count=1):
+              p=Path(path); t=p.read_text(encoding='utf-8')
+              if t.count(old) < count: raise SystemExit(f'missing marker {path}: {old[:80]}')
+              p.write_text(t.replace(old,new,count),encoding='utf-8')
+
+          receipts = '''Acceptance docs PR    #177\nAcceptance docs CI    31914122068 · SUCCESS\nAcceptance docs merge b5448ebbd1ab3aa27c21804d06a78ec4beffa669\nAcceptance docs Pages 31914188650 · SUCCESS'''
+          rw('README.md','Acceptance docs       IN PROGRESS',receipts)
+          rw('README.md','The immediate next action is a **fresh read-only post-Build96 Phase9 reliability audit** after acceptance-docs closeout. Build97 remains unallocated until that audit proves the smallest coherent next gap.','The immediate next action is a **fresh read-only post-Build96 Phase9 reliability audit**. Build97 remains unallocated until that audit proves the smallest coherent next gap.')
+
+          receipts_ps = '''Acceptance docs PR      #177\nAcceptance docs CI      31914122068 · SUCCESS\nAcceptance docs merge   b5448ebbd1ab3aa27c21804d06a78ec4beffa669\nAcceptance docs Pages   31914188650 · SUCCESS'''
+          rw('PROJECT_STATE.md','Acceptance docs         IN PROGRESS',receipts_ps)
+          rw('PROJECT_STATE.md','Acceptance-docs closeout is now the only remaining Build96 administrative step before the next fresh read-only audit.','The Build96 acceptance-docs closeout is complete; the next action is a fresh read-only post-Build96 Phase9 reliability audit.')
+          rw('PROJECT_STATE.md','Build97                 UNALLOCATED pending fresh read-only audit','Build97                 UNALLOCATED pending fresh read-only post-Build96 audit')
+
+          rw('QA.md','Acceptance docs         IN PROGRESS',receipts_ps)
+          rw('QA.md','Updated: 2026-08-16 after explicit **Build96 REAL USER PASS**; acceptance-docs closeout in progress.','Updated: 2026-08-16 after explicit **Build96 REAL USER PASS** and completed acceptance-docs CI/merge/Pages closeout.')
+
+          p=Path('ROADMAP.md'); t=p.read_text(encoding='utf-8')
+          t=t.replace('Updated: 2026-08-16 after **Build96 REAL USER PASS**; acceptance-docs closeout in progress.','Updated: 2026-08-16 after **Build96 REAL USER PASS** and completed acceptance-docs closeout.',1)
+          old='''## In progress\n\n### Build96 acceptance-docs closeout\n\nBuild96 runtime, candidate docs and real-user acceptance are complete. Seven-document acceptance closeout is the only active administrative step.\n\n**Build97 remains UNALLOCATED.**\n\n## Next\n\nAfter Build96 acceptance-docs closeout, run a fresh read-only post-Build96 Phase9 reliability audit.'''
+          new='''## In progress\n\n### Post-Build96 fresh reliability audit\n\nBuild96 runtime, candidate docs, explicit real-user acceptance and seven-document acceptance closeout are complete. No new implementation slice is allocated yet.\n\n**Build97 remains UNALLOCATED.**\n\n## Next\n\nRun a fresh read-only post-Build96 Phase9 reliability audit.'''
+          if old not in t: raise SystemExit('missing ROADMAP final-state marker')
+          p.write_text(t.replace(old,new,1),encoding='utf-8')
+
+          p=Path('CHANGELOG.md'); t=p.read_text(encoding='utf-8')
+          marker='''Candidate docs Pages     31913138348 · SUCCESS\nSafety post-deploy'''
+          repl='''Candidate docs Pages     31913138348 · SUCCESS\nAcceptance docs PR       #177\nAcceptance docs CI       31914122068 · SUCCESS\nAcceptance docs merge    b5448ebbd1ab3aa27c21804d06a78ec4beffa669\nAcceptance docs Pages    31914188650 · SUCCESS\nSafety post-deploy'''
+          if marker not in t: raise SystemExit('missing CHANGELOG receipts marker')
+          t=t.replace(marker,repl,1).replace('Build97                  UNALLOCATED pending acceptance-docs closeout + fresh audit','Build97                  UNALLOCATED pending fresh read-only post-Build96 audit',1)
+          p.write_text(t,encoding='utf-8')
+
+          rw('docs/INTEGRATION_SAFETY.md','  acceptance docs IN PROGRESS','  acceptance docs PR #177 / CI 31914122068 / merge b5448ebbd1ab3aa27c21804d06a78ec4beffa669 / Pages 31914188650 SUCCESS')
+          rw('docs/INTEGRATION_SAFETY.md','After Build96 real-user acceptance:\n  safety/post-build96-real-user-pass-20260816','After Build96 real-user acceptance:\n  safety/post-build96-real-user-pass-20260816\n  safety/post-build96-rup-docs-closeout-20260816')
+
+          p=Path('changelogs/CHANGELOG-BUILD96.md'); t=p.read_text(encoding='utf-8')
+          t=t.replace('Build97 = UNALLOCATED pending acceptance-docs closeout + fresh audit','Build97 = UNALLOCATED pending fresh read-only post-Build96 audit',1)
+          append='''\n## Acceptance-docs closeout receipts\n\n```text\nAcceptance docs PR       #177\nExact docs head          70fc1a6ee18cf2089ef3d3f11a96a19bac772e8b\nAcceptance docs CI       31914122068 · SUCCESS\nAcceptance docs merge    b5448ebbd1ab3aa27c21804d06a78ec4beffa669\nAcceptance docs Pages    31914188650 · SUCCESS · build + deploy\nSafety docs green        safety/post-build96-rup-docs-green-premerge-20260816\nSafety docs closeout     safety/post-build96-rup-docs-closeout-20260816\n```\n'''
+          if '## Acceptance-docs closeout receipts' not in t: t=t.rstrip()+append
+          p.write_text(t+'\n',encoding='utf-8')
+          PY
+      - name: Verify and commit docs-only result
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/build96-final-receipts-once.yml
+          git config user.name 'ShinoBiWan'
+          git config user.email 'shinobione@users.noreply.github.com'
+          git add README.md PROJECT_STATE.md ROADMAP.md QA.md CHANGELOG.md docs/INTEGRATION_SAFETY.md changelogs/CHANGELOG-BUILD96.md .github/workflows/build96-final-receipts-once.yml
+          git diff --cached --name-only
+          git commit -m 'Docs: finalize Build96 acceptance receipts'
+          git push origin HEAD:docs/build96-final-receipts
