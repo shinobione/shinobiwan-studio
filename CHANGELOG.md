@@ -2,6 +2,52 @@
 
 This file is the **current concise changelog**. Detailed per-build records live under [`changelogs/`](changelogs/README.md).
 
+## Current deployed candidate
+
+### v0.19.11 · Build89 — 2026-08-15
+
+Codename: `studio-focus-slice4-phase9-album-private-read-transient-retry-truth`  
+Status: **DEPLOYED CANDIDATE — REAL USER SMOKE PENDING**
+
+Build89 extends bounded private-read resilience to canonical Album collection/detail **GETs only**.
+
+Candidate behavior:
+
+- non-timeout Album browser `fetch()` interruption is classified as `transport`, not falsely as `access-or-cors`;
+- timeout, transport interruption, and HTTP `408/425/429/500/502/503/504` may receive exactly one bounded retry;
+- 401/403, deterministic ordinary 4xx, non-JSON Access/gating responses and invalid JSON are never retried;
+- maximum attempts are two total;
+- `getAdminAlbums()` and `getAdminAlbum()` share the bounded helper;
+- private Album visual discovery and existing canonical Album rereads inherit those GETs;
+- every Album POST/write path remains unchanged;
+- Album create and binary-upload response-loss semantics remain unchanged;
+- Lyrics and SonicTrace private reads remain separate future audit families;
+- no Track Manager, Worker, public Worker, R2 schema/data migration, LaunchPAD, LRC Maker or SonicTrace Deep Audio change was required.
+
+Exact candidate evidence:
+
+```text
+Safety pre               safety/pre-phase9-album-private-read-retry-build89-20260815-1307
+Safety pre-PR            safety/post-build89-prepr-20260815-1310
+Studio PR                #147
+Exact tested head        8b73d19d8fced35642ee243cff0ac19d983fd0de
+Validation               31881635973 · SUCCESS
+Runtime merge            b7ae769c66e9adccef79c80467cc8fd0a8534820
+Runtime Pages            31881682269 · SUCCESS · exact runtime merge SHA
+Safety post-deploy       safety/post-build89-deployed-candidate-20260815-1319
+Track Manager            v5.23 · unchanged
+Studio bridge            v1.13 · unchanged
+TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
+Public Worker            v2.7 · unchanged
+Worker deploy            NONE
+R2 migration/write       NONE caused by deployment
+Real-user smoke          PENDING
+```
+
+Historical CI runs `31881467538` and `31881538488` were red only because inherited Phase7-C / Studio Focus successor allowlists stopped at Build88. Those heads were never merged. Final exact-head CI `31881635973` passed the complete repository-native chain.
+
+Detailed candidate record: [`changelogs/CHANGELOG-BUILD89.md`](changelogs/CHANGELOG-BUILD89.md).
+
 ## Current accepted release
 
 ### v0.19.10 · Build88 — 2026-08-15
@@ -367,6 +413,6 @@ All Phase8/9 health and guidance surfaces continue to preserve the same canonica
 
 ## Next bounded action
 
-Run a fresh post-Build88 Phase9 reliability audit. Build89 remains **UNALLOCATED** until that audit proves the smallest coherent next scope.
+Perform the normal-browser Build89 Album private-read regression smoke. Build90 remains **UNALLOCATED** until Build89 receives explicit acceptance and a fresh audit proves the next smallest coherent scope.
 
 `CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS` remains mandatory.
