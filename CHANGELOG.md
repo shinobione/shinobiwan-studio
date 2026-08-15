@@ -4,6 +4,59 @@ This file is the **current concise changelog**. Detailed per-build records live 
 
 ## Current accepted release
 
+### v0.19.16 · Build94 — 2026-08-15
+
+Codename: `studio-focus-slice4-phase9-lyrics-validation-transient-retry-truth`  
+Status: **REAL USER PASS — ACCEPTED**
+
+Build94 hardens canonical Lyrics **validation only**. `lyrics-validate-v1` is non-mutating, so the visible Lyrics Validate flow may receive one bounded retry after a transient failure without changing save semantics.
+
+Accepted behavior:
+
+- timeout / browser transport interruption / HTTP `408/425/429/500/502/503/504` may receive exactly one retry;
+- maximum attempts are two total;
+- finite 9-second timeout remains per validation attempt;
+- Access/session gating and deterministic ordinary 4xx are never retried;
+- invalid JSON / invalid proposal shape are never retried;
+- visible Lyrics **Validate** uses the hardened wrapper;
+- `lyrics-save-v1` remains zero automatic retries;
+- Build83 committed / not-committed / ambiguous / unverified save response-loss recovery is unchanged;
+- no Track Manager, Worker, public Worker, R2 schema/data migration, LaunchPAD or LRC Maker change was required;
+- normal-browser acceptance received explicit **`BUILD94 PASS MADAFAKA`** on 2026-08-15;
+- acceptance did not deliberately cut network or invalidate Cloudflare Access to manufacture a transient retry; automated guards own that failure-path proof.
+
+Exact acceptance evidence:
+
+```text
+Original runtime PR       #166 · rolled back after red Pages inherited guard
+Original merge            5bcb2f4fd3b4fd3bbc4442d7cd9705211c733d35
+Original Pages            31902471804 · FAILURE
+Rollback main             6c9c677b2f6299d13949642b712f2bf39b48b676 · byte-identical accepted Build93 tree
+Rollback Pages            31907580912 · SUCCESS
+Superseded hotfix PR      #167 · CLOSED / SUPERSEDED
+Studio PR                 #169
+Exact tested head         81298582163505a11378fe1094f800f1f3d437b5
+Validation                31907745153 · SUCCESS
+Runtime merge             fe636560de9ca5f3f33aae76dddc5474ba990f17
+Runtime Pages             31907784289 · SUCCESS · exact runtime merge SHA
+Safety post-deploy        safety/post-build94-deployed-candidate-20260815-2338
+Safety post-acceptance    safety/post-build94-real-user-pass-20260815-2346
+Track Manager             v5.23 · unchanged
+Studio bridge             v1.13 · unchanged
+TM Worker Version ID      439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
+Public Worker             v2.7 · unchanged
+Worker deploy             NONE
+R2 migration/write        NONE caused by implementation/deployment
+Real-user smoke           BUILD94 PASS MADAFAKA · 2026-08-15
+Build95                   UNALLOCATED pending acceptance-docs closeout + fresh audit
+```
+
+The first Build94 merge remains explicit safety history. It was rolled back rather than patched in-place after Pages exposed inherited guard incompatibility. Build94 v2 was reconstructed from the restored accepted Build93 tree with inherited private-read, Phase7-C Build69, Build90 and Focus64–67 successor guard alignment included before merge.
+
+Detailed accepted record: [`changelogs/CHANGELOG-BUILD94.md`](changelogs/CHANGELOG-BUILD94.md).
+
+## Accepted predecessor
+
 ### v0.19.15 · Build93 — 2026-08-15
 
 Codename: `studio-focus-slice4-phase9-track-metadata-validation-transient-retry-truth`  
@@ -59,7 +112,6 @@ Public Worker            v2.7 · unchanged
 Worker deploy            NONE
 R2 migration/write       NONE caused by deployment
 Real-user smoke          BUILD93 PASS MADAFAKA · 2026-08-15
-Build94                  UNALLOCATED
 ```
 
 Historical CI `31898251689` was red only because inherited Phase7-C Build69 stopped at `0.19.14 / Build92`. Historical CI `31898329621` then passed Phase7-C, Phase8 and Phase9 Build82→93 — including the new Build93 guard — and stopped only at the inherited Focus Build64 successor cap. Focus64–67 were widened only for `v0.19.15 / Build93`; functional assertions remain intact. Neither red head was merged.
@@ -655,6 +707,6 @@ All Phase8/9 health and guidance surfaces continue to preserve the same canonica
 
 ## Next bounded action
 
-Run a fresh read-only post-Build93 Phase9 reliability audit. Build94 remains **UNALLOCATED** until that audit proves the smallest coherent next scope.
+Finish Build94 acceptance-docs exact-head CI / merge / Pages, then run a fresh read-only post-Build94 Phase9 reliability audit. Build95 remains **UNALLOCATED** until that audit proves the smallest coherent next scope.
 
 `CI GREEN != DEPLOYED CANDIDATE != REAL USER PASS` remains mandatory.

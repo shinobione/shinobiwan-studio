@@ -1,35 +1,126 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-08-15 after explicit **Build93 REAL USER PASS** and published acceptance-docs closeout.
+Updated: 2026-08-15 after explicit **Build94 REAL USER PASS**; acceptance-docs closeout is in progress.
 
 This file records what has actually been validated, what automated guards cover, and what remains unproven. It is not a full test-history dump.
 
 ## Current accepted Studio runtime
 
 ```text
-Version                 v0.19.15
-Build                   Build93
+Version                 v0.19.16
+Build                   Build94
 Status                  REAL USER PASS
-Runtime PR              #162
-Exact tested head       fcbe4c59a3a364d9665eba2ed432f37475116364
-Final CI                31898542379 · SUCCESS
-Historical CI #457      31898251689 · FAILURE · Phase7-C successor cap only · never merged
-Historical CI #458      31898329621 · FAILURE · Focus Build64 successor cap only · never merged
-Runtime merge           6c1ceb7d59971ec6c7e251532054392f02c08157
-Pages                   31898639778 · SUCCESS · exact runtime merge SHA
-Candidate docs PR       #163
-Candidate docs CI       31899284370 · SUCCESS
-Candidate docs merge    6464659428e34a679c8acfeb481bfaca78e05bc7
-Candidate docs Pages    31899342536 · SUCCESS
-Acceptance docs PR      #164
-Acceptance docs CI      31901050237 · SUCCESS
-Acceptance docs merge   8df0417ee4d96de1e1b386c0fb15af60dcdbc661
-Acceptance docs Pages   31901109789 · SUCCESS
+Runtime PR              #169
+Exact tested head       81298582163505a11378fe1094f800f1f3d437b5
+Final CI                31907745153 · SUCCESS
+Runtime merge           fe636560de9ca5f3f33aae76dddc5474ba990f17
+Pages                   31907784289 · SUCCESS · exact runtime merge SHA
+Safety post-deploy      safety/post-build94-deployed-candidate-20260815-2338
+Safety post-acceptance  safety/post-build94-real-user-pass-20260815-2346
 Worker deploy           NONE
 Track Manager change    NONE
-R2 migration/write      NONE caused by deployment
-Real-user verdict       BUILD93 PASS MADAFAKA · 2026-08-15
+R2 migration/write      NONE caused by implementation/deployment
+Real-user verdict       BUILD94 PASS MADAFAKA · 2026-08-15
 ```
+
+## Build94 automated coverage — GREEN
+
+Final validation run `31907745153` passed the complete repository-native chain on exact head `81298582163505a11378fe1094f800f1f3d437b5`, including:
+
+- private-read contract;
+- Phase5 algorithms;
+- Phase6 Lyrics contract;
+- C3 / Deep Audio / Album / parity guards;
+- PHASE UX guards;
+- Phase7 and Phase8 guards;
+- inherited Phase9 Build82 destructive-write ambiguity guard;
+- inherited Phase9 Build83 canonical Lyrics save response-loss guard;
+- inherited Phase9 Build84 SonicTrace save response-loss guard;
+- inherited Phase9 Build85 Album metadata response-loss guard;
+- inherited Phase9 Build86 Album move response-loss guard;
+- inherited Phase9 Build87 Album membership response-loss guard;
+- inherited Phase9 Build88 core private-read transient retry guard;
+- inherited Phase9 Build89 Album private-read transient retry guard;
+- inherited Phase9 Build90 Lyrics private-read transient retry guard;
+- inherited Phase9 Build91 SonicTrace private-read transient retry guard;
+- inherited Phase9 Build92 Track metadata response-loss guard;
+- inherited Phase9 Build93 Track metadata validation transient retry guard;
+- new Phase9 Build94 Lyrics validation transient retry guard;
+- inherited private-read / Phase7-C Build69 / Build90 / Studio Focus Build64–67 successor compatibility aligned through Build94;
+- TypeScript typecheck;
+- Vite production build.
+
+Build94 specifically guards the non-mutating Lyrics validation path:
+
+```text
+lyrics-validate-v1 attempt 1
+├─ timeout                            → one retry max
+├─ transport/fetch interruption       → one retry max
+├─ HTTP 408/425/429/500/502/503/504  → one retry max
+├─ Access / deterministic ordinary 4xx → NO RETRY
+├─ invalid JSON / invalid proposal    → NO RETRY
+└─ success                            → return validation result
+
+attempt 2 failure → surface immediately
+```
+
+Additional Build94 guarantees:
+
+- maximum attempts are exactly two total;
+- finite 9-second timeout remains per validation attempt;
+- visible Lyrics **Validate** uses the hardened wrapper;
+- `lyrics-validate-v1` remains explicitly non-mutating;
+- browser transport interruption is typed separately from Access/session gating;
+- Access/session gating does not enter transient retry;
+- invalid JSON/proposal shape does not enter transient retry;
+- no generic retry/backoff framework is introduced;
+- `lyrics-save-v1` remains at zero automatic retries;
+- Build83 `LYRICS_SAVE_TIMEOUT` / `LYRICS_SAVE_TRANSPORT` and committed / not-committed / ambiguous / unverified response-loss recovery remain unchanged;
+- no Track Manager, Worker or R2 schema/data mutation was required.
+
+Historical first attempt remains explicit safety evidence rather than being relabelled green:
+
+```text
+Original runtime PR     #166
+Original head           5f453868cc8cd2878e6964e3e747f841a5dde4c0
+Original merge          5bcb2f4fd3b4fd3bbc4442d7cd9705211c733d35
+Pages                   31902471804 · FAILURE · inherited private-read Lyrics POST guard
+Rollback main           6c9c677b2f6299d13949642b712f2bf39b48b676 · byte-identical accepted Build93 tree
+Rollback Pages          31907580912 · SUCCESS
+Superseded hotfix PR    #167 · CLOSED / SUPERSEDED
+```
+
+Build94 v2 was reconstructed cleanly from restored accepted Build93 with all discovered inherited guard compatibility included before merge.
+
+## Build94 real-user smoke — PASS
+
+The acceptance smoke was intentionally a **normal-browser Lyrics validation regression**, not a manufactured transient-failure test.
+
+The user completed the bounded smoke and returned the explicit verdict:
+
+```text
+BUILD94 PASS MADAFAKA
+```
+
+The accepted smoke boundary covered:
+
+- hard refresh to deployed `v0.19.16 · Build94`;
+- opening one existing Track with canonical `lyrics.txt`;
+- canonical Lyrics loading normally;
+- visible **Validate** completing normally through the non-mutating validation path;
+- no Lyrics Save required for this validation-only slice;
+- canonical lyrics unchanged after reload;
+- surrounding Track / Albums / SonicTrace / Lyrics navigation sanity.
+
+Acceptance intentionally did **not** cut network, expire Cloudflare Access or manufacture timeout/transport/transient-HTTP branches. Those failure paths remain protected by automated classification and attempt-bound guards.
+
+Result:
+
+```text
+Build94 = REAL USER PASS
+```
+
+No Worker deployment, Track Manager change, public Worker change, R2 schema/data migration or cross-repository runtime change was required to reach acceptance.
 
 ## Build93 automated coverage — GREEN
 
@@ -828,7 +919,7 @@ Deep Audio              2.0.3-alpha
 LRC Maker               6.3.8
 ```
 
-Build93 does not supersede those products' independent validation histories.
+Build94 does not supersede those products' independent validation histories.
 
 ## Core contracts that must remain guarded
 
@@ -869,7 +960,12 @@ Build93 does not supersede those products' independent validation histories.
 - `.lrc` is optional export/compatibility only;
 - canonical saves use protected Track Manager paths and private reread/stale verification;
 - lost save responses are never blindly retried;
-- Build90 changes only the GET side of normal reads and recovery/verification rereads.
+- Build90 changes only the GET side of normal reads and recovery/verification rereads;
+- Build94 allows one bounded retry only for non-mutating `lyrics-validate-v1` timeout / transport / HTTP `408/425/429/500/502/503/504`;
+- Build94 validation is capped at two total attempts with a finite 9-second timeout per attempt;
+- Access/session gating, deterministic ordinary 4xx and invalid JSON/proposal do not retry;
+- `lyrics-save-v1` remains at zero automatic retries;
+- Build83 save response-loss truth remains unchanged.
 
 ### SonicTrace
 
@@ -901,7 +997,7 @@ Build93 does not supersede those products' independent validation histories.
 - canonical reread must prove exact operation-specific postconditions;
 - Build88, Build89, Build90 and Build91 do not alter any write retry rule;
 - Build92 adds operation-specific Track metadata recovery only and must not be generalized to create/upload or another write family;
-- Build93 adds bounded retry only to a non-mutating validation operation and must not be generalized into write retry.
+- Build93 and Build94 add bounded retry only to explicitly non-mutating validation operations and must not be generalized into write retry.
 
 ### Release Campaign
 
@@ -919,11 +1015,11 @@ Git history shows the public-cover credential/fetch path was corrected in Build6
 
 ## Known open QA gaps / next audits
 
-No Build93 acceptance blocker remains. Acceptance docs PR #164 passed CI `31901050237`, merged at `8df0417ee4d96de1e1b386c0fb15af60dcdbc661`, and Pages `31901109789` deployed that exact merge successfully.
+No Build94 runtime acceptance blocker remains. Runtime PR #169 passed exact-head CI `31907745153`, merged at `fe636560de9ca5f3f33aae76dddc5474ba990f17`, and Pages `31907784289` deployed that exact merge successfully. Explicit user acceptance is `BUILD94 PASS MADAFAKA` on 2026-08-15.
 
-The current QA boundary is a fresh bounded post-Build93 Phase9 audit before any successor allocation. Album asset upload and Album create remain known heavier candidates; degraded/offline/PWA remains cross-cutting. A smaller gap may win only if fresh evidence proves it.
+The current QA boundary is acceptance-docs exact-head CI / merge / Pages closeout, followed by a fresh bounded post-Build94 Phase9 audit before any successor allocation. Album asset upload and Album create remain known heavier candidates; degraded/offline/PWA remains cross-cutting; Deep Audio compute retry remains causality/cost-sensitive. A smaller gap may win only if fresh evidence proves it.
 
-**Build94 is unallocated** until the fresh post-Build93 audit proves a concrete scope.
+**Build95 is unallocated** until Build94 docs closeout is complete and the fresh post-Build94 audit proves a concrete scope.
 
 ## Standard validation commands
 
@@ -945,7 +1041,7 @@ TypeScript only:
 npm run typecheck
 ```
 
-Do not replace the native full validation chain with a smaller ad-hoc test when preparing a runtime merge.
+Do not replace the native full validation chain with a smaller ad-hoc test when preparing a runtime merge or acceptance-docs merge.
 
 ## Acceptance recording rule
 

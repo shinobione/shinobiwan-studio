@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-15 after **Build93 REAL USER PASS and acceptance-docs closeout**.
+Updated: 2026-08-15 after **Build94 REAL USER PASS**; acceptance-docs closeout is in progress.
 
 This file is the durable roadmap summary. Historical implementation detail belongs in `docs/` and `changelogs/`; do not copy it here unless it changes what is done, active, next or backlogged.
 
@@ -339,26 +339,54 @@ Accepted evidence and behavior:
 - acceptance used normal browser regression and did **not** deliberately cut network or invalidate Cloudflare Access to manufacture a transient retry;
 - no Track Manager, Worker, R2 schema/data migration or cross-product runtime change.
 
+### Phase 9 Slice13 — Lyrics validation transient retry truth
+
+**Build94 · v0.19.16 · REAL USER PASS**
+
+The fresh post-Build93 audit selected non-mutating canonical Lyrics validation as the smallest coherent remaining reliability gap. Album upload/create still require stronger causality contracts; degraded/offline/PWA remains cross-cutting; automatic retry of long-running Deep Audio compute can duplicate expensive work.
+
+Accepted runtime evidence and behavior:
+
+- original runtime PR #166 / merge `5bcb2f4fd3b4fd3bbc4442d7cd9705211c733d35` was rolled back after Pages `31902471804` exposed inherited guard incompatibility;
+- rollback main `6c9c677b2f6299d13949642b712f2bf39b48b676` restored byte-identical accepted Build93 content;
+- rollback Pages `31907580912` SUCCESS;
+- hotfix PR #167 closed as superseded;
+- clean runtime PR #169 rebuilt Build94 from accepted Build93 with inherited private-read, Phase7-C Build69, Build90 and Focus64–67 guard alignment included before merge;
+- exact tested head `81298582163505a11378fe1094f800f1f3d437b5`;
+- full runtime CI `31907745153` SUCCESS;
+- runtime merge `fe636560de9ca5f3f33aae76dddc5474ba990f17`;
+- Pages `31907784289` SUCCESS build + deploy on that exact merge;
+- `lyrics-validate-v1` may retry once only for timeout / transport / HTTP `408/425/429/500/502/503/504`;
+- Access/session gating, deterministic ordinary 4xx and invalid JSON/proposal never retry;
+- maximum two total attempts with finite 9-second timeout per attempt;
+- `lyrics-save-v1` remains zero automatic retries;
+- Build83 save response-loss truth remains unchanged;
+- explicit real-user verdict **`BUILD94 PASS MADAFAKA`** on 2026-08-15;
+- normal-browser acceptance confirmed canonical Lyrics load, visible Validate, canonical lyrics unchanged after reload and surrounding Track / Albums / SonicTrace / Lyrics navigation;
+- acceptance did **not** deliberately cut network or invalidate Cloudflare Access to manufacture a transient retry;
+- no Track Manager, Worker, R2 schema/data migration or cross-product runtime change.
+
 ## In progress
 
-### Phase 9 — fresh post-Build93 reliability audit
+### Build94 acceptance-docs closeout
 
-Build93 is fully accepted and its acceptance-docs receipts are published. **Build94 is not allocated.**
+Runtime CI, runtime merge, Pages and explicit real-user acceptance are complete. This isolated seven-document acceptance branch must still pass its own exact-head CI, merge and Pages before its administrative closeout receipts are final.
 
-The current task is a fresh read-only audit to identify the smallest remaining reliability gap without duplicating existing recovery logic or turning Phase9 into a generic refactor bucket.
+**Build95 remains UNALLOCATED.**
 
 ## Next
 
-Audit remaining candidates by proven risk / bounded scope, without assuming a build number:
+After Build94 acceptance-docs closeout, run a fresh read-only post-Build94 Phase9 reliability audit. Audit remaining candidates by proven risk / bounded scope, without assuming a build number:
 
 1. Album asset upload response-loss truth;
 2. Album create response-loss truth;
 3. degraded/offline/PWA resilience;
-4. any newly proven smaller bounded reliability gap found by the fresh audit.
+4. Deep Audio transport/compute behavior, with duplicate-compute causality explicitly considered;
+5. any newly proven smaller bounded reliability gap found by the fresh audit.
 
 Pick **one** coherent slice only after the audit proves the gap and confirms it does not duplicate existing recovery logic.
 
-**Build94 remains UNALLOCATED.**
+**Build95 remains UNALLOCATED.**
 
 ## Backlog
 
@@ -389,8 +417,8 @@ There is currently **no official Phase 11**.
 - Do not generalize GET retry into write retry.
 - Do not generalize non-mutating validation retry into write retry.
 - Do not generalize one write family's recovery postcondition into another operation family.
-- Do not allocate Build94 before a fresh bounded post-Build93 audit selects its scope.
+- Do not allocate Build95 before Build94 acceptance-docs closeout and a fresh bounded post-Build94 audit select its scope.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build93 REAL USER PASS boundary.
+See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build94 REAL USER PASS boundary.
