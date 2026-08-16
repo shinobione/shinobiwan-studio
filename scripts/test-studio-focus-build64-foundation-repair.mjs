@@ -4,33 +4,39 @@ import fs from 'node:fs';
 const read = path => fs.readFileSync(path, 'utf8');
 
 const pkg = JSON.parse(read('package.json'));
-if (pkg.version === '0.19.22') assert.ok(read('src/release.ts').includes('build99AncestryMarker'), 'Build100 must preserve accepted Build99 Phase9 ancestry.');
-if (['0.19.21', '0.19.22', '0.19.23'].includes(pkg.version)) assert.ok(read('src/release.ts').includes('build98AncestryMarker'), 'Build99 must preserve accepted Build98 Phase9 ancestry.');
-assert.ok(['0.19.3', '0.19.4', '0.19.5', '0.19.6', '0.19.7', '0.19.8', '0.19.9', '0.19.10', '0.19.11', '0.19.12', '0.19.13', '0.19.14', '0.19.15', '0.19.16', '0.19.17', '0.19.18', '0.19.19', '0.19.20', '0.19.21', '0.19.22', '0.19.23'].includes(pkg.version), 'Build64 guard only accepts the validated v0.19.3-v0.19.21 Studio successor line.');
-
 const release = read('src/release.ts');
-assert.match(release, /version:\s*'0\.19\.(?:3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23)'/);
+if (['0.19.22', '0.19.23', '0.19.24'].includes(pkg.version)) assert.ok(release.includes('build99AncestryMarker'), 'Build100+ must preserve accepted Build99 Phase9 ancestry.');
+if (['0.19.21', '0.19.22', '0.19.23', '0.19.24'].includes(pkg.version)) assert.ok(release.includes('build98AncestryMarker'), 'Build99+ must preserve accepted Build98 Phase9 ancestry.');
+if (['0.19.23', '0.19.24'].includes(pkg.version)) assert.ok(release.includes('build100AncestryMarker'), 'Build101+ must preserve Build100 Phase9 ancestry.');
+if (pkg.version === '0.19.24') assert.ok(release.includes('build101AncestryMarker'), 'Build102 must preserve Build101 candidate ancestry.');
+assert.ok(['0.19.3', '0.19.4', '0.19.5', '0.19.6', '0.19.7', '0.19.8', '0.19.9', '0.19.10', '0.19.11', '0.19.12', '0.19.13', '0.19.14', '0.19.15', '0.19.16', '0.19.17', '0.19.18', '0.19.19', '0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24'].includes(pkg.version), 'Build64 guard only accepts the validated Studio successor line through Build102.');
+
+assert.match(release, /version:\s*'0\.19\.(?:3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24)'/);
 for (const required of [
   'build: 64',
   "codename: 'foundation-regression-repair'",
 ]) assert.ok(release.includes(required), `Build 64 release ancestry is missing ${required}.`);
-if (/build:\s*(?:82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98)/.test(release)) assert.ok(release.includes('build81AncestryMarker'), 'Phase9 successors must preserve accepted Build81 ancestry.');
-if (/build:\s*(?:83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98)/.test(release)) assert.ok(release.includes('build82AncestryMarker'), 'Build83+ must preserve accepted Build82 Phase9 ancestry.');
-if (/build:\s*(?:84|85|86|87|88|89|90|91|92|93|94|95|96|97|98)/.test(release)) assert.ok(release.includes('build83AncestryMarker'), 'Build84+ must preserve accepted Build83 Phase9 ancestry.');
-if (/build:\s*(?:85|86|87|88|89|90|91|92|93|94|95|96|97|98)/.test(release)) assert.ok(release.includes('build84AncestryMarker'), 'Build85+ must preserve accepted Build84 Phase9 ancestry.');
-if (/build:\s*(?:86|87|88|89|90|91|92|93|94|95|96|97|98)/.test(release)) assert.ok(release.includes('build85AncestryMarker'), 'Build86+ must preserve accepted Build85 Phase9 ancestry.');
-if (/build:\s*(?:87|88|89|90|91|92|93|94|95|96|97|98)/.test(release)) assert.ok(release.includes('build86AncestryMarker'), 'Build87+ must preserve accepted Build86 Phase9 ancestry.');
-if (/build:\s*(?:88|89|90|91|92|93|94|95|96|97|98)/.test(release)) assert.ok(release.includes('build87AncestryMarker'), 'Build88+ must preserve accepted Build87 Phase9 ancestry.');
-if (/build:\s*(?:89|90|91|92|93|94|95|96|97|98)/.test(release)) assert.ok(release.includes('build88AncestryMarker'), 'Build89+ must preserve accepted Build88 Phase9 ancestry.');
-if (/build:\s*(?:90|91|92|93|94|95|96|97|98)/.test(release)) assert.ok(release.includes('build89AncestryMarker'), 'Build90+ must preserve accepted Build89 Phase9 ancestry.');
-if (/build:\s*(?:91|92|93|94|95|96|97|98)/.test(release)) assert.ok(release.includes('build90AncestryMarker'), 'Build91+ must preserve accepted Build90 Phase9 ancestry.');
-if (/build:\s*(?:92|93|94|95|96|97|98)/.test(release)) assert.ok(release.includes('build91AncestryMarker'), 'Build92+ must preserve accepted Build91 Phase9 ancestry.');
-if (/build:\s*(?:93|94|95|96|97|98)/.test(release)) assert.ok(release.includes('build92AncestryMarker'), 'Build93+ must preserve accepted Build92 Phase9 ancestry.');
-if (/build:\s*(?:94|95|96|97|98)/.test(release)) assert.ok(release.includes('build93AncestryMarker'), 'Build94+ must preserve accepted Build93 Phase9 ancestry.');
-if (/build:\s*(?:95|96|97|98)/.test(release)) assert.ok(release.includes('build94AncestryMarker'), 'Build95+ must preserve accepted Build94 Phase9 ancestry.');
-if (/build:\s*(?:96|97)/.test(release)) assert.ok(release.includes('build95AncestryMarker'), 'Build96+ must preserve accepted Build95 Phase9 ancestry.');
-if (/build:\s*(?:97|98)/.test(release)) assert.ok(release.includes('build96AncestryMarker'), 'Build97+ must preserve accepted Build96 Phase9 ancestry.');
-if (/build:\s*98/.test(release)) assert.ok(release.includes('build97AncestryMarker'), 'Build98 must preserve Build97 Phase9 ancestry.');
+if (/build:\s*(?:82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102)/.test(release)) assert.ok(release.includes('build81AncestryMarker'), 'Phase9 successors must preserve accepted Build81 ancestry.');
+if (/build:\s*(?:83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102)/.test(release)) assert.ok(release.includes('build82AncestryMarker'), 'Build83+ must preserve accepted Build82 Phase9 ancestry.');
+if (/build:\s*(?:84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102)/.test(release)) assert.ok(release.includes('build83AncestryMarker'), 'Build84+ must preserve accepted Build83 Phase9 ancestry.');
+if (/build:\s*(?:85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102)/.test(release)) assert.ok(release.includes('build84AncestryMarker'), 'Build85+ must preserve accepted Build84 Phase9 ancestry.');
+if (/build:\s*(?:86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102)/.test(release)) assert.ok(release.includes('build85AncestryMarker'), 'Build86+ must preserve accepted Build85 Phase9 ancestry.');
+if (/build:\s*(?:87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102)/.test(release)) assert.ok(release.includes('build86AncestryMarker'), 'Build87+ must preserve accepted Build86 Phase9 ancestry.');
+if (/build:\s*(?:88|89|90|91|92|93|94|95|96|97|98|99|100|101|102)/.test(release)) assert.ok(release.includes('build87AncestryMarker'), 'Build88+ must preserve accepted Build87 Phase9 ancestry.');
+if (/build:\s*(?:89|90|91|92|93|94|95|96|97|98|99|100|101|102)/.test(release)) assert.ok(release.includes('build88AncestryMarker'), 'Build89+ must preserve accepted Build88 Phase9 ancestry.');
+if (/build:\s*(?:90|91|92|93|94|95|96|97|98|99|100|101|102)/.test(release)) assert.ok(release.includes('build89AncestryMarker'), 'Build90+ must preserve accepted Build89 Phase9 ancestry.');
+if (/build:\s*(?:91|92|93|94|95|96|97|98|99|100|101|102)/.test(release)) assert.ok(release.includes('build90AncestryMarker'), 'Build91+ must preserve accepted Build90 Phase9 ancestry.');
+if (/build:\s*(?:92|93|94|95|96|97|98|99|100|101|102)/.test(release)) assert.ok(release.includes('build91AncestryMarker'), 'Build92+ must preserve accepted Build91 Phase9 ancestry.');
+if (/build:\s*(?:93|94|95|96|97|98|99|100|101|102)/.test(release)) assert.ok(release.includes('build92AncestryMarker'), 'Build93+ must preserve accepted Build92 Phase9 ancestry.');
+if (/build:\s*(?:94|95|96|97|98|99|100|101|102)/.test(release)) assert.ok(release.includes('build93AncestryMarker'), 'Build94+ must preserve accepted Build93 Phase9 ancestry.');
+if (/build:\s*(?:95|96|97|98|99|100|101|102)/.test(release)) assert.ok(release.includes('build94AncestryMarker'), 'Build95+ must preserve accepted Build94 Phase9 ancestry.');
+if (/build:\s*(?:96|97|98|99|100|101|102)/.test(release)) assert.ok(release.includes('build95AncestryMarker'), 'Build96+ must preserve accepted Build95 Phase9 ancestry.');
+if (/build:\s*(?:97|98|99|100|101|102)/.test(release)) assert.ok(release.includes('build96AncestryMarker'), 'Build97+ must preserve accepted Build96 Phase9 ancestry.');
+if (/build:\s*(?:98|99|100|101|102)/.test(release)) assert.ok(release.includes('build97AncestryMarker'), 'Build98+ must preserve Build97 Phase9 ancestry.');
+if (/build:\s*(?:99|100|101|102)/.test(release)) assert.ok(release.includes('build98AncestryMarker'), 'Build99+ must preserve accepted Build98 Phase9 ancestry.');
+if (/build:\s*(?:100|101|102)/.test(release)) assert.ok(release.includes('build99AncestryMarker'), 'Build100+ must preserve accepted Build99 Phase9 ancestry.');
+if (/build:\s*(?:101|102)/.test(release)) assert.ok(release.includes('build100AncestryMarker'), 'Build101+ must preserve Build100 Phase9 ancestry.');
+if (/build:\s*102/.test(release)) assert.ok(release.includes('build101AncestryMarker'), 'Build102 must preserve Build101 candidate ancestry.');
 
 const metadata = read('src/components/MetadataValidationPanel.tsx');
 for (const required of [
@@ -79,4 +85,4 @@ for (const required of [
   "summary.textContent = 'Add lyrics.txt / plain-text editor'",
 ]) assert.ok(presentation.includes(required), `Build 64 visible Lyrics source control is missing ${required}.`);
 
-console.log(`Studio ${pkg.version} Build64 foundation regression repair contract remains protected through the bounded v0.19.18 Phase9 successor.`);
+console.log(`Studio ${pkg.version} Build64 foundation regression repair contract remains protected through Build102.`);
