@@ -28,7 +28,7 @@ expect(api.includes('function metadataMismatch('), 'client must compare requeste
 expect(api.includes('expectedMetadata?: AdminAlbumMetadataPatch'), 'metadata reread verification must receive the requested patch');
 expect(api.includes('return verify(albumId, payload, { expectedMetadata: metadata });'), 'metadata save must verify the requested fields');
 expect(api.includes('Canonical Album reread mismatch:'), 'canonical mismatch must produce a visible verification warning');
-expect(api.includes("transport: 'Track Manager v5.23 / bridge v1.13 only'"), 'Album write transport must target TM5.23 / bridge1.13');
+expect(api.includes("transport: 'Track Manager v5.23-v5.24 / bridges v1.13-v1.14'"), 'Album write transport must retain the bounded TM5.23-v5.24 / bridge1.13-v1.14 successor line');
 expect(api.includes('verificationDetail?: string | null'), 'Worker verification details must survive the client boundary');
 expect(api.includes('quality?: AdminAlbumQuality | null'), 'Worker quality details must survive the client boundary');
 
@@ -42,4 +42,4 @@ expect(api.includes("metadata: 'album-metadata-save-v1'"), 'existing scoped Albu
 expect(!api.includes('/publish'), 'Build79 must not introduce a separate Album publish write route');
 expect(pkg.scripts['check:phase8']?.includes('test-phase8-album-publish-truth-build79.mjs'), 'Build79 guard must run in check:phase8');
 
-console.log('Build79 Album publish truth guard passed through its bounded Build80 successor.');
+console.log('Build79 Album publish truth guard passed through its bounded Build80 successor and current TM5.23-v5.24 transport line.');
