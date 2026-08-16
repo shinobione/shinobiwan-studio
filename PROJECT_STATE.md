@@ -1,10 +1,10 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-17 after **Build102 REAL USER PASS** and completed acceptance-docs CI/merge/Pages closeout.
+Updated: 2026-08-17 after **Build102 REAL USER PASS** and cross-stack reconciliation against current LaunchPAD / Worker GitHub truth.
 
 This is the short current checkpoint to read immediately after `AGENTS.md`. Historical implementation detail remains in `changelogs/` and milestone docs.
 
-## Current accepted runtime
+## Current accepted Studio runtime
 
 ```text
 Studio version          v0.19.24
@@ -30,17 +30,11 @@ Safety pre-build        safety/pre-build102-etag-normalization-corrective-202608
 Safety green premerge   safety/post-build102-green-premerge-20260817-0134
 Safety post-deploy      safety/post-build102-deployed-candidate-20260817-0136
 Safety post-acceptance  safety/post-build102-real-user-pass-20260817-0142
-Worker deploy           NONE
-Track Manager change    NONE
-Public Worker change    NONE
-R2 schema migration     NONE
 ```
 
-**Build102 is the current accepted Studio runtime.** Build100 is the previous accepted feature runtime. Build101 is a historical **rejected candidate**: its cover write committed and remained present after refresh, but its normal-success verifier reported a false negative because Track Manager returned R2 `httpEtag` with HTTP quotes while the private reread exposed raw `etag` without those quotes.
+**Build102 is the current accepted Studio runtime.** Build101 is a rejected historical candidate: its Track-asset write committed, but quoted R2 `httpEtag` versus raw canonical `etag` caused a real-user false-negative verifier result. Build102 changes only that representation comparison while preserving exact revision/filename/presence/fingerprint proof and zero automatic upload retry.
 
-Build102 changes only that representation comparison: trim whitespace, remove one symmetric outer pair of double quotes when present, then compare the remaining ETag exactly. Exact revision, filename, private presence, size, content type and duration checks remain unchanged. Automatic Track asset upload retries remain zero.
-
-Detailed acceptance receipt: [`docs/acceptance/BUILD102-REAL-USER-PASS.md`](docs/acceptance/BUILD102-REAL-USER-PASS.md).
+Detailed receipt: [`docs/acceptance/BUILD102-REAL-USER-PASS.md`](docs/acceptance/BUILD102-REAL-USER-PASS.md).
 
 ## Current ecosystem baseline
 
@@ -49,14 +43,19 @@ Track Manager           v5.24 · REAL USER VERIFIED
 Studio bridge           v1.14
 TM admin Worker         53abb651-4f3c-46a7-a37a-055f35d340b9
 TM deployment run       31919397012 · SUCCESS · admin only
-Public Worker           v2.7 · unchanged
+Public Worker           v2.8 · REAL USER PASS
+Public Worker source    LaunchPAD-APP PR #241 · merge b99ff00bb2483b46c7b1e02c874ebfc22892156d
+Public Worker deploy    31974132377 · target public
+Public Worker Version   49d87191-a13e-41a7-80c8-d1fd9362af77
 LaunchPAD public        2026.08.12.102 · REAL USER PASS
 SonicTrace              V2-E Build08 · REAL USER PASS
 Deep Audio              2.0.3-alpha
 LRC Maker               6.3.8
 ```
 
-No Build102 backend deployment occurred. The only production media mutation used for acceptance was the intentional single real-user cover upload.
+Public Worker v2.8 closes the previously listed publication-projection gap outside the Studio runtime: a published Track is withheld from public list/detail/media while its canonical owner Album remains draft/archived; standalone published Singles and Tracks owned by published Albums remain public. Canonical ownership is derived from Album `trackIds`, and the real-user production smoke passed with `Pixels & Promises` hidden while `Anh Yêu Em` remained Draft.
+
+No Build102 backend deployment occurred. The Build102 acceptance media mutation was one intentional cover upload only.
 
 ## Program position
 
@@ -75,90 +74,29 @@ Phase 10                FUTURE · progressive extraction
 Official Phase 11       NONE
 ```
 
-### Phase9 Slice20 lineage
+## Frozen authority and reliability rules
 
-```text
-Build101 · v0.19.23
-  Track asset normal-success fingerprint verification
-  → real-user write COMMITTED
-  → false-negative `asset ETag` mismatch
-  → NOT ACCEPTED
-
-Build102 · v0.19.24
-  bounded ETag representation corrective
-  → full CI green
-  → Pages deployed
-  → real-user ASSET SAVED
-  → canonical reread Verified
-  → catalog rebuilt Yes
-  → REAL USER PASS
-```
-
-## Frozen authority model
-
-- **GitHub** — application-code authority.
-- **Cloudflare R2** — canonical catalog/media/data authority.
-- **Track Manager** — protected canonical Track/Album write authority.
-- **Studio** — private cockpit/orchestrator, never a generic R2 writer.
-- **LaunchPAD** — public listener UX.
-- **SonicTrace** — audio intelligence.
-- **LRC Maker** — lyrics synchronization.
-- canonical `trackId` remains the same R2 slug across the toolchain.
-- public fallback remains read-only and never verifies canonical writes.
-
-## Current accepted reliability contracts
-
-### Private reads
-
-Build88–91 keep bounded GET retry semantics:
-
-```text
-timeout / transport / 408/425/429/500/502/503/504 → retry once max
-401/403 / deterministic 4xx / Access gating / invalid JSON → NO RETRY
-```
-
-No GET retry rule authorizes write retry.
-
-### Writes
-
-Phase9 accepted write hardening keeps the operation-specific rule:
-
-```text
-write response unavailable
-→ NEVER blind automatic retry
-→ private canonical reread
-→ classify committed / not committed / ambiguous / unverified
-```
-
-Each operation keeps its own exact postcondition. Build102 does not generalize or weaken any write contract.
-
-### Track asset normal success
-
-```text
-upload success response
-→ exact response revision
-→ exact manifest filename
-→ private canonical asset present
-→ server size/contentType/duration when supplied
-→ ETag normalized only for one outer HTTP quote pair
-→ exact normalized ETag value
-→ Verified only if every required fact matches
-```
+- GitHub = application-code authority; R2 = canonical catalog/media/data authority.
+- Track Manager = protected Track/Album write authority; Studio = private orchestrator, never a generic R2 writer.
+- Album `trackIds` remains the sole canonical Album-membership authority.
+- public fallback is read-only and never verifies writes.
+- private GET/transient retry is bounded and never authorizes write retry.
+- accepted Phase9 writes use: `response unavailable → no blind retry → private canonical reread → committed / not committed / ambiguous / unverified` with operation-specific postconditions.
+- Track asset normal success requires exact revision, manifest filename, private presence and server fingerprint fields when supplied; ETag normalization removes only one symmetric outer HTTP quote pair before exact comparison.
 
 ## Immediate next action
 
-**Fresh read-only post-Build102 Phase9 audit.** Do not allocate Build103 before the audit proves the smallest coherent next gap.
+**Fresh read-only post-Build102 Phase9 audit.** Do not allocate Build103 before the current implementation proves the smallest coherent next gap.
 
-Candidates to re-evaluate include, without pre-selecting one:
+Remaining candidates to re-evaluate, without pre-selecting one:
 
 - Album create lost-response causality / operation identity;
-- exact-byte or digest proof for binary uploads where the backend contract can support it;
+- exact-byte or digest proof for binary upload families where the backend can expose trustworthy evidence;
 - remaining Track create/upload causality gaps;
-- Deep Audio duplicate-compute risk and non-mutating/expensive retry boundaries;
-- degraded/offline/PWA behavior;
-- publication projection where a public Track may coexist with a canonical parent Album still marked Draft.
+- Deep Audio duplicate-compute risk and expensive-analysis retry boundaries;
+- degraded/offline behavior that materially affects the private Studio workflow.
 
-Only one independently reversible slice should be selected after the current code/contracts are reread.
+The publication-projection item is **closed cross-stack by Public Worker v2.8** and is no longer a Build103 candidate.
 
 ## Backlog kept intact
 
@@ -168,4 +106,4 @@ Only one independently reversible slice should be selected after the current cod
 
 ## Release mechanics
 
-The repository still has no formal GitHub Release objects and no Git tags. Runtime identity is carried by code, docs and Pages.
+The Studio repository still has no formal GitHub Release objects and no Git tags. Runtime identity is carried by code, docs and Pages.
