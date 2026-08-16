@@ -1,0 +1,70 @@
+name: Build99 acceptance docs V3
+
+on:
+  push:
+    branches:
+      - docs/build99-real-user-pass-closeout-20260816
+    paths:
+      - .github/workflows/build99-acceptance-docs-v3.yml
+
+permissions:
+  contents: write
+
+jobs:
+  closeout:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: docs/build99-real-user-pass-closeout-20260816
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Apply acceptance overlay
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re, textwrap
+          src = Path('.github/workflows/build99-acceptance-docs-once.yml').read_text(encoding='utf-8')
+          match = re.search(r"python - <<'PY'\n(?P<body>[\s\S]*?)\n          PY", src)
+          if not match:
+              raise SystemExit('Cannot extract V1 acceptance recipe')
+          code = textwrap.dedent(match.group('body'))
+          old = "marker='\\n## Active / next\\n'"
+          if code.count(old) != 1:
+              raise SystemExit(f'Expected one ROADMAP marker recipe, got {code.count(old)}')
+          code = code.replace(old, "marker='\\n## In progress\\n'", 1)
+          exec(compile(code, '<build99-acceptance-v3>', 'exec'), {'__name__': '__main__'})
+          p = Path('ROADMAP.md')
+          t = p.read_text(encoding='utf-8')
+          pattern = r"## In progress\n\n### Post-Build98 fresh reliability audit[\s\S]*?\n\*\*Build99 remains UNALLOCATED\.\*\*\n\n## Next\n\n[\s\S]*?\n\*\*Build99 remains UNALLOCATED\.\*\*"
+          replacement = "## In progress\n\n### Build99 acceptance closeout\n\nBuild99 is explicit REAL USER PASS. Runtime, candidate-docs and human smoke receipts are known; the seven-document acceptance closeout is being finalized. No new runtime slice is allocated during this closeout.\n\n**Build100 remains UNALLOCATED.**\n\n## Next\n\nRun a fresh read-only post-Build99 Phase9 audit. The already-observed `Singles → first Track into an empty draft Album` membership deadlock is the leading candidate because the daily Album Tracklist currently exposes reorder/remove/move only for Tracks already in `album.trackIds`; an empty draft Album therefore has no path to claim its first unowned Track. Re-evaluate that finding against the existing Build87 membership authority and any smaller proven gaps before allocating a build.\n\nPick **one** coherent slice only after the audit proves it.\n\n**Build100 remains UNALLOCATED.**"
+          t, n = re.subn(pattern, replacement, t, count=1)
+          if n != 1:
+              raise SystemExit(f'ROADMAP in-progress/next block mismatch: {n}')
+          old_constraint = 'Do not allocate Build99 before Build97/Build98 acceptance-docs closeout and a fresh bounded post-Build98 audit selects its scope.'
+          if t.count(old_constraint) != 1:
+              raise SystemExit(f'ROADMAP frozen constraint mismatch: {t.count(old_constraint)}')
+          t = t.replace(old_constraint, 'Do not allocate Build100 before Build99 acceptance-docs closeout and a fresh bounded post-Build99 audit selects its scope.', 1)
+          old_pointer = 'See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the coupled Build97/Build98 + TM v5.24 REAL USER PASS boundary.'
+          if t.count(old_pointer) != 1:
+              raise SystemExit(f'ROADMAP acceptance pointer mismatch: {t.count(old_pointer)}')
+          t = t.replace(old_pointer, 'See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build99 REAL USER PASS boundary plus the separately observed first-track Album membership deadlock.', 1)
+          p.write_text(t, encoding='utf-8')
+          print('Build99 acceptance V3 overlay applied')
+          PY
+      - name: Install and full repository gate
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+      - name: Commit exactly seven docs
+        shell: bash
+        run: |
+          git config user.name "ShinoBiWan"
+          git config user.email "shinobione@users.noreply.github.com"
+          git add README.md PROJECT_STATE.md QA.md ROADMAP.md CHANGELOG.md changelogs/CHANGELOG-BUILD99.md docs/INTEGRATION_SAFETY.md
+          test "$(git diff --cached --name-only | wc -l)" -eq 7
+          git diff --cached --name-only
+          git commit -m "Docs: accept Build99 real-user closeout"
+          git push origin HEAD:docs/build99-real-user-pass-closeout-20260816
