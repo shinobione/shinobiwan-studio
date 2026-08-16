@@ -4,57 +4,69 @@ This file is the **current concise changelog**. Detailed per-build records live 
 
 ## Current accepted release
 
+### v0.19.20 · Build98 — 2026-08-16
+
+Codename: `studio-focus-slice4-phase9-tm524-duration-evidence-compat-corrective`  
+Status: **REAL USER PASS — ACCEPTED**
+
+Build98 is the bounded Studio compatibility corrective for Track Manager v5.24 / Studio bridge v1.14. It accepts the new duration-evidence bridge pair in metadata validation/save without changing automatic write retry semantics. The corrective was required because the genuine Build97 continuation exposed a pre-existing TM v5.23 generated-bundle scope defect after Track creation had already succeeded.
+
+Exact accepted evidence:
+
+```text
+Studio PR                 #181
+Exact final head          c393e26caa9a9e7d0b3ad71fccca92b9c1ae234b
+Historical CI #495        31917263004 · FAILURE · inherited Build79 literal label only · never merged
+Validation #496           31917295331 · SUCCESS
+Runtime merge             5ebbf78f9d9296eaed998f1093f2ca7dad68fd1d
+Runtime Pages #188        31917336845 · SUCCESS
+Safety post-deploy        safety/post-build98-deployed-candidate-20260816
+Safety post-acceptance    safety/post-build98-real-user-pass-20260816
+TM corrective PR          LaunchPAD-APP #238
+TM source merge           aaa28c90c95b6d5dbe76e34a840d95e194e0cc65
+TM deploy run #40         31919397012 · SUCCESS · admin only
+TM Worker Version ID      53abb651-4f3c-46a7-a37a-055f35d340b9
+Track Manager             v5.24 · REAL USER VERIFIED
+Studio bridge             v1.14
+Public Worker             v2.7 · unchanged
+Real-user smoke           MP3 + COVER + MP4 + TXT PASS MADAFAKA · 2026-08-16
+Build99                   UNALLOCATED pending fresh read-only audit
+```
+
+Detailed accepted record: [`changelogs/CHANGELOG-BUILD98.md`](changelogs/CHANGELOG-BUILD98.md).
+
+## Accepted predecessor
+
+### v0.19.19 · Build97 — 2026-08-16
+
+Codename: `studio-focus-slice4-phase9-track-create-success-verification-truth`  
+Status: **REAL USER PASS — ACCEPTED**
+
+Build97 tightens normal successful Track creation only: Track Manager's server-normalized response manifest must exactly match Studio's second private canonical reread before `clientVerified=true`. The genuine `Pixels & Promises` draft was created correctly. Its first asset continuation exposed the separate TM v5.23 `uploadEvidence` scope defect; after TM v5.24 + Build98 corrective deployment, the same Track successfully accepted MP3, cover JPEG, MP4 and TXT assets.
+
+```text
+Runtime PR                #179
+Exact tested head         31facc9eb124d3068f4f870dcfa78e38284e2f6a
+Validation #493           31914980387 · SUCCESS
+Runtime merge             0519d3ad1c364ee34188e17ecb9d10c3f0308c54
+Runtime Pages #186        31915029686 · SUCCESS
+Candidate docs PR         #180
+Candidate docs CI #494    31915104936 · SUCCESS
+Candidate docs merge      99925484dc8143f6c12eb4c049690132e1a98dbc
+Candidate docs Pages #187 31915152385 · SUCCESS
+Real-user completion      MP3 + COVER + MP4 + TXT PASS MADAFAKA · 2026-08-16
+```
+
+Detailed accepted record: [`changelogs/CHANGELOG-BUILD97.md`](changelogs/CHANGELOG-BUILD97.md).
+
+## Accepted predecessor
+
 ### v0.19.18 · Build96 — 2026-08-16
 
 Codename: `studio-focus-slice4-phase9-album-create-success-verification-truth`  
 Status: **REAL USER PASS — ACCEPTED**
 
-Build96 tightens only normal successful Album create verification. After Track Manager reports create success, Studio's private canonical reread must now prove both the exact response/canonical revision and every metadata key supplied to create before returning `clientVerified=true`.
-
-Accepted behavior:
-
-- exact requested create metadata is compared with canonical Album state;
-- existing `metadataMismatch()` / `verify(... expectedMetadata ...)` truth is reused;
-- both focused and legacy create surfaces continue rejecting unverified success;
-- create response-loss recovery remains explicitly out of scope without operation identity;
-- maximum automatic create retries remains zero;
-- Album binary upload semantics are unchanged;
-- explicit real-user verdict **`Build 96 SMOKED 💨`** on 2026-08-16;
-- no Track Manager, Worker, public Worker, R2 schema/data migration, LaunchPAD or LRC Maker change was required.
-
-Exact acceptance evidence:
-
-```text
-Safety pre               safety/pre-phase9-album-create-success-verification-build96-20260816
-Safety pre-PR            safety/post-build96-prepr-20260816
-Safety green pre-merge   safety/post-build96-green-premerge-20260816
-Studio PR                #175
-Exact tested head        8ee5711d57f3a3986bf1e054b637f8ee3d5f7efe
-Historical CI #488       31912907163 · FAILURE · new guard variable-name assumption only · never merged
-Validation               31912951430 · SUCCESS
-Runtime merge            1cb14c3ad96087cd9f8fc7de62119b8b5be0ee94
-Runtime Pages            31913006240 · SUCCESS
-Candidate docs PR        #176
-Candidate docs CI        31913104842 · SUCCESS
-Candidate docs merge     dbb8bab680ab3cad5ef8f11fa276f3e9bb3dd43a
-Candidate docs Pages     31913138348 · SUCCESS
-Acceptance docs PR       #177
-Acceptance docs CI       31914122068 · SUCCESS
-Acceptance docs merge    b5448ebbd1ab3aa27c21804d06a78ec4beffa669
-Acceptance docs Pages    31914188650 · SUCCESS
-Safety post-deploy       safety/post-build96-deployed-candidate-20260816
-Safety post-acceptance   safety/post-build96-real-user-pass-20260816
-Track Manager            v5.23 · unchanged
-Studio bridge            v1.13 · unchanged
-TM Worker Version ID     439a1ce4-e458-427d-9fd6-61e888efd269 · unchanged
-Public Worker            v2.7 · unchanged
-Worker deploy            NONE
-R2 migration/write       NONE caused by implementation/deployment
-Real-user smoke          Build 96 SMOKED 💨 · 2026-08-16
-Build97                  UNALLOCATED pending fresh read-only post-Build96 audit
-```
-
-Detailed accepted record: [`changelogs/CHANGELOG-BUILD96.md`](changelogs/CHANGELOG-BUILD96.md).
+Build96 tightens only normal successful Album create verification. After Track Manager reports create success, Studio's private canonical reread must prove both the exact response/canonical revision and every metadata key supplied to create before returning `clientVerified=true`. Create response-loss recovery remains explicitly out of scope without operation identity, automatic create retries remain zero, and Album binary upload semantics are unchanged. Explicit verdict: **`Build 96 SMOKED 💨`** on 2026-08-16.
 
 ## Accepted predecessor
 

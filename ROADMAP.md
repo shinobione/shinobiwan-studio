@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-16 after **Build96 REAL USER PASS** and completed acceptance-docs closeout.
+Updated: 2026-08-16 after **Build97 + Build98 REAL USER PASS**, TM v5.24 real-user verification and acceptance closeout initiation.
 
 This file is the durable roadmap summary. Historical implementation detail belongs in `docs/` and `changelogs/`; do not copy it here unless it changes what is done, active, next or backlogged.
 
@@ -417,21 +417,44 @@ Accepted evidence and behavior:
 - acceptance used a real intended canonical Album/EP/collection and did not manufacture a network/Access/lost-response branch;
 - no Track Manager, Worker, R2 schema/data migration or cross-product runtime change.
 
+### Phase 9 Slice16 — Track create normal-success verification truth
+
+**Build97 · v0.19.19 · REAL USER PASS**
+
+- runtime PR #179; exact head `31facc9eb124d3068f4f870dcfa78e38284e2f6a`; CI `31914980387` SUCCESS; merge `0519d3ad1c364ee34188e17ecb9d10c3f0308c54`; Pages `31915029686` SUCCESS;
+- normal successful Track create now requires exact equality between Track Manager's server-normalized response manifest and Studio's second private canonical reread;
+- Track create response-loss recovery remains out of scope and automatic create retries remain zero;
+- genuine `Pixels & Promises` draft creation passed; downstream asset continuation initially exposed a separate pre-existing TM v5.23 bug;
+- after the bounded TM v5.24 / Build98 corrective pair, the same genuine Track continued successfully;
+- explicit final real-user verdict chain completed on 2026-08-16.
+
+### Phase 9 Slice17 — TM v5.24 duration-evidence compatibility corrective
+
+**Build98 · v0.19.20 · REAL USER PASS**
+
+- runtime PR #181; exact final head `c393e26caa9a9e7d0b3ad71fccca92b9c1ae234b`; final CI `31917295331` SUCCESS; merge `5ebbf78f9d9296eaed998f1093f2ca7dad68fd1d`; Pages `31917336845` SUCCESS;
+- historical CI `31917263004` failed only on the inherited Build79 literal transport label and was never merged;
+- accepts TM `5.24 / bridge1.14` only as a bounded duration-evidence successor in metadata validation/save;
+- LaunchPAD corrective PR #238 fixed the generated-bundle `uploadEvidence` scope defect and added a real executable fresh-draft MP3/JPEG regression;
+- protected admin deployment run `31919397012` SUCCESS; Worker Version ID `53abb651-4f3c-46a7-a37a-055f35d340b9`; Public Worker v2.7 skipped/unchanged;
+- real-user verdict **`MP3 + COVER + MP4 + TXT PASS MADAFAKA`** on 2026-08-16;
+- no blind write retry, no R2 schema migration, no public Worker change.
+
 ## In progress
 
-### Post-Build96 fresh reliability audit
+### Post-Build98 fresh reliability audit
 
-Build96 runtime, candidate docs, explicit real-user acceptance and seven-document acceptance closeout are complete. No new implementation slice is allocated yet.
+Build97 and Build98 are now explicit REAL USER PASS, and Track Manager v5.24 / Studio bridge v1.14 is real-user verified after protected admin deployment. Acceptance documentation is being finalized; no new runtime slice is allocated yet.
 
-**Build97 remains UNALLOCATED.**
+**Build99 remains UNALLOCATED.**
 
 ## Next
 
-Run a fresh read-only post-Build96 Phase9 reliability audit. Re-evaluate remaining candidates by proven risk and bounded scope, including Album asset upload response-loss/digest truth, Album create lost-response causality with operation identity, degraded/offline/PWA resilience, Deep Audio duplicate-compute safety, and any newly proven smaller gap.
+Run a fresh read-only post-Build98 Phase9 reliability audit. Re-evaluate remaining candidates by proven risk and bounded scope, including Album binary upload exact-byte/digest truth, create lost-response causality with persisted operation identity, degraded/offline/PWA resilience, Deep Audio duplicate-compute safety, and any newly proven smaller gap.
 
 Pick **one** coherent slice only after the audit proves it.
 
-**Build97 remains UNALLOCATED.**
+**Build99 remains UNALLOCATED.**
 
 ## Backlog
 
@@ -462,8 +485,8 @@ There is currently **no official Phase 11**.
 - Do not generalize GET retry into write retry.
 - Do not generalize non-mutating validation retry into write retry.
 - Do not generalize one write family's recovery postcondition into another operation family.
-- Do not allocate Build96 before Build95 acceptance-docs closeout and a fresh bounded post-Build95 audit selects its scope.
+- Do not allocate Build99 before Build97/Build98 acceptance-docs closeout and a fresh bounded post-Build98 audit selects its scope.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build95 REAL USER PASS boundary.
+See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the coupled Build97/Build98 + TM v5.24 REAL USER PASS boundary.

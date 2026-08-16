@@ -1,35 +1,56 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-08-16 after explicit **Build96 REAL USER PASS** and completed acceptance-docs CI/merge/Pages closeout.
+Updated: 2026-08-16 after explicit **Build97 + Build98 REAL USER PASS** and Track Manager v5.24 real-user verification.
 
 This file records what has actually been validated, what automated guards cover, and what remains unproven. It is not a full test-history dump.
 
 ## Current accepted Studio runtime
 
 ```text
-Version                 v0.19.18
-Build                   Build96
+Version                 v0.19.20
+Build                   Build98
 Status                  REAL USER PASS
-Runtime PR              #175
-Exact tested head       8ee5711d57f3a3986bf1e054b637f8ee3d5f7efe
-Final CI                31912951430 · SUCCESS
-Runtime merge           1cb14c3ad96087cd9f8fc7de62119b8b5be0ee94
-Pages                   31913006240 · SUCCESS · exact runtime merge SHA
-Candidate docs PR       #176
-Candidate docs CI       31913104842 · SUCCESS
-Candidate docs merge    dbb8bab680ab3cad5ef8f11fa276f3e9bb3dd43a
-Candidate docs Pages    31913138348 · SUCCESS
-Acceptance docs PR      #177
-Acceptance docs CI      31914122068 · SUCCESS
-Acceptance docs merge   b5448ebbd1ab3aa27c21804d06a78ec4beffa669
-Acceptance docs Pages   31914188650 · SUCCESS
-Safety post-deploy      safety/post-build96-deployed-candidate-20260816
-Safety post-acceptance  safety/post-build96-real-user-pass-20260816
-Worker deploy           NONE
-Track Manager change    NONE
-R2 migration/write      NONE caused by implementation/deployment
-Real-user verdict       Build 96 SMOKED 💨 · 2026-08-16
+Runtime PR              #181
+Exact tested head       c393e26caa9a9e7d0b3ad71fccca92b9c1ae234b
+Historical CI           31917263004 · FAILURE · inherited Build79 guard label only · never merged
+Final CI                31917295331 · SUCCESS
+Runtime merge           5ebbf78f9d9296eaed998f1093f2ca7dad68fd1d
+Pages                   31917336845 · SUCCESS · exact runtime merge SHA
+Safety post-deploy      safety/post-build98-deployed-candidate-20260816
+Safety post-acceptance  safety/post-build98-real-user-pass-20260816
+Track Manager           v5.24 · DEPLOYED · REAL USER VERIFIED
+Studio bridge           v1.14
+TM deploy run           31919397012 · SUCCESS · admin only
+TM Worker Version ID    53abb651-4f3c-46a7-a37a-055f35d340b9
+Public Worker           v2.7 · unchanged
+Real-user verdict       MP3 + COVER + MP4 + TXT PASS MADAFAKA · 2026-08-16
 ```
+
+## Build98 automated coverage — GREEN
+
+Final validation run `31917295331` passed the complete repository-native chain on exact head `c393e26caa9a9e7d0b3ad71fccca92b9c1ae234b`, including Build80 duration-evidence compatibility, Build93 metadata validation, Build97 Track-create truth, the new Build98 bridge compatibility guard, all inherited Phase9 / Studio Focus guards, TypeScript and Vite. Historical run `31917263004` failed only because the Build79 guard asserted the old literal TM5.23/bridge1.13 transport label; only that historical guard was widened to the bounded v5.23-v5.24 line.
+
+Track Manager corrective CI also executes the exact fresh-draft regression that had failed in v5.23: create a draft with the observed `album-track` + `Singles` shape, commit first MP3, derive canonical duration, then commit first JPEG. TM v5.24 passes that dynamic regression.
+
+## Build98 / TM v5.24 real-user smoke — PASS
+
+After protected admin-only deployment run `31919397012`, the user resumed the genuine `Pixels & Promises` draft and returned:
+
+```text
+MP3 + COVER + MP4 + TXT PASS MADAFAKA
+```
+
+Observed real-user result: MP3, cover JPEG, MP4 and TXT writes all committed successfully with no recurrence of `ASSET_SAVE_ROLLBACK · HTTP 500`. Public Worker deployment steps were skipped. The deploy workflow did not rebuild `catalog/index.json` or mutate existing R2 media; the only R2 media changes were the explicit user uploads under test.
+
+Result: `Build98 = REAL USER PASS`, `TM v5.24 = REAL USER VERIFIED`.
+
+## Build97 automated coverage — GREEN
+
+Build97 final validation `31914980387` passed on exact head `31facc9eb124d3068f4f870dcfa78e38284e2f6a`; runtime merge `0519d3ad1c364ee34188e17ecb9d10c3f0308c54` and Pages `31915029686` were green. Build97 requires exact equality between Track Manager's normalized successful create response and Studio's private canonical reread before `clientVerified=true`; Track-create automatic retries remain zero.
+
+## Build97 real-user smoke — PASS after cross-stack corrective
+
+The genuine `Pixels & Promises` New Track create succeeded and produced a canonical draft. The first continuation attempt then exposed a separate pre-existing TM v5.23 Track-asset generated-bundle bug. That blocker did not invalidate Build97 create truth; it blocked downstream continuation. After TM v5.24 + Build98 were deployed, the same genuine Track accepted MP3/JPEG/MP4/TXT assets and remained usable. Build97 is therefore accepted with the blocker/corrective chain preserved explicitly rather than hidden.
 
 ## Build96 automated coverage — GREEN
 

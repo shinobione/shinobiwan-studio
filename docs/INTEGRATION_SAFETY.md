@@ -3,7 +3,7 @@
 Date established: 2026-08-08  
 Hardened: 2026-08-09  
 Current-state overlay refreshed: 2026-08-16  
-Current accepted Studio release: `v0.19.18` / Build `96` / REAL USER PASS
+Current accepted Studio release: `v0.19.20` / Build `98` / REAL USER PASS
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -21,41 +21,29 @@ For short current state, read root `PROJECT_STATE.md` first. This file contains 
 
 ```text
 Studio accepted
-  v0.19.18 / Build96 / REAL USER PASS
-  exact tested head 8ee5711d57f3a3986bf1e054b637f8ee3d5f7efe
-  final runtime CI 31912951430 / SUCCESS
-  runtime merge 1cb14c3ad96087cd9f8fc7de62119b8b5be0ee94
-  runtime Pages 31913006240 / SUCCESS
-  candidate docs PR #176 / CI 31913104842 / merge dbb8bab680ab3cad5ef8f11fa276f3e9bb3dd43a / Pages 31913138348 SUCCESS
-  acceptance docs PR #177 / CI 31914122068 / merge b5448ebbd1ab3aa27c21804d06a78ec4beffa669 / Pages 31914188650 SUCCESS
-  browser smoke Build 96 SMOKED 💨 / 2026-08-16
-  safety post-deploy safety/post-build96-deployed-candidate-20260816
-  safety post-acceptance safety/post-build96-real-user-pass-20260816
-  Worker deploy NONE
-  Track Manager change NONE
-  R2 migration/write NONE caused by implementation/deployment
+  v0.19.20 / Build98 / REAL USER PASS
+  exact tested head c393e26caa9a9e7d0b3ad71fccca92b9c1ae234b
+  final runtime CI 31917295331 / SUCCESS
+  runtime merge 5ebbf78f9d9296eaed998f1093f2ca7dad68fd1d
+  runtime Pages 31917336845 / SUCCESS
+  browser smoke MP3 + COVER + MP4 + TXT PASS MADAFAKA / 2026-08-16
+  safety post-deploy safety/post-build98-deployed-candidate-20260816
+  safety post-acceptance safety/post-build98-real-user-pass-20260816
 
-Build95 accepted predecessor
-  runtime PR #171 / CI 31911514334 / merge 0ad5e48f17c658c6b85c2ae405d32e874d2306d6 / Pages 31911568069 SUCCESS
-  acceptance docs PR #173 / CI 31912389047 / merge f6738d56eddcadc2810c7d5413700e14b20f71a3 / Pages 31912432617 SUCCESS
-  browser smoke BUILD95 PASS MADAFAKA / 2026-08-16
-
-Build94 safety history
-  original PR #166 / merge 5bcb2f4fd3b4fd3bbc4442d7cd9705211c733d35
-  original Pages 31902471804 / FAILURE / inherited guard incompatibility
-  rollback main 6c9c677b2f6299d13949642b712f2bf39b48b676 / byte-identical accepted Build93 tree
-  rollback Pages 31907580912 / SUCCESS
-  hotfix PR #167 CLOSED / SUPERSEDED
-  clean runtime PR #169
+Build97 accepted predecessor
+  runtime PR #179 / CI 31914980387 / merge 0519d3ad1c364ee34188e17ecb9d10c3f0308c54 / Pages 31915029686 SUCCESS
+  genuine Track create passed; downstream blocker traced separately to TM v5.23 and resolved by TM v5.24 + Build98
 
 LaunchPAD
   2026.08.12.102 / REAL USER PASS
 
 Track Manager / LaunchPAD backend
-  Track Manager v5.23 / Studio bridge v1.13
-  deployment run 31842482166 / SUCCESS / target admin
-  Worker Version ID 439a1ce4-e458-427d-9fd6-61e888efd269
-  public Worker v2.7 unchanged
+  Track Manager v5.24 / Studio bridge v1.14 / REAL USER VERIFIED
+  corrective PR #238 / source merge aaa28c90c95b6d5dbe76e34a840d95e194e0cc65
+  deployment run 31919397012 / SUCCESS / target admin
+  Worker Version ID 53abb651-4f3c-46a7-a37a-055f35d340b9
+  public Worker v2.7 unchanged / deploy steps skipped
+  deploy did not rebuild catalog/index.json or mutate existing R2 media
 
 SonicTrace
   V2-E Build08 / REAL USER PASS
@@ -72,6 +60,18 @@ Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable 
 Most relevant current references:
 
 ```text
+After Build98 deployment candidate:
+  safety/post-build98-deployed-candidate-20260816
+
+After Build98 real-user acceptance:
+  safety/post-build98-real-user-pass-20260816
+
+After TM v5.24 real-user acceptance:
+  LaunchPAD safety/post-tm524-real-user-pass-20260816
+
+After Build97 deployment candidate:
+  safety/post-build97-deployed-candidate-20260816
+
 After Build96 deployment candidate:
   safety/post-build96-deployed-candidate-20260816
   safety/post-build96-candidate-docs-closeout-20260816

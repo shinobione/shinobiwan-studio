@@ -1,45 +1,42 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-16 after **Build96 REAL USER PASS**; seven-document acceptance closeout in progress.
+Updated: 2026-08-16 after **Build97 + Build98 REAL USER PASS** and TM v5.24 protected admin deployment verification; acceptance-docs closeout in progress.
 
 This file is the short current checkpoint. It is the first project-state document to read after `AGENTS.md`.
 
 ## Current accepted runtime
 
 ```text
-Studio version          v0.19.18
-Studio build            Build96
-Codename                studio-focus-slice4-phase9-album-create-success-verification-truth
+Studio version          v0.19.20
+Studio build            Build98
+Codename                studio-focus-slice4-phase9-tm524-duration-evidence-compat-corrective
 Acceptance              REAL USER PASS
-Runtime PR              #175
-Exact tested head       8ee5711d57f3a3986bf1e054b637f8ee3d5f7efe
-Final runtime CI        31912951430 · SUCCESS
-Runtime merge SHA       1cb14c3ad96087cd9f8fc7de62119b8b5be0ee94
-Runtime Pages           31913006240 · SUCCESS · exact runtime merge SHA
-Candidate docs PR       #176
-Candidate docs CI       31913104842 · SUCCESS
-Candidate docs merge    dbb8bab680ab3cad5ef8f11fa276f3e9bb3dd43a
-Candidate docs Pages    31913138348 · SUCCESS
-Acceptance docs PR      #177
-Acceptance docs CI      31914122068 · SUCCESS
-Acceptance docs merge   b5448ebbd1ab3aa27c21804d06a78ec4beffa669
-Acceptance docs Pages   31914188650 · SUCCESS
-Real-user smoke         Build 96 SMOKED 💨 · 2026-08-16
-Safety post-deploy      safety/post-build96-deployed-candidate-20260816
-Safety post-acceptance  safety/post-build96-real-user-pass-20260816
-Worker deploy           NONE
-Track Manager change    NONE
-R2 migration/write      NONE caused by implementation/deployment
+Runtime PR              #181
+Exact tested head       c393e26caa9a9e7d0b3ad71fccca92b9c1ae234b
+Historical CI           31917263004 · FAILURE · inherited Build79 transport-label guard only · never merged
+Final runtime CI        31917295331 · SUCCESS
+Runtime merge SHA       5ebbf78f9d9296eaed998f1093f2ca7dad68fd1d
+Runtime Pages           31917336845 · SUCCESS · exact runtime merge SHA
+Real-user smoke         MP3 + COVER + MP4 + TXT PASS MADAFAKA · 2026-08-16
+Safety post-deploy      safety/post-build98-deployed-candidate-20260816
+Safety post-acceptance  safety/post-build98-real-user-pass-20260816
+TM corrective PR        LaunchPAD-APP #238
+TM source merge         aaa28c90c95b6d5dbe76e34a840d95e194e0cc65
+TM deploy run           31919397012 · SUCCESS · admin only
+TM Worker Version ID    53abb651-4f3c-46a7-a37a-055f35d340b9
+Public Worker           v2.7 · unchanged
+R2 migration/write      NONE caused by deployment; user asset writes only during explicit smoke
 ```
 
-Build96 is the latest **accepted** Studio runtime. Build95 remains its accepted predecessor. The Build96 acceptance-docs closeout is complete; the next action is a fresh read-only post-Build96 Phase9 reliability audit.
+Build98 is the latest **accepted** Studio runtime. Build97 is its accepted predecessor and the genuine Track-create smoke that exposed the pre-existing TM v5.23 asset-upload blocker. Build98/TM v5.24 form the bounded corrective pair that restored continuation without widening automatic write retries.
 
 ## Current ecosystem baseline
 
 ```text
-Track Manager           v5.23 · DEPLOYED
-Studio bridge           v1.13
-TM admin Worker         439a1ce4-e458-427d-9fd6-61e888efd269
+Track Manager           v5.24 · DEPLOYED · REAL USER VERIFIED
+Studio bridge           v1.14
+TM admin Worker         53abb651-4f3c-46a7-a37a-055f35d340b9
+TM deployment run       31919397012 · SUCCESS · admin only
 Public Worker           v2.7 · unchanged
 LaunchPAD public        2026.08.12.102 · REAL USER PASS
 SonicTrace              V2-E Build08 · REAL USER PASS
@@ -65,6 +62,10 @@ Build95 changes only the **daily Albums UI wiring**. `AlbumsWorkspace` now route
 
 Build96 changes only **normal successful Album create verification**. The shared create service now rereads canonical Album state and compares the exact response/canonical revision plus every metadata key supplied to create before reporting `clientVerified=true`. Create response-loss recovery, operation IDs, automatic create retry and binary-upload digest proof remain explicitly out of scope.
 
+Build97 changes only **normal successful Track create verification**. Studio compares Track Manager's server-normalized create response manifest with a second private canonical Track reread, including the exact revision and whole normalized manifest. Track create response-loss remains out of scope and automatic Track-create retries remain zero.
+
+Build98 is a **cross-stack compatibility corrective** forced by the real Build97 continuation smoke. TM v5.23 had a generated-bundle lexical-scope defect (`uploadEvidence` declared in Album upload but used undeclared in Track upload), producing deterministic `ASSET_SAVE_ROLLBACK · HTTP 500` for the first Track assets. TM v5.24 / bridge v1.14 fixes the builder scope and adds a dynamic fresh-draft MP3/JPEG regression. Studio Build98 accepts the bounded `5.24/1.14` duration-evidence pair in metadata validation/save without changing retry or write semantics. The genuine `Pixels & Promises` flow then accepted MP3, cover JPEG, MP4 and TXT assets.
+
 ## Program position
 
 ```text
@@ -89,10 +90,20 @@ Phase 9 Slice12         COMPLETE · Build93 REAL USER PASS
 Phase 9 Slice13         COMPLETE · Build94 REAL USER PASS
 Phase 9 Slice14         COMPLETE · Build95 REAL USER PASS
 Phase 9 Slice15         COMPLETE · Build96 REAL USER PASS
-Build97                 UNALLOCATED pending fresh read-only post-Build96 audit
+Phase 9 Slice16         COMPLETE · Build97 REAL USER PASS
+Phase 9 Slice17         COMPLETE · Build98 REAL USER PASS
+Build99                 UNALLOCATED pending fresh read-only post-Build98 audit
 Phase 10                FUTURE
 Official Phase 11       NONE
 ```
+
+## Build98 accepted behavior
+
+Build98 closes the cross-stack compatibility blocker exposed during the genuine Build97 continuation smoke. Studio accepts TM `5.24 / 1.14` only as an explicit bounded duration-evidence successor; TM v5.24 fixes the generated Track-asset evidence declaration scope and keeps the existing guarded R2 transaction/reread/rollback model. Real-user verdict: **`MP3 + COVER + MP4 + TXT PASS MADAFAKA`** on 2026-08-16.
+
+## Build97 accepted behavior
+
+Build97 normal-success Track create verification requires the server-normalized response manifest to match Studio's second private canonical reread exactly before `clientVerified=true`. The real `Pixels & Promises` draft was created correctly; its continuation was initially blocked only by the separate TM v5.23 asset defect, then completed after the TM v5.24 / Build98 corrective pair.
 
 ## Build96 accepted behavior
 
