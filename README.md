@@ -20,39 +20,30 @@ Then verify real GitHub state before mutation.
 Studio                v0.19.24 · Build102 · REAL USER PASS
 Codename              studio-focus-slice4-phase9-track-asset-etag-representation-corrective
 Runtime PR            #193
-Exact tested head     cfebb5cfe5b87627a29890a7477bd5628ef60759
 Validation            #524 · 31979380563 · SUCCESS
 Runtime merge         64ac5ed4d53daeafc4fa5b7a25ec66594eef274d
-Runtime Pages         #200 · 31979525479 · SUCCESS build + deploy
-Candidate docs PR     #194
-Candidate docs CI     #525 · 31979629544 · SUCCESS
-Candidate docs merge  68b39ce99e29745c14e004ae8e6fd1218f66b18c
-Candidate docs Pages  #201 · 31979667787 · SUCCESS
+Runtime Pages         #200 · 31979525479 · SUCCESS
 Real-user smoke       ASSET SAVED · Canonical reread Verified · Catalog rebuilt Yes
-Canonical revision    2026-08-16T23:42:38.231Z
-Safety human-pass     safety/post-build102-real-user-pass-20260817-0142
-Build101              REJECTED candidate · real-user ETag representation false negative
-Build100              v0.19.22 · REAL USER PASS
+Build101              REJECTED candidate · ETag representation false negative
 Track Manager         v5.24 · REAL USER VERIFIED
 Studio bridge         v1.14
-TM deploy run         31919397012 · SUCCESS · admin only
 TM admin Worker       53abb651-4f3c-46a7-a37a-055f35d340b9
-Public Worker         v2.7 · unchanged
+Public Worker         v2.8 · REAL USER PASS
+Public Worker deploy  31974132377 · public only
+Public Worker version 49d87191-a13e-41a7-80c8-d1fd9362af77
 LaunchPAD public      2026.08.12.102 · REAL USER PASS
 SonicTrace            V2-E Build08 · REAL USER PASS
 Deep Audio            2.0.3-alpha
 LRC Maker             6.3.8
 ```
 
-**Studio v0.19.24 · Build102 is the current accepted runtime.**
+**Studio v0.19.24 · Build102 is the current accepted Studio runtime.** Build102 preserves the stronger Build101 Track-asset success proof and corrects only the quoted-HTTP-vs-raw-canonical ETag representation mismatch. Automatic asset upload retries remain zero.
 
-Build101 introduced stronger normal-success verification for Track asset uploads but failed real-user acceptance because identical R2 ETags were compared in two syntax representations: quoted HTTP `httpEtag` from the upload response versus raw `object.etag` from the private canonical reread. The write itself committed and the cover remained present after refresh without re-upload.
+Public Worker **v2.8** is also accepted cross-stack truth. It closes the previously observed public projection leak without changing Studio publication state: a published Track owned by a Draft/archived canonical Album is withheld from public list/detail/media until the parent Album is published. Canonical ownership comes from Album `trackIds`, never Track-side compatibility cache. The production smoke passed with `Pixels & Promises` hidden while `Anh Yêu Em` remained Draft.
 
-Build102 corrects only that representation mismatch: one symmetric outer pair of HTTP double quotes may be removed before exact ETag comparison. Exact canonical revision, filename, presence, size, content type and duration checks remain intact, and automatic upload retries remain zero.
+Detailed Build102 receipt: [`docs/acceptance/BUILD102-REAL-USER-PASS.md`](docs/acceptance/BUILD102-REAL-USER-PASS.md).
 
-Detailed acceptance receipt: [`docs/acceptance/BUILD102-REAL-USER-PASS.md`](docs/acceptance/BUILD102-REAL-USER-PASS.md).
-
-The repository still publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
+The Studio repository still publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
 ## Product model
 
@@ -86,6 +77,8 @@ Production:  Needs attention / Production complete
 Publication: Published / Draft
 ```
 
+Public visibility is additionally gated by canonical parent-Album publication in Public Worker v2.8.
+
 ## Accepted workflow authority
 
 ```text
@@ -105,13 +98,13 @@ Phase 8             COMPLETE · Build81 closeout
 Phase 9             ACTIVE
 Phase 9 Slice1–19   Build82→Build100 · REAL USER PASS
 Phase 9 Slice20     Build102 · REAL USER PASS
-Build101            REJECTED candidate · false-negative ETag representation
+Build101            REJECTED candidate
 Build103            UNALLOCATED · fresh read-only post-Build102 audit required
 Phase 10            FUTURE · progressive extraction
 Official Phase 11   NONE
 ```
 
-The immediate next action is a **fresh read-only post-Build102 Phase9 audit**. Build103 remains unallocated until the current implementation proves one smallest coherent next gap.
+The immediate next action is a **fresh read-only post-Build102 Phase9 audit**. The publication-projection item is already closed cross-stack by Public Worker v2.8 and is not a Build103 candidate.
 
 ## Frozen authority model
 
@@ -119,15 +112,16 @@ The immediate next action is a **fresh read-only post-Build102 Phase9 audit**. B
 - **Cloudflare R2** — canonical catalog/media/data authority.
 - **Track Manager** — protected canonical Track/Album write authority.
 - **Studio** — private cockpit/orchestrator, never a generic R2 writer.
-- **LaunchPAD** — public listener UX.
+- **LaunchPAD / Public Worker** — public listener and public-read visibility layer.
 - **SonicTrace** — audio intelligence.
 - **LRC Maker** — lyrics synchronization.
 - canonical `trackId` = the same R2 slug across the toolchain.
-- public fallback is read-only and never verifies canonical writes.
+- canonical Album membership/ownership = Album `trackIds`.
+- public fallback remains read-only and never verifies canonical writes.
 
 ## Reliability rules
 
-Private GET retry is bounded to the accepted transient classes and at most one retry. It never authorizes write retry.
+Private GET retry is bounded to accepted transient classes and at most one retry. It never authorizes write retry.
 
 For accepted Phase9 writes:
 
@@ -139,19 +133,6 @@ response lost / timeout
 ```
 
 Each write family keeps operation-specific postconditions.
-
-For Build102 Track asset normal success:
-
-```text
-upload success
-→ exact response revision
-→ exact manifest filename
-→ private canonical presence
-→ server fingerprint fields when supplied
-→ normalize only one outer HTTP quote pair on ETag
-→ exact normalized ETag comparison
-→ Verified only when every required fact matches
-```
 
 ## Roadmap continuity
 
