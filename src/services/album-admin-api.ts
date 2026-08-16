@@ -20,6 +20,7 @@ export interface AdminAlbumQualityTrack { trackId?: string; exists?: boolean; st
 export interface AdminAlbumQuality { publishable?: boolean; checks?: AdminAlbumQualityCheck[]; tracks?: AdminAlbumQualityTrack[]; assets?: Partial<Record<AdminAlbumAssetKind, AdminAlbumAssetState | null>>; }
 export interface AdminAlbumWriteResponse {
   ok?: boolean; created?: boolean; saved?: boolean; moved?: boolean; deleted?: boolean; albumId?: string; album?: AdminAlbumManifest;
+  kind?: AdminAlbumAssetKind; path?: string | null; size?: number | null; contentType?: string | null; etag?: string | null;
   trackIds?: string[]; targetTrackIds?: string[]; sourceTrackIds?: string[] | null; previousUpdatedAt?: string | null; updatedAt?: string | null;
   targetUpdatedAt?: string | null; sourceUpdatedAt?: string | null; code?: string; currentUpdatedAt?: string | null; error?: string;
   quality?: AdminAlbumQuality | null; verificationDetail?: string | null; rollback?: Record<string, unknown> | null; clientVerified?: boolean;
@@ -78,6 +79,14 @@ function metadataMismatch(manifest: AdminAlbumManifest | undefined, expected?: A
   return (Object.keys(expected) as Array<keyof AdminAlbumMetadataPatch>).filter(key =>
     JSON.stringify(manifest[key] ?? null) !== JSON.stringify(expected[key] ?? null));
 }
+type ExpectedAlbumAssetVerification = {
+  kind: AdminAlbumAssetKind;
+  path: string;
+  size: number | null;
+  contentType: string | null;
+  etag: string | null;
+};
+
 function isTransientAlbumReadError(reason: unknown): reason is AdminReadError {
   return reason instanceof AdminReadError && (
     reason.kind === 'timeout'
@@ -197,7 +206,7 @@ async function deleteAlbumAssetRequest(albumId: string, kind: AdminAlbumAssetKin
   }
 }
 async function requireManage(capability: string) { const health = await getAdminBridgeHealth(); if (!(health.capabilities?.manage || []).includes(capability)) throw new AlbumAdminError(`Track Manager does not advertise ${capability}. The Album write stays locked.`); }
-async function verify(albumId: string, payload: AdminAlbumWriteResponse, options: { expectedTrackIds?: string[]; expectedMetadata?: AdminAlbumMetadataPatch } = {}): Promise<AdminAlbumWriteResponse> {
+async function verify(albumId: string, payload: AdminAlbumWriteResponse, options: { expectedTrackIds?: string[]; expectedMetadata?: AdminAlbumMetadataPatch; expectedAsset?: ExpectedAlbumAssetVerification } = {}): Promise<AdminAlbumWriteResponse> {
   const expectedRevision = payload.updatedAt || payload.album?.updatedAt || null;
   let clientVerified = false; let verificationWarning: string | null = null;
   try {
@@ -206,12 +215,25 @@ async function verify(albumId: string, payload: AdminAlbumWriteResponse, options
     const revisionMatches = Boolean(expectedRevision && manifest?.updatedAt === expectedRevision);
     const trackIdsMatch = !options.expectedTrackIds || JSON.stringify(manifest?.trackIds || []) === JSON.stringify(options.expectedTrackIds);
     const mismatchedMetadata = metadataMismatch(manifest, options.expectedMetadata);
-    clientVerified = revisionMatches && trackIdsMatch && mismatchedMetadata.length === 0;
+    const assetState = options.expectedAsset ? reread.album?.assets?.[options.expectedAsset.kind] : null;
+    const assetPathMatches = !options.expectedAsset || manifest?.assets?.[options.expectedAsset.kind] === options.expectedAsset.path;
+    const assetPresent = !options.expectedAsset || assetState?.present === true;
+    const assetSizeMatches = !options.expectedAsset || options.expectedAsset.size == null || assetState?.size === options.expectedAsset.size;
+    const assetContentTypeMatches = !options.expectedAsset || !options.expectedAsset.contentType || assetState?.contentType === options.expectedAsset.contentType;
+    const assetEtagMatches = !options.expectedAsset || !options.expectedAsset.etag || assetState?.etag === options.expectedAsset.etag;
+    clientVerified = revisionMatches && trackIdsMatch && mismatchedMetadata.length === 0 && assetPathMatches && assetPresent && assetSizeMatches && assetContentTypeMatches && assetEtagMatches;
     if (!clientVerified) {
       const detail: string[] = [];
       if (!revisionMatches) detail.push('canonical revision does not match the write result');
       if (!trackIdsMatch) detail.push('canonical tracklist does not match the saved tracklist');
       for (const key of mismatchedMetadata) detail.push(`${key} requested=${JSON.stringify(options.expectedMetadata?.[key] ?? null)} canonical=${JSON.stringify(manifest?.[key] ?? null)}`);
+      if (options.expectedAsset) {
+        if (!assetPathMatches) detail.push(`${options.expectedAsset.kind} canonical path does not match the server upload response`);
+        if (!assetPresent) detail.push(`${options.expectedAsset.kind} is not present in private canonical asset state`);
+        if (!assetSizeMatches) detail.push(`${options.expectedAsset.kind} size does not match the server upload response`);
+        if (!assetContentTypeMatches) detail.push(`${options.expectedAsset.kind} content type does not match the server upload response`);
+        if (!assetEtagMatches) detail.push(`${options.expectedAsset.kind} ETag does not match the server upload response`);
+      }
       verificationWarning = `Canonical Album reread mismatch: ${detail.join('; ')}. Reloaded canonical state is authoritative.`;
     }
   }
@@ -258,7 +280,7 @@ export async function moveAdminAlbumTrack(targetAlbumId: string, input: { trackI
 export async function uploadAdminAlbumAsset(albumId: string, kind: AdminAlbumAssetKind, expectedUpdatedAt: string, file: File) {
   assertId(albumId); if (!expectedUpdatedAt) throw new AlbumAdminError('Canonical Album revision is required.'); await requireManage('album-assets'); const form = new FormData(); form.set('intent', INTENT.upload); form.set('expectedUpdatedAt', expectedUpdatedAt); form.set('file', file, file.name);
   let response: Response; try { response = await fetch(`${baseUrl()}/api/studio/albums/${encodeURIComponent(albumId)}/assets/${kind}/upload`, { method: 'POST', headers: { Accept: 'application/json' }, body: form, cache: 'no-store', credentials: 'include', mode: 'cors' }); } catch { throw new AlbumAdminError('Album asset upload failed before Track Manager returned a response. Reload canonical Album state before retrying.', null, 'ALBUM_ASSET_TRANSPORT'); }
-  if (!isJson(response)) throw new AlbumAdminError('Cloudflare Access session is not available to Album asset upload.', response.status || null, 'ALBUM_ACCESS_SESSION_REQUIRED'); const payload = await response.json() as AdminAlbumWriteResponse; if (!response.ok) throw new AlbumAdminError(albumWriteErrorMessage(payload, `Album asset upload returned HTTP ${response.status}.`), response.status, payload.code || null, payload.currentUpdatedAt || null, payload.rollback || null, payload.quality || null, payload.verificationDetail || null); if (!payload.saved || !payload.updatedAt) throw new AlbumAdminError('Track Manager returned an invalid Album asset upload response.'); return verify(albumId, payload);
+  if (!isJson(response)) throw new AlbumAdminError('Cloudflare Access session is not available to Album asset upload.', response.status || null, 'ALBUM_ACCESS_SESSION_REQUIRED'); const payload = await response.json() as AdminAlbumWriteResponse; if (!response.ok) throw new AlbumAdminError(albumWriteErrorMessage(payload, `Album asset upload returned HTTP ${response.status}.`), response.status, payload.code || null, payload.currentUpdatedAt || null, payload.rollback || null, payload.quality || null, payload.verificationDetail || null); if (!payload.saved || !payload.updatedAt || payload.kind !== kind || !payload.path) throw new AlbumAdminError('Track Manager returned an invalid Album asset upload response.'); return verify(albumId, payload, { expectedAsset: { kind, path: payload.path, size: payload.size ?? null, contentType: payload.contentType ?? null, etag: payload.etag ?? null } });
 }
 export async function deleteAdminAlbumAsset(albumId: string, kind: AdminAlbumAssetKind, expectedUpdatedAt: string): Promise<AdminAlbumWriteResponse> {
   assertId(albumId);
@@ -380,4 +402,8 @@ export const albumAdminService = Object.freeze({
   createSuccessVerificationPolicy: 'canonical-reread-revision-plus-requested-metadata',
   createLostResponsePolicy: 'not-covered-no-operation-id-no-blind-retry',
   maxAutomaticCreateRetries: 0,
+  assetUploadSuccessVerificationPolicy: 'server-response-revision-slot-path-presence-fingerprint-plus-private-reread',
+  assetUploadExactBytesPolicy: 'not-covered-no-client-digest',
+  assetUploadLostResponsePolicy: 'not-covered-no-operation-id-no-blind-retry',
+  maxAutomaticAssetUploadRetries: 0,
 });
