@@ -19,14 +19,19 @@ Then verify the real GitHub state before mutation.
 ## Current accepted state
 
 ```text
-Studio                v0.19.20 · Build98 · REAL USER PASS
-Codename              studio-focus-slice4-phase9-tm524-duration-evidence-compat-corrective
-Runtime PR            #181
-Exact tested head     c393e26caa9a9e7d0b3ad71fccca92b9c1ae234b
-Validation            31917295331 · SUCCESS
-Runtime merge         5ebbf78f9d9296eaed998f1093f2ca7dad68fd1d
-Runtime Pages         31917336845 · SUCCESS · exact runtime merge SHA
-Real-user smoke       MP3 + COVER + MP4 + TXT PASS MADAFAKA · 2026-08-16
+Studio                v0.19.21 · Build99 · REAL USER PASS
+Codename              studio-focus-slice4-phase9-album-asset-upload-success-verification-truth
+Runtime PR            #183
+Exact tested head     3cc99aabd18d23ec38ba4df9fd042e03aace8238
+Validation            31920824628 · SUCCESS
+Runtime merge         dd26df1664fa7de2b2e77b0d2ae3d9d48cb9eefd
+Runtime Pages         31920895328 · SUCCESS · exact runtime merge SHA
+Candidate docs PR     #184
+Candidate docs CI     31920976229 · SUCCESS
+Candidate docs merge  f3c1bff90ea8cb02f16e01b5f3f973e10ecdb499
+Candidate docs Pages  31921021926 · SUCCESS
+Real-user smoke       BUILD99 SMOKED 💨 · 2026-08-16
+Build98               v0.19.20 · REAL USER PASS
 Build97               v0.19.19 · REAL USER PASS
 Build97 runtime PR    #179
 Build97 CI            31914980387 · SUCCESS
@@ -43,7 +48,7 @@ Deep Audio            2.0.3-alpha
 LRC Maker             6.3.8
 ```
 
-**Studio v0.19.20 · Build98 is the current accepted runtime.** Build97 is its accepted predecessor. Build97 tightened normal successful Track create verification against the server-normalized manifest and private canonical reread. Its first real-user continuation exposed a pre-existing Track Manager v5.23 generated-bundle scope defect after the canonical draft had already been created correctly.
+**Studio v0.19.21 · Build99 is the current accepted runtime.** Build98 is its accepted predecessor. Build97 tightened normal successful Track create verification against the server-normalized manifest and private canonical reread. Its first real-user continuation exposed a pre-existing Track Manager v5.23 generated-bundle scope defect after the canonical draft had already been created correctly.
 
 Track Manager v5.24 / Studio bridge v1.14 corrected that backend asset-write defect. Build98 is the bounded Studio compatibility corrective that accepts the new duration-evidence bridge pair without widening retry or write semantics. The genuine `Pixels & Promises` continuation then successfully committed MP3, cover JPEG, MP4 and TXT assets with no recurrence of `ASSET_SAVE_ROLLBACK · HTTP 500`.
 
@@ -117,11 +122,12 @@ Phase 9 Slice14     Build95 · REAL USER PASS
 Phase 9 Slice15     Build96 · REAL USER PASS
 Phase 9 Slice16     Build97 · REAL USER PASS
 Phase 9 Slice17     Build98 · REAL USER PASS
-Build99             UNALLOCATED · pending fresh read-only audit
+Phase 9 Slice18     Build99 · REAL USER PASS
+Build100            UNALLOCATED · pending fresh read-only post-Build99 audit
 Phase 10            FUTURE
 ```
 
-The immediate next action is a **fresh read-only post-Build98 Phase9 reliability audit**. Build99 remains unallocated until that audit proves the smallest coherent next gap.
+The immediate next action is a **fresh read-only post-Build99 Phase9 audit**. The already-observed `Singles → first Track into an empty draft Album` membership deadlock is the leading candidate, but Build100 remains unallocated until the audit proves scope and authority boundaries.
 
 ## Frozen authority model
 

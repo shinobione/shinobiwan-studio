@@ -1,34 +1,35 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-16 after **Build97 + Build98 REAL USER PASS** and TM v5.24 protected admin deployment verification; acceptance-docs closeout in progress.
+Updated: 2026-08-16 after **Build99 REAL USER PASS**; seven-document acceptance closeout in progress.
 
 This file is the short current checkpoint. It is the first project-state document to read after `AGENTS.md`.
 
 ## Current accepted runtime
 
 ```text
-Studio version          v0.19.20
-Studio build            Build98
-Codename                studio-focus-slice4-phase9-tm524-duration-evidence-compat-corrective
+Studio version          v0.19.21
+Studio build            Build99
+Codename                studio-focus-slice4-phase9-album-asset-upload-success-verification-truth
 Acceptance              REAL USER PASS
-Runtime PR              #181
-Exact tested head       c393e26caa9a9e7d0b3ad71fccca92b9c1ae234b
-Historical CI           31917263004 · FAILURE · inherited Build79 transport-label guard only · never merged
-Final runtime CI        31917295331 · SUCCESS
-Runtime merge SHA       5ebbf78f9d9296eaed998f1093f2ca7dad68fd1d
-Runtime Pages           31917336845 · SUCCESS · exact runtime merge SHA
-Real-user smoke         MP3 + COVER + MP4 + TXT PASS MADAFAKA · 2026-08-16
-Safety post-deploy      safety/post-build98-deployed-candidate-20260816
-Safety post-acceptance  safety/post-build98-real-user-pass-20260816
-TM corrective PR        LaunchPAD-APP #238
-TM source merge         aaa28c90c95b6d5dbe76e34a840d95e194e0cc65
-TM deploy run           31919397012 · SUCCESS · admin only
-TM Worker Version ID    53abb651-4f3c-46a7-a37a-055f35d340b9
-Public Worker           v2.7 · unchanged
-R2 migration/write      NONE caused by deployment; user asset writes only during explicit smoke
+Runtime PR              #183
+Exact tested head       3cc99aabd18d23ec38ba4df9fd042e03aace8238
+Historical CI           31920761317 · FAILURE · inherited C2.5-D literal verifier guard only · never merged
+Final runtime CI        31920824628 · SUCCESS
+Runtime merge SHA       dd26df1664fa7de2b2e77b0d2ae3d9d48cb9eefd
+Runtime Pages           31920895328 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #184
+Candidate docs CI       31920976229 · SUCCESS
+Candidate docs merge    f3c1bff90ea8cb02f16e01b5f3f973e10ecdb499
+Candidate docs Pages    31921021926 · SUCCESS
+Real-user smoke         BUILD99 SMOKED 💨 · 2026-08-16
+Safety post-deploy      safety/post-build99-deployed-candidate-20260816
+Safety post-acceptance  safety/post-build99-real-user-pass-20260816
+Worker deploy           NONE
+Track Manager change    NONE
+R2 migration/write      NONE caused by Build99 implementation/deployment
 ```
 
-Build98 is the latest **accepted** Studio runtime. Build97 is its accepted predecessor and the genuine Track-create smoke that exposed the pre-existing TM v5.23 asset-upload blocker. Build98/TM v5.24 form the bounded corrective pair that restored continuation without widening automatic write retries.
+Build99 is the latest **accepted** Studio runtime. Build98 remains its accepted predecessor. Build99 strengthens only normal successful Album cover/thumbnail verification using server-returned asset evidence plus private canonical reread; exact selected-client-byte digest proof and upload lost-response causality remain explicitly out of scope.
 
 ## Current ecosystem baseline
 
@@ -92,10 +93,17 @@ Phase 9 Slice14         COMPLETE · Build95 REAL USER PASS
 Phase 9 Slice15         COMPLETE · Build96 REAL USER PASS
 Phase 9 Slice16         COMPLETE · Build97 REAL USER PASS
 Phase 9 Slice17         COMPLETE · Build98 REAL USER PASS
-Build99                 UNALLOCATED pending fresh read-only post-Build98 audit
+Phase 9 Slice18         COMPLETE · Build99 REAL USER PASS
+Build100                UNALLOCATED pending fresh read-only post-Build99 audit
 Phase 10                FUTURE
 Official Phase 11       NONE
 ```
+
+## Build99 accepted behavior
+
+Build99 closes the normal-success verification gap for Album cover/thumbnail upload. `clientVerified=true` now requires exact response/canonical revision, requested slot/path, private canonical presence, and server-returned `size` / `contentType` / `etag` agreement when those fingerprint fields are present. It adds no automatic upload retry, no operation ID, no Worker/R2 change, and does not claim exact selected-client-byte proof. Real-user verdict: **`BUILD99 SMOKED 💨`** on 2026-08-16.
+
+The same real-user session also exposed a separate UX/authority deadlock: a Track currently surfaced under virtual `Singles` cannot be claimed as the first member of an empty draft Album from the current Albums Tracklist UI. This finding is **not part of Build99** and is reserved for the fresh post-Build99 audit.
 
 ## Build98 accepted behavior
 

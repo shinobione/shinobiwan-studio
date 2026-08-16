@@ -4,7 +4,7 @@ Date: 2026-08-16
 Version: `v0.19.21`  
 Build: `99`  
 Codename: `studio-focus-slice4-phase9-album-asset-upload-success-verification-truth`  
-Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+Status: **REAL USER PASS · ACCEPTED**
 
 ## Why this slice exists
 
@@ -86,10 +86,14 @@ Public Worker               v2.7 unchanged
 
 Full CI #498 exposed only the inherited C2.5-D guard's literal expectation for `return verify(albumId, payload)`. That guard alone was widened to recognize Build99's same canonical verifier with the new `expectedAsset` postcondition while preserving Track Manager authority and zero automatic Album asset upload retries. No runtime logic changed in response to that red run. Full CI #499 then passed on the exact final head.
 
-## Human acceptance boundary
+## Human acceptance
 
-Build99 is **not yet REAL USER PASS**.
+Explicit verdict: **`BUILD99 SMOKED 💨`** on 2026-08-16.
 
-A useful real-user smoke is a genuine Album cover/thumbnail replacement on an Album that actually needs artwork changed. Normal success must complete without a verification error; after reload, the cover/thumbnail must remain canonically present. Do not create a disposable canonical Album and do not deliberately break network/Cloudflare Access merely to manufacture a lost-response branch.
+The real-user Album artwork flow completed normally without canonical-verification error and remained coherent after reload. Acceptance did not manufacture a network/Access failure.
 
-Build100 remains **UNALLOCATED** pending Build99 human acceptance, acceptance-docs closeout, and a fresh read-only post-Build99 audit.
+A separate UX/authority finding was observed during the same session: a Track surfaced under virtual `Singles` cannot currently be claimed as the first member of an empty draft Album from the daily Albums Tracklist UI. That finding is outside Build99 scope and is reserved for the fresh post-Build99 audit.
+
+Safety post-acceptance: `safety/post-build99-real-user-pass-20260816`.
+
+Build100 remains **UNALLOCATED** pending acceptance-docs closeout and fresh read-only audit.

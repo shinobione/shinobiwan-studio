@@ -1,30 +1,48 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-08-16 after explicit **Build97 + Build98 REAL USER PASS** and Track Manager v5.24 real-user verification.
+Updated: 2026-08-16 after explicit **Build99 REAL USER PASS**.
 
 This file records what has actually been validated, what automated guards cover, and what remains unproven. It is not a full test-history dump.
 
 ## Current accepted Studio runtime
 
 ```text
-Version                 v0.19.20
-Build                   Build98
+Version                 v0.19.21
+Build                   Build99
 Status                  REAL USER PASS
-Runtime PR              #181
-Exact tested head       c393e26caa9a9e7d0b3ad71fccca92b9c1ae234b
-Historical CI           31917263004 · FAILURE · inherited Build79 guard label only · never merged
-Final CI                31917295331 · SUCCESS
-Runtime merge           5ebbf78f9d9296eaed998f1093f2ca7dad68fd1d
-Pages                   31917336845 · SUCCESS · exact runtime merge SHA
-Safety post-deploy      safety/post-build98-deployed-candidate-20260816
-Safety post-acceptance  safety/post-build98-real-user-pass-20260816
-Track Manager           v5.24 · DEPLOYED · REAL USER VERIFIED
+Runtime PR              #183
+Exact tested head       3cc99aabd18d23ec38ba4df9fd042e03aace8238
+Historical CI           31920761317 · FAILURE · inherited C2.5-D literal verifier guard only · never merged
+Final CI                31920824628 · SUCCESS
+Runtime merge           dd26df1664fa7de2b2e77b0d2ae3d9d48cb9eefd
+Pages                   31920895328 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #184
+Candidate docs CI       31920976229 · SUCCESS
+Candidate docs merge    f3c1bff90ea8cb02f16e01b5f3f973e10ecdb499
+Candidate docs Pages    31921021926 · SUCCESS
+Safety post-deploy      safety/post-build99-deployed-candidate-20260816
+Safety post-acceptance  safety/post-build99-real-user-pass-20260816
+Track Manager           v5.24 · unchanged by Build99
 Studio bridge           v1.14
-TM deploy run           31919397012 · SUCCESS · admin only
-TM Worker Version ID    53abb651-4f3c-46a7-a37a-055f35d340b9
 Public Worker           v2.7 · unchanged
-Real-user verdict       MP3 + COVER + MP4 + TXT PASS MADAFAKA · 2026-08-16
+Real-user verdict       BUILD99 SMOKED 💨 · 2026-08-16
 ```
+
+## Build99 automated coverage — GREEN
+
+Final validation run `31920824628` passed the complete repository-native chain on exact head `3cc99aabd18d23ec38ba4df9fd042e03aace8238`. Historical run `31920761317` failed only because the inherited C2.5-D guard required the old literal `return verify(albumId, payload)` form; only that guard was widened to accept the same verifier with Build99's `expectedAsset` postcondition. No runtime behavior changed for that red run.
+
+Build99 proves normal successful Album cover/thumbnail upload only: exact response revision, requested canonical slot/path, private asset presence, and server-returned `size`, `contentType`, and `etag` agreement when supplied. Automatic upload retries remain zero. Exact client-byte digest proof and lost-response causality remain unproven by design.
+
+## Build99 real-user smoke — PASS
+
+The user completed a genuine Album artwork smoke and returned:
+
+```text
+BUILD99 SMOKED 💨
+```
+
+Acceptance confirms the deployed normal-success Album artwork path completed without canonical-verification error and remained coherent after reload. No network/Access failure was manufactured. The same session separately exposed the empty-draft-Album first-track intake deadlock; that UX/authority gap is recorded for the post-Build99 audit and does not alter the Build99 verdict.
 
 ## Build98 automated coverage — GREEN
 
