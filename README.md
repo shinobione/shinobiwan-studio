@@ -30,6 +30,10 @@ Candidate docs PR     #188
 Candidate docs CI     31945020130 · SUCCESS
 Candidate docs merge  2ddce2be6abba8324c64054702f0e7654831c83b
 Candidate docs Pages  31945131271 · SUCCESS
+Acceptance docs PR     #189
+Acceptance docs CI     31972354459 · SUCCESS
+Acceptance docs merge  453191f3ee8e3ae875c3d402f4427c1208d542dd
+Acceptance docs Pages  31972413696 · SUCCESS
 Real-user smoke       BUILD100 SMOKED 💨 · 2026-08-16
 Safety post-deploy    safety/post-build100-deployed-candidate-20260816
 Safety human-pass     safety/post-build100-real-user-pass-20260816-2255

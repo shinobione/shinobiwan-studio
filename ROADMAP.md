@@ -467,6 +467,7 @@ The smoke also exposed a separate product deadlock: a Track in virtual `Singles`
 - runtime PR #187; exact tested head `9df6dd99c6e1bb6a2b1fbf5c555188659432ed8d`; CI `31944882443` SUCCESS;
 - runtime merge `49f5c8e0267a318e2b0900ba5e222bd56d098db8`; Pages `31944932464` SUCCESS;
 - candidate docs PR #188 / CI `31945020130` / merge `2ddce2be6abba8324c64054702f0e7654831c83b` / Pages `31945131271` SUCCESS;
+- acceptance docs PR #189 / CI `31972354459` / merge `453191f3ee8e3ae875c3d402f4427c1208d542dd` / Pages `31972413696` SUCCESS;
 - canonical ownership derives from Album `trackIds`; only unowned Tracks are offered;
 - **Add to tracklist** stages locally; **Save tracklist** remains Build87 resilient membership;
 - genuine `Anh Yêu Em` + `Pixels & Promises` workflow persisted across reload and Track-side reread;
