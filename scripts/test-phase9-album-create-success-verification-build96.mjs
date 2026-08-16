@@ -7,9 +7,9 @@ const albumApi = read('src/services/album-admin-api.ts');
 const focused = read('src/components/AlbumsWorkspace.tsx');
 const legacy = read('src/components/AlbumManager.tsx');
 const pkg = JSON.parse(read('package.json'));
-if (pkg.version === '0.19.22') assert.ok(release.includes('build99AncestryMarker'), 'Build100 must preserve accepted Build99 ancestry.');
+if (['0.19.22', '0.19.23', '0.19.24'].includes(pkg.version)) assert.ok(release.includes('build99AncestryMarker'), 'Build100+ must preserve accepted Build99 ancestry.');
 
-assert.ok(['0.19.18', '0.19.19', '0.19.20', '0.19.21', '0.19.22', '0.19.23'].includes(pkg.version), 'Build96 guard accepts Build96 and its bounded Build97/Build98 successors.');
+assert.ok(['0.19.18', '0.19.19', '0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24'].includes(pkg.version), 'Build96 guard accepts Build96 and bounded successors through Build102.');
 assert.ok(release.includes('build95AncestryMarker'), 'Build96+ must preserve accepted Build95 ancestry.');
 assert.ok(release.includes("version: 0.19.17 · build: 95 · codename: 'studio-focus-slice4-phase9-albums-daily-resilient-service-convergence'"), 'Accepted Build95 identity must remain immutable in ancestry.');
 if (pkg.version === '0.19.18') {
@@ -17,12 +17,14 @@ if (pkg.version === '0.19.18') {
   assert.ok(release.includes('build: 96'), 'Build96 release identity is missing.');
   assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-album-create-success-verification-truth'"), 'Build96 codename mismatch.');
 }
-if (['0.19.19', '0.19.20', '0.19.21', '0.19.22', '0.19.23'].includes(pkg.version)) {
+if (['0.19.19', '0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24'].includes(pkg.version)) {
   assert.ok(release.includes('build96AncestryMarker'), 'Build97+ must preserve accepted Build96 ancestry.');
   assert.ok(release.includes("version: 0.19.18 · build: 96 · codename: 'studio-focus-slice4-phase9-album-create-success-verification-truth'"), 'Accepted Build96 identity must remain immutable in ancestry.');
 }
-if (['0.19.20', '0.19.21', '0.19.22', '0.19.23'].includes(pkg.version)) assert.ok(release.includes('build97AncestryMarker'), 'Build98+ must preserve Build97 ancestry while inheriting Build96 Album create truth.');
-if (['0.19.21', '0.19.22', '0.19.23'].includes(pkg.version)) assert.ok(release.includes('build98AncestryMarker'), 'Build99 must preserve accepted Build98 ancestry while inheriting Build96 Album create truth.');
+if (['0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24'].includes(pkg.version)) assert.ok(release.includes('build97AncestryMarker'), 'Build98+ must preserve Build97 ancestry while inheriting Build96 Album create truth.');
+if (['0.19.21', '0.19.22', '0.19.23', '0.19.24'].includes(pkg.version)) assert.ok(release.includes('build98AncestryMarker'), 'Build99+ must preserve accepted Build98 ancestry while inheriting Build96 Album create truth.');
+if (['0.19.23', '0.19.24'].includes(pkg.version)) assert.ok(release.includes('build100AncestryMarker'), 'Build101+ must preserve Build100 ancestry while inheriting Build96 Album create truth.');
+if (pkg.version === '0.19.24') assert.ok(release.includes('build101AncestryMarker'), 'Build102 must preserve Build101 candidate ancestry while inheriting Build96 Album create truth.');
 
 // Build96 tightens only normal-success canonical verification for Album create.
 assert.ok(albumApi.includes("const payload = await writeJson('/api/studio/albums', { intent: INTENT.create, album });"), 'Album create must retain the existing Track Manager write intent and transport.');
@@ -37,7 +39,7 @@ assert.ok(!albumApi.includes('retryAdminAlbumCreate'), 'Build96 must not add an 
 
 // Upload is deliberately not generalized: exact-byte proof still requires stronger digest/operation identity.
 assert.ok(albumApi.includes("form.set('intent', INTENT.upload)"), 'Album asset upload must retain its existing transport.');
-if (['0.19.21', '0.19.22', '0.19.23'].includes(pkg.version)) {
+if (['0.19.21', '0.19.22', '0.19.23', '0.19.24'].includes(pkg.version)) {
   assert.ok(albumApi.includes('return verify(albumId, payload, { expectedAsset: {'), 'Build99 explicitly hardens Album upload normal-success verification as a bounded successor to Build96.');
 } else {
   assert.ok(albumApi.includes('return verify(albumId, payload);'), 'Build96 historical runtime must leave upload verification semantics unchanged.');
@@ -69,4 +71,4 @@ for (const inherited of [
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must retain ${inherited}`);
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Build96 must remain inside the repository-native full build gate.');
 
-console.log('Phase9 Build96 Album create success-verification guard passed: normal success now proves revision + exact requested metadata, while create lost-response recovery and binary upload remain explicitly out of scope with zero automatic create retries.');
+console.log('Phase9 Build96 Album create success-verification guard passed through Build102: normal success proves revision + exact requested metadata, while create lost-response recovery and binary upload remain explicitly out of scope with zero automatic create retries.');

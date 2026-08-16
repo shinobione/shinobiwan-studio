@@ -7,7 +7,7 @@ const albumApi = read('src/services/album-admin-api.ts');
 const workspace = read('src/components/AlbumsWorkspace.tsx');
 const pkg = JSON.parse(read('package.json'));
 
-assert.ok(['0.19.21', '0.19.22', '0.19.23'].includes(pkg.version), 'Build99 guard accepts Build99 and its bounded Build100 successor.');
+assert.ok(['0.19.21', '0.19.22', '0.19.23', '0.19.24'].includes(pkg.version), 'Build99 guard accepts Build99 and bounded successors through Build102.');
 if (pkg.version === '0.19.21') {
   assert.ok(release.includes("version: '0.19.21'"), 'Build99 release version mismatch.');
   assert.ok(release.includes('build: 99'), 'Build99 release identity is missing.');
@@ -65,4 +65,4 @@ for (const inherited of [
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must retain ${inherited}`);
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Build99 must remain inside the repository-native full build gate.');
 
-console.log('Phase9 Build99 Album asset upload success-verification guard passed: normal success proves response revision + requested slot/path + canonical presence and available server fingerprint fields, while exact selected-byte and lost-response causality remain explicitly out of scope with zero automatic retries.');
+console.log('Phase9 Build99 Album asset upload success-verification guard passed through Build102: normal success proves response revision + requested slot/path + canonical presence and available server fingerprint fields, while exact selected-byte and lost-response causality remain explicitly out of scope with zero automatic retries.');
