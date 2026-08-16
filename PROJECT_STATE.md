@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-17 after **Build102 REAL USER PASS**.
+Updated: 2026-08-17 after **Build102 REAL USER PASS** and completed acceptance-docs CI/merge/Pages closeout.
 
 This is the short current checkpoint to read immediately after `AGENTS.md`. Historical implementation detail remains in `changelogs/` and milestone docs.
 
@@ -20,6 +20,10 @@ Candidate docs PR       #194
 Candidate docs CI       #525 · 31979629544 · SUCCESS
 Candidate docs merge    68b39ce99e29745c14e004ae8e6fd1218f66b18c
 Candidate docs Pages    #201 · 31979667787 · SUCCESS
+Acceptance docs PR      #195
+Acceptance docs CI      #526 · 31980142885 · SUCCESS
+Acceptance docs merge   ae297162fd6579eabe2d455d65f57b129dce58bc
+Acceptance docs Pages   #206 · 31980208567 · SUCCESS build + deploy
 Real-user smoke         ASSET SAVED · Canonical reread Verified · Catalog rebuilt Yes
 Canonical revision      2026-08-16T23:42:38.231Z
 Safety pre-build        safety/pre-build102-etag-normalization-corrective-20260817-0120
