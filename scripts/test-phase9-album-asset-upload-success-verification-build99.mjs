@@ -7,12 +7,18 @@ const albumApi = read('src/services/album-admin-api.ts');
 const workspace = read('src/components/AlbumsWorkspace.tsx');
 const pkg = JSON.parse(read('package.json'));
 
-assert.equal(pkg.version, '0.19.21', 'Build99 package version must be v0.19.21.');
-assert.ok(release.includes("version: '0.19.21'"), 'Build99 release version mismatch.');
-assert.ok(release.includes('build: 99'), 'Build99 release identity is missing.');
-assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-album-asset-upload-success-verification-truth'"), 'Build99 codename mismatch.');
-assert.ok(release.includes('build98AncestryMarker'), 'Build99 must preserve accepted Build98 ancestry.');
+assert.ok(['0.19.21', '0.19.22'].includes(pkg.version), 'Build99 guard accepts Build99 and its bounded Build100 successor.');
+if (pkg.version === '0.19.21') {
+  assert.ok(release.includes("version: '0.19.21'"), 'Build99 release version mismatch.');
+  assert.ok(release.includes('build: 99'), 'Build99 release identity is missing.');
+  assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-album-asset-upload-success-verification-truth'"), 'Build99 codename mismatch.');
+}
+assert.ok(release.includes('build98AncestryMarker'), 'Build99+ must preserve accepted Build98 ancestry.');
 assert.ok(release.includes("version: 0.19.20 · build: 98 · codename: 'studio-focus-slice4-phase9-tm524-duration-evidence-compat-corrective'"), 'Accepted Build98 identity must remain immutable in Build99 ancestry.');
+if (pkg.version === '0.19.22') {
+  assert.ok(release.includes('build99AncestryMarker'), 'Build100 must preserve accepted Build99 ancestry.');
+  assert.ok(release.includes("version: 0.19.21 · build: 99 · codename: 'studio-focus-slice4-phase9-album-asset-upload-success-verification-truth'"), 'Accepted Build99 identity must remain immutable in Build100 ancestry.');
+}
 
 // Build99 closes only normal-success Album asset verification. It does not claim exact selected-byte proof.
 for (const field of [

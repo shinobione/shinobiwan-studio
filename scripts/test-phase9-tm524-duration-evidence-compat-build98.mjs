@@ -8,15 +8,16 @@ const save = read('src/services/track-metadata-admin-api.ts');
 const phase4 = read('src/services/phase4-admin-api.ts');
 const album = read('src/services/album-admin-api.ts');
 const pkg = JSON.parse(read('package.json'));
+if (pkg.version === '0.19.22') assert.ok(release.includes('build99AncestryMarker'), 'Build100 must preserve accepted Build99 ancestry.');
 
-assert.ok(['0.19.20', '0.19.21'].includes(pkg.version), 'Build98 guard accepts Build98 and its bounded Build99 successor.');
+assert.ok(['0.19.20', '0.19.21', '0.19.22'].includes(pkg.version), 'Build98 guard accepts Build98 and its bounded Build99 successor.');
 if (pkg.version === '0.19.20') {
   assert.ok(release.includes("version: '0.19.20'"), 'Build98 release version mismatch.');
   assert.ok(release.includes('build: 98'), 'Build98 release identity is missing.');
   assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-tm524-duration-evidence-compat-corrective'"), 'Build98 codename mismatch.');
 }
 assert.ok(release.includes('build97AncestryMarker'), 'Build98+ must preserve Build97 candidate ancestry.');
-if (pkg.version === '0.19.21') {
+if (['0.19.21', '0.19.22'].includes(pkg.version)) {
   assert.ok(release.includes('build98AncestryMarker'), 'Build99 must preserve accepted Build98 ancestry.');
   assert.ok(release.includes("version: 0.19.20 · build: 98 · codename: 'studio-focus-slice4-phase9-tm524-duration-evidence-compat-corrective'"), 'Build98 accepted runtime identity must remain immutable in Build99 ancestry.');
 }

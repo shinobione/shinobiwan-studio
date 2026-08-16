@@ -152,6 +152,7 @@ function AlbumEditor({ albumId, albums, tracks, visual, onChanged, onClose }: {
   const [form, setForm] = useState<Form>(EMPTY);
   const [ids, setIds] = useState<string[]>([]);
   const [moves, setMoves] = useState<Record<string, string>>({});
+  const [intakeTrackId, setIntakeTrackId] = useState('');
   const [cover, setCover] = useState<File | null>(null);
   const [palette, setPalette] = useState<CoverPalette | null>(null);
   const [tab, setTab] = useState<AlbumTab>('overview');
@@ -187,6 +188,19 @@ function AlbumEditor({ albumId, albums, tracks, visual, onChanged, onClose }: {
   }, [cover]);
 
   const byId = useMemo(() => new Map(tracks.map(track => [track.id, track])), [tracks]);
+  const canonicalOwnerByTrackId = useMemo(() => {
+    const owners = new Map<string, string>();
+    for (const summary of albums) {
+      for (const trackId of summary.trackIds) {
+        if (!owners.has(trackId)) owners.set(trackId, summary.id);
+      }
+    }
+    return owners;
+  }, [albums]);
+  const intakeCandidates = useMemo(
+    () => tracks.filter(track => !ids.includes(track.id) && !canonicalOwnerByTrackId.has(track.id)),
+    [tracks, ids, canonicalOwnerByTrackId],
+  );
   const changed = album ? JSON.stringify(ids) !== JSON.stringify(album.trackIds) : false;
   const overviewPalette = paletteFromForm(form);
 
@@ -206,6 +220,14 @@ function AlbumEditor({ albumId, albums, tracks, visual, onChanged, onClose }: {
     } finally {
       setBusy(false);
     }
+  }
+
+  function stageTrackIntake() {
+    const trackId = intakeTrackId;
+    if (!trackId || !intakeCandidates.some(track => track.id === trackId)) return;
+    setIds(current => current.includes(trackId) ? current : [...current, trackId]);
+    setIntakeTrackId('');
+    setNotice(`“${byId.get(trackId)?.title || trackId}” staged locally. Nothing is written until Save tracklist.`);
   }
 
   async function saveMetadata() {
@@ -328,6 +350,8 @@ function AlbumEditor({ albumId, albums, tracks, visual, onChanged, onClose }: {
 
     {tab === 'tracklist' && <article className="panel album-tracklist-panel c3-album-tab-panel">
       <div className="album-section-head"><div><span className="eyebrow">TRACKLIST / MEMBERSHIP</span><h3>{ids.length} ordered tracks</h3><p><code>album.trackIds</code> is the canonical membership and artistic order. Reorder here at any time.</p></div></div>
+      <div className="album-boundary-note"><strong>Add tracks from Singles / unassigned</strong><span>Availability is derived from canonical Album trackIds, not the Track-side display cache. Add only stages the ordered list locally. Nothing is written until Save tracklist.</span></div>
+      <div className="album-actions"><div className="album-track-move"><select aria-label="Choose an available Track to add" value={intakeTrackId} disabled={busy || intakeCandidates.length === 0} onChange={event => setIntakeTrackId(event.target.value)}><option value="">{intakeCandidates.length ? 'Choose a Track…' : 'No unassigned Tracks available'}</option>{intakeCandidates.map(track => <option key={track.id} value={track.id}>{track.title} · {track.id}</option>)}</select><button disabled={busy || !intakeTrackId} onClick={stageTrackIntake}>Add to tracklist</button></div><span>{intakeCandidates.length} canonically unowned Track{intakeCandidates.length === 1 ? '' : 's'} available</span></div>
       <ol className="album-tracklist">{ids.map((id, index) => <li key={id}><span className="album-track-index">{String(index + 1).padStart(2, '0')}</span><div><strong>{byId.get(id)?.title || id}</strong><small>{id}</small></div><div className="album-track-controls"><button disabled={busy || index === 0} onClick={() => { const next = [...ids]; [next[index - 1], next[index]] = [next[index], next[index - 1]]; setIds(next); }}>↑</button><button disabled={busy || index === ids.length - 1} onClick={() => { const next = [...ids]; [next[index], next[index + 1]] = [next[index + 1], next[index]]; setIds(next); }}>↓</button><button disabled={busy} onClick={() => setIds(ids.filter(value => value !== id))}>Remove</button></div><div className="album-track-move"><select value={moves[id] || ''} onChange={event => setMoves({ ...moves, [id]: event.target.value })}><option value="">Move to…</option>{albums.filter(item => item.id !== album.id).map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select><button disabled={busy || !moves[id]} onClick={() => void moveTrack(id)}>Move</button></div></li>)}</ol>
       <div className="album-actions"><span>{changed ? 'Unsaved tracklist changes' : 'Tracklist matches canonical state'}</span><button className="primary-btn" disabled={busy || !changed} onClick={() => void saveTracklist()}>Save tracklist</button></div>
     </article>}
