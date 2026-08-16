@@ -1,7 +1,7 @@
 # CHANGELOG — Studio v0.19.24 · Build102
 
 Date: 2026-08-17
-Status: **SOURCE CANDIDATE · NOT DEPLOYED**
+Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
 Codename: `studio-focus-slice4-phase9-track-asset-etag-representation-corrective`
 
 ## Real-user trigger
@@ -39,18 +39,41 @@ The diagnostic details now retain both the response ETag and canonical reread ET
 - no Album asset behavior change;
 - no UI/layout change.
 
-## Safety
+## Safety and verification receipts
 
 ```text
 Accepted predecessor       Studio v0.19.22 · Build100
-Rejected candidate         Studio v0.19.23 · Build101 (real-user false-negative ETag representation mismatch)
+Rejected candidate         Studio v0.19.23 · Build101 · REAL USER FALSE NEGATIVE
 Build101 write verdict     COMMITTED — cover persisted after refresh without re-upload
 Build102 base              690828f5d33f0c0884fcef29334567407b639e61
 Pre-build safety           safety/pre-build102-etag-normalization-corrective-20260817-0120
 Feature branch             phase9/build102-etag-representation-corrective
+Runtime PR                 #193
+Runtime PR head            cfebb5cfe5b87627a29890a7477bd5628ef60759
+Official Validate          #524 · run 31979380563 · SUCCESS
+Green premerge safety      safety/post-build102-green-premerge-20260817-0134
+Runtime merge              64ac5ed4d53daeafc4fa5b7a25ec66594eef274d
+Pages                      #200 · run 31979525479 · build SUCCESS · deploy SUCCESS
+Postdeploy safety          safety/post-build102-deployed-candidate-20260817-0136
 Worker deploy              NONE
 Track Manager change       NONE
+Public Worker change       NONE
 R2 migration/schema        NONE
 ```
 
-Build100 remains the latest **accepted** Studio runtime until this corrective passes CI, deploys as a candidate and receives a clean real-user smoke.
+The official final-head validation ran the repository-native full `npm run build` and passed the complete inherited Phase 0–9, Studio Focus, typecheck and Vite build gate, including both the Build101 verification guard and the new Build102 ETag representation regression guard. Earlier red PR runs were caused by inherited successor guards that had not yet admitted `0.19.24`; they were aligned before the final head and no red head was merged.
+
+## Human smoke boundary
+
+Use a genuine normal successful Track asset upload through the daily **Track → Visuals / Assets** surface. Prefer a replaceable cover or thumbnail on a safe draft/unpublished Track. Do not manufacture a timeout, lost response, fingerprint mismatch or destructive failure branch.
+
+Expected normal-success result:
+
+1. the upload completes once;
+2. Studio reports **`ASSET SAVED`**;
+3. Studio reports **`Canonical reread: Verified`**;
+4. Studio reports **`Catalog rebuilt: Yes`**;
+5. reload the Track and confirm the new asset remains present;
+6. no retry or second upload is needed.
+
+Build100 remains the latest **accepted** Studio runtime until Build102 receives an explicit real-user PASS. Build101 is not accepted and is retained only as the candidate that exposed the ETag representation mismatch. No Build103 work begins before Build102 acceptance and a fresh read-only post-acceptance audit.
