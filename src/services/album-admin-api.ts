@@ -374,7 +374,7 @@ export async function deleteAdminAlbumAsset(albumId: string, kind: AdminAlbumAss
 
 export const albumAdminService = Object.freeze({
   intents: INTENT,
-  transport: 'Track Manager v5.23 / bridge v1.13 only',
+  transport: 'Track Manager v5.23-v5.24 / bridges v1.13-v1.14',
   privateReadRetryPolicy: 'one-retry-timeout-transport-transient-http-no-access-retry',
   privateReadMaxAttempts: 2,
   createSuccessVerificationPolicy: 'canonical-reread-revision-plus-requested-metadata',

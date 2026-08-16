@@ -11,7 +11,7 @@ import type { AdminAudioEvidence } from './audio-duration-evidence';
 import { studioConfig } from './config';
 
 const METADATA_SAVE_INTENT = 'metadata-save-v1';
-const DURATION_EVIDENCE_BRIDGES = new Set(['5.22/1.12', '5.23/1.13']);
+const DURATION_EVIDENCE_BRIDGES = new Set(['5.22/1.12', '5.23/1.13', '5.24/1.14']);
 
 export type TrackMetadataCommitState = 'committed' | 'not-committed' | 'ambiguous' | 'unverified';
 
@@ -86,7 +86,7 @@ async function requireMetadataWrite(evidence: AdminAudioEvidence | null): Promis
   }
   if (evidence && !DURATION_EVIDENCE_BRIDGES.has(`${health.trackManagerVersion || ''}/${health.version || ''}`)) {
     throw new TrackMetadataSaveError(
-      `Canonical audio-duration repair requires Track Manager v5.22 / bridge v1.12 or v5.23 / v1.13; active bridge is ${health.trackManagerVersion || 'unknown'} / ${health.version || 'unknown'}.`,
+      `Canonical audio-duration repair requires Track Manager v5.22 / bridge v1.12, v5.23 / v1.13, or v5.24 / v1.14; active bridge is ${health.trackManagerVersion || 'unknown'} / ${health.version || 'unknown'}.`,
       409,
       'DURATION_EVIDENCE_BRIDGE_REQUIRED',
     );
