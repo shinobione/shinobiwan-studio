@@ -450,6 +450,7 @@ Accepted evidence and behavior:
 - runtime merge `dd26df1664fa7de2b2e77b0d2ae3d9d48cb9eefd`;
 - Pages `31920895328` SUCCESS on the exact runtime merge;
 - candidate docs PR #184 / CI `31920976229` SUCCESS / merge `f3c1bff90ea8cb02f16e01b5f3f973e10ecdb499` / Pages `31921021926` SUCCESS;
+- acceptance docs PR #185 / CI `31944004275` SUCCESS / merge `66052e2a16097801916f92c43623739123dd5067` / Pages `31944054855` SUCCESS;
 - explicit real-user verdict `BUILD99 SMOKED 💨` on 2026-08-16;
 - normal success now proves response revision + requested Album asset slot/path + canonical presence + available server fingerprint fields;
 - exact selected-client-byte proof remains out of scope without a digest contract;
@@ -461,9 +462,9 @@ The smoke also exposed a separate product deadlock: a Track in virtual `Singles`
 
 ## In progress
 
-### Build99 acceptance closeout
+### Post-Build99 fresh audit
 
-Build99 is explicit REAL USER PASS. Runtime, candidate-docs and human smoke receipts are known; the seven-document acceptance closeout is being finalized. No new runtime slice is allocated during this closeout.
+Build99 is fully accepted and its seven-document acceptance CI/merge/Pages closeout is complete. The project is now in read-only audit mode; no new runtime slice is allocated until the smallest coherent next gap is proven.
 
 **Build100 remains UNALLOCATED.**
 

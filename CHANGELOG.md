@@ -22,6 +22,10 @@ Candidate docs PR         #184
 Candidate docs CI #500    31920976229 · SUCCESS
 Candidate docs merge      f3c1bff90ea8cb02f16e01b5f3f973e10ecdb499
 Candidate docs Pages #191 31921021926 · SUCCESS
+Acceptance docs PR       #185
+Acceptance docs CI #501  31944004275 · SUCCESS
+Acceptance docs merge    66052e2a16097801916f92c43623739123dd5067
+Acceptance docs Pages #192 31944054855 · SUCCESS
 Safety post-deploy        safety/post-build99-deployed-candidate-20260816
 Safety post-acceptance    safety/post-build99-real-user-pass-20260816
 Track Manager             v5.24 · unchanged by Build99

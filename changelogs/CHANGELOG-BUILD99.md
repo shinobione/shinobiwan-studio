@@ -96,4 +96,15 @@ A separate UX/authority finding was observed during the same session: a Track su
 
 Safety post-acceptance: `safety/post-build99-real-user-pass-20260816`.
 
-Build100 remains **UNALLOCATED** pending acceptance-docs closeout and fresh read-only audit.
+## Acceptance closeout receipts
+
+```text
+Acceptance docs PR        #185
+Exact docs head            93e63eaf0d8336b9847448dd3c546f01cb268e11
+Acceptance docs CI #501    31944004275 · SUCCESS
+Acceptance docs merge      66052e2a16097801916f92c43623739123dd5067
+Acceptance docs Pages #192 31944054855 · SUCCESS / SUCCESS
+Safety after docs Pages    safety/post-build99-acceptance-docs-pages-20260816
+```
+
+Build100 remains **UNALLOCATED** pending fresh read-only post-Build99 audit.
