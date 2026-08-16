@@ -1,0 +1,152 @@
+name: Build99 acceptance docs one-shot
+
+on:
+  push:
+    branches:
+      - docs/build99-real-user-pass-closeout-20260816
+    paths:
+      - .github/workflows/build99-acceptance-docs-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  closeout:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: docs/build99-real-user-pass-closeout-20260816
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Patch seven canonical docs
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          VERDICT = 'BUILD99 SMOKED 💨'
+          DATE = '2026-08-16'
+          RUNTIME_HEAD = '3cc99aabd18d23ec38ba4df9fd042e03aace8238'
+          RUNTIME_CI = '31920824628'
+          RUNTIME_MERGE = 'dd26df1664fa7de2b2e77b0d2ae3d9d48cb9eefd'
+          RUNTIME_PAGES = '31920895328'
+          CANDIDATE_DOCS_MERGE = 'f3c1bff90ea8cb02f16e01b5f3f973e10ecdb499'
+          CANDIDATE_DOCS_CI = '31920976229'
+          CANDIDATE_DOCS_PAGES = '31921021926'
+
+          def read(path): return Path(path).read_text(encoding='utf-8')
+          def write(path, text): Path(path).write_text(text, encoding='utf-8')
+          def replace_once(text, old, new, label):
+              if text.count(old) != 1:
+                  raise SystemExit(f'{label}: expected one exact marker, got {text.count(old)}')
+              return text.replace(old, new, 1)
+          def sub_once(text, pattern, repl, label, flags=0):
+              out, n = re.subn(pattern, repl, text, count=1, flags=flags)
+              if n != 1:
+                  raise SystemExit(f'{label}: expected one regex marker, got {n}')
+              return out
+
+          # README
+          p='README.md'; t=read(p)
+          t=replace_once(t,
+          'Studio                v0.19.20 · Build98 · REAL USER PASS\nCodename              studio-focus-slice4-phase9-tm524-duration-evidence-compat-corrective\nRuntime PR            #181\nExact tested head     c393e26caa9a9e7d0b3ad71fccca92b9c1ae234b\nValidation            31917295331 · SUCCESS\nRuntime merge         5ebbf78f9d9296eaed998f1093f2ca7dad68fd1d\nRuntime Pages         31917336845 · SUCCESS · exact runtime merge SHA\nReal-user smoke       MP3 + COVER + MP4 + TXT PASS MADAFAKA · 2026-08-16',
+          f'Studio                v0.19.21 · Build99 · REAL USER PASS\nCodename              studio-focus-slice4-phase9-album-asset-upload-success-verification-truth\nRuntime PR            #183\nExact tested head     {RUNTIME_HEAD}\nValidation            {RUNTIME_CI} · SUCCESS\nRuntime merge         {RUNTIME_MERGE}\nRuntime Pages         {RUNTIME_PAGES} · SUCCESS · exact runtime merge SHA\nCandidate docs PR     #184\nCandidate docs CI     {CANDIDATE_DOCS_CI} · SUCCESS\nCandidate docs merge  {CANDIDATE_DOCS_MERGE}\nCandidate docs Pages  {CANDIDATE_DOCS_PAGES} · SUCCESS\nReal-user smoke       {VERDICT} · {DATE}\nBuild98               v0.19.20 · REAL USER PASS', 'README current block')
+          t=replace_once(t,
+          '**Studio v0.19.20 · Build98 is the current accepted runtime.** Build97 is its accepted predecessor.',
+          '**Studio v0.19.21 · Build99 is the current accepted runtime.** Build98 is its accepted predecessor.', 'README current sentence')
+          t=replace_once(t,
+          'Phase 9 Slice17     Build98 · REAL USER PASS\nBuild99             UNALLOCATED · pending fresh read-only audit',
+          'Phase 9 Slice17     Build98 · REAL USER PASS\nPhase 9 Slice18     Build99 · REAL USER PASS\nBuild100            UNALLOCATED · pending fresh read-only post-Build99 audit', 'README program')
+          t=replace_once(t,
+          'The immediate next action is a **fresh read-only post-Build98 Phase9 reliability audit**. Build99 remains unallocated until that audit proves the smallest coherent next gap.',
+          'The immediate next action is a **fresh read-only post-Build99 Phase9 audit**. The already-observed `Singles → first Track into an empty draft Album` membership deadlock is the leading candidate, but Build100 remains unallocated until the audit proves scope and authority boundaries.', 'README next action')
+          write(p,t)
+
+          # PROJECT_STATE
+          p='PROJECT_STATE.md'; t=read(p)
+          t=replace_once(t,
+          'Updated: 2026-08-16 after **Build97 + Build98 REAL USER PASS** and TM v5.24 protected admin deployment verification; acceptance-docs closeout in progress.',
+          'Updated: 2026-08-16 after **Build99 REAL USER PASS**; seven-document acceptance closeout in progress.', 'PROJECT_STATE updated')
+          t=sub_once(t, r'## Current accepted runtime\n\n```text\n[\s\S]*?\n```\n\nBuild98 is the latest \*\*accepted\*\* Studio runtime\.[^\n]*',
+          f'''## Current accepted runtime\n\n```text\nStudio version          v0.19.21\nStudio build            Build99\nCodename                studio-focus-slice4-phase9-album-asset-upload-success-verification-truth\nAcceptance              REAL USER PASS\nRuntime PR              #183\nExact tested head       {RUNTIME_HEAD}\nHistorical CI           31920761317 · FAILURE · inherited C2.5-D literal verifier guard only · never merged\nFinal runtime CI        {RUNTIME_CI} · SUCCESS\nRuntime merge SHA       {RUNTIME_MERGE}\nRuntime Pages           {RUNTIME_PAGES} · SUCCESS · exact runtime merge SHA\nCandidate docs PR       #184\nCandidate docs CI       {CANDIDATE_DOCS_CI} · SUCCESS\nCandidate docs merge    {CANDIDATE_DOCS_MERGE}\nCandidate docs Pages    {CANDIDATE_DOCS_PAGES} · SUCCESS\nReal-user smoke         {VERDICT} · {DATE}\nSafety post-deploy      safety/post-build99-deployed-candidate-20260816\nSafety post-acceptance  safety/post-build99-real-user-pass-20260816\nWorker deploy           NONE\nTrack Manager change    NONE\nR2 migration/write      NONE caused by Build99 implementation/deployment\n```\n\nBuild99 is the latest **accepted** Studio runtime. Build98 remains its accepted predecessor. Build99 strengthens only normal successful Album cover/thumbnail verification using server-returned asset evidence plus private canonical reread; exact selected-client-byte digest proof and upload lost-response causality remain explicitly out of scope.''', 'PROJECT_STATE current', re.M)
+          t=replace_once(t,
+          'Phase 9 Slice17         COMPLETE · Build98 REAL USER PASS\nBuild99                 UNALLOCATED pending fresh read-only post-Build98 audit',
+          'Phase 9 Slice17         COMPLETE · Build98 REAL USER PASS\nPhase 9 Slice18         COMPLETE · Build99 REAL USER PASS\nBuild100                UNALLOCATED pending fresh read-only post-Build99 audit', 'PROJECT_STATE program')
+          insert='''\n## Build99 accepted behavior\n\nBuild99 closes the normal-success verification gap for Album cover/thumbnail upload. `clientVerified=true` now requires exact response/canonical revision, requested slot/path, private canonical presence, and server-returned `size` / `contentType` / `etag` agreement when those fingerprint fields are present. It adds no automatic upload retry, no operation ID, no Worker/R2 change, and does not claim exact selected-client-byte proof. Real-user verdict: **`BUILD99 SMOKED 💨`** on 2026-08-16.\n\nThe same real-user session also exposed a separate UX/authority deadlock: a Track currently surfaced under virtual `Singles` cannot be claimed as the first member of an empty draft Album from the current Albums Tracklist UI. This finding is **not part of Build99** and is reserved for the fresh post-Build99 audit.\n'''
+          t=replace_once(t, '\n## Build98 accepted behavior\n', insert+'\n## Build98 accepted behavior\n', 'PROJECT_STATE Build99 section')
+          write(p,t)
+
+          # QA
+          p='QA.md'; t=read(p)
+          t=replace_once(t,
+          'Updated: 2026-08-16 after explicit **Build97 + Build98 REAL USER PASS** and Track Manager v5.24 real-user verification.',
+          'Updated: 2026-08-16 after explicit **Build99 REAL USER PASS**.', 'QA updated')
+          t=sub_once(t, r'## Current accepted Studio runtime\n\n```text\n[\s\S]*?\n```',
+          f'''## Current accepted Studio runtime\n\n```text\nVersion                 v0.19.21\nBuild                   Build99\nStatus                  REAL USER PASS\nRuntime PR              #183\nExact tested head       {RUNTIME_HEAD}\nHistorical CI           31920761317 · FAILURE · inherited C2.5-D literal verifier guard only · never merged\nFinal CI                {RUNTIME_CI} · SUCCESS\nRuntime merge           {RUNTIME_MERGE}\nPages                   {RUNTIME_PAGES} · SUCCESS · exact runtime merge SHA\nCandidate docs PR       #184\nCandidate docs CI       {CANDIDATE_DOCS_CI} · SUCCESS\nCandidate docs merge    {CANDIDATE_DOCS_MERGE}\nCandidate docs Pages    {CANDIDATE_DOCS_PAGES} · SUCCESS\nSafety post-deploy      safety/post-build99-deployed-candidate-20260816\nSafety post-acceptance  safety/post-build99-real-user-pass-20260816\nTrack Manager           v5.24 · unchanged by Build99\nStudio bridge           v1.14\nPublic Worker           v2.7 · unchanged\nReal-user verdict       {VERDICT} · {DATE}\n```''', 'QA current', re.M)
+          qa='''\n## Build99 automated coverage — GREEN\n\nFinal validation run `31920824628` passed the complete repository-native chain on exact head `3cc99aabd18d23ec38ba4df9fd042e03aace8238`. Historical run `31920761317` failed only because the inherited C2.5-D guard required the old literal `return verify(albumId, payload)` form; only that guard was widened to accept the same verifier with Build99's `expectedAsset` postcondition. No runtime behavior changed for that red run.\n\nBuild99 proves normal successful Album cover/thumbnail upload only: exact response revision, requested canonical slot/path, private asset presence, and server-returned `size`, `contentType`, and `etag` agreement when supplied. Automatic upload retries remain zero. Exact client-byte digest proof and lost-response causality remain unproven by design.\n\n## Build99 real-user smoke — PASS\n\nThe user completed a genuine Album artwork smoke and returned:\n\n```text\nBUILD99 SMOKED 💨\n```\n\nAcceptance confirms the deployed normal-success Album artwork path completed without canonical-verification error and remained coherent after reload. No network/Access failure was manufactured. The same session separately exposed the empty-draft-Album first-track intake deadlock; that UX/authority gap is recorded for the post-Build99 audit and does not alter the Build99 verdict.\n'''
+          t=replace_once(t, '\n## Build98 automated coverage — GREEN\n', qa+'\n## Build98 automated coverage — GREEN\n', 'QA Build99 section')
+          write(p,t)
+
+          # ROADMAP
+          p='ROADMAP.md'; t=read(p)
+          t=replace_once(t,
+          'Updated: 2026-08-16 after **Build97 + Build98 REAL USER PASS**, TM v5.24 real-user verification and acceptance closeout initiation.',
+          'Updated: 2026-08-16 after **Build99 REAL USER PASS** and acceptance closeout initiation.', 'ROADMAP updated')
+          section='''\n### Phase 9 Slice18 — Album asset upload normal-success verification truth\n\n**Build99 · v0.19.21 · REAL USER PASS**\n\n- runtime PR #183;\n- exact final tested head `3cc99aabd18d23ec38ba4df9fd042e03aace8238`;\n- final CI `31920824628` SUCCESS;\n- runtime merge `dd26df1664fa7de2b2e77b0d2ae3d9d48cb9eefd`;\n- Pages `31920895328` SUCCESS on the exact runtime merge;\n- candidate docs PR #184 / CI `31920976229` SUCCESS / merge `f3c1bff90ea8cb02f16e01b5f3f973e10ecdb499` / Pages `31921021926` SUCCESS;\n- explicit real-user verdict `BUILD99 SMOKED 💨` on 2026-08-16;\n- normal success now proves response revision + requested Album asset slot/path + canonical presence + available server fingerprint fields;\n- exact selected-client-byte proof remains out of scope without a digest contract;\n- upload lost-response causality remains out of scope without operation identity;\n- zero automatic upload retries;\n- no Worker, Track Manager or R2 implementation change.\n\nThe smoke also exposed a separate product deadlock: a Track in virtual `Singles` cannot currently be claimed as the first member of an empty draft Album through the daily Albums Tracklist UI. This is the leading post-Build99 audit candidate, not part of Build99.\n'''
+          marker='\n## Active / next\n'
+          if marker not in t:
+              # Older roadmap uses a different durable-next heading; insert before Phase 10 if available.
+              marker='\n## Phase 10'
+          if marker not in t:
+              raise SystemExit('ROADMAP insertion marker missing')
+          t=t.replace(marker, section+marker, 1)
+          t=t.replace('Build99', 'Build99', 1)  # no-op keeps explicit intent
+          # Promote any exact unallocated line if still present.
+          t=t.replace('Build99                 UNALLOCATED pending fresh read-only post-Build98 audit', 'Phase 9 Slice18         COMPLETE · Build99 REAL USER PASS\nBuild100                UNALLOCATED pending fresh read-only post-Build99 audit')
+          t=t.replace('Build99             UNALLOCATED · pending fresh read-only audit', 'Phase 9 Slice18     Build99 · REAL USER PASS\nBuild100            UNALLOCATED · pending fresh read-only post-Build99 audit')
+          write(p,t)
+
+          # CHANGELOG
+          p='CHANGELOG.md'; t=read(p)
+          build99=f'''### v0.19.21 · Build99 — 2026-08-16\n\nCodename: `studio-focus-slice4-phase9-album-asset-upload-success-verification-truth`  \nStatus: **REAL USER PASS — ACCEPTED**\n\nBuild99 tightens normal successful Album cover/thumbnail verification only. After Track Manager reports upload success, Studio's private canonical reread must prove the exact response revision, requested slot/path, asset presence, and server-returned `size`, `contentType`, and `etag` when supplied before `clientVerified=true`. No automatic upload retry, operation ID, Worker/R2 change, or exact selected-client-byte digest claim is introduced.\n\n```text\nRuntime PR                #183\nExact tested head         {RUNTIME_HEAD}\nHistorical CI #498       31920761317 · FAILURE · inherited C2.5-D literal guard only · never merged\nValidation #499           {RUNTIME_CI} · SUCCESS\nRuntime merge             {RUNTIME_MERGE}\nRuntime Pages #190        {RUNTIME_PAGES} · SUCCESS\nCandidate docs PR         #184\nCandidate docs CI #500    {CANDIDATE_DOCS_CI} · SUCCESS\nCandidate docs merge      {CANDIDATE_DOCS_MERGE}\nCandidate docs Pages #191 {CANDIDATE_DOCS_PAGES} · SUCCESS\nSafety post-deploy        safety/post-build99-deployed-candidate-20260816\nSafety post-acceptance    safety/post-build99-real-user-pass-20260816\nTrack Manager             v5.24 · unchanged by Build99\nStudio bridge             v1.14\nPublic Worker             v2.7 · unchanged\nReal-user smoke           {VERDICT} · {DATE}\nBuild100                  UNALLOCATED pending fresh read-only audit\n```\n\nDetailed accepted record: [`changelogs/CHANGELOG-BUILD99.md`](changelogs/CHANGELOG-BUILD99.md).\n\n## Accepted predecessor\n\n'''
+          t=replace_once(t, '## Current accepted release\n\n### v0.19.20 · Build98 — 2026-08-16', '## Current accepted release\n\n'+build99+'### v0.19.20 · Build98 — 2026-08-16', 'CHANGELOG current')
+          write(p,t)
+
+          # BUILD99 changelog
+          p='changelogs/CHANGELOG-BUILD99.md'; t=read(p)
+          t=replace_once(t, 'Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**', 'Status: **REAL USER PASS · ACCEPTED**', 'BUILD99 status')
+          t=replace_once(t, '## Human acceptance boundary\n\nBuild99 is **not yet REAL USER PASS**.\n\nA useful real-user smoke is a genuine Album cover/thumbnail replacement on an Album that actually needs artwork changed. Normal success must complete without a verification error; after reload, the cover/thumbnail must remain canonically present. Do not create a disposable canonical Album and do not deliberately break network/Cloudflare Access merely to manufacture a lost-response branch.\n\nBuild100 remains **UNALLOCATED** pending Build99 human acceptance, acceptance-docs closeout, and a fresh read-only post-Build99 audit.',
+          f'''## Human acceptance\n\nExplicit verdict: **`{VERDICT}`** on {DATE}.\n\nThe real-user Album artwork flow completed normally without canonical-verification error and remained coherent after reload. Acceptance did not manufacture a network/Access failure.\n\nA separate UX/authority finding was observed during the same session: a Track surfaced under virtual `Singles` cannot currently be claimed as the first member of an empty draft Album from the daily Albums Tracklist UI. That finding is outside Build99 scope and is reserved for the fresh post-Build99 audit.\n\nSafety post-acceptance: `safety/post-build99-real-user-pass-20260816`.\n\nBuild100 remains **UNALLOCATED** pending acceptance-docs closeout and fresh read-only audit.''', 'BUILD99 acceptance')
+          write(p,t)
+
+          # INTEGRATION SAFETY
+          p='docs/INTEGRATION_SAFETY.md'; t=read(p)
+          t=replace_once(t, 'Current accepted Studio release: `v0.19.20` / Build `98` / REAL USER PASS', 'Current accepted Studio release: `v0.19.21` / Build `99` / REAL USER PASS', 'SAFETY release')
+          t=sub_once(t, r'Studio accepted\n  v0\.19\.20 / Build98 / REAL USER PASS[\s\S]*?  safety post-acceptance safety/post-build98-real-user-pass-20260816',
+          f'''Studio accepted\n  v0.19.21 / Build99 / REAL USER PASS\n  exact tested head {RUNTIME_HEAD}\n  final runtime CI {RUNTIME_CI} / SUCCESS\n  runtime merge {RUNTIME_MERGE}\n  runtime Pages {RUNTIME_PAGES} / SUCCESS\n  browser smoke {VERDICT} / {DATE}\n  safety post-deploy safety/post-build99-deployed-candidate-20260816\n  safety post-acceptance safety/post-build99-real-user-pass-20260816''', 'SAFETY overlay', re.M)
+          restore='''\nAfter Build99 deployment candidate:\n  safety/post-build99-deployed-candidate-20260816\n  safety/post-build99-candidate-docs-closeout-20260816\n\nAfter Build99 real-user acceptance:\n  safety/post-build99-real-user-pass-20260816\n\n'''
+          t=replace_once(t, 'Most relevant current references:\n\n```text\n', 'Most relevant current references:\n\n```text\n'+restore, 'SAFETY checkpoints')
+          write(p,t)
+
+          expected=['README.md','PROJECT_STATE.md','QA.md','ROADMAP.md','CHANGELOG.md','changelogs/CHANGELOG-BUILD99.md','docs/INTEGRATION_SAFETY.md']
+          for path in expected:
+              if 'Build99' not in read(path): raise SystemExit(f'{path}: Build99 acceptance marker absent')
+          print('Build99 seven-doc acceptance overlay applied')
+          PY
+      - name: Install and full repository gate
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+      - name: Commit exactly seven docs
+        shell: bash
+        run: |
+          git config user.name "ShinoBiWan"
+          git config user.email "shinobione@users.noreply.github.com"
+          git add README.md PROJECT_STATE.md QA.md ROADMAP.md CHANGELOG.md changelogs/CHANGELOG-BUILD99.md docs/INTEGRATION_SAFETY.md
+          test "$(git diff --cached --name-only | wc -l)" -eq 7
+          git diff --cached --name-only
+          git commit -m "Docs: accept Build99 real-user closeout"
+          git push origin HEAD:docs/build99-real-user-pass-closeout-20260816
