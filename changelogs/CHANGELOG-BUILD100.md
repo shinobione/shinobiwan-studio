@@ -4,7 +4,7 @@ Date: 2026-08-16
 Version: `v0.19.22`  
 Build: `100`  
 Codename: `studio-focus-slice4-phase9-album-first-track-intake`  
-Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+Status: **REAL USER PASS · ACCEPTED**
 
 ## Why this slice exists
 
@@ -80,21 +80,24 @@ Public Worker               v2.7 unchanged
 
 The V1 fail-fast occurred entirely in the ephemeral patch workspace before any runtime commit. V2 widened only the inherited C2.5-D Build99 successor condition to retain the already-accepted Build99 `expectedAsset` verifier on Build100, then passed the full repository build before committing the exact bounded runtime/guard changes.
 
-## Human acceptance boundary
+## Real-user acceptance
 
-Build100 is **not yet REAL USER PASS**.
+User verdict on 2026-08-16:
 
-Use the genuine blocked case already available:
+```text
+BUILD100 SMOKED 💨
+```
 
-1. hard-refresh Studio and confirm `v0.19.22 · Build100`;
-2. open the draft Album `Anh Yêu Em`;
-3. open **Tracklist**;
-4. confirm `Pixels & Promises` appears under **Add tracks from Singles / unassigned**;
-5. select it and click **Add to tracklist** — this must only stage locally;
-6. confirm the list shows one unsaved Track and the UI says nothing is written until **Save tracklist**;
-7. click **Save tracklist** once and accept the confirmation;
-8. confirm the save reports canonical verification across Album + Track caches;
-9. reload the Album and confirm `Pixels & Promises` remains in `album.trackIds`;
-10. reopen `Pixels & Promises` and confirm Album / Project now displays `Anh Yêu Em` rather than virtual `Singles`.
+The genuine blocked case passed:
 
-Do not manufacture a network/Access failure. Build101 remains **UNALLOCATED** pending explicit Build100 human acceptance, acceptance closeout and a fresh post-Build100 audit.
+- draft Album `Anh Yêu Em` exposed `Pixels & Promises` as virtual Singles / unassigned;
+- **Add to tracklist** staged locally before any canonical write;
+- one guarded **Save tracklist** committed membership through existing Build87 resilient truth;
+- canonical reload preserved Album membership/order;
+- reopening the Track showed `Anh Yêu Em` instead of virtual `Singles`.
+
+No network/Cloudflare Access failure was manufactured. The acceptance write was the intentional Album-membership mutation under test; Build100 implementation/deployment itself caused no R2 migration/write and changed no Worker or Track Manager runtime.
+
+Safety post-human-pass: `safety/post-build100-real-user-pass-20260816-2255`.
+
+Build101 remains **UNALLOCATED** pending acceptance-docs closeout and a fresh bounded post-Build100 audit.

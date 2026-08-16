@@ -1,39 +1,34 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-16 after **Build99 REAL USER PASS** and completed seven-document acceptance CI/merge/Pages closeout.
+Updated: 2026-08-16 after explicit **Build100 REAL USER PASS**; acceptance-docs receipts are being closed out without runtime changes.
 
 This file is the short current checkpoint. It is the first project-state document to read after `AGENTS.md`.
 
 ## Current accepted runtime
 
 ```text
-Studio version          v0.19.21
-Studio build            Build99
-Codename                studio-focus-slice4-phase9-album-asset-upload-success-verification-truth
+Studio version          v0.19.22
+Studio build            Build100
+Codename                studio-focus-slice4-phase9-album-first-track-intake
 Acceptance              REAL USER PASS
-Runtime PR              #183
-Exact tested head       3cc99aabd18d23ec38ba4df9fd042e03aace8238
-Historical CI           31920761317 · FAILURE · inherited C2.5-D literal verifier guard only · never merged
-Final runtime CI        31920824628 · SUCCESS
-Runtime merge SHA       dd26df1664fa7de2b2e77b0d2ae3d9d48cb9eefd
-Runtime Pages           31920895328 · SUCCESS · exact runtime merge SHA
-Candidate docs PR       #184
-Candidate docs CI       31920976229 · SUCCESS
-Candidate docs merge    f3c1bff90ea8cb02f16e01b5f3f973e10ecdb499
-Candidate docs Pages    31921021926 · SUCCESS
-Acceptance docs PR      #185
-Acceptance docs CI      31944004275 · SUCCESS
-Acceptance docs merge   66052e2a16097801916f92c43623739123dd5067
-Acceptance docs Pages   31944054855 · SUCCESS
-Real-user smoke         BUILD99 SMOKED 💨 · 2026-08-16
-Safety post-deploy      safety/post-build99-deployed-candidate-20260816
-Safety post-acceptance  safety/post-build99-real-user-pass-20260816
+Runtime PR              #187
+Exact tested head       9df6dd99c6e1bb6a2b1fbf5c555188659432ed8d
+Final runtime CI        31944882443 · SUCCESS
+Runtime merge SHA       49f5c8e0267a318e2b0900ba5e222bd56d098db8
+Runtime Pages           31944932464 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #188
+Candidate docs CI       31945020130 · SUCCESS
+Candidate docs merge    2ddce2be6abba8324c64054702f0e7654831c83b
+Candidate docs Pages    31945131271 · SUCCESS
+Real-user smoke         BUILD100 SMOKED 💨 · 2026-08-16
+Safety post-deploy      safety/post-build100-deployed-candidate-20260816
+Safety post-acceptance  safety/post-build100-real-user-pass-20260816-2255
 Worker deploy           NONE
 Track Manager change    NONE
-R2 migration/write      NONE caused by Build99 implementation/deployment
+R2 implementation write NONE; accepted smoke performed one intentional guarded Album-membership write
 ```
 
-Build99 is the latest **accepted** Studio runtime. Build98 remains its accepted predecessor. Build99 strengthens only normal successful Album cover/thumbnail verification using server-returned asset evidence plus private canonical reread; exact selected-client-byte digest proof and upload lost-response causality remain explicitly out of scope.
+Build100 is the latest **accepted** Studio runtime. Build99 remains its accepted predecessor. Build100 reconnects the missing daily Album intake path while the existing Build87 resilient membership transaction remains the sole write authority and verifies Album plus affected Track caches after save.
 
 ## Current ecosystem baseline
 
@@ -98,10 +93,29 @@ Phase 9 Slice15         COMPLETE · Build96 REAL USER PASS
 Phase 9 Slice16         COMPLETE · Build97 REAL USER PASS
 Phase 9 Slice17         COMPLETE · Build98 REAL USER PASS
 Phase 9 Slice18         COMPLETE · Build99 REAL USER PASS
-Build100                UNALLOCATED pending fresh read-only post-Build99 audit
+Phase 9 Slice19         COMPLETE · Build100 REAL USER PASS
+Build101                UNALLOCATED pending fresh read-only post-Build100 audit
 Phase 10                FUTURE
 Official Phase 11       NONE
 ```
+
+## Build100 accepted behavior
+
+Build100 closes the daily-workflow deadlock discovered during the Build99 real-user session. Canonical authority remains `album.trackIds`; Track-side Album metadata remains compatibility/display cache only.
+
+```text
+canonical Album summaries
+→ derive owner map from every album.trackIds
+→ expose Tracks with no canonical Album owner
+→ Add to tracklist = local staging only
+→ Save tracklist = existing Build87 resilient membership transaction
+→ private Album + affected Track-cache reread
+→ exact canonical membership required before verified success
+```
+
+The genuine `Anh Yêu Em` / `Pixels & Promises` workflow passed in production. `Pixels & Promises` was staged from virtual Singles/unassigned, saved once through the guarded membership path, persisted after reload, and then displayed `Anh Yêu Em` on the Track side. No network/Access failure was manufactured. Real-user verdict: **`BUILD100 SMOKED 💨`** on 2026-08-16.
+
+Build100 adds no editable Album selector to Track metadata, no new endpoint/service, no blind write retry, no Track Manager/Worker change, and no R2 schema migration.
 
 ## Build99 accepted behavior
 

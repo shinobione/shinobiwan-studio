@@ -1,36 +1,47 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-08-16 after explicit **Build99 REAL USER PASS**.
+Updated: 2026-08-16 after explicit **Build100 REAL USER PASS**.
 
 This file records what has actually been validated, what automated guards cover, and what remains unproven. It is not a full test-history dump.
 
 ## Current accepted Studio runtime
 
 ```text
-Version                 v0.19.21
-Build                   Build99
+Version                 v0.19.22
+Build                   Build100
 Status                  REAL USER PASS
-Runtime PR              #183
-Exact tested head       3cc99aabd18d23ec38ba4df9fd042e03aace8238
-Historical CI           31920761317 · FAILURE · inherited C2.5-D literal verifier guard only · never merged
-Final CI                31920824628 · SUCCESS
-Runtime merge           dd26df1664fa7de2b2e77b0d2ae3d9d48cb9eefd
-Pages                   31920895328 · SUCCESS · exact runtime merge SHA
-Candidate docs PR       #184
-Candidate docs CI       31920976229 · SUCCESS
-Candidate docs merge    f3c1bff90ea8cb02f16e01b5f3f973e10ecdb499
-Candidate docs Pages    31921021926 · SUCCESS
-Acceptance docs PR      #185
-Acceptance docs CI      31944004275 · SUCCESS
-Acceptance docs merge   66052e2a16097801916f92c43623739123dd5067
-Acceptance docs Pages   31944054855 · SUCCESS
-Safety post-deploy      safety/post-build99-deployed-candidate-20260816
-Safety post-acceptance  safety/post-build99-real-user-pass-20260816
-Track Manager           v5.24 · unchanged by Build99
+Runtime PR              #187
+Exact tested head       9df6dd99c6e1bb6a2b1fbf5c555188659432ed8d
+Final CI                31944882443 · SUCCESS
+Runtime merge           49f5c8e0267a318e2b0900ba5e222bd56d098db8
+Pages                   31944932464 · SUCCESS · exact runtime merge SHA
+Candidate docs PR       #188
+Candidate docs CI       31945020130 · SUCCESS
+Candidate docs merge    2ddce2be6abba8324c64054702f0e7654831c83b
+Candidate docs Pages    31945131271 · SUCCESS
+Safety post-deploy      safety/post-build100-deployed-candidate-20260816
+Safety post-acceptance  safety/post-build100-real-user-pass-20260816-2255
+Track Manager           v5.24 · unchanged by Build100
 Studio bridge           v1.14
 Public Worker           v2.7 · unchanged
-Real-user verdict       BUILD99 SMOKED 💨 · 2026-08-16
+Real-user verdict       BUILD100 SMOKED 💨 · 2026-08-16
 ```
+
+## Build100 automated coverage — GREEN
+
+Final validation `31944882443` passed the complete repository-native chain on exact head `9df6dd99c6e1bb6a2b1fbf5c555188659432ed8d`. Canonical ownership is derived from Album `trackIds`, only unowned Tracks are offered for intake, **Add to tracklist** stages locally, and the single write remains `saveAdminAlbumMembershipResilient(...)` from Build87.
+
+Build100 adds no backend endpoint, Track Manager/Worker change, R2 schema migration or automatic write retry. Tracks already owned by another canonical Album continue to use the guarded Move flow.
+
+## Build100 real-user smoke — PASS
+
+The user returned:
+
+```text
+BUILD100 SMOKED 💨
+```
+
+`Pixels & Promises` was staged from virtual Singles/unassigned into empty draft Album `Anh Yêu Em`, committed once through the guarded membership save, persisted after reload, and reread on the Track side with `Anh Yêu Em` instead of virtual Singles. No network/Access failure was manufactured.
 
 ## Build99 automated coverage — GREEN
 

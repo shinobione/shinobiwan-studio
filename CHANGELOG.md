@@ -4,38 +4,42 @@ This file is the **current concise changelog**. Detailed per-build records live 
 
 ## Current accepted release
 
+### v0.19.22 · Build100 — 2026-08-16
+
+Codename: `studio-focus-slice4-phase9-album-first-track-intake`  
+Status: **REAL USER PASS — ACCEPTED**
+
+Build100 closes the daily Album first-track intake deadlock without creating a second ownership authority. The Albums workspace derives ownership from canonical `album.trackIds`, offers only Tracks with no canonical Album owner, stages **Add to tracklist** locally, and keeps the existing Build87 resilient membership transaction as the sole canonical write.
+
+```text
+Runtime PR                #187
+Exact tested head         9df6dd99c6e1bb6a2b1fbf5c555188659432ed8d
+Validation #503           31944882443 · SUCCESS
+Runtime merge             49f5c8e0267a318e2b0900ba5e222bd56d098db8
+Runtime Pages #194        31944932464 · SUCCESS
+Candidate docs PR         #188
+Candidate docs CI #504    31945020130 · SUCCESS
+Candidate docs merge      2ddce2be6abba8324c64054702f0e7654831c83b
+Candidate docs Pages #195 31945131271 · SUCCESS
+Safety post-deploy        safety/post-build100-deployed-candidate-20260816
+Safety post-acceptance    safety/post-build100-real-user-pass-20260816-2255
+Track Manager             v5.24 · unchanged by Build100
+Studio bridge             v1.14
+Public Worker             v2.7 · unchanged
+Real-user smoke           BUILD100 SMOKED 💨 · 2026-08-16
+Build101                  UNALLOCATED pending fresh read-only post-Build100 audit
+```
+
+Detailed accepted record: [`changelogs/CHANGELOG-BUILD100.md`](changelogs/CHANGELOG-BUILD100.md).
+
+## Accepted predecessor
+
 ### v0.19.21 · Build99 — 2026-08-16
 
 Codename: `studio-focus-slice4-phase9-album-asset-upload-success-verification-truth`  
 Status: **REAL USER PASS — ACCEPTED**
 
-Build99 tightens normal successful Album cover/thumbnail verification only. After Track Manager reports upload success, Studio's private canonical reread must prove the exact response revision, requested slot/path, asset presence, and server-returned `size`, `contentType`, and `etag` when supplied before `clientVerified=true`. No automatic upload retry, operation ID, Worker/R2 change, or exact selected-client-byte digest claim is introduced.
-
-```text
-Runtime PR                #183
-Exact tested head         3cc99aabd18d23ec38ba4df9fd042e03aace8238
-Historical CI #498       31920761317 · FAILURE · inherited C2.5-D literal guard only · never merged
-Validation #499           31920824628 · SUCCESS
-Runtime merge             dd26df1664fa7de2b2e77b0d2ae3d9d48cb9eefd
-Runtime Pages #190        31920895328 · SUCCESS
-Candidate docs PR         #184
-Candidate docs CI #500    31920976229 · SUCCESS
-Candidate docs merge      f3c1bff90ea8cb02f16e01b5f3f973e10ecdb499
-Candidate docs Pages #191 31921021926 · SUCCESS
-Acceptance docs PR       #185
-Acceptance docs CI #501  31944004275 · SUCCESS
-Acceptance docs merge    66052e2a16097801916f92c43623739123dd5067
-Acceptance docs Pages #192 31944054855 · SUCCESS
-Safety post-deploy        safety/post-build99-deployed-candidate-20260816
-Safety post-acceptance    safety/post-build99-real-user-pass-20260816
-Track Manager             v5.24 · unchanged by Build99
-Studio bridge             v1.14
-Public Worker             v2.7 · unchanged
-Real-user smoke           BUILD99 SMOKED 💨 · 2026-08-16
-Build100                  UNALLOCATED pending fresh read-only audit
-```
-
-Detailed accepted record: [`changelogs/CHANGELOG-BUILD99.md`](changelogs/CHANGELOG-BUILD99.md).
+Build99 tightened normal successful Album cover/thumbnail verification. Its smoke also exposed the separate first-track intake deadlock that Build100 subsequently closed. Detailed accepted record: [`changelogs/CHANGELOG-BUILD99.md`](changelogs/CHANGELOG-BUILD99.md).
 
 ## Accepted predecessor
 

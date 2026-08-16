@@ -19,28 +19,22 @@ Then verify the real GitHub state before mutation.
 ## Current accepted state
 
 ```text
-Studio                v0.19.21 · Build99 · REAL USER PASS
-Codename              studio-focus-slice4-phase9-album-asset-upload-success-verification-truth
-Runtime PR            #183
-Exact tested head     3cc99aabd18d23ec38ba4df9fd042e03aace8238
-Validation            31920824628 · SUCCESS
-Runtime merge         dd26df1664fa7de2b2e77b0d2ae3d9d48cb9eefd
-Runtime Pages         31920895328 · SUCCESS · exact runtime merge SHA
-Candidate docs PR     #184
-Candidate docs CI     31920976229 · SUCCESS
-Candidate docs merge  f3c1bff90ea8cb02f16e01b5f3f973e10ecdb499
-Candidate docs Pages  31921021926 · SUCCESS
-Acceptance docs PR     #185
-Acceptance docs CI     31944004275 · SUCCESS
-Acceptance docs merge  66052e2a16097801916f92c43623739123dd5067
-Acceptance docs Pages  31944054855 · SUCCESS
-Real-user smoke       BUILD99 SMOKED 💨 · 2026-08-16
+Studio                v0.19.22 · Build100 · REAL USER PASS
+Codename              studio-focus-slice4-phase9-album-first-track-intake
+Runtime PR            #187
+Exact tested head     9df6dd99c6e1bb6a2b1fbf5c555188659432ed8d
+Validation            31944882443 · SUCCESS
+Runtime merge         49f5c8e0267a318e2b0900ba5e222bd56d098db8
+Runtime Pages         31944932464 · SUCCESS · exact runtime merge SHA
+Candidate docs PR     #188
+Candidate docs CI     31945020130 · SUCCESS
+Candidate docs merge  2ddce2be6abba8324c64054702f0e7654831c83b
+Candidate docs Pages  31945131271 · SUCCESS
+Real-user smoke       BUILD100 SMOKED 💨 · 2026-08-16
+Safety post-deploy    safety/post-build100-deployed-candidate-20260816
+Safety human-pass     safety/post-build100-real-user-pass-20260816-2255
+Build99               v0.19.21 · REAL USER PASS
 Build98               v0.19.20 · REAL USER PASS
-Build97               v0.19.19 · REAL USER PASS
-Build97 runtime PR    #179
-Build97 CI            31914980387 · SUCCESS
-Build97 merge         0519d3ad1c364ee34188e17ecb9d10c3f0308c54
-Build97 Pages         31915029686 · SUCCESS
 Track Manager         v5.24 · REAL USER VERIFIED
 Studio bridge         v1.14
 TM deploy run         31919397012 · SUCCESS · admin only
@@ -52,7 +46,7 @@ Deep Audio            2.0.3-alpha
 LRC Maker             6.3.8
 ```
 
-**Studio v0.19.21 · Build99 is the current accepted runtime.** Build98 is its accepted predecessor. Build97 tightened normal successful Track create verification against the server-normalized manifest and private canonical reread. Its first real-user continuation exposed a pre-existing Track Manager v5.23 generated-bundle scope defect after the canonical draft had already been created correctly.
+**Studio v0.19.22 · Build100 is the current accepted runtime.** Build99 is its accepted predecessor. Build97 tightened normal successful Track create verification against the server-normalized manifest and private canonical reread. Its first real-user continuation exposed a pre-existing Track Manager v5.23 generated-bundle scope defect after the canonical draft had already been created correctly.
 
 Track Manager v5.24 / Studio bridge v1.14 corrected that backend asset-write defect. Build98 is the bounded Studio compatibility corrective that accepts the new duration-evidence bridge pair without widening retry or write semantics. The genuine `Pixels & Promises` continuation then successfully committed MP3, cover JPEG, MP4 and TXT assets with no recurrence of `ASSET_SAVE_ROLLBACK · HTTP 500`.
 
@@ -127,11 +121,12 @@ Phase 9 Slice15     Build96 · REAL USER PASS
 Phase 9 Slice16     Build97 · REAL USER PASS
 Phase 9 Slice17     Build98 · REAL USER PASS
 Phase 9 Slice18     Build99 · REAL USER PASS
-Build100            UNALLOCATED · pending fresh read-only post-Build99 audit
+Phase 9 Slice19     Build100 · REAL USER PASS
+Build101            UNALLOCATED · pending fresh read-only post-Build100 audit
 Phase 10            FUTURE
 ```
 
-The immediate next action is a **fresh read-only post-Build99 Phase9 audit**. The already-observed `Singles → first Track into an empty draft Album` membership deadlock is the leading candidate, but Build100 remains unallocated until the audit proves scope and authority boundaries.
+The immediate next action is a **fresh read-only post-Build100 Phase9 audit**. Build100 closed the previously observed `Singles → first Track into an empty draft Album` deadlock through the existing Build87 guarded membership authority. Build101 remains unallocated until a new bounded audit proves the next smallest coherent gap.
 
 ## Frozen authority model
 

@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-16 after **Build99 REAL USER PASS** and acceptance closeout initiation.
+Updated: 2026-08-16 after explicit **Build100 REAL USER PASS**; Build101 remains unallocated pending fresh audit.
 
 This file is the durable roadmap summary. Historical implementation detail belongs in `docs/` and `changelogs/`; do not copy it here unless it changes what is done, active, next or backlogged.
 
@@ -458,23 +458,36 @@ Accepted evidence and behavior:
 - zero automatic upload retries;
 - no Worker, Track Manager or R2 implementation change.
 
-The smoke also exposed a separate product deadlock: a Track in virtual `Singles` cannot currently be claimed as the first member of an empty draft Album through the daily Albums Tracklist UI. This is the leading post-Build99 audit candidate, not part of Build99.
+The smoke also exposed a separate product deadlock: a Track in virtual `Singles` could not be claimed as the first member of an empty draft Album through the daily Albums Tracklist UI. That finding remained outside Build99 and became Build100 only after a fresh audit proved the existing Build87 membership authority was sufficient.
+
+### Phase 9 Slice19 — Album first-track intake / canonical membership continuity
+
+**Build100 · v0.19.22 · REAL USER PASS**
+
+- runtime PR #187; exact tested head `9df6dd99c6e1bb6a2b1fbf5c555188659432ed8d`; CI `31944882443` SUCCESS;
+- runtime merge `49f5c8e0267a318e2b0900ba5e222bd56d098db8`; Pages `31944932464` SUCCESS;
+- candidate docs PR #188 / CI `31945020130` / merge `2ddce2be6abba8324c64054702f0e7654831c83b` / Pages `31945131271` SUCCESS;
+- canonical ownership derives from Album `trackIds`; only unowned Tracks are offered;
+- **Add to tracklist** stages locally; **Save tracklist** remains Build87 resilient membership;
+- genuine `Anh Yêu Em` + `Pixels & Promises` workflow persisted across reload and Track-side reread;
+- explicit real-user verdict **`BUILD100 SMOKED 💨`** on 2026-08-16;
+- no new endpoint/service, automatic write retry, Track Manager/Worker change or R2 schema migration.
 
 ## In progress
 
-### Post-Build99 fresh audit
+### Post-Build100 fresh audit
 
-Build99 is fully accepted and its seven-document acceptance CI/merge/Pages closeout is complete. The project is now in read-only audit mode; no new runtime slice is allocated until the smallest coherent next gap is proven.
+Build100 is real-user accepted. The project returns to read-only audit mode; no new runtime slice is allocated until the smallest coherent next gap is proven.
 
-**Build100 remains UNALLOCATED.**
+**Build101 remains UNALLOCATED.**
 
 ## Next
 
-Run a fresh read-only post-Build99 Phase9 audit. The already-observed `Singles → first Track into an empty draft Album` membership deadlock is the leading candidate because the daily Album Tracklist currently exposes reorder/remove/move only for Tracks already in `album.trackIds`; an empty draft Album therefore has no path to claim its first unowned Track. Re-evaluate that finding against the existing Build87 membership authority and any smaller proven gaps before allocating a build.
+Run a fresh read-only post-Build100 Phase9 audit across current Studio/Track Manager/LaunchPAD contracts. Re-evaluate heavier gaps such as Album create lost-response causality, Album binary-upload exact-byte/digest proof, Deep Audio duplicate-compute risk, degraded/offline/PWA behavior, and the newly observed publication-projection question where a Track may become public while its canonical parent Album remains draft.
 
-Pick **one** coherent slice only after the audit proves it.
+Pick **one** coherent slice only after the audit proves it. Do not allocate from memory.
 
-**Build100 remains UNALLOCATED.**
+**Build101 remains UNALLOCATED.**
 
 ## Backlog
 
@@ -505,8 +518,8 @@ There is currently **no official Phase 11**.
 - Do not generalize GET retry into write retry.
 - Do not generalize non-mutating validation retry into write retry.
 - Do not generalize one write family's recovery postcondition into another operation family.
-- Do not allocate Build100 before Build99 acceptance-docs closeout and a fresh bounded post-Build99 audit selects its scope.
+- Do not allocate Build101 before Build100 acceptance-docs closeout and a fresh bounded post-Build100 audit selects its scope.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build99 REAL USER PASS boundary plus the separately observed first-track Album membership deadlock.
+See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build100 REAL USER PASS boundary. Build101 remains unallocated pending the fresh post-Build100 audit.
