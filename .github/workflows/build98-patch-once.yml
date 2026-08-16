@@ -1,0 +1,152 @@
+name: Build98 bounded compatibility patch one-shot
+
+on:
+  push:
+    branches:
+      - phase9/build98-tm524-duration-evidence-compat
+
+permissions:
+  contents: write
+
+jobs:
+  patch-build98:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: phase9/build98-tm524-duration-evidence-compat
+          fetch-depth: 0
+      - name: Apply bounded compatibility patch
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json, re
+
+          def read(p): return Path(p).read_text(encoding='utf-8')
+          def write(p,t): Path(p).write_text(t,encoding='utf-8')
+          def exact(t, old, new, label):
+              n=t.count(old)
+              if n != 1: raise SystemExit(f'{label}: expected exactly 1 marker, got {n}')
+              return t.replace(old,new,1)
+
+          # Runtime compatibility only.
+          p='src/services/metadata-duration-api.ts'; t=read(p)
+          t=exact(t,"  '5.23/1.13',\n]);","  '5.23/1.13',\n  '5.24/1.14',\n]);",'duration pair')
+          t=exact(t,'Track Manager v5.22 / Studio bridge v1.12 or v5.23 / v1.13','Track Manager v5.22 / Studio bridge v1.12, v5.23 / v1.13, or Track Manager v5.24 / v1.14','duration copy')
+          write(p,t)
+
+          p='src/services/track-metadata-admin-api.ts'; t=read(p)
+          t=exact(t,"const DURATION_EVIDENCE_BRIDGES = new Set(['5.22/1.12', '5.23/1.13']);","const DURATION_EVIDENCE_BRIDGES = new Set(['5.22/1.12', '5.23/1.13', '5.24/1.14']);",'save pair')
+          t=exact(t,'Track Manager v5.22 / bridge v1.12 or v5.23 / v1.13','Track Manager v5.22 / bridge v1.12, v5.23 / v1.13, or v5.24 / v1.14','save copy')
+          write(p,t)
+
+          p='src/services/album-admin-api.ts'; t=read(p)
+          t=exact(t,"transport: 'Track Manager v5.23 / bridge v1.13 only'","transport: 'Track Manager v5.23-v5.24 / bridges v1.13-v1.14'",'album contract label')
+          write(p,t)
+
+          # Release identity and Build97 candidate ancestry.
+          p='src/release.ts'; t=read(p)
+          t=exact(t,"  version: '0.19.19',\n  build: 97,\n  codename: 'studio-focus-slice4-phase9-track-create-success-verification-truth',","  version: '0.19.20',\n  build: 98,\n  codename: 'studio-focus-slice4-phase9-tm524-duration-evidence-compat-corrective',",'release identity')
+          marker="export const build96AncestryMarker = \"version: 0.19.18 · build: 96 · codename: 'studio-focus-slice4-phase9-album-create-success-verification-truth'\";"
+          t=exact(t,marker,marker+"\nexport const build97AncestryMarker = \"version: 0.19.19 · build: 97 · codename: 'studio-focus-slice4-phase9-track-create-success-verification-truth'\";",'Build97 ancestry')
+          write(p,t)
+
+          p='package.json'; data=json.loads(read(p)); data['version']='0.19.20'
+          guard='node scripts/test-phase9-tm524-duration-evidence-compat-build98.mjs'
+          if guard not in data['scripts']['check:phase9']:
+              data['scripts']['check:phase9'] += ' && ' + guard
+          write(p,json.dumps(data,ensure_ascii=False,indent=2)+'\n')
+
+          # Build80 duration successor truth.
+          p='scripts/test-phase8-duration-evidence-successor-build80.mjs'; t=read(p)
+          t=exact(t,"assert.ok(durationApi.includes(\"'5.23/1.13'\"), 'TM5.23 / bridge1.13 validation successor must remain supported');","assert.ok(durationApi.includes(\"'5.23/1.13'\"), 'TM5.23 / bridge1.13 validation successor must remain supported');\nassert.ok(durationApi.includes(\"'5.24/1.14'\"), 'TM5.24 / bridge1.14 corrective successor must remain supported');",'Build80 validation pair')
+          t=exact(t,"const DURATION_EVIDENCE_BRIDGES = new Set(['5.22/1.12', '5.23/1.13']);","const DURATION_EVIDENCE_BRIDGES = new Set(['5.22/1.12', '5.23/1.13', '5.24/1.14']);",'Build80 save pair')
+          t=t.replace('TM5.22/1.12 and TM5.23/1.13 remain bounded-compatible','TM5.22/1.12, TM5.23/1.13 and TM5.24/1.14 remain bounded-compatible')
+          write(p,t)
+
+          # Build69 broad successor line + duration pair + current Album contract label.
+          p='scripts/test-phase7-c-guided-metadata-build69.mjs'; t=read(p)
+          t=t.replace('|18|19)', '|18|19|20)')
+          t=t.replace('|96|97)', '|96|97|98)')
+          t=t.replace('phase9-track-create-success-verification-truth))', 'phase9-track-create-success-verification-truth|phase9-tm524-duration-evidence-compat-corrective))')
+          t=t.replace("if (/build:\\s*97/.test(release)) assert.ok(release.includes('build96AncestryMarker'), 'Build97 must preserve accepted Build96 Phase9 ancestry.');", "if (/build:\\s*(?:97|98)/.test(release)) assert.ok(release.includes('build96AncestryMarker'), 'Build97+ must preserve accepted Build96 Phase9 ancestry.');\nif (/build:\\s*98/.test(release)) assert.ok(release.includes('build97AncestryMarker'), 'Build98 must preserve Build97 Phase9 ancestry.');")
+          t=t.replace("assert.ok(metadataDurationApi.includes(\"'5.23/1.13'\"));", "assert.ok(metadataDurationApi.includes(\"'5.23/1.13'\"));\nassert.ok(metadataDurationApi.includes(\"'5.24/1.14'\"));")
+          write(p,t)
+
+          # Phase9 predecessor guards: allow only the one bounded Build98 successor and require Build97 ancestry on Build98.
+          p='scripts/test-phase9-track-metadata-validation-transient-retry-build93.mjs'; t=read(p)
+          t=t.replace("'0.19.19'].includes(pkg.version)", "'0.19.19', '0.19.20'].includes(pkg.version)")
+          t=t.replace('Build93 guard accepts Build93 and its bounded Build94/Build95/Build96/Build97 successors.', 'Build93 guard accepts Build93 and its bounded Build94/Build95/Build96/Build97/Build98 successors.')
+          t=t.replace("['0.19.17', '0.19.18', '0.19.19'].includes(pkg.version)", "['0.19.17', '0.19.18', '0.19.19', '0.19.20'].includes(pkg.version)")
+          t=t.replace("['0.19.18', '0.19.19'].includes(pkg.version)", "['0.19.18', '0.19.19', '0.19.20'].includes(pkg.version)")
+          t=t.replace("if (pkg.version === '0.19.19') assert.ok(release.includes('build96AncestryMarker'), 'Build97 must preserve accepted Build96 ancestry while inheriting Build93 validation truth.');", "if (['0.19.19', '0.19.20'].includes(pkg.version)) assert.ok(release.includes('build96AncestryMarker'), 'Build97+ must preserve accepted Build96 ancestry while inheriting Build93 validation truth.');\nif (pkg.version === '0.19.20') assert.ok(release.includes('build97AncestryMarker'), 'Build98 must preserve Build97 ancestry while inheriting Build93 validation truth.');")
+          write(p,t)
+
+          p='scripts/test-phase9-lyrics-validation-transient-retry-build94.mjs'; t=read(p)
+          t=t.replace("'0.19.19'].includes(pkg.version)", "'0.19.19', '0.19.20'].includes(pkg.version)")
+          t=t.replace('Build94 guard accepts Build94 and its bounded Build95/Build96/Build97 successors.', 'Build94 guard accepts Build94 and its bounded Build95/Build96/Build97/Build98 successors.')
+          t=t.replace("['0.19.18', '0.19.19'].includes(pkg.version)", "['0.19.18', '0.19.19', '0.19.20'].includes(pkg.version)")
+          t=t.replace("if (pkg.version === '0.19.19') assert.ok(release.includes('build96AncestryMarker'), 'Build97 must preserve accepted Build96 ancestry while inheriting Build94 validation truth.');", "if (['0.19.19', '0.19.20'].includes(pkg.version)) assert.ok(release.includes('build96AncestryMarker'), 'Build97+ must preserve accepted Build96 ancestry while inheriting Build94 validation truth.');\nif (pkg.version === '0.19.20') assert.ok(release.includes('build97AncestryMarker'), 'Build98 must preserve Build97 ancestry while inheriting Build94 validation truth.');")
+          write(p,t)
+
+          p='scripts/test-phase9-albums-daily-resilient-convergence-build95.mjs'; t=read(p)
+          t=t.replace("['0.19.17', '0.19.18', '0.19.19']", "['0.19.17', '0.19.18', '0.19.19', '0.19.20']")
+          t=t.replace('Build95 guard accepts Build95 and its bounded Build96/Build97 successors.', 'Build95 guard accepts Build95 and its bounded Build96/Build97/Build98 successors.')
+          t=t.replace("['0.19.18', '0.19.19'].includes(pkg.version)", "['0.19.18', '0.19.19', '0.19.20'].includes(pkg.version)")
+          t=t.replace("if (pkg.version === '0.19.19') assert.ok(release.includes('build96AncestryMarker'), 'Build97 must preserve accepted Build96 ancestry while inheriting Build95 daily Albums truth.');", "if (['0.19.19', '0.19.20'].includes(pkg.version)) assert.ok(release.includes('build96AncestryMarker'), 'Build97+ must preserve accepted Build96 ancestry while inheriting Build95 daily Albums truth.');\nif (pkg.version === '0.19.20') assert.ok(release.includes('build97AncestryMarker'), 'Build98 must preserve Build97 ancestry while inheriting Build95 daily Albums truth.');")
+          write(p,t)
+
+          p='scripts/test-phase9-album-create-success-verification-build96.mjs'; t=read(p)
+          t=t.replace("['0.19.18', '0.19.19']", "['0.19.18', '0.19.19', '0.19.20']")
+          t=t.replace('Build96 guard accepts Build96 and its bounded Build97 successor.', 'Build96 guard accepts Build96 and its bounded Build97/Build98 successors.')
+          t=t.replace("if (pkg.version === '0.19.19') {", "if (['0.19.19', '0.19.20'].includes(pkg.version)) {")
+          t=t.replace("'Build97 must preserve accepted Build96 ancestry.'", "'Build97+ must preserve accepted Build96 ancestry.'")
+          t=t.replace("  assert.ok(release.includes(\"version: 0.19.18 · build: 96 · codename: 'studio-focus-slice4-phase9-album-create-success-verification-truth'\"), 'Accepted Build96 identity must remain immutable in ancestry.');\n}", "  assert.ok(release.includes(\"version: 0.19.18 · build: 96 · codename: 'studio-focus-slice4-phase9-album-create-success-verification-truth'\"), 'Accepted Build96 identity must remain immutable in ancestry.');\n}\nif (pkg.version === '0.19.20') assert.ok(release.includes('build97AncestryMarker'), 'Build98 must preserve Build97 ancestry while inheriting Build96 Album create truth.');")
+          write(p,t)
+
+          p='scripts/test-phase9-track-create-success-verification-build97.mjs'; t=read(p)
+          old="assert.equal(pkg.version, '0.19.19', 'Build97 package version must be v0.19.19.');\nassert.ok(release.includes(\"version: '0.19.19'\"), 'Build97 release version mismatch.');\nassert.ok(release.includes('build: 97'), 'Build97 release identity is missing.');\nassert.ok(release.includes(\"codename: 'studio-focus-slice4-phase9-track-create-success-verification-truth'\"), 'Build97 codename mismatch.');"
+          new="assert.ok(['0.19.19', '0.19.20'].includes(pkg.version), 'Build97 guard accepts Build97 and its bounded Build98 corrective successor.');\nif (pkg.version === '0.19.19') {\n  assert.ok(release.includes(\"version: '0.19.19'\"), 'Build97 release version mismatch.');\n  assert.ok(release.includes('build: 97'), 'Build97 release identity is missing.');\n  assert.ok(release.includes(\"codename: 'studio-focus-slice4-phase9-track-create-success-verification-truth'\"), 'Build97 codename mismatch.');\n}\nif (pkg.version === '0.19.20') assert.ok(release.includes('build97AncestryMarker'), 'Build98 must preserve Build97 Track create ancestry.');"
+          t=exact(t,old,new,'Build97 successor header')
+          write(p,t)
+
+          # Focus64-67 only widen the validated successor identity line. Preserve all functional assertions.
+          for p in [
+            'scripts/test-studio-focus-build64-foundation-repair.mjs',
+            'scripts/test-studio-focus-build65-lyrics-crash-corrective.mjs',
+            'scripts/test-studio-focus-build66-asset-identity-lyrics-continuity.mjs',
+            'scripts/test-studio-focus-build67-lyrics-source-anchor.mjs',
+          ]:
+              t=read(p)
+              t=t.replace("'0.19.19'].includes(pkg.version)", "'0.19.19', '0.19.20'].includes(pkg.version)")
+              t=t.replace('v0.19.3-v0.19.19', 'v0.19.3-v0.19.20')
+              t=t.replace('|18|19)', '|18|19|20)')
+              t=t.replace('|96|97)', '|96|97|98)')
+              t=t.replace("if (/build:\\s*97/.test(release)) assert.ok(release.includes('build96AncestryMarker'), 'Build97 must preserve accepted Build96 Phase9 ancestry.');", "if (/build:\\s*(?:97|98)/.test(release)) assert.ok(release.includes('build96AncestryMarker'), 'Build97+ must preserve accepted Build96 Phase9 ancestry.');\nif (/build:\\s*98/.test(release)) assert.ok(release.includes('build97AncestryMarker'), 'Build98 must preserve Build97 Phase9 ancestry.');")
+              t=t.replace('Track Manager v5.23 / bridge v1.13 only', 'Track Manager v5.23-v5.24 / bridges v1.13-v1.14')
+              write(p,t)
+          PY
+
+      - name: Verify expected files and run targeted gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+          node scripts/test-phase8-duration-evidence-successor-build80.mjs
+          node scripts/test-phase9-track-metadata-validation-transient-retry-build93.mjs
+          node scripts/test-phase9-track-create-success-verification-build97.mjs
+          node scripts/test-phase9-tm524-duration-evidence-compat-build98.mjs
+          npm run typecheck
+          git status --short
+
+      - name: Commit and self-remove temporary workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'ShinoBiWan'
+          git config user.email 'shinobione@users.noreply.github.com'
+          git rm .github/workflows/build98-patch-once.yml
+          git add src/services/metadata-duration-api.ts src/services/track-metadata-admin-api.ts src/services/album-admin-api.ts src/release.ts package.json scripts/test-phase8-duration-evidence-successor-build80.mjs scripts/test-phase7-c-guided-metadata-build69.mjs scripts/test-phase9-track-metadata-validation-transient-retry-build93.mjs scripts/test-phase9-lyrics-validation-transient-retry-build94.mjs scripts/test-phase9-albums-daily-resilient-convergence-build95.mjs scripts/test-phase9-album-create-success-verification-build96.mjs scripts/test-phase9-track-create-success-verification-build97.mjs scripts/test-studio-focus-build64-foundation-repair.mjs scripts/test-studio-focus-build65-lyrics-crash-corrective.mjs scripts/test-studio-focus-build66-asset-identity-lyrics-continuity.mjs scripts/test-studio-focus-build67-lyrics-source-anchor.mjs scripts/test-phase9-tm524-duration-evidence-compat-build98.mjs changelogs/CHANGELOG-BUILD98.md
+          git commit -m 'Build98: accept TM v5.24 duration evidence bridge'
+          git push origin HEAD:phase9/build98-tm524-duration-evidence-compat
