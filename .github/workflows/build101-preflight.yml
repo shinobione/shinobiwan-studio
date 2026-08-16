@@ -30,7 +30,9 @@ jobs:
         run: npm install --no-audit --no-fund
 
       - name: Apply bounded Build101 patch
-        run: node scripts/apply-build101-track-asset-verification.mjs
+        run: |
+          node scripts/apply-build101-track-asset-verification.mjs
+          node scripts/apply-build101-successor-guards.mjs
 
       - name: Full repository gate before product commit
         run: npm run build
@@ -38,12 +40,12 @@ jobs:
       - name: Verify bounded candidate paths
         run: |
           git diff --name-only
-          test "$(git diff --name-only | grep -Ev '^(package.json|src/release.ts|src/services/phase4-admin-api.ts|scripts/test-phase9-track-asset-upload-success-verification-build101.mjs|changelogs/CHANGELOG-BUILD101.md)$' | wc -l)" -eq 0
+          test "$(git diff --name-only | grep -Ev '^(package.json|src/release.ts|src/services/phase4-admin-api.ts|scripts/test-phase9-track-asset-upload-success-verification-build101.mjs|scripts/test-phase-ux-c2-5-d-albums.mjs|changelogs/CHANGELOG-BUILD101.md)$' | wc -l)" -eq 0
 
       - name: Commit candidate only after green gate
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add package.json src/release.ts src/services/phase4-admin-api.ts scripts/test-phase9-track-asset-upload-success-verification-build101.mjs changelogs/CHANGELOG-BUILD101.md
+          git add package.json src/release.ts src/services/phase4-admin-api.ts scripts/test-phase9-track-asset-upload-success-verification-build101.mjs scripts/test-phase-ux-c2-5-d-albums.mjs changelogs/CHANGELOG-BUILD101.md
           git commit -m "Build101: verify Track asset upload success fingerprint"
           git push origin HEAD:phase9/build101-track-asset-upload-verification
