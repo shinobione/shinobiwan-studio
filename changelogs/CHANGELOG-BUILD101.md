@@ -1,7 +1,7 @@
 # CHANGELOG — Studio v0.19.23 · Build101
 
 Date: 2026-08-16
-Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+Status: **REAL USER SMOKE FAILED · FALSE NEGATIVE · SUPERSEDED BY BUILD102**
 Codename: `studio-focus-slice4-phase9-track-asset-upload-success-verification-truth`
 
 ## Why
@@ -10,7 +10,7 @@ Fresh post-Build100 audit found one bounded Studio-only truth gap in the daily T
 
 ## Build101 contract
 
-After a normal successful Track asset upload, Studio now requires the private canonical reread to match:
+After a normal successful Track asset upload, Studio requires the private canonical reread to match:
 
 - the exact new manifest revision returned by Track Manager;
 - the canonical manifest asset filename;
@@ -55,15 +55,24 @@ R2 migration/schema        NONE
 
 Before the product candidate was allowed to commit, temporary preflight #5 (`31975310788`) ran the full repository `npm run build` successfully and then passed a bounded-path anti-tronçonneuse check. Earlier preflight attempts stopped before any product commit while inherited successor guards were aligned; no red preflight candidate was merged or deployed. All temporary preflight workflow/patcher files were removed before PR #191.
 
-## Human smoke boundary
+## Real-user smoke verdict
 
-Use a genuine normal successful Track asset upload through the daily **Track → Visuals / Assets** surface. Prefer a replaceable cover or thumbnail on a safe draft/unpublished Track. Do not manufacture a timeout, lost response, fingerprint mismatch or destructive failure branch.
+The genuine normal-success cover replacement returned Track Manager success, but Studio displayed `ASSET_UPLOAD_UNVERIFIED` with a single reported mismatch: **`asset ETag`**. The user correctly did **not** retry. A plain Track refresh showed the new cover still present without any second upload.
 
-Expected normal-success result:
+This proves:
 
-1. the upload completes once;
-2. Studio reports the canonical reread as verified;
-3. reload the Track and confirm the asset remains present;
-4. no retry or second upload is needed.
+```text
+server write              COMMITTED
+canonical asset           PRESENT after refresh
+second upload             NONE
+Build101 UI verdict       FALSE NEGATIVE
+mismatch                  asset ETag representation only
+```
 
-Build100 remains the latest **accepted** Studio runtime until this deployed candidate receives an explicit real-user PASS. Build102 remains **UNALLOCATED** until Build101 acceptance and a fresh read-only audit identify a concrete next gap.
+Root cause: Track Manager v5.24's upload response uses R2 `httpEtag`, which carries surrounding HTTP quotes, while the private Track reread exposes the same R2 identity through raw `object.etag` without those quotes. Build101 compared those representations as raw strings.
+
+Build101's **DO NOT RETRY** safety behavior was correct and prevented a duplicate write, but the candidate cannot be accepted because its normal-success verification misclassified an actually committed canonical upload.
+
+## Disposition
+
+Build101 is **not accepted**. Build100 remains the latest accepted Studio runtime. The bounded Studio-only corrective is Build102 (`v0.19.24`), which normalizes only one symmetric outer HTTP quote pair before exact ETag comparison while preserving every other Build101 fingerprint check and all zero-automatic-retry semantics.
