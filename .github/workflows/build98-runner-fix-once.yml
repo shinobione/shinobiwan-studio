@@ -1,0 +1,38 @@
+name: Fix Build98 one-shot runner
+
+on:
+  push:
+    branches:
+      - phase9/build98-tm524-duration-evidence-compat
+
+permissions:
+  contents: write
+
+jobs:
+  fix-runner:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: phase9/build98-tm524-duration-evidence-compat
+          fetch-depth: 0
+      - name: Replace unsupported npm ci and self-remove
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('.github/workflows/build98-patch-once.yml')
+          t=p.read_text(encoding='utf-8')
+          old='          npm ci\n'
+          new='          npm install --no-audit --no-fund\n'
+          if t.count(old) != 1:
+              raise SystemExit(f'expected exactly one npm ci marker, got {t.count(old)}')
+          p.write_text(t.replace(old,new,1),encoding='utf-8')
+          PY
+          git config user.name 'ShinoBiWan'
+          git config user.email 'shinobione@users.noreply.github.com'
+          git rm .github/workflows/build98-runner-fix-once.yml
+          git add .github/workflows/build98-patch-once.yml
+          git commit -m 'Fix temporary Build98 runner install mode'
+          git push origin HEAD:phase9/build98-tm524-duration-evidence-compat
