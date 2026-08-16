@@ -39,7 +39,7 @@ Diagnostics retain both response and canonical reread ETags if verification stil
 - no Album asset behavior change;
 - no UI/layout change.
 
-## Runtime and candidate receipts
+## Runtime and closeout receipts
 
 ```text
 Accepted predecessor       Studio v0.19.22 · Build100
@@ -59,6 +59,10 @@ Candidate docs PR          #194
 Candidate docs CI          #525 · run 31979629544 · SUCCESS
 Candidate docs merge       68b39ce99e29745c14e004ae8e6fd1218f66b18c
 Candidate docs Pages       #201 · run 31979667787 · SUCCESS
+Acceptance docs PR         #195
+Acceptance docs CI         #526 · run 31980142885 · SUCCESS
+Acceptance docs merge      ae297162fd6579eabe2d455d65f57b129dce58bc
+Acceptance docs Pages      #206 · run 31980208567 · build SUCCESS · deploy SUCCESS
 Acceptance safety          safety/post-build102-real-user-pass-20260817-0142
 Worker deploy              NONE
 Track Manager change       NONE
