@@ -8,10 +8,13 @@ const intake = read('src/components/TrackCreatePanel.tsx');
 const albumApi = read('src/services/album-admin-api.ts');
 const pkg = JSON.parse(read('package.json'));
 
-assert.equal(pkg.version, '0.19.19', 'Build97 package version must be v0.19.19.');
-assert.ok(release.includes("version: '0.19.19'"), 'Build97 release version mismatch.');
-assert.ok(release.includes('build: 97'), 'Build97 release identity is missing.');
-assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-track-create-success-verification-truth'"), 'Build97 codename mismatch.');
+assert.ok(['0.19.19', '0.19.20'].includes(pkg.version), 'Build97 guard accepts Build97 and its bounded Build98 corrective successor.');
+if (pkg.version === '0.19.19') {
+  assert.ok(release.includes("version: '0.19.19'"), 'Build97 release version mismatch.');
+  assert.ok(release.includes('build: 97'), 'Build97 release identity is missing.');
+  assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-track-create-success-verification-truth'"), 'Build97 codename mismatch.');
+}
+if (pkg.version === '0.19.20') assert.ok(release.includes('build97AncestryMarker'), 'Build98 must preserve Build97 Track create ancestry.');
 assert.ok(release.includes('build96AncestryMarker'), 'Build97 must preserve accepted Build96 ancestry.');
 assert.ok(release.includes("version: 0.19.18 · build: 96 · codename: 'studio-focus-slice4-phase9-album-create-success-verification-truth'"), 'Accepted Build96 identity must remain immutable in ancestry.');
 
