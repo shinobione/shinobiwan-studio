@@ -7,7 +7,7 @@ const albumApi = read('src/services/album-admin-api.ts');
 const workspace = read('src/components/AlbumsWorkspace.tsx');
 const pkg = JSON.parse(read('package.json'));
 
-assert.ok(['0.19.21', '0.19.22'].includes(pkg.version), 'Build99 guard accepts Build99 and its bounded Build100 successor.');
+assert.ok(['0.19.21', '0.19.22', '0.19.23'].includes(pkg.version), 'Build99 guard accepts Build99 and its bounded Build100 successor.');
 if (pkg.version === '0.19.21') {
   assert.ok(release.includes("version: '0.19.21'"), 'Build99 release version mismatch.');
   assert.ok(release.includes('build: 99'), 'Build99 release identity is missing.');
