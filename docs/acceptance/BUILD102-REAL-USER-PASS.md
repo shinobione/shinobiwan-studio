@@ -27,7 +27,7 @@ Build101 remains historical evidence only: its write committed and persisted aft
 
 Build102 normalizes only one symmetric outer pair of HTTP double quotes before exact ETag comparison. Exact canonical revision, filename, presence, size, content type, duration and the normalized ETag value remain required. Automatic upload retries remain zero.
 
-## Runtime receipts
+## Runtime and closeout receipts
 
 ```text
 Runtime PR              #193
@@ -39,6 +39,10 @@ Candidate docs PR       #194
 Candidate docs CI       #525 · 31979629544 · SUCCESS
 Candidate docs merge    68b39ce99e29745c14e004ae8e6fd1218f66b18c
 Candidate docs Pages    #201 · 31979667787 · SUCCESS
+Acceptance docs PR      #195
+Acceptance docs CI      #526 · 31980142885 · SUCCESS
+Acceptance docs merge   ae297162fd6579eabe2d455d65f57b129dce58bc
+Acceptance docs Pages   #206 · 31980208567 · SUCCESS build + deploy
 Pre-build safety        safety/pre-build102-etag-normalization-corrective-20260817-0120
 Green premerge safety   safety/post-build102-green-premerge-20260817-0134
 Postdeploy safety       safety/post-build102-deployed-candidate-20260817-0136
