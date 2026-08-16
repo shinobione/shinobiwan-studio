@@ -1,4 +1,4 @@
-name: Build100 final acceptance receipts once
+name: Build100 final acceptance receipts once v2
 
 on:
   push:
