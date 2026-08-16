@@ -117,6 +117,14 @@ function isJsonResponse(response: Response): boolean {
   return (response.headers.get('content-type') || '').toLowerCase().includes('application/json');
 }
 
+function normalizeAssetEtag(value: string | null | undefined): string | null {
+  const trimmed = String(value ?? '').trim();
+  if (!trimmed) return null;
+  return trimmed.length >= 2 && trimmed.startsWith('"') && trimmed.endsWith('"')
+    ? trimmed.slice(1, -1)
+    : trimmed;
+}
+
 async function requireManage(capability: Phase4ManageCapability): Promise<void> {
   const health = await getAdminBridgeHealth();
   const capabilities = health.capabilities as (typeof health.capabilities & { manage?: string[] }) | undefined;
@@ -417,7 +425,7 @@ export async function uploadAdminTrackAsset(
     const durationVerified = payload.duration == null || manifest?.duration === payload.duration;
     const sizeVerified = payload.size == null || asset?.size === payload.size;
     const contentTypeVerified = !payload.contentType || asset?.contentType === payload.contentType;
-    const etagVerified = !payload.etag || asset?.etag === payload.etag;
+    const etagVerified = !payload.etag || normalizeAssetEtag(asset?.etag) === normalizeAssetEtag(payload.etag);
     const clientVerified = manifest?.updatedAt === payload.updatedAt
       && manifest?.assets?.[kind] === payload.filename
       && asset?.present === true
@@ -442,7 +450,7 @@ export async function uploadAdminTrackAsset(
         manifest?.updatedAt || null,
         null,
         false,
-        `response updatedAt=${payload.updatedAt}; filename=${payload.filename}; size=${payload.size ?? 'n/a'}; contentType=${payload.contentType ?? 'n/a'}; etag=${payload.etag ?? 'n/a'}`,
+        `response updatedAt=${payload.updatedAt}; filename=${payload.filename}; size=${payload.size ?? 'n/a'}; contentType=${payload.contentType ?? 'n/a'}; responseEtag=${payload.etag ?? 'n/a'}; canonicalEtag=${asset?.etag ?? 'n/a'}`,
       );
     }
     return { ...payload, clientVerified: true, retrySafe: false };
