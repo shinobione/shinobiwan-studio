@@ -71,6 +71,14 @@ Runtime PR                  #187
 Full PR CI #503             31944882443 · SUCCESS
 Runtime merge               49f5c8e0267a318e2b0900ba5e222bd56d098db8
 Runtime Pages #194          31944932464 · SUCCESS / SUCCESS
+Candidate docs PR           #188
+Candidate docs CI #504      31945020130 · SUCCESS
+Candidate docs merge        2ddce2be6abba8324c64054702f0e7654831c83b
+Candidate docs Pages #195   31945131271 · SUCCESS / SUCCESS
+Acceptance docs PR          #189
+Acceptance docs CI #505     31972354459 · SUCCESS
+Acceptance docs merge       453191f3ee8e3ae875c3d402f4427c1208d542dd
+Acceptance docs Pages #196  31972413696 · SUCCESS / SUCCESS
 Safety post-deploy          safety/post-build100-deployed-candidate-20260816
 Worker deploy               NONE
 Track Manager change        NONE
@@ -100,4 +108,4 @@ No network/Cloudflare Access failure was manufactured. The acceptance write was 
 
 Safety post-human-pass: `safety/post-build100-real-user-pass-20260816-2255`.
 
-Build101 remains **UNALLOCATED** pending acceptance-docs closeout and a fresh bounded post-Build100 audit.
+Build101 remains **UNALLOCATED** pending a fresh bounded post-Build100 audit.
