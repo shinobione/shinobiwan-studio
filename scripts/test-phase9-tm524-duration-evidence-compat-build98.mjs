@@ -9,11 +9,17 @@ const phase4 = read('src/services/phase4-admin-api.ts');
 const album = read('src/services/album-admin-api.ts');
 const pkg = JSON.parse(read('package.json'));
 
-assert.equal(pkg.version, '0.19.20', 'Build98 package version must be v0.19.20.');
-assert.ok(release.includes("version: '0.19.20'"), 'Build98 release version mismatch.');
-assert.ok(release.includes('build: 98'), 'Build98 release identity is missing.');
-assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-tm524-duration-evidence-compat-corrective'"), 'Build98 codename mismatch.');
-assert.ok(release.includes('build97AncestryMarker'), 'Build98 must preserve Build97 candidate ancestry.');
+assert.ok(['0.19.20', '0.19.21'].includes(pkg.version), 'Build98 guard accepts Build98 and its bounded Build99 successor.');
+if (pkg.version === '0.19.20') {
+  assert.ok(release.includes("version: '0.19.20'"), 'Build98 release version mismatch.');
+  assert.ok(release.includes('build: 98'), 'Build98 release identity is missing.');
+  assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-tm524-duration-evidence-compat-corrective'"), 'Build98 codename mismatch.');
+}
+assert.ok(release.includes('build97AncestryMarker'), 'Build98+ must preserve Build97 candidate ancestry.');
+if (pkg.version === '0.19.21') {
+  assert.ok(release.includes('build98AncestryMarker'), 'Build99 must preserve accepted Build98 ancestry.');
+  assert.ok(release.includes("version: 0.19.20 · build: 98 · codename: 'studio-focus-slice4-phase9-tm524-duration-evidence-compat-corrective'"), 'Build98 accepted runtime identity must remain immutable in Build99 ancestry.');
+}
 assert.ok(release.includes("version: 0.19.19 · build: 97 · codename: 'studio-focus-slice4-phase9-track-create-success-verification-truth'"), 'Build97 runtime identity must remain immutable in Build98 ancestry.');
 
 for (const pair of ["'5.22/1.12'", "'5.23/1.13'", "'5.24/1.14'"]) {
@@ -51,6 +57,7 @@ for (const inherited of [
   'test-phase9-album-create-success-verification-build96.mjs',
   'test-phase9-track-create-success-verification-build97.mjs',
   'test-phase9-tm524-duration-evidence-compat-build98.mjs',
+  'test-phase9-album-asset-upload-success-verification-build99.mjs',
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must retain ${inherited}`);
 
 console.log('Build98 TM5.24/bridge1.14 compatibility corrective guard passed: duration evidence is explicitly bounded across validation/save, Build97 create truth remains intact, and writes retain zero automatic retries.');
