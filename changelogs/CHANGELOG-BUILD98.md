@@ -4,7 +4,7 @@ Date: 2026-08-16
 Version: `v0.19.20`  
 Build: `98`  
 Codename: `studio-focus-slice4-phase9-tm524-duration-evidence-compat-corrective`  
-Status: **IMPLEMENTED CANDIDATE · CI PENDING · REAL USER SMOKE BLOCKED ON TM DEPLOY**
+Status: **REAL USER PASS · ACCEPTED**
 
 ## Trigger
 
@@ -45,16 +45,28 @@ Build98 does **not** change:
 
 Metadata writes and Track create both remain at **zero automatic retries**.
 
-## Safety
+## Accepted receipts
 
 ```text
-Studio accepted/candidate base  99925484dc8143f6c12eb4c049690132e1a98dbc
-Safety pre                     safety/pre-build98-tm524-duration-compat-20260816
-Feature branch                 phase9/build98-tm524-duration-evidence-compat
-TM v5.24 merged source         aaa28c90c95b6d5dbe76e34a840d95e194e0cc65
-TM production deployment       PENDING MANUAL PROTECTED WORKFLOW
-Worker change in Studio PR     NONE
-R2 mutation from Studio PR     NONE
+Studio base before Build98       99925484dc8143f6c12eb4c049690132e1a98dbc
+Safety pre                      safety/pre-build98-tm524-duration-compat-20260816
+Runtime PR                      #181
+Exact final head                c393e26caa9a9e7d0b3ad71fccca92b9c1ae234b
+Historical CI #495              31917263004 · FAILURE · inherited Build79 label only · never merged
+Final CI #496                   31917295331 · SUCCESS
+Runtime merge                   5ebbf78f9d9296eaed998f1093f2ca7dad68fd1d
+Runtime Pages #188              31917336845 · SUCCESS
+Safety post-deploy              safety/post-build98-deployed-candidate-20260816
+Safety post-acceptance          safety/post-build98-real-user-pass-20260816
+TM corrective PR                LaunchPAD-APP #238
+TM source merge                 aaa28c90c95b6d5dbe76e34a840d95e194e0cc65
+TM deploy run #40               31919397012 · SUCCESS · admin only
+TM Worker Version ID            53abb651-4f3c-46a7-a37a-055f35d340b9
+Public Worker                   v2.7 · unchanged / skipped
+Real-user verdict               MP3 + COVER + MP4 + TXT PASS MADAFAKA · 2026-08-16
 ```
 
+The protected TM deploy verified v5.24 / bridge v1.14 and Cloudflare Access, while explicitly skipping Public Worker deployment. The deploy itself did not rebuild `catalog/index.json` or mutate existing R2 media. The genuine user flow then committed MP3, cover JPEG, MP4 and TXT assets successfully with no recurrence of `ASSET_SAVE_ROLLBACK · HTTP 500`.
+
+Build98 is **REAL USER PASS · ACCEPTED**. Build99 remains unallocated pending a fresh read-only post-Build98 audit.
 Build98 cannot be called REAL USER PASS until TM v5.24 is deployed and the genuine `Pixels & Promises` asset flow is successfully resumed.

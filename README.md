@@ -19,25 +19,23 @@ Then verify the real GitHub state before mutation.
 ## Current accepted state
 
 ```text
-Studio                v0.19.18 · Build96 · REAL USER PASS
-Codename              studio-focus-slice4-phase9-album-create-success-verification-truth
-Runtime PR            #175
-Exact tested head     8ee5711d57f3a3986bf1e054b637f8ee3d5f7efe
-Validation            31912951430 · SUCCESS
-Runtime merge         1cb14c3ad96087cd9f8fc7de62119b8b5be0ee94
-Runtime Pages         31913006240 · SUCCESS · exact runtime merge SHA
-Candidate docs PR     #176
-Candidate docs CI     31913104842 · SUCCESS
-Candidate docs merge  dbb8bab680ab3cad5ef8f11fa276f3e9bb3dd43a
-Candidate docs Pages  31913138348 · SUCCESS
-Acceptance docs PR    #177
-Acceptance docs CI    31914122068 · SUCCESS
-Acceptance docs merge b5448ebbd1ab3aa27c21804d06a78ec4beffa669
-Acceptance docs Pages 31914188650 · SUCCESS
-Real-user smoke       Build 96 SMOKED 💨 · 2026-08-16
-Track Manager         v5.23 · DEPLOYED
-Studio bridge         v1.13
-TM admin Worker       439a1ce4-e458-427d-9fd6-61e888efd269
+Studio                v0.19.20 · Build98 · REAL USER PASS
+Codename              studio-focus-slice4-phase9-tm524-duration-evidence-compat-corrective
+Runtime PR            #181
+Exact tested head     c393e26caa9a9e7d0b3ad71fccca92b9c1ae234b
+Validation            31917295331 · SUCCESS
+Runtime merge         5ebbf78f9d9296eaed998f1093f2ca7dad68fd1d
+Runtime Pages         31917336845 · SUCCESS · exact runtime merge SHA
+Real-user smoke       MP3 + COVER + MP4 + TXT PASS MADAFAKA · 2026-08-16
+Build97               v0.19.19 · REAL USER PASS
+Build97 runtime PR    #179
+Build97 CI            31914980387 · SUCCESS
+Build97 merge         0519d3ad1c364ee34188e17ecb9d10c3f0308c54
+Build97 Pages         31915029686 · SUCCESS
+Track Manager         v5.24 · REAL USER VERIFIED
+Studio bridge         v1.14
+TM deploy run         31919397012 · SUCCESS · admin only
+TM admin Worker       53abb651-4f3c-46a7-a37a-055f35d340b9
 Public Worker         v2.7 · unchanged
 LaunchPAD public      2026.08.12.102 · REAL USER PASS
 SonicTrace            V2-E Build08 · REAL USER PASS
@@ -45,17 +43,13 @@ Deep Audio            2.0.3-alpha
 LRC Maker             6.3.8
 ```
 
-**Studio v0.19.18 · Build96 is the current accepted runtime.** Build95 remains its accepted predecessor. Build95 closes a wiring gap in the real daily Albums route: metadata save, ordered membership save and Album move now consume the already accepted Build85/86/87 resilient services instead of the older generic mutations.
+**Studio v0.19.20 · Build98 is the current accepted runtime.** Build97 is its accepted predecessor. Build97 tightened normal successful Track create verification against the server-normalized manifest and private canonical reread. Its first real-user continuation exposed a pre-existing Track Manager v5.23 generated-bundle scope defect after the canonical draft had already been created correctly.
 
-Build95 does **not** add a new recovery algorithm. Album create, binary upload and asset delete remain on their existing operation-specific paths. No Track Manager/Worker/R2 schema or data migration was introduced.
+Track Manager v5.24 / Studio bridge v1.14 corrected that backend asset-write defect. Build98 is the bounded Studio compatibility corrective that accepts the new duration-evidence bridge pair without widening retry or write semantics. The genuine `Pixels & Promises` continuation then successfully committed MP3, cover JPEG, MP4 and TXT assets with no recurrence of `ASSET_SAVE_ROLLBACK · HTTP 500`.
 
-Build96 tightens only **normal successful Album create verification**: after Track Manager reports create success, Studio rereads the canonical Album and now requires both the exact returned/canonical revision and every metadata key supplied to create to match before `clientVerified=true`. Create response-loss recovery remains out of scope, `maxAutomaticCreateRetries` remains `0`, and Album binary upload semantics are unchanged.
+No blind write retry was added. Public Worker v2.7 remained untouched, and the protected TM deployment rebuilt neither `catalog/index.json` nor existing R2 media.
 
-The bounded normal-browser acceptance received explicit **`BUILD95 PASS MADAFAKA`** on 2026-08-16. The smoke covered the normal Albums surface, a harmless metadata save with persistence, a safe ordered tracklist save with persistence, coherent Move UI presence, and surrounding Albums / Track / Lyrics / SonicTrace navigation. No network/Cloudflare failure was deliberately manufactured.
-
-Build94 remains the accepted predecessor for non-mutating Lyrics validation retry truth; Build85/86/87 remain the operation-specific Album response-loss authorities that Build95 now wires into the daily editor.
-
-The repository currently publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
+The repository still publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
 ## Product model
 
@@ -121,11 +115,13 @@ Phase 9 Slice12     Build93 · REAL USER PASS
 Phase 9 Slice13     Build94 · REAL USER PASS
 Phase 9 Slice14     Build95 · REAL USER PASS
 Phase 9 Slice15     Build96 · REAL USER PASS
-Build97             UNALLOCATED
+Phase 9 Slice16     Build97 · REAL USER PASS
+Phase 9 Slice17     Build98 · REAL USER PASS
+Build99             UNALLOCATED · pending fresh read-only audit
 Phase 10            FUTURE
 ```
 
-The immediate next action is a **fresh read-only post-Build96 Phase9 reliability audit**. Build97 remains unallocated until that audit proves the smallest coherent next gap.
+The immediate next action is a **fresh read-only post-Build98 Phase9 reliability audit**. Build99 remains unallocated until that audit proves the smallest coherent next gap.
 
 ## Frozen authority model
 
