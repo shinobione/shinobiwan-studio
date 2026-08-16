@@ -5,11 +5,11 @@ const read = path => fs.readFileSync(path, 'utf8');
 
 const pkg = JSON.parse(read('package.json'));
 if (pkg.version === '0.19.22') assert.ok(read('src/release.ts').includes('build99AncestryMarker'), 'Build100 must preserve accepted Build99 Phase9 ancestry.');
-if (['0.19.21', '0.19.22'].includes(pkg.version)) assert.ok(read('src/release.ts').includes('build98AncestryMarker'), 'Build99 must preserve accepted Build98 Phase9 ancestry.');
-assert.ok(['0.19.3', '0.19.4', '0.19.5', '0.19.6', '0.19.7', '0.19.8', '0.19.9', '0.19.10', '0.19.11', '0.19.12', '0.19.13', '0.19.14', '0.19.15', '0.19.16', '0.19.17', '0.19.18', '0.19.19', '0.19.20', '0.19.21', '0.19.22'].includes(pkg.version), 'Build64 guard only accepts the validated v0.19.3-v0.19.21 Studio successor line.');
+if (['0.19.21', '0.19.22', '0.19.23'].includes(pkg.version)) assert.ok(read('src/release.ts').includes('build98AncestryMarker'), 'Build99 must preserve accepted Build98 Phase9 ancestry.');
+assert.ok(['0.19.3', '0.19.4', '0.19.5', '0.19.6', '0.19.7', '0.19.8', '0.19.9', '0.19.10', '0.19.11', '0.19.12', '0.19.13', '0.19.14', '0.19.15', '0.19.16', '0.19.17', '0.19.18', '0.19.19', '0.19.20', '0.19.21', '0.19.22', '0.19.23'].includes(pkg.version), 'Build64 guard only accepts the validated v0.19.3-v0.19.21 Studio successor line.');
 
 const release = read('src/release.ts');
-assert.match(release, /version:\s*'0\.19\.(?:3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22)'/);
+assert.match(release, /version:\s*'0\.19\.(?:3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23)'/);
 for (const required of [
   'build: 64',
   "codename: 'foundation-regression-repair'",

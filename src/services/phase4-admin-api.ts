@@ -410,12 +410,54 @@ export async function uploadAdminTrackAsset(
     }
   }
   if (!payload.saved || !payload.updatedAt || !payload.filename) throw new Phase4AdminError('Track Manager returned an invalid asset upload response.');
-  const reread = await getAdminTrack(trackId);
-  const manifest = reread.track?.manifest;
-  const asset = reread.track?.assets?.[kind];
-  const durationVerified = payload.duration == null || manifest?.duration === payload.duration;
-  const clientVerified = manifest?.updatedAt === payload.updatedAt && manifest?.assets?.[kind] === payload.filename && asset?.present === true && durationVerified;
-  return { ...payload, clientVerified };
+  try {
+    const reread = await getAdminTrack(trackId);
+    const manifest = reread.track?.manifest;
+    const asset = reread.track?.assets?.[kind];
+    const durationVerified = payload.duration == null || manifest?.duration === payload.duration;
+    const sizeVerified = payload.size == null || asset?.size === payload.size;
+    const contentTypeVerified = !payload.contentType || asset?.contentType === payload.contentType;
+    const etagVerified = !payload.etag || asset?.etag === payload.etag;
+    const clientVerified = manifest?.updatedAt === payload.updatedAt
+      && manifest?.assets?.[kind] === payload.filename
+      && asset?.present === true
+      && sizeVerified
+      && contentTypeVerified
+      && etagVerified
+      && durationVerified;
+    if (!clientVerified) {
+      const mismatches = [
+        manifest?.updatedAt === payload.updatedAt ? null : 'canonical revision',
+        manifest?.assets?.[kind] === payload.filename ? null : 'manifest asset filename',
+        asset?.present === true ? null : 'private asset presence',
+        sizeVerified ? null : 'asset size',
+        contentTypeVerified ? null : 'asset content type',
+        etagVerified ? null : 'asset ETag',
+        durationVerified ? null : 'canonical duration',
+      ].filter(Boolean).join(', ');
+      throw new Phase4AdminError(
+        `Track Manager reported asset upload success, but the canonical reread did not verify the exact new revision plus server asset fingerprint (${mismatches || 'unknown mismatch'}). Do not retry.`,
+        null,
+        'ASSET_UPLOAD_UNVERIFIED',
+        manifest?.updatedAt || null,
+        null,
+        false,
+        `response updatedAt=${payload.updatedAt}; filename=${payload.filename}; size=${payload.size ?? 'n/a'}; contentType=${payload.contentType ?? 'n/a'}; etag=${payload.etag ?? 'n/a'}`,
+      );
+    }
+    return { ...payload, clientVerified: true, retrySafe: false };
+  } catch (reason) {
+    if (reason instanceof Phase4AdminError) throw reason;
+    throw new Phase4AdminError(
+      'Track Manager reported asset upload success, but Studio could not complete the canonical asset reread. Do not retry until the track is reloaded and inspected.',
+      null,
+      'ASSET_UPLOAD_UNVERIFIED',
+      null,
+      null,
+      false,
+      reason instanceof Error ? reason.message : String(reason),
+    );
+  }
 }
 
 export async function deleteAdminTrackAsset(

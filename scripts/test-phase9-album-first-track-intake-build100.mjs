@@ -8,12 +8,18 @@ const membership = read('src/services/album-membership-admin-api.ts');
 const c25d = read('scripts/test-phase-ux-c2-5-d-albums.mjs');
 const pkg = JSON.parse(read('package.json'));
 
-assert.equal(pkg.version, '0.19.22', 'Build100 package version must be v0.19.22.');
-assert.ok(release.includes("version: '0.19.22'"), 'Build100 release version mismatch.');
-assert.ok(release.includes('build: 100'), 'Build100 release identity is missing.');
-assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-album-first-track-intake'"), 'Build100 codename mismatch.');
-assert.ok(release.includes('build99AncestryMarker'), 'Build100 must preserve accepted Build99 ancestry.');
-assert.ok(release.includes("version: 0.19.21 · build: 99 · codename: 'studio-focus-slice4-phase9-album-asset-upload-success-verification-truth'"), 'Accepted Build99 identity must remain immutable in Build100 ancestry.');
+assert.ok(['0.19.22', '0.19.23'].includes(pkg.version), 'Build100 guard accepts Build100 and its bounded Build101 successor.');
+if (pkg.version === '0.19.22') {
+  assert.ok(release.includes("version: '0.19.22'"), 'Build100 release version mismatch.');
+  assert.ok(release.includes('build: 100'), 'Build100 release identity is missing.');
+  assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-album-first-track-intake'"), 'Build100 codename mismatch.');
+}
+assert.ok(release.includes('build99AncestryMarker'), 'Build100+ must preserve accepted Build99 ancestry.');
+assert.ok(release.includes("version: 0.19.21 · build: 99 · codename: 'studio-focus-slice4-phase9-album-asset-upload-success-verification-truth'"), 'Accepted Build99 identity must remain immutable in Build100+ ancestry.');
+if (pkg.version === '0.19.23') {
+  assert.ok(release.includes('build100AncestryMarker'), 'Build101 must preserve accepted Build100 ancestry.');
+  assert.ok(release.includes("version: 0.19.22 · build: 100 · codename: 'studio-focus-slice4-phase9-album-first-track-intake'"), 'Accepted Build100 identity must remain immutable in Build101 ancestry.');
+}
 
 // Canonical Album manifests, not Track compatibility caches, decide whether a Track is available for intake.
 assert.ok(workspace.includes('const canonicalOwnerByTrackId = useMemo(() => {'), 'Build100 must derive canonical ownership from loaded Albums.');
