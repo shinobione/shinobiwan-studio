@@ -3,7 +3,7 @@
 Date established: 2026-08-08  
 Hardened: 2026-08-09  
 Current-state overlay refreshed: 2026-08-16  
-Current accepted Studio release: `v0.19.20` / Build `98` / REAL USER PASS
+Current accepted Studio release: `v0.19.21` / Build `99` / REAL USER PASS
 
 This policy is mandatory for work affecting LaunchPAD, Track Manager, SonicTrace, LRC Maker or shared production data.
 
@@ -21,14 +21,14 @@ For short current state, read root `PROJECT_STATE.md` first. This file contains 
 
 ```text
 Studio accepted
-  v0.19.20 / Build98 / REAL USER PASS
-  exact tested head c393e26caa9a9e7d0b3ad71fccca92b9c1ae234b
-  final runtime CI 31917295331 / SUCCESS
-  runtime merge 5ebbf78f9d9296eaed998f1093f2ca7dad68fd1d
-  runtime Pages 31917336845 / SUCCESS
-  browser smoke MP3 + COVER + MP4 + TXT PASS MADAFAKA / 2026-08-16
-  safety post-deploy safety/post-build98-deployed-candidate-20260816
-  safety post-acceptance safety/post-build98-real-user-pass-20260816
+  v0.19.21 / Build99 / REAL USER PASS
+  exact tested head 3cc99aabd18d23ec38ba4df9fd042e03aace8238
+  final runtime CI 31920824628 / SUCCESS
+  runtime merge dd26df1664fa7de2b2e77b0d2ae3d9d48cb9eefd
+  runtime Pages 31920895328 / SUCCESS
+  browser smoke BUILD99 SMOKED 💨 / 2026-08-16
+  safety post-deploy safety/post-build99-deployed-candidate-20260816
+  safety post-acceptance safety/post-build99-real-user-pass-20260816
 
 Build97 accepted predecessor
   runtime PR #179 / CI 31914980387 / merge 0519d3ad1c364ee34188e17ecb9d10c3f0308c54 / Pages 31915029686 SUCCESS
@@ -60,6 +60,14 @@ Historical Phase6/Phase7/Phase8 and earlier Phase9 checkpoints remain immutable 
 Most relevant current references:
 
 ```text
+
+After Build99 deployment candidate:
+  safety/post-build99-deployed-candidate-20260816
+  safety/post-build99-candidate-docs-closeout-20260816
+
+After Build99 real-user acceptance:
+  safety/post-build99-real-user-pass-20260816
+
 After Build98 deployment candidate:
   safety/post-build98-deployed-candidate-20260816
 

@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-16 after **Build97 + Build98 REAL USER PASS**, TM v5.24 real-user verification and acceptance closeout initiation.
+Updated: 2026-08-16 after **Build99 REAL USER PASS** and acceptance closeout initiation.
 
 This file is the durable roadmap summary. Historical implementation detail belongs in `docs/` and `changelogs/`; do not copy it here unless it changes what is done, active, next or backlogged.
 
@@ -440,21 +440,40 @@ Accepted evidence and behavior:
 - real-user verdict **`MP3 + COVER + MP4 + TXT PASS MADAFAKA`** on 2026-08-16;
 - no blind write retry, no R2 schema migration, no public Worker change.
 
+### Phase 9 Slice18 — Album asset upload normal-success verification truth
+
+**Build99 · v0.19.21 · REAL USER PASS**
+
+- runtime PR #183;
+- exact final tested head `3cc99aabd18d23ec38ba4df9fd042e03aace8238`;
+- final CI `31920824628` SUCCESS;
+- runtime merge `dd26df1664fa7de2b2e77b0d2ae3d9d48cb9eefd`;
+- Pages `31920895328` SUCCESS on the exact runtime merge;
+- candidate docs PR #184 / CI `31920976229` SUCCESS / merge `f3c1bff90ea8cb02f16e01b5f3f973e10ecdb499` / Pages `31921021926` SUCCESS;
+- explicit real-user verdict `BUILD99 SMOKED 💨` on 2026-08-16;
+- normal success now proves response revision + requested Album asset slot/path + canonical presence + available server fingerprint fields;
+- exact selected-client-byte proof remains out of scope without a digest contract;
+- upload lost-response causality remains out of scope without operation identity;
+- zero automatic upload retries;
+- no Worker, Track Manager or R2 implementation change.
+
+The smoke also exposed a separate product deadlock: a Track in virtual `Singles` cannot currently be claimed as the first member of an empty draft Album through the daily Albums Tracklist UI. This is the leading post-Build99 audit candidate, not part of Build99.
+
 ## In progress
 
-### Post-Build98 fresh reliability audit
+### Build99 acceptance closeout
 
-Build97 and Build98 are now explicit REAL USER PASS, and Track Manager v5.24 / Studio bridge v1.14 is real-user verified after protected admin deployment. Acceptance documentation is being finalized; no new runtime slice is allocated yet.
+Build99 is explicit REAL USER PASS. Runtime, candidate-docs and human smoke receipts are known; the seven-document acceptance closeout is being finalized. No new runtime slice is allocated during this closeout.
 
-**Build99 remains UNALLOCATED.**
+**Build100 remains UNALLOCATED.**
 
 ## Next
 
-Run a fresh read-only post-Build98 Phase9 reliability audit. Re-evaluate remaining candidates by proven risk and bounded scope, including Album binary upload exact-byte/digest truth, create lost-response causality with persisted operation identity, degraded/offline/PWA resilience, Deep Audio duplicate-compute safety, and any newly proven smaller gap.
+Run a fresh read-only post-Build99 Phase9 audit. The already-observed `Singles → first Track into an empty draft Album` membership deadlock is the leading candidate because the daily Album Tracklist currently exposes reorder/remove/move only for Tracks already in `album.trackIds`; an empty draft Album therefore has no path to claim its first unowned Track. Re-evaluate that finding against the existing Build87 membership authority and any smaller proven gaps before allocating a build.
 
 Pick **one** coherent slice only after the audit proves it.
 
-**Build99 remains UNALLOCATED.**
+**Build100 remains UNALLOCATED.**
 
 ## Backlog
 
@@ -485,8 +504,8 @@ There is currently **no official Phase 11**.
 - Do not generalize GET retry into write retry.
 - Do not generalize non-mutating validation retry into write retry.
 - Do not generalize one write family's recovery postcondition into another operation family.
-- Do not allocate Build99 before Build97/Build98 acceptance-docs closeout and a fresh bounded post-Build98 audit selects its scope.
+- Do not allocate Build100 before Build99 acceptance-docs closeout and a fresh bounded post-Build99 audit selects its scope.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the coupled Build97/Build98 + TM v5.24 REAL USER PASS boundary.
+See `PROJECT_STATE.md` for exact PR/SHA/CI/deploy receipts and `QA.md` for the Build99 REAL USER PASS boundary plus the separately observed first-track Album membership deadlock.
