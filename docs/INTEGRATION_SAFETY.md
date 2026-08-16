@@ -26,6 +26,7 @@ Studio accepted
   final runtime CI 31920824628 / SUCCESS
   runtime merge dd26df1664fa7de2b2e77b0d2ae3d9d48cb9eefd
   runtime Pages 31920895328 / SUCCESS
+  acceptance docs PR #185 / CI 31944004275 / merge 66052e2a16097801916f92c43623739123dd5067 / Pages 31944054855 SUCCESS
   browser smoke BUILD99 SMOKED 💨 / 2026-08-16
   safety post-deploy safety/post-build99-deployed-candidate-20260816
   safety post-acceptance safety/post-build99-real-user-pass-20260816
@@ -67,6 +68,7 @@ After Build99 deployment candidate:
 
 After Build99 real-user acceptance:
   safety/post-build99-real-user-pass-20260816
+  safety/post-build99-acceptance-docs-pages-20260816
 
 After Build98 deployment candidate:
   safety/post-build98-deployed-candidate-20260816

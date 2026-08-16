@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-16 after **Build99 REAL USER PASS**; seven-document acceptance closeout in progress.
+Updated: 2026-08-16 after **Build99 REAL USER PASS** and completed seven-document acceptance CI/merge/Pages closeout.
 
 This file is the short current checkpoint. It is the first project-state document to read after `AGENTS.md`.
 
@@ -21,6 +21,10 @@ Candidate docs PR       #184
 Candidate docs CI       31920976229 · SUCCESS
 Candidate docs merge    f3c1bff90ea8cb02f16e01b5f3f973e10ecdb499
 Candidate docs Pages    31921021926 · SUCCESS
+Acceptance docs PR      #185
+Acceptance docs CI      31944004275 · SUCCESS
+Acceptance docs merge   66052e2a16097801916f92c43623739123dd5067
+Acceptance docs Pages   31944054855 · SUCCESS
 Real-user smoke         BUILD99 SMOKED 💨 · 2026-08-16
 Safety post-deploy      safety/post-build99-deployed-candidate-20260816
 Safety post-acceptance  safety/post-build99-real-user-pass-20260816

@@ -30,6 +30,10 @@ Candidate docs PR     #184
 Candidate docs CI     31920976229 · SUCCESS
 Candidate docs merge  f3c1bff90ea8cb02f16e01b5f3f973e10ecdb499
 Candidate docs Pages  31921021926 · SUCCESS
+Acceptance docs PR     #185
+Acceptance docs CI     31944004275 · SUCCESS
+Acceptance docs merge  66052e2a16097801916f92c43623739123dd5067
+Acceptance docs Pages  31944054855 · SUCCESS
 Real-user smoke       BUILD99 SMOKED 💨 · 2026-08-16
 Build98               v0.19.20 · REAL USER PASS
 Build97               v0.19.19 · REAL USER PASS
