@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-17 after **Build105 deployed corrective candidate**. Build103 remains the latest accepted Studio runtime until Build105 real-user smoke.
+Updated: 2026-08-17 after **Build105 REAL USER PASS**.
 
 This file tracks only durable Done / Active / Next / Backlog state. Historical implementation detail belongs in `changelogs/`, `docs/` and acceptance receipts.
 
@@ -49,6 +49,7 @@ Build101  Track asset success verifier candidate               REJECTED · false
 Build102  bounded ETag representation corrective              REAL USER PASS
 Build103  canonical audio pre-compute transient retry          REAL USER PASS
 Build104  Deep Audio response-loss fence candidate             REJECTED · false UNKNOWN classification
+Build105  Deep Audio pre-submit transport corrective           REAL USER PASS
 ```
 
 ### Cross-stack publication projection — CLOSED
@@ -77,28 +78,13 @@ canonical writes           unchanged / operation-specific no-blind-retry rules
 
 Detailed receipt: [`docs/acceptance/BUILD103-REAL-USER-PASS.md`](docs/acceptance/BUILD103-REAL-USER-PASS.md).
 
-## Rejected current-cycle evidence
-
-### Build104 — false Deep Audio UNKNOWN classification
-
-Build104 intended to fence true Deep Audio response loss after submit, but its real-user normal-path smoke proved every XHR transport error/timeout was treated as if upload had already begun.
-
-That meant a local coordinator that was offline, blocked, or failing before upload could produce:
-
-```text
-DEEP AUDIO STATE UNKNOWN
-RELOAD BEFORE RESUBMIT
-```
-
-without browser evidence that the compute upload had actually started. Build104 is therefore rejected and superseded by Build105. Its intended post-upload ambiguity rule is retained only where upload-start evidence exists.
-
-## In progress
-
 ### Phase 9 Slice22 — Deep Audio pre-submit transport corrective
 
-**Deployed candidate: Build105 · v0.19.27 · REAL USER SMOKE PENDING**
+**Accepted runtime: Build105 · v0.19.27 · REAL USER PASS**
 
-Build105 separates two cases that Build104 conflated:
+Build104 attempted to fence true Deep Audio response loss after submit, but its normal-path real-user smoke proved every XHR transport error/timeout was being treated as if upload had already begun. That could create a false `DEEP AUDIO STATE UNKNOWN` / `RELOAD BEFORE RESUBMIT` when the local coordinator was unavailable before upload start.
+
+Build105 separates the two cases:
 
 ```text
 transport / timeout BEFORE browser-observed upload start
@@ -117,7 +103,7 @@ transport / timeout AFTER browser-observed upload start
 
 Synchronous `xhr.send()` failure is pre-submit and unfenced. The corrective changes only Studio; no SonicTrace backend, Track Manager, Worker, Public Worker or R2 schema/data deployment occurred.
 
-Candidate receipts:
+Accepted receipts:
 
 ```text
 Runtime PR             #204
@@ -125,30 +111,34 @@ Exact tested head      efa188b8d7181a4aa03bdea4bf2da40534203e9e
 Final runtime CI       #585 · 32002434543 · SUCCESS
 Runtime merge          f3a295d5e7bdbd0cfa05cc6d44901fab62e42c5b
 Runtime Pages          #215 · 32002484381 · SUCCESS build + deploy
+Candidate docs PR      #205
+Candidate docs CI      #586 · 32002709875 · SUCCESS
+Candidate docs merge   6de3709d4e89a2806cbf0cf9b598d71d49b1742f
+Candidate docs Pages   #216 · 32002755699 · SUCCESS build + deploy
+Human smoke            BUILD105 SMOKED 💨 · FULL profile ready · Deep Audio analysis complete
 Safety pre-build       safety/pre-build105-deep-audio-presubmit-corrective-20260817
 Safety green premerge  safety/post-build105-green-premerge-20260817-0838
 Safety post-deploy     safety/post-build105-deployed-candidate-20260817-0839
+Safety human pass      safety/post-build105-real-user-pass-20260817-0854
 ```
 
-Detailed receipt: [`changelogs/CHANGELOG-BUILD105.md`](changelogs/CHANGELOG-BUILD105.md).
+Detailed receipt: [`docs/acceptance/BUILD105-REAL-USER-PASS.md`](docs/acceptance/BUILD105-REAL-USER-PASS.md).
 
-**Build103 remains the latest accepted runtime until the Build105 human smoke passes.**
+Build104 remains rejected historical evidence; Build105 acceptance does not rewrite that verdict.
+
+## In progress
+
+### Phase 9 — post-Build105 read-only audit boundary
+
+No next build is allocated yet.
+
+**Build106 is UNALLOCATED** until a fresh read-only audit of the real current repository/runtime state proves one smallest coherent reliability or truth gap that is safe to address without widening authority or retry semantics.
 
 ## Next
 
-Perform one **normal-path** Build105 real-user SonicTrace / Deep Audio analysis on a known-good existing Track while the local SonicTrace coordinator is healthy.
+Perform a fresh **read-only post-Build105 Phase9 audit**.
 
-Expected:
-
-```text
-canonical audio → Browser DSP → one Deep Audio POST → FULL or legitimate PARTIAL → normal review
-```
-
-The healthy path must not show `DEEP AUDIO STATE UNKNOWN` or `RELOAD BEFORE RESUBMIT`.
-
-Do not deliberately trigger timeout, network loss, coordinator shutdown or Access failure. Automated Build105 guards prove the pre-submit-versus-response-loss classification; production smoke proves the healthy path remains normal.
-
-After explicit PASS: acceptance-closeout Build105, then a fresh read-only Phase9 audit before allocating another build.
+The audit must start from real GitHub state and accepted runtime truth, not from an assumed next feature. If no bounded safe gap is proven, do not allocate Build106 merely to keep the build counter moving.
 
 ## Backlog
 
@@ -188,9 +178,9 @@ There is currently **no official Phase 11**.
 - Do not generalize non-mutating validation retry into write retry.
 - Do not generalize one write family's recovery postcondition into another operation family.
 - Build101 remains rejected historical evidence; do not relabel it accepted because Build102 passed.
-- Build104 remains rejected historical evidence; do not relabel it accepted because Build105 corrects its classification boundary.
-- Build105 must not be accepted until its normal-path human smoke passes.
+- Build104 remains rejected historical evidence; do not relabel it accepted because Build105 passed.
+- Build106 remains unallocated until the post-Build105 audit proves a bounded next gap.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for current runtime/cross-stack truth, `QA.md` for accepted validation boundaries, [`docs/acceptance/BUILD103-REAL-USER-PASS.md`](docs/acceptance/BUILD103-REAL-USER-PASS.md) for the latest accepted Studio receipt, and [`changelogs/CHANGELOG-BUILD105.md`](changelogs/CHANGELOG-BUILD105.md) for the deployed corrective candidate boundary.
+See `PROJECT_STATE.md` for current runtime/cross-stack truth, `QA.md` for accepted validation boundaries, and [`docs/acceptance/BUILD105-REAL-USER-PASS.md`](docs/acceptance/BUILD105-REAL-USER-PASS.md) for the latest accepted Studio receipt.
