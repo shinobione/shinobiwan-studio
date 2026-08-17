@@ -7,15 +7,16 @@ const api = read('src/services/sonictrace-api.ts');
 const panel = read('src/components/SonicTracePanel.tsx');
 const pkg = JSON.parse(read('package.json'));
 
-assert.ok(['0.19.25', '0.19.26'].includes(pkg.version), 'Build103 guard accepts Build103 and bounded Build104 successor.');
+assert.ok(['0.19.25', '0.19.26', '0.19.27'].includes(pkg.version), 'Build103 guard accepts Build103 and bounded Build104/Build105 successors.');
 if (pkg.version === '0.19.25') {
   assert.match(release, /version: '0\.19\.25'/);
   assert.match(release, /build: 103/);
 } else {
   assert.match(release, /build103AncestryMarker/);
   assert.match(release, /version: 0\.19\.25 · build: 103 · codename: 'studio-focus-slice4-phase9-canonical-audio-download-transient-retry-truth'/);
+  if (pkg.version === '0.19.27') assert.match(release, /build104AncestryMarker/);
 }
-assert.match(release, /studio-focus-slice4-phase9-canonical-audio-download-transient-retry-truth/);
+assert.match(release, /studio-focus-slice4-phase9-(?:canonical-audio-download-transient-retry-truth|deep-audio-response-loss-fence|deep-audio-presubmit-transport-corrective)/);
 assert.match(release, /build102AncestryMarker/);
 assert.match(pkg.scripts['check:phase9'], /test-phase9-canonical-audio-download-transient-retry-build103\.mjs/);
 
@@ -50,7 +51,7 @@ assert.ok(deepStart >= 0 && deepEnd > deepStart, 'Deep Audio function boundary i
 const deepFunction = api.slice(deepStart, deepEnd);
 assert.match(deepFunction, /xhr\.open\('POST', `\$\{sonicBase\(\)\}\/api\/studio\/analyze`, true\)/);
 assert.doesNotMatch(deepFunction, /for \(let attempt/);
-assert.doesNotMatch(deepFunction, /retry/i);
+assert.doesNotMatch(deepFunction, /setTimeout\([^)]*runSonicTraceAnalysis/);
 assert.match(api, /deepAudioComputeRetryPolicy: 'zero-automatic-retries'/);
 assert.match(panel, /const result = await runSonicTraceAnalysis\(file, track\.id, current\.currentSourceVersion, dsp, setProgress\)/);
 

@@ -490,31 +490,45 @@ export function runSonicTraceAnalysis(
 
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
+    let uploadPhaseStarted = false;
+    let uploadCompleted = false;
     xhr.open('POST', `${sonicBase()}/api/studio/analyze`, true);
     xhr.timeout = 30 * 60 * 1000;
+    xhr.upload.onloadstart = () => { uploadPhaseStarted = true; };
+    xhr.upload.onload = () => { uploadPhaseStarted = true; uploadCompleted = true; };
     xhr.upload.onprogress = event => {
+      if (event.loaded > 0) uploadPhaseStarted = true;
       if (event.lengthComputable) onProgress?.(35 + Math.round((event.loaded / event.total) * 55));
     };
-    xhr.onerror = () => {
+
+    const rejectTransportFailure = (timedOut: boolean) => {
+      if (!uploadPhaseStarted) {
+        reject(new SonicTraceError(
+          timedOut
+            ? 'SonicTrace Deep Audio coordinator timed out before the browser observed upload start. Browser DSP remains available; this attempt is not fenced.'
+            : 'SonicTrace Deep Audio node is offline or blocked by the browser before upload began. Browser DSP remains available; this attempt is not fenced.',
+          null,
+          timedOut ? 'DEEP_AUDIO_COMPUTE_PRESUBMIT_TIMEOUT' : 'DEEP_AUDIO_COMPUTE_PRESUBMIT_TRANSPORT',
+          true,
+          'POST /api/studio/analyze failed before XMLHttpRequest upload loadstart; no Deep Audio upload was observed by this browser session.',
+        ));
+        return;
+      }
+
       deepAudioResponseLossFence.add(fenceKey);
       reject(new SonicTraceError(
-        'Deep Audio response was lost after submit began. Studio cannot prove whether the coordinator already ran or is still running this compute. Do not immediately re-scan; reload Studio before any explicit new submission.',
+        timedOut
+          ? 'Deep Audio response timed out after upload began. Studio cannot prove whether the coordinator already ran or is still running this compute. Do not immediately re-scan; reload Studio before any explicit new submission.'
+          : 'Deep Audio response was lost after upload began. Studio cannot prove whether the coordinator already ran or is still running this compute. Do not immediately re-scan; reload Studio before any explicit new submission.',
         null,
-        'DEEP_AUDIO_COMPUTE_TRANSPORT_UNVERIFIED',
+        timedOut ? 'DEEP_AUDIO_COMPUTE_TIMEOUT_UNVERIFIED' : 'DEEP_AUDIO_COMPUTE_TRANSPORT_UNVERIFIED',
         false,
-        'POST /api/studio/analyze response unavailable after submit; compute state unknown.',
+        `POST /api/studio/analyze failed after upload start; uploadCompleted=${uploadCompleted}; compute state unknown.`,
       ));
     };
-    xhr.ontimeout = () => {
-      deepAudioResponseLossFence.add(fenceKey);
-      reject(new SonicTraceError(
-        'Deep Audio response timed out after submit began. Studio cannot prove whether the coordinator already ran or is still running this compute. Do not immediately re-scan; reload Studio before any explicit new submission.',
-        null,
-        'DEEP_AUDIO_COMPUTE_TIMEOUT_UNVERIFIED',
-        false,
-        'POST /api/studio/analyze timed out after submit; compute state unknown.',
-      ));
-    };
+
+    xhr.onerror = () => rejectTransportFailure(false);
+    xhr.ontimeout = () => rejectTransportFailure(true);
     xhr.onload = () => {
       let payload: SonicTraceAnalysis & { detail?: string };
       try { payload = JSON.parse(xhr.responseText) as SonicTraceAnalysis & { detail?: string }; }
@@ -538,7 +552,17 @@ export function runSonicTraceAnalysis(
     form.set('track_id', trackId);
     form.set('source_version', JSON.stringify(sourceVersion));
     form.set('file', file);
-    xhr.send(form);
+    try {
+      xhr.send(form);
+    } catch (reason) {
+      reject(new SonicTraceError(
+        'Deep Audio request could not be submitted before upload began. Browser DSP remains available; this attempt is not fenced.',
+        null,
+        'DEEP_AUDIO_COMPUTE_PRESUBMIT_TRANSPORT',
+        true,
+        reason instanceof Error ? reason.message : String(reason),
+      ));
+    }
   });
 }
 
@@ -579,6 +603,7 @@ export const sonicTraceService = Object.freeze({
   canonicalAudioReadRetryPolicy: 'one-retry-timeout-transport-transient-http-before-deep-audio-post',
   canonicalAudioReadMaxAttempts: 2,
   deepAudioComputeRetryPolicy: 'zero-automatic-retries',
-  deepAudioResponseLossPolicy: 'unknown-after-timeout-or-transport-reload-before-manual-resubmit',
-  deepAudioResponseLossFence: 'in-memory-track-source-fence-cleared-by-page-reload',
+  deepAudioPreSubmitTransportPolicy: 'no-fence-manual-rescan-allowed-zero-automatic-retries',
+  deepAudioResponseLossPolicy: 'unknown-only-after-upload-start-reload-before-manual-resubmit',
+  deepAudioResponseLossFence: 'in-memory-track-source-fence-after-upload-start-cleared-by-page-reload',
 });

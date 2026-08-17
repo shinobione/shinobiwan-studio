@@ -1,7 +1,7 @@
 export const studioRelease = {
-  version: '0.19.26',
-  build: 104,
-  codename: 'studio-focus-slice4-phase9-deep-audio-response-loss-fence',
+  version: '0.19.27',
+  build: 105,
+  codename: 'studio-focus-slice4-phase9-deep-audio-presubmit-transport-corrective',
   releasedAt: '2026-08-17',
 } as const;
 
@@ -46,3 +46,4 @@ export const build100AncestryMarker = "version: 0.19.22 · build: 100 · codenam
 export const build101AncestryMarker = "version: 0.19.23 · build: 101 · codename: 'studio-focus-slice4-phase9-track-asset-upload-success-verification-truth'";
 export const build102AncestryMarker = "version: 0.19.24 · build: 102 · codename: 'studio-focus-slice4-phase9-track-asset-etag-representation-corrective'";
 export const build103AncestryMarker = "version: 0.19.25 · build: 103 · codename: 'studio-focus-slice4-phase9-canonical-audio-download-transient-retry-truth'";
+export const build104AncestryMarker = "version: 0.19.26 · build: 104 · codename: 'studio-focus-slice4-phase9-deep-audio-response-loss-fence'";

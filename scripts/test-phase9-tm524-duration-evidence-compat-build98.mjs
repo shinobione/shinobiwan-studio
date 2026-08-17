@@ -8,23 +8,24 @@ const save = read('src/services/track-metadata-admin-api.ts');
 const phase4 = read('src/services/phase4-admin-api.ts');
 const album = read('src/services/album-admin-api.ts');
 const pkg = JSON.parse(read('package.json'));
-if (['0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build99AncestryMarker'), 'Build100+ must preserve accepted Build99 ancestry.');
+if (['0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27'].includes(pkg.version)) assert.ok(release.includes('build99AncestryMarker'), 'Build100+ must preserve accepted Build99 ancestry.');
 
-assert.ok(['0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26'].includes(pkg.version), 'Build98 guard accepts Build98 and bounded successors through Build104.');
+assert.ok(['0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27'].includes(pkg.version), 'Build98 guard accepts Build98 and bounded successors through Build105.');
 if (pkg.version === '0.19.20') {
   assert.ok(release.includes("version: '0.19.20'"), 'Build98 release version mismatch.');
   assert.ok(release.includes('build: 98'), 'Build98 release identity is missing.');
   assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-tm524-duration-evidence-compat-corrective'"), 'Build98 codename mismatch.');
 }
 assert.ok(release.includes('build97AncestryMarker'), 'Build98+ must preserve Build97 candidate ancestry.');
-if (['0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26'].includes(pkg.version)) {
+if (['0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27'].includes(pkg.version)) {
   assert.ok(release.includes('build98AncestryMarker'), 'Build99+ must preserve accepted Build98 ancestry.');
   assert.ok(release.includes("version: 0.19.20 · build: 98 · codename: 'studio-focus-slice4-phase9-tm524-duration-evidence-compat-corrective'"), 'Build98 accepted runtime identity must remain immutable in successor ancestry.');
 }
-if (['0.19.23', '0.19.24', '0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build100AncestryMarker'), 'Build101+ must preserve Build100 ancestry.');
-if (['0.19.24', '0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build101AncestryMarker'), 'Build102+ must preserve Build101 candidate ancestry while retaining the stronger Track asset verification boundary.');
-if (['0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build102AncestryMarker'), 'Build103+ must preserve accepted Build102 ancestry.');
-if (pkg.version === '0.19.26') assert.ok(release.includes('build103AncestryMarker'), 'Build104 must preserve accepted Build103 ancestry.');
+if (['0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27'].includes(pkg.version)) assert.ok(release.includes('build100AncestryMarker'), 'Build101+ must preserve Build100 ancestry.');
+if (['0.19.24', '0.19.25', '0.19.26', '0.19.27'].includes(pkg.version)) assert.ok(release.includes('build101AncestryMarker'), 'Build102+ must preserve Build101 candidate ancestry while retaining the stronger Track asset verification boundary.');
+if (['0.19.25', '0.19.26', '0.19.27'].includes(pkg.version)) assert.ok(release.includes('build102AncestryMarker'), 'Build103+ must preserve accepted Build102 ancestry.');
+if (['0.19.26', '0.19.27'].includes(pkg.version)) assert.ok(release.includes('build103AncestryMarker'), 'Build104+ must preserve accepted Build103 ancestry.');
+if (pkg.version === '0.19.27') assert.ok(release.includes('build104AncestryMarker'), 'Build105 must preserve rejected Build104 candidate ancestry.');
 assert.ok(release.includes("version: 0.19.19 · build: 97 · codename: 'studio-focus-slice4-phase9-track-create-success-verification-truth'"), 'Build97 runtime identity must remain immutable in Build98 ancestry.');
 
 for (const pair of ["'5.22/1.12'", "'5.23/1.13'", "'5.24/1.14'"]) {
@@ -65,4 +66,4 @@ for (const inherited of [
   'test-phase9-album-asset-upload-success-verification-build99.mjs',
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must retain ${inherited}`);
 
-console.log('Build98 TM5.24/bridge1.14 compatibility corrective guard passed through Build104: duration evidence stays explicitly bounded, Build97 create truth remains intact, and writes retain zero automatic retries.');
+console.log('Build98 TM5.24/bridge1.14 compatibility corrective guard passed through Build105: duration evidence stays explicitly bounded, Build97 create truth remains intact, and writes retain zero automatic retries.');
