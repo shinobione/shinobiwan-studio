@@ -17,35 +17,35 @@ Then verify real GitHub state before mutation.
 ## Current accepted state
 
 ```text
-Studio                v0.19.25 · Build103 · REAL USER PASS
-Codename              studio-focus-slice4-phase9-canonical-audio-download-transient-retry-truth
-Runtime PR            #198
-Exact tested head     9d89aa1051b67b828836a45b648b6f45b69dbe74
-Validation            #543 · 31981673322 · SUCCESS
-Runtime merge         5732741bbe0c96d7f6c8d3e1b5b4989af1fa9b83
-Runtime Pages         #209 · 31981768144 · SUCCESS
-Candidate docs PR     #199
-Candidate docs merge  c98bfbba7c48d2cbf96b7b4760204b6d0523c228
-Candidate docs Pages  #210 · 31981993765 · SUCCESS
-Real-user smoke       BUILD103 SMOKED 💨
-Build101              REJECTED candidate · ETag representation false negative
-Track Manager         v5.24 · REAL USER VERIFIED
-Studio bridge         v1.14
-TM admin Worker       53abb651-4f3c-46a7-a37a-055f35d340b9
-Public Worker         v2.8 · REAL USER PASS
-Public Worker deploy  31974132377 · public only
-Public Worker version 49d87191-a13e-41a7-80c8-d1fd9362af77
-LaunchPAD public      2026.08.12.102 · REAL USER PASS
-SonicTrace            V2-E Build08 · REAL USER PASS
-Deep Audio            2.0.3-alpha
-LRC Maker             6.3.8
+Studio accepted        v0.19.25 · Build103 · REAL USER PASS
+Accepted runtime PR    #198
+Accepted runtime CI    #543 · 31981673322 · SUCCESS
+Accepted runtime merge 5732741bbe0c96d7f6c8d3e1b5b4989af1fa9b83
+Accepted runtime Pages #209 · 31981768144 · SUCCESS
+Latest candidate       v0.19.26 · Build104 · REAL USER SMOKE PENDING
+Candidate runtime PR   #202
+Candidate tested head  8060a81b7fdb6a608244c768a042e56e630451f0
+Candidate validation   #564 · 31983472391 · SUCCESS
+Candidate merge        a0a082376eedc6c5c90bad59bbc5e92bf72e6cdd
+Candidate Pages        #213 · 31983514507 · SUCCESS
+Build101               REJECTED candidate · ETag representation false negative
+Track Manager          v5.24 · REAL USER VERIFIED
+Studio bridge          v1.14
+TM admin Worker        53abb651-4f3c-46a7-a37a-055f35d340b9
+Public Worker          v2.8 · REAL USER PASS
+LaunchPAD public       2026.08.12.102 · REAL USER PASS
+SonicTrace             V2-E Build08 · REAL USER PASS
+Deep Audio             2.0.3-alpha
+LRC Maker              6.3.8
 ```
 
-**Studio v0.19.25 · Build103 is the current accepted Studio runtime.** Build103 hardens only the non-mutating canonical master-audio GET performed before SonicTrace / Deep Audio compute. That GET may retry once for bounded transient failures; the expensive `POST /api/studio/analyze` remains strictly one-shot with **zero automatic retries**.
+**Studio v0.19.25 · Build103 remains the current accepted Studio runtime.** Build103 hardens only the non-mutating canonical master-audio GET performed before SonicTrace / Deep Audio compute. That GET may retry once for bounded transient failures; the expensive `POST /api/studio/analyze` remains strictly one-shot with **zero automatic retries**.
+
+**Studio v0.19.26 · Build104 is deployed as a candidate awaiting real-user smoke.** The fresh audit proved that timeout/transport after a Deep Audio POST submit cannot safely be treated as “not started” or retry-safe. Build104 therefore fences that exact Track + canonical source revision in the current page, reports **COMPUTE UNKNOWN**, refuses a second Deep Audio POST for the fenced source, and requires an explicit page reload before a deliberate manual resubmit. It does not add any automatic compute retry.
 
 Public Worker **v2.8** remains accepted cross-stack truth. It withholds a published Track from public list/detail/media while its canonical parent Album remains Draft/archived, using Album `trackIds` as ownership authority.
 
-Detailed latest Studio receipt: [`docs/acceptance/BUILD103-REAL-USER-PASS.md`](docs/acceptance/BUILD103-REAL-USER-PASS.md).
+Latest accepted Studio receipt: [`docs/acceptance/BUILD103-REAL-USER-PASS.md`](docs/acceptance/BUILD103-REAL-USER-PASS.md). Build104 candidate detail: [`docs/PHASE9-BUILD104-DEEP-AUDIO-RESPONSE-LOSS-FENCE.md`](docs/PHASE9-BUILD104-DEEP-AUDIO-RESPONSE-LOSS-FENCE.md).
 
 The Studio repository still publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
@@ -103,13 +103,13 @@ Phase 9             ACTIVE
 Phase 9 Slice1–19   Build82→Build100 · REAL USER PASS
 Phase 9 Slice20     Build102 · REAL USER PASS
 Phase 9 Slice21     Build103 · REAL USER PASS
+Phase 9 Slice22     Build104 · DEPLOYED CANDIDATE · SMOKE PENDING
 Build101            REJECTED candidate
-Build104            UNALLOCATED · fresh read-only post-Build103 audit required
 Phase 10            FUTURE · progressive extraction
 Official Phase 11   NONE
 ```
 
-The immediate next action is a **fresh read-only post-Build103 Phase9 audit**. Build104 must not be allocated until the current implementation proves one smallest coherent next gap.
+The immediate next action is the **normal-path Build104 real-user smoke**. Do not manufacture timeout/network loss to test the fence in production; automated guards already cover that failure path.
 
 ## Frozen authority model
 
@@ -128,7 +128,7 @@ The immediate next action is a **fresh read-only post-Build103 Phase9 audit**. B
 
 Private GET retry is bounded to accepted transient classes and at most one retry. It never authorizes write retry.
 
-Build103 extends that bounded philosophy to the canonical-audio pre-compute GET only. It does not authorize automatic Deep Audio POST retry.
+Build103 extends that bounded philosophy to the canonical-audio pre-compute GET only. Build104 does **not** retry Deep Audio compute: timeout/transport after submit becomes UNKNOWN and blocks a second same-source POST until page reload.
 
 For accepted Phase9 writes:
 
@@ -146,7 +146,7 @@ Each write family keeps operation-specific postconditions.
 Preserved backlog includes:
 
 - Album/Track create and upload causality gaps that require stronger operation identity or digest evidence;
-- Deep Audio duplicate-compute boundaries beyond the safe pre-compute GET;
+- stronger Deep Audio operation identity/status only if the coordinator gains a safe backend contract;
 - degraded/offline workflow work only when a bounded product slice is proven;
 - premium interaction polish: tactile press/release, restrained glow/focus, coherent hover/active states, smooth panel/tab transitions and reduced-motion-safe motion;
 - Phase10 progressive extraction of mature LRC / SonicTrace / catalog engines while Studio remains orchestrator;

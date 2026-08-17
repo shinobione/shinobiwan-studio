@@ -1,7 +1,7 @@
 # CHANGELOG — Studio v0.19.26 · Build104
 
 Date: 2026-08-17
-Status: **SOURCE CANDIDATE · NOT DEPLOYED**
+Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
 Codename: `studio-focus-slice4-phase9-deep-audio-response-loss-fence`
 
 ## Why
@@ -32,13 +32,20 @@ The SonicTrace coordinator has no client operation/idempotency key and generates
 - no forced production timeout/network-loss smoke;
 - no Album/Track create or binary-upload causality claim.
 
-## Safety
+## Safety and deployment receipts
 
 ```text
 Accepted predecessor    Studio v0.19.25 · Build103 · REAL USER PASS
 Base                     74afc0c052e80e7d8c2cd18df333d70ec363b614
 Pre-build safety         safety/pre-build104-deep-audio-response-loss-fence-20260817
 Feature branch           phase9/build104-deep-audio-response-loss-fence
+Runtime PR               #202
+Exact tested head        8060a81b7fdb6a608244c768a042e56e630451f0
+Final runtime CI         #564 · 31983472391 · SUCCESS
+Green premerge safety    safety/post-build104-green-premerge-20260817-0258
+Runtime merge SHA        a0a082376eedc6c5c90bad59bbc5e92bf72e6cdd
+Runtime Pages            #213 · 31983514507 · SUCCESS build + deploy
+Post-deploy safety       safety/post-build104-deployed-candidate-20260817-0301
 Worker deploy            NONE
 Track Manager change     NONE
 SonicTrace backend       NONE
@@ -48,4 +55,10 @@ R2 migration/schema      NONE
 
 Detailed audit: [`../docs/PHASE9-BUILD104-DEEP-AUDIO-RESPONSE-LOSS-FENCE.md`](../docs/PHASE9-BUILD104-DEEP-AUDIO-RESPONSE-LOSS-FENCE.md).
 
-Build104 remains a source candidate until the exact final PR head passes the full repository validation chain, is merged/deployed, and the required normal-path real-user smoke succeeds.
+## Human acceptance boundary
+
+Build104 remains **not accepted** until a normal-browser, known-good SonicTrace / Deep Audio analysis smoke passes in production.
+
+The smoke must **not** manufacture a timeout, disconnect the network, or force an Access failure. The response-loss fence is regression-tested automatically. Human validation exists only to prove that the healthy analysis path still acquires canonical audio, runs Browser DSP + Deep Audio once, returns the truthful FULL/PARTIAL backend result, and does not show the UNKNOWN-state fence unexpectedly.
+
+**Build103 remains the latest accepted Studio runtime until explicit Build104 REAL USER PASS.**
