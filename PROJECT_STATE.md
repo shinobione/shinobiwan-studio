@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-17 after **Build103 REAL USER PASS** and acceptance closeout.
+Updated: 2026-08-17 after **Build104 deployment candidate**. Build103 remains the latest accepted Studio runtime until Build104 real-user smoke passes.
 
 This is the short current checkpoint to read immediately after `AGENTS.md`. Historical implementation detail remains in `changelogs/` and milestone docs.
 
@@ -12,32 +12,52 @@ Studio build            Build103
 Codename                studio-focus-slice4-phase9-canonical-audio-download-transient-retry-truth
 Acceptance              REAL USER PASS
 Runtime PR              #198
-Base                    1b9934288043b85bbed537b0e8cf1ddc4f786184
 Exact tested head       9d89aa1051b67b828836a45b648b6f45b69dbe74
 Final runtime CI        #543 · 31981673322 · SUCCESS
 Runtime merge SHA       5732741bbe0c96d7f6c8d3e1b5b4989af1fa9b83
 Runtime Pages           #209 · 31981768144 · SUCCESS build + deploy
-Candidate docs PR       #199
-Candidate docs merge    c98bfbba7c48d2cbf96b7b4760204b6d0523c228
-Candidate docs Pages    #210 · 31981993765 · SUCCESS build + deploy
 Acceptance docs PR      #200
 Acceptance docs CI      #545 · 31982315109 · SUCCESS
 Acceptance docs merge   dc284afbb087ae98619534f565cf82d3263e97d0
 Acceptance docs Pages   #211 · 31982359259 · SUCCESS build + deploy
+Final receipts PR       #201
+Final receipts CI       #546 · 31982465722 · SUCCESS
+Final receipts merge    74afc0c052e80e7d8c2cd18df333d70ec363b614
+Final receipts Pages    #212 · 31982501221 · SUCCESS build + deploy
 Real-user smoke         BUILD103 SMOKED 💨
-Safety pre-build        safety/pre-build103-canonical-audio-download-retry-20260817
-Safety green premerge   safety/post-build103-green-premerge-20260817-0217
-Safety post-deploy      safety/post-build103-deployed-candidate-20260817-0223
 Safety post-acceptance  safety/post-build103-real-user-pass-20260817-0234
+```
+
+**Build103 is the current accepted Studio runtime.** Its canonical master-audio pre-compute GET may retry once for bounded transient failures; `POST /api/studio/analyze` remains one-shot with zero automatic retries.
+
+Detailed receipt: [`docs/acceptance/BUILD103-REAL-USER-PASS.md`](docs/acceptance/BUILD103-REAL-USER-PASS.md).
+
+## Current deployed Studio candidate
+
+```text
+Studio version          v0.19.26
+Studio build            Build104
+Codename                studio-focus-slice4-phase9-deep-audio-response-loss-fence
+Acceptance              DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Base                    74afc0c052e80e7d8c2cd18df333d70ec363b614
+Runtime PR              #202
+Exact tested head       8060a81b7fdb6a608244c768a042e56e630451f0
+Final runtime CI        #564 · 31983472391 · SUCCESS
+Runtime merge SHA       a0a082376eedc6c5c90bad59bbc5e92bf72e6cdd
+Runtime Pages           #213 · 31983514507 · SUCCESS build + deploy
+Safety pre-build        safety/pre-build104-deep-audio-response-loss-fence-20260817
+Safety green premerge   safety/post-build104-green-premerge-20260817-0258
+Safety post-deploy      safety/post-build104-deployed-candidate-20260817-0301
 Worker deploy           NONE
 Track Manager change    NONE
+SonicTrace backend      NONE
 Public Worker change    NONE
 R2 migration/schema     NONE
 ```
 
-**Build103 is the current accepted Studio runtime.** It gives only the non-mutating canonical master-audio GET before SonicTrace / Deep Audio compute one bounded retry for timeout, browser transport interruption, or explicit transient HTTP `408/425/429/500/502/503/504`. The expensive `POST /api/studio/analyze` remains one-shot with zero automatic retries. Access failures, deterministic ordinary HTTP failures, and empty/invalid successful responses do not retry.
+Build104 corrects a truth/duplicate-compute gap after Deep Audio response loss. Once `POST /api/studio/analyze` has begun, browser timeout/transport cannot prove whether compute ran or is still running. Build104 therefore reports **COMPUTE UNKNOWN**, fences the exact Track + canonical source revision in memory, refuses a second same-source Deep Audio POST in that page, and requires page reload before deliberate manual resubmit. It adds **no automatic Deep Audio retry**.
 
-Detailed receipt: [`docs/acceptance/BUILD103-REAL-USER-PASS.md`](docs/acceptance/BUILD103-REAL-USER-PASS.md).
+Detailed candidate audit: [`docs/PHASE9-BUILD104-DEEP-AUDIO-RESPONSE-LOSS-FENCE.md`](docs/PHASE9-BUILD104-DEEP-AUDIO-RESPONSE-LOSS-FENCE.md).
 
 Build101 remains a rejected historical candidate: its Track-asset write committed, but quoted R2 `httpEtag` versus raw canonical `etag` caused a real-user false-negative verifier result. Build102 corrected only that representation comparison and remains accepted ancestry.
 
@@ -58,9 +78,7 @@ Deep Audio              2.0.3-alpha
 LRC Maker               6.3.8
 ```
 
-Public Worker v2.8 closes the previously listed publication-projection gap outside the Studio runtime: a published Track is withheld from public list/detail/media while its canonical owner Album remains draft/archived; standalone published Singles and Tracks owned by published Albums remain public. Canonical ownership is derived from Album `trackIds`.
-
-No Build103 backend deployment occurred. Build103 deployment itself performs no R2 mutation.
+No Build104 backend deployment occurred. Build104 deployment itself performs no R2 mutation.
 
 ## Program position
 
@@ -74,8 +92,8 @@ Phase 9                 ACTIVE
 Phase 9 Slice1–19       COMPLETE · Build82→Build100 REAL USER PASS
 Phase 9 Slice20         COMPLETE · Build102 REAL USER PASS
 Phase 9 Slice21         COMPLETE · Build103 REAL USER PASS
+Phase 9 Slice22         Build104 DEPLOYED CANDIDATE · SMOKE PENDING
 Build101                REJECTED candidate · ETag representation false negative
-Build104                UNALLOCATED · fresh read-only audit required
 Phase 10                FUTURE · progressive extraction
 Official Phase 11       NONE
 ```
@@ -88,23 +106,20 @@ Official Phase 11       NONE
 - public fallback is read-only and never verifies writes.
 - private GET/transient retry is bounded and never authorizes write retry.
 - accepted Phase9 writes use: `response unavailable → no blind retry → private canonical reread → committed / not committed / ambiguous / unverified` with operation-specific postconditions.
-- Track asset normal success requires exact revision, manifest filename, private presence and server fingerprint fields when supplied; ETag normalization removes only one symmetric outer HTTP quote pair before exact comparison.
-- Build103 retries only the pre-compute canonical-audio GET. It must never become an automatic retry of Deep Audio compute or any canonical write.
+- Build103 retries only the pre-compute canonical-audio GET.
+- Build104 never automatically retries Deep Audio compute; timeout/transport after submit is UNKNOWN, and the same Track/source is fenced in-page until reload.
 
 ## Immediate next action
 
-**Fresh read-only post-Build103 Phase9 audit.** Do not allocate Build104 before the current implementation proves the smallest coherent next gap.
+**Build104 normal-path real-user smoke.** Use a known-good Track and ordinary SonicTrace / Deep Audio analysis. Do not manufacture timeout, disconnect the network, or force Access failure. Automated guards cover the response-loss fence; human smoke verifies the healthy analysis path has no regression or duplicate submit.
 
-Remaining candidates to re-evaluate, without pre-selecting one:
-
-- Album create lost-response causality / operation identity;
-- exact-byte or digest proof for binary upload families where the backend can expose trustworthy evidence;
-- remaining Track create/upload causality gaps;
-- Deep Audio duplicate-compute risk and expensive-analysis retry boundaries beyond the safe pre-compute GET;
-- degraded/offline behavior that materially affects the private Studio workflow.
+Build104 must not be accepted until that smoke passes.
 
 ## Backlog kept intact
 
+- create/upload response-loss causality requiring backend operation identity or trustworthy digest evidence;
+- future Deep Audio operation status/idempotency only if the coordinator gains a safe contract;
+- degraded/offline workflow work when a bounded slice is proven;
 - premium interaction polish: tactile press/release, restrained glow/focus, coherent hover/active states, smooth panel/tab transitions, reduced-motion-safe motion;
 - Phase10 progressive extraction of mature LRC/SonicTrace/catalog engines while Studio remains orchestrator;
 - no official Phase11.
