@@ -7,11 +7,16 @@ const api = read('src/services/sonictrace-api.ts');
 const panel = read('src/components/SonicTracePanel.tsx');
 const pkg = JSON.parse(read('package.json'));
 
-assert.match(release, /version: '0\.19\.25'/);
-assert.match(release, /build: 103/);
+assert.ok(['0.19.25', '0.19.26'].includes(pkg.version), 'Build103 guard accepts Build103 and bounded Build104 successor.');
+if (pkg.version === '0.19.25') {
+  assert.match(release, /version: '0\.19\.25'/);
+  assert.match(release, /build: 103/);
+} else {
+  assert.match(release, /build103AncestryMarker/);
+  assert.match(release, /version: 0\.19\.25 · build: 103 · codename: 'studio-focus-slice4-phase9-canonical-audio-download-transient-retry-truth'/);
+}
 assert.match(release, /studio-focus-slice4-phase9-canonical-audio-download-transient-retry-truth/);
 assert.match(release, /build102AncestryMarker/);
-assert.equal(pkg.version, '0.19.25');
 assert.match(pkg.scripts['check:phase9'], /test-phase9-canonical-audio-download-transient-retry-build103\.mjs/);
 
 // The canonical audio fetch is a non-mutating GET that may receive exactly one bounded retry.
@@ -49,4 +54,4 @@ assert.doesNotMatch(deepFunction, /retry/i);
 assert.match(api, /deepAudioComputeRetryPolicy: 'zero-automatic-retries'/);
 assert.match(panel, /const result = await runSonicTraceAnalysis\(file, track\.id, current\.currentSourceVersion, dsp, setProgress\)/);
 
-console.log('Build103 canonical audio GET retry guard PASS: one bounded pre-compute retry, zero automatic Deep Audio POST retries.');
+console.log(`Build103 canonical audio GET retry guard PASS under ${pkg.version}: one bounded pre-compute retry remains inherited while Deep Audio POST stays one-shot.`);
