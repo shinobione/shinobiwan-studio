@@ -1,5 +1,4 @@
 import { studioConfig } from './config';
-import { fetchJson } from './http';
 import {
   AdminReadError,
   adminMediaUrl,
@@ -97,6 +96,21 @@ interface PublicTrackResponse {
 }
 
 type Settled<T> = { ok: true; value: T } | { ok: false; error: unknown };
+type PublicCatalogReadFailureKind = 'http' | 'timeout' | 'transport' | 'invalid-response';
+
+const TRANSIENT_PUBLIC_CATALOG_READ_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
+
+class PublicCatalogReadError extends Error {
+  readonly kind: PublicCatalogReadFailureKind;
+  readonly status: number | null;
+
+  constructor(kind: PublicCatalogReadFailureKind, message: string, status: number | null = null) {
+    super(message);
+    this.name = 'PublicCatalogReadError';
+    this.kind = kind;
+    this.status = status;
+  }
+}
 
 function baseUrl(): string {
   return studioConfig.catalogApi.replace(/\/$/, '');
@@ -104,6 +118,70 @@ function baseUrl(): string {
 
 function settle<T>(promise: Promise<T>): Promise<Settled<T>> {
   return promise.then(value => ({ ok: true, value }), error => ({ ok: false, error }));
+}
+
+function isTransientPublicCatalogReadError(reason: unknown): reason is PublicCatalogReadError {
+  return reason instanceof PublicCatalogReadError && (
+    reason.kind === 'timeout'
+    || reason.kind === 'transport'
+    || (reason.kind === 'http' && reason.status !== null && TRANSIENT_PUBLIC_CATALOG_READ_STATUSES.has(reason.status))
+  );
+}
+
+async function fetchPublicCatalogJsonOnce<T>(url: string, timeoutMs: number): Promise<T> {
+  const controller = new AbortController();
+  const timeout = globalThis.setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        headers: { Accept: 'application/json' },
+        cache: 'no-store',
+        signal: controller.signal,
+      });
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        throw new PublicCatalogReadError('timeout', 'LaunchPAD public catalog read timed out.');
+      }
+      throw new PublicCatalogReadError('transport', 'LaunchPAD public catalog read transport was interrupted.');
+    }
+
+    if (!response.ok) {
+      throw new PublicCatalogReadError('http', `LaunchPAD public catalog read returned HTTP ${response.status}.`, response.status);
+    }
+
+    try {
+      return (await response.json()) as T;
+    } catch {
+      throw new PublicCatalogReadError('invalid-response', 'LaunchPAD public catalog read returned invalid JSON.', response.status);
+    }
+  } finally {
+    globalThis.clearTimeout(timeout);
+  }
+}
+
+async function fetchPublicCatalogJson<T>(url: string, timeoutMs = 3500): Promise<T> {
+  let firstTransientFailure: PublicCatalogReadError | null = null;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      return await fetchPublicCatalogJsonOnce<T>(url, timeoutMs);
+    } catch (reason) {
+      if (attempt === 0 && isTransientPublicCatalogReadError(reason)) {
+        firstTransientFailure = reason;
+        continue;
+      }
+      if (firstTransientFailure && reason instanceof PublicCatalogReadError) {
+        throw new PublicCatalogReadError(
+          reason.kind,
+          `LaunchPAD public catalog read failed after one bounded transient retry. ${reason.message}`,
+          reason.status,
+        );
+      }
+      throw reason;
+    }
+  }
+  throw new PublicCatalogReadError('transport', 'LaunchPAD public catalog read retry loop ended unexpectedly.');
 }
 
 function stringList(value: unknown): string[] {
@@ -378,17 +456,17 @@ function mapLyricSegments(value: PublicTrack['lyrics']): StudioLyricSegment[] {
 }
 
 async function getPublicHealth(): Promise<PublicHealth> {
-  return fetchJson<PublicHealth>(`${baseUrl()}/health`);
+  return fetchPublicCatalogJson<PublicHealth>(`${baseUrl()}/health`);
 }
 
 async function getPublicTracks(): Promise<StudioTrack[]> {
-  const payload = await fetchJson<PublicTracksResponse>(`${baseUrl()}/tracks`, 6000);
+  const payload = await fetchPublicCatalogJson<PublicTracksResponse>(`${baseUrl()}/tracks`, 6000);
   if (payload.ok === false || !Array.isArray(payload.tracks)) throw new Error('LaunchPAD returned an invalid catalog response.');
   return payload.tracks.map(mapPublicTrack);
 }
 
 async function getPublicTrack(trackId: string): Promise<StudioTrackDetail> {
-  const payload = await fetchJson<PublicTrackResponse>(`${baseUrl()}/tracks/${encodeURIComponent(trackId)}`, 6000);
+  const payload = await fetchPublicCatalogJson<PublicTrackResponse>(`${baseUrl()}/tracks/${encodeURIComponent(trackId)}`, 6000);
   if (payload.ok === false || !payload.track) throw new Error('LaunchPAD returned an invalid track response.');
   const track = mapPublicTrack(payload.track);
   const lyricSegments = mapLyricSegments(payload.track.lyrics);
@@ -484,3 +562,8 @@ export async function getCatalogTrack(trackId: string): Promise<StudioTrackDetai
     throw new Error(`Private and public track reads failed. Private: ${failureMessage(adminError)} Public: ${failureMessage(publicResult.error)}`);
   }
 }
+
+export const catalogReliabilityContract = {
+  publicFallbackReadRetryPolicy: 'one-retry-timeout-transport-transient-http',
+  publicFallbackReadMaxAttempts: 2,
+} as const;
