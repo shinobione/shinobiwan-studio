@@ -1,38 +1,61 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-17 after **Build105 deployment candidate**. Build103 remains the latest accepted Studio runtime until Build105 real-user smoke passes.
+Updated: 2026-08-17 after **Build105 REAL USER PASS**.
 
 This is the short current checkpoint to read immediately after `AGENTS.md`. Historical implementation detail remains in `changelogs/` and milestone docs.
 
 ## Current accepted Studio runtime
 
 ```text
-Studio version          v0.19.25
-Studio build            Build103
-Codename                studio-focus-slice4-phase9-canonical-audio-download-transient-retry-truth
+Studio version          v0.19.27
+Studio build            Build105
+Codename                studio-focus-slice4-phase9-deep-audio-presubmit-transport-corrective
 Acceptance              REAL USER PASS
-Runtime PR              #198
-Exact tested head       9d89aa1051b67b828836a45b648b6f45b69dbe74
-Final runtime CI        #543 · 31981673322 · SUCCESS
-Runtime merge SHA       5732741bbe0c96d7f6c8d3e1b5b4989af1fa9b83
-Runtime Pages           #209 · 31981768144 · SUCCESS build + deploy
-Acceptance docs PR      #200
-Acceptance docs CI      #545 · 31982315109 · SUCCESS
-Acceptance docs merge   dc284afbb087ae98619534f565cf82d3263e97d0
-Acceptance docs Pages   #211 · 31982359259 · SUCCESS build + deploy
-Final receipts PR       #201
-Final receipts CI       #546 · 31982465722 · SUCCESS
-Final receipts merge    74afc0c052e80e7d8c2cd18df333d70ec363b614
-Final receipts Pages    #212 · 31982501221 · SUCCESS build + deploy
-Real-user smoke         BUILD103 SMOKED 💨
-Safety post-acceptance  safety/post-build103-real-user-pass-20260817-0234
+Runtime PR              #204
+Exact tested head       efa188b8d7181a4aa03bdea4bf2da40534203e9e
+Final runtime CI        #585 · 32002434543 · SUCCESS
+Runtime merge SHA       f3a295d5e7bdbd0cfa05cc6d44901fab62e42c5b
+Runtime Pages           #215 · 32002484381 · SUCCESS build + deploy
+Candidate docs PR       #205
+Candidate docs CI       #586 · 32002709875 · SUCCESS
+Candidate docs merge    6de3709d4e89a2806cbf0cf9b598d71d49b1742f
+Candidate docs Pages    #216 · 32002755699 · SUCCESS build + deploy
+Real-user smoke         BUILD105 SMOKED 💨 · FULL profile ready · Deep Audio analysis complete
+Safety pre-build        safety/pre-build105-deep-audio-presubmit-corrective-20260817
+Safety green premerge   safety/post-build105-green-premerge-20260817-0838
+Safety post-deploy      safety/post-build105-deployed-candidate-20260817-0839
+Safety post-acceptance  safety/post-build105-real-user-pass-20260817-0854
+Acceptance closeout     docs/build105-acceptance-closeout-20260817
+Worker deploy           NONE
+Track Manager change    NONE
+SonicTrace backend      NONE
+Public Worker change    NONE
+R2 migration/schema     NONE
 ```
 
-**Build103 is the current accepted Studio runtime.** Its canonical master-audio pre-compute GET may retry once for bounded transient failures; `POST /api/studio/analyze` remains one-shot with zero automatic retries.
+**Build105 is the current accepted Studio runtime.** It retains Build103's bounded pre-compute canonical-audio GET retry and narrows the Deep Audio response-loss fence to cases where the browser has observed upload start.
 
-Detailed receipt: [`docs/acceptance/BUILD103-REAL-USER-PASS.md`](docs/acceptance/BUILD103-REAL-USER-PASS.md).
+```text
+transport/timeout before upload start
+→ PRE-SUBMIT UNREACHABLE
+→ no duplicate-compute fence
+→ zero automatic retry
+→ explicit manual re-scan allowed after coordinator recovery
 
-## Rejected current-cycle candidate
+transport/timeout after upload start
+→ COMPUTE UNKNOWN
+→ exact Track/source fenced in-page
+→ zero automatic retry
+→ reload required before deliberate resubmit
+```
+
+Synchronous `xhr.send()` failure is pre-submit and unfenced. `POST /api/studio/analyze` remains one-shot per explicit user action.
+
+Detailed receipt: [`docs/acceptance/BUILD105-REAL-USER-PASS.md`](docs/acceptance/BUILD105-REAL-USER-PASS.md).
+
+## Rejected historical candidates
+
+### Build104
 
 ```text
 Studio version          v0.19.26
@@ -49,52 +72,11 @@ Candidate docs merge    aa448498549964fe44bd14a1c1767c400ddb8e2d
 Candidate docs Pages    #214 · 31983689742 · SUCCESS build + deploy
 ```
 
-Build104 correctly established the desired fence for true Deep Audio response loss, but armed it for **every** XHR transport failure. The human normal-path smoke exposed that node-offline / blocked / pre-submit transport could be misclassified as compute-UNKNOWN even when the browser had not observed upload start. Build104 is not accepted and is superseded by Build105.
+Build104 correctly established the desired fence for true Deep Audio response loss, but armed it for every XHR transport failure. The human normal-path smoke exposed that node-offline / blocked / pre-submit transport could be misclassified as compute-UNKNOWN before browser-observed upload start. Build104 remains rejected and is superseded by accepted Build105.
 
-## Current deployed Studio candidate
+### Build101
 
-```text
-Studio version          v0.19.27
-Studio build            Build105
-Codename                studio-focus-slice4-phase9-deep-audio-presubmit-transport-corrective
-Acceptance              DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
-Base                    aa448498549964fe44bd14a1c1767c400ddb8e2d
-Runtime PR              #204
-Exact tested head       efa188b8d7181a4aa03bdea4bf2da40534203e9e
-Final runtime CI        #585 · 32002434543 · SUCCESS
-Runtime merge SHA       f3a295d5e7bdbd0cfa05cc6d44901fab62e42c5b
-Runtime Pages           #215 · 32002484381 · SUCCESS build + deploy
-Safety pre-build        safety/pre-build105-deep-audio-presubmit-corrective-20260817
-Safety green premerge   safety/post-build105-green-premerge-20260817-0838
-Safety post-deploy      safety/post-build105-deployed-candidate-20260817-0839
-Worker deploy           NONE
-Track Manager change    NONE
-SonicTrace backend      NONE
-Public Worker change    NONE
-R2 migration/schema     NONE
-```
-
-Build105 narrows the ambiguity fence to the first browser-observed Deep Audio upload evidence:
-
-```text
-transport/timeout before upload start
-→ PRE-SUBMIT UNREACHABLE
-→ no fence
-→ zero automatic retry
-→ explicit manual re-scan allowed after coordinator recovery
-
-transport/timeout after upload start
-→ COMPUTE UNKNOWN
-→ exact Track/source fenced in-page
-→ zero automatic retry
-→ reload required before deliberate resubmit
-```
-
-Synchronous `xhr.send()` failure is also pre-submit and unfenced. Browser DSP fallback remains reviewable; pre-submit fallback stays explicit that Deep Audio is `UNAVAILABLE`. No backend or R2 change occurred.
-
-Detailed candidate receipt: [`changelogs/CHANGELOG-BUILD105.md`](changelogs/CHANGELOG-BUILD105.md).
-
-Build101 remains a rejected historical candidate: its Track-asset write committed, but quoted R2 `httpEtag` versus raw canonical `etag` caused a real-user false-negative verifier result. Build102 corrected only that representation comparison and remains accepted ancestry.
+Build101 remains rejected historical evidence: its Track-asset write committed, but quoted R2 `httpEtag` versus raw canonical `etag` caused a real-user false-negative verifier result. Build102 corrected only that representation comparison and remains accepted ancestry.
 
 ## Current ecosystem baseline
 
@@ -129,7 +111,8 @@ Phase 9 Slice20         COMPLETE · Build102 REAL USER PASS
 Phase 9 Slice21         COMPLETE · Build103 REAL USER PASS
 Build101                REJECTED candidate · ETag representation false negative
 Build104                REJECTED candidate · false Deep Audio UNKNOWN classification
-Phase 9 Slice22         Build105 DEPLOYED CORRECTIVE CANDIDATE · SMOKE PENDING
+Phase 9 Slice22         COMPLETE · Build105 REAL USER PASS
+Build106                UNALLOCATED
 Phase 10                FUTURE · progressive extraction
 Official Phase 11       NONE
 ```
@@ -144,20 +127,30 @@ Official Phase 11       NONE
 - accepted Phase9 writes use: `response unavailable → no blind retry → private canonical reread → committed / not committed / ambiguous / unverified` with operation-specific postconditions.
 - Build103 retries only the pre-compute canonical-audio GET.
 - Build105 never automatically retries Deep Audio compute; it fences only after browser-observed upload start.
+- rejected Build101 and Build104 evidence stays rejected; successor acceptance does not rewrite history.
+
+## Human acceptance evidence
+
+The normal-path Build105 smoke used **Ghost Signal** with a healthy local SonicTrace coordinator and visibly reached:
+
+```text
+FULL profile ready
+Audio match: Current
+History: 1 scan
+Deep Audio analysis complete
+Browser RMS: -14.7 dBFS
+LUFS: -12.5 LUFS
+True Peak: -0.3 dBTP
+Sections: 9
+```
+
+The review surface exposed DSP, MASTERING, NEURAL, EMBEDDING, STRUCTURE and SEMANTIC SUMMARY layers, with no `DEEP AUDIO STATE UNKNOWN` and no `RELOAD BEFORE RESUBMIT`.
 
 ## Immediate next action
 
-**Build105 normal-path real-user smoke with the local SonicTrace coordinator healthy.** Use a known-good existing Track and run one ordinary SonicTrace / Deep Audio analysis.
+**Fresh read-only post-Build105 Phase9 audit.** Build106 stays **UNALLOCATED** until the current repository and runtime state prove one smallest coherent next gap.
 
-Expected healthy path:
-
-```text
-canonical audio → Browser DSP → one Deep Audio POST → FULL or legitimate PARTIAL → normal review
-```
-
-The healthy path must not show `DEEP AUDIO STATE UNKNOWN` or `RELOAD BEFORE RESUBMIT`.
-
-Do not manufacture timeout, disconnect the network, stop the coordinator, or force Access failure. Automated guards cover those classification boundaries. Build105 must not be accepted until this smoke passes.
+Do not manufacture timeout, disconnect the network, stop the coordinator, or force Access failure as production QA. Automated guards own those classification boundaries.
 
 ## Backlog kept intact
 
