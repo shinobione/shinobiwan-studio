@@ -12,6 +12,11 @@ import type {
 const SAVE_INTENT = 'sonictrace-analysis-save-v1';
 const TRANSIENT_SONICTRACE_READ_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
 const TRANSIENT_CANONICAL_AUDIO_READ_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
+const deepAudioResponseLossFence = new Set<string>();
+
+function deepAudioFenceKey(trackId: string, sourceVersion: SonicTraceSourceVersion): string {
+  return [trackId, sourceVersion.kind, sourceVersion.value, sourceVersion.sizeBytes].join(':');
+}
 
 export interface SonicTraceHealth {
   status?: string;
@@ -472,6 +477,17 @@ export function runSonicTraceAnalysis(
   browserDsp: Record<string, unknown> | null,
   onProgress?: (percent: number) => void,
 ): Promise<SonicTraceAnalysis> {
+  const fenceKey = deepAudioFenceKey(trackId, sourceVersion);
+  if (deepAudioResponseLossFence.has(fenceKey)) {
+    return Promise.reject(new SonicTraceError(
+      'A previous Deep Audio submit for this exact Track/audio revision lost its response. Compute state is unknown. Reload Studio before an explicit re-scan; Studio will not submit a second Deep Audio POST in this page.',
+      null,
+      'DEEP_AUDIO_COMPUTE_RELOAD_REQUIRED',
+      false,
+      `fence=${fenceKey}`,
+    ));
+  }
+
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open('POST', `${sonicBase()}/api/studio/analyze`, true);
@@ -479,8 +495,26 @@ export function runSonicTraceAnalysis(
     xhr.upload.onprogress = event => {
       if (event.lengthComputable) onProgress?.(35 + Math.round((event.loaded / event.total) * 55));
     };
-    xhr.onerror = () => reject(new SonicTraceError('SonicTrace Deep Audio node is offline or blocked by the browser. Browser DSP remains available.'));
-    xhr.ontimeout = () => reject(new SonicTraceError('SonicTrace Deep Audio analysis timed out. Browser DSP remains available.'));
+    xhr.onerror = () => {
+      deepAudioResponseLossFence.add(fenceKey);
+      reject(new SonicTraceError(
+        'Deep Audio response was lost after submit began. Studio cannot prove whether the coordinator already ran or is still running this compute. Do not immediately re-scan; reload Studio before any explicit new submission.',
+        null,
+        'DEEP_AUDIO_COMPUTE_TRANSPORT_UNVERIFIED',
+        false,
+        'POST /api/studio/analyze response unavailable after submit; compute state unknown.',
+      ));
+    };
+    xhr.ontimeout = () => {
+      deepAudioResponseLossFence.add(fenceKey);
+      reject(new SonicTraceError(
+        'Deep Audio response timed out after submit began. Studio cannot prove whether the coordinator already ran or is still running this compute. Do not immediately re-scan; reload Studio before any explicit new submission.',
+        null,
+        'DEEP_AUDIO_COMPUTE_TIMEOUT_UNVERIFIED',
+        false,
+        'POST /api/studio/analyze timed out after submit; compute state unknown.',
+      ));
+    };
     xhr.onload = () => {
       let payload: SonicTraceAnalysis & { detail?: string };
       try { payload = JSON.parse(xhr.responseText) as SonicTraceAnalysis & { detail?: string }; }
@@ -545,4 +579,6 @@ export const sonicTraceService = Object.freeze({
   canonicalAudioReadRetryPolicy: 'one-retry-timeout-transport-transient-http-before-deep-audio-post',
   canonicalAudioReadMaxAttempts: 2,
   deepAudioComputeRetryPolicy: 'zero-automatic-retries',
+  deepAudioResponseLossPolicy: 'unknown-after-timeout-or-transport-reload-before-manual-resubmit',
+  deepAudioResponseLossFence: 'in-memory-track-source-fence-cleared-by-page-reload',
 });
