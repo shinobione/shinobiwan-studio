@@ -19,7 +19,7 @@ assert.match(api, /const TRANSIENT_CANONICAL_AUDIO_READ_STATUSES = new Set\(\[40
 assert.match(api, /function isTransientCanonicalAudioReadError\(reason: unknown\): reason is SonicTraceError/);
 assert.match(api, /reason\.code === 'CANONICAL_AUDIO_READ_TIMEOUT'/);
 assert.match(api, /reason\.code === 'CANONICAL_AUDIO_READ_TRANSPORT'/);
-assert.match(api, /async function fetchCanonicalAudioOnce\(/);
+assert.match(api, /function fetchCanonicalAudioOnce\(/);
 assert.match(api, /Canonical audio download failed after one bounded transient retry/);
 assert.match(api, /canonicalAudioReadRetryPolicy: 'one-retry-timeout-transport-transient-http-before-deep-audio-post'/);
 assert.match(api, /canonicalAudioReadMaxAttempts: 2/);
