@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-17 after **Build106 REAL USER PASS** and acceptance closeout initiation.
+Updated: 2026-08-17 after **Build106 REAL USER PASS** and acceptance closeout completion.
 
 This is the short current checkpoint to read immediately after `AGENTS.md`. Historical implementation detail remains in `changelogs/` and milestone docs.
 
@@ -21,15 +21,16 @@ Candidate docs PR       #209
 Candidate docs CI       #612 · 32059364849 · SUCCESS
 Candidate docs merge    24125d13962d8394ff0026ebbe38341607726054
 Candidate docs Pages    #220 · 32059459541 · SUCCESS build + deploy
-Acceptance docs PR      PENDING
-Acceptance docs CI      PENDING
-Acceptance docs merge   PENDING
-Acceptance docs Pages   PENDING
+Acceptance docs PR      #210
+Acceptance docs CI      #613 · 32062146377 · SUCCESS
+Acceptance docs merge   a79b5c44d86b45361fe4d649114f7f8b5c29849c
+Acceptance docs Pages   #221 · 32062257475 · SUCCESS build + deploy
 Real-user smoke         PASS · private/incognito · PUBLIC READ-ONLY FALLBACK · Ghost Signal detail opened
 Safety pre-build        safety/pre-build106-public-catalog-fallback-retry-20260817
 Safety green premerge   safety/post-build106-green-premerge-20260817-2112
 Safety post-deploy      safety/post-build106-deployed-candidate-20260817-2115
 Safety real-user pass   safety/post-build106-real-user-pass-20260817-2141
+Safety post-acceptance  safety/post-build106-acceptance-closeout-20260817-2151
 Worker deploy           NONE
 Track Manager change    NONE
 Public Worker change    NONE
