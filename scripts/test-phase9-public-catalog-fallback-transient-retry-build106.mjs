@@ -25,7 +25,7 @@ assert.doesNotMatch(genericHttp, /TRANSIENT_PUBLIC_CATALOG_READ_STATUSES/);
 
 assert.match(catalog, /type PublicCatalogReadFailureKind = 'http' \| 'timeout' \| 'transport' \| 'invalid-response'/);
 assert.match(catalog, /const TRANSIENT_PUBLIC_CATALOG_READ_STATUSES = new Set\(\[408, 425, 429, 500, 502, 503, 504\]\)/);
-assert.match(catalog, /async function fetchPublicCatalogJsonOnce<T>\(url: string, timeoutMs: number\): Promise<T>/);
+assert.match(catalog, /async function fetchPublicCatalogJsonOnce<T>\(url: string, timeoutMs = 3500\): Promise<T>/);
 assert.match(catalog, /error instanceof DOMException && error\.name === 'AbortError'/);
 assert.match(catalog, /new PublicCatalogReadError\('timeout'/);
 assert.match(catalog, /new PublicCatalogReadError\('transport'/);
@@ -35,27 +35,36 @@ assert.match(catalog, /reason\.kind === 'timeout'/);
 assert.match(catalog, /reason\.kind === 'transport'/);
 assert.match(catalog, /reason\.kind === 'http' && reason\.status !== null && TRANSIENT_PUBLIC_CATALOG_READ_STATUSES\.has\(reason\.status\)/);
 assert.doesNotMatch(catalog, /reason\.kind === 'invalid-response'\s*\|\|/);
-assert.match(catalog, /for \(let attempt = 0; attempt < 2; attempt \+= 1\)/);
-assert.match(catalog, /if \(attempt === 0 && isTransientPublicCatalogReadError\(reason\)\)/);
-assert.match(catalog, /failed after one bounded transient retry/);
+
+// The initial public read remains one-shot and parallel. A second GET is allowed only after private failure.
+assert.match(catalog, /async function retryPublicCatalogFallbackAfterTransientFailure<T>\(/);
+assert.match(catalog, /if \(initial\.ok\) return initial\.value/);
+assert.match(catalog, /if \(!isTransientPublicCatalogReadError\(initial\.error\)\) throw initial\.error/);
+assert.match(catalog, /return await retry\(\)/);
+assert.match(catalog, /fallback failed after one bounded transient retry/);
+assert.doesNotMatch(catalog, /for \(let attempt = 0; attempt < 2/);
 assert.match(catalog, /publicFallbackReadRetryPolicy: 'one-retry-timeout-transport-transient-http'/);
 assert.match(catalog, /publicFallbackReadMaxAttempts: 2/);
+assert.match(catalog, /publicFallbackRetryAfterPrivateFailureOnly: true/);
 
-// Only the existing public health/list/detail GET family uses this retry path.
-assert.match(catalog, /return fetchPublicCatalogJson<PublicHealth>\(`\$\{baseUrl\(\)\}\/health`\)/);
-assert.match(catalog, /fetchPublicCatalogJson<PublicTracksResponse>\(`\$\{baseUrl\(\)\}\/tracks`, 6000\)/);
-assert.match(catalog, /fetchPublicCatalogJson<PublicTrackResponse>\(`\$\{baseUrl\(\)\}\/tracks\/\$\{encodeURIComponent\(trackId\)\}`, 6000\)/);
-assert.equal((catalog.match(/fetchPublicCatalogJson</g) || []).length, 4, 'Build106 should contain one helper call plus exactly three typed public read uses.');
+// Only the existing public health/list/detail GET family can participate in fallback retry.
+assert.match(catalog, /return fetchPublicCatalogJsonOnce<PublicHealth>\(`\$\{baseUrl\(\)\}\/health`\)/);
+assert.match(catalog, /fetchPublicCatalogJsonOnce<PublicTracksResponse>\(`\$\{baseUrl\(\)\}\/tracks`, 6000\)/);
+assert.match(catalog, /fetchPublicCatalogJsonOnce<PublicTrackResponse>\(`\$\{baseUrl\(\)\}\/tracks\/\$\{encodeURIComponent\(trackId\)\}`, 6000\)/);
 assert.doesNotMatch(catalog, /method:\s*'POST'/);
 
-// Private authority and fallback ordering stay frozen.
-assert.match(catalog, /const privatePayload = await getAdminTracks\(\)/);
-assert.match(catalog, /const privatePayload = await getAdminTrack\(trackId\)/);
-assert.match(catalog, /if \(publicResult\.ok\) return publicResult\.value/);
+// Private-success enrichment consumes only the already-started one-shot public result.
+assert.match(catalog, /const privatePayload = await getAdminTracks\(\)[\s\S]*const publicResult = await publicResultPromise;[\s\S]*const publicTracks = publicResult\.ok \? publicResult\.value : \[\]/);
+assert.match(catalog, /const privatePayload = await getAdminTrack\(trackId\)[\s\S]*const publicResult = await publicResultPromise;[\s\S]*const publicTrack = publicResult\.ok \? publicResult\.value : null/);
+
+// Retry resolver is invoked only from private failure catch paths.
+assert.match(catalog, /catch \(adminError\) \{\n    const publicResult = await publicHealth;\n    const publicValue = await retryPublicCatalogFallbackAfterTransientFailure\(publicResult, getPublicHealth\)/);
+assert.match(catalog, /catch \(adminError\) \{\n    const publicResult = await publicResultPromise;\n    try \{\n      return await retryPublicCatalogFallbackAfterTransientFailure\(publicResult, getPublicTracks\)/);
+assert.match(catalog, /retryPublicCatalogFallbackAfterTransientFailure\(publicResult, \(\) => getPublicTrack\(trackId\)\)/);
 
 // Album artwork remains intentionally private-first and is not swept into Build106.
 assert.match(publicAlbums, /const privatePayload = await getAdminAlbums\(\)/);
 assert.match(publicAlbums, /const response = await fetch\(`\$\{base\}\/albums`/);
-assert.doesNotMatch(publicAlbums, /fetchPublicCatalogJson/);
+assert.doesNotMatch(publicAlbums, /retryPublicCatalogFallbackAfterTransientFailure/);
 
-console.log('Build106 public catalog fallback transient retry PASS: health/list/detail GETs retry once only for timeout, transport, or bounded transient HTTP while deterministic failures, generic HTTP calls, writes, and Album artwork fallback remain unchanged.');
+console.log('Build106 public catalog fallback transient retry PASS: the initial public health/list/detail reads remain one-shot, and exactly one retry is allowed only after private failure plus a bounded transient public failure; deterministic failures, generic HTTP calls, writes, and Album artwork fallback remain unchanged.');
