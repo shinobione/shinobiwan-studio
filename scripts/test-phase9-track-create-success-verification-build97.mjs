@@ -7,22 +7,23 @@ const phase4 = read('src/services/phase4-admin-api.ts');
 const intake = read('src/components/TrackCreatePanel.tsx');
 const albumApi = read('src/services/album-admin-api.ts');
 const pkg = JSON.parse(read('package.json'));
-if (['0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build99AncestryMarker'), 'Build100+ must preserve accepted Build99 ancestry.');
+if (['0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27'].includes(pkg.version)) assert.ok(release.includes('build99AncestryMarker'), 'Build100+ must preserve accepted Build99 ancestry.');
 
-assert.ok(['0.19.19', '0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26'].includes(pkg.version), 'Build97 guard accepts Build97 and bounded successors through Build104.');
+assert.ok(['0.19.19', '0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27'].includes(pkg.version), 'Build97 guard accepts Build97 and bounded successors through Build105.');
 if (pkg.version === '0.19.19') {
   assert.ok(release.includes("version: '0.19.19'"), 'Build97 release version mismatch.');
   assert.ok(release.includes('build: 97'), 'Build97 release identity is missing.');
   assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-track-create-success-verification-truth'"), 'Build97 codename mismatch.');
 }
-if (['0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build97AncestryMarker'), 'Build98+ must preserve Build97 Track create ancestry.');
-if (['0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build98AncestryMarker'), 'Build99+ must preserve accepted Build98 ancestry while inheriting Build97 Track create truth.');
+if (['0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27'].includes(pkg.version)) assert.ok(release.includes('build97AncestryMarker'), 'Build98+ must preserve Build97 Track create ancestry.');
+if (['0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27'].includes(pkg.version)) assert.ok(release.includes('build98AncestryMarker'), 'Build99+ must preserve accepted Build98 ancestry while inheriting Build97 Track create truth.');
 assert.ok(release.includes('build96AncestryMarker'), 'Build97+ must preserve accepted Build96 ancestry.');
 assert.ok(release.includes("version: 0.19.18 · build: 96 · codename: 'studio-focus-slice4-phase9-album-create-success-verification-truth'"), 'Accepted Build96 identity must remain immutable in ancestry.');
-if (['0.19.23', '0.19.24', '0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build100AncestryMarker'), 'Build101+ must preserve Build100 ancestry.');
-if (['0.19.24', '0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build101AncestryMarker'), 'Build102+ must preserve Build101 candidate ancestry.');
-if (['0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build102AncestryMarker'), 'Build103+ must preserve accepted Build102 ancestry.');
-if (pkg.version === '0.19.26') assert.ok(release.includes('build103AncestryMarker'), 'Build104 must preserve accepted Build103 ancestry.');
+if (['0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27'].includes(pkg.version)) assert.ok(release.includes('build100AncestryMarker'), 'Build101+ must preserve Build100 ancestry.');
+if (['0.19.24', '0.19.25', '0.19.26', '0.19.27'].includes(pkg.version)) assert.ok(release.includes('build101AncestryMarker'), 'Build102+ must preserve Build101 candidate ancestry.');
+if (['0.19.25', '0.19.26', '0.19.27'].includes(pkg.version)) assert.ok(release.includes('build102AncestryMarker'), 'Build103+ must preserve accepted Build102 ancestry.');
+if (['0.19.26', '0.19.27'].includes(pkg.version)) assert.ok(release.includes('build103AncestryMarker'), 'Build104+ must preserve accepted Build103 ancestry.');
+if (pkg.version === '0.19.27') assert.ok(release.includes('build104AncestryMarker'), 'Build105 must preserve rejected Build104 candidate ancestry.');
 
 assert.ok(phase4.includes("const payload = await postSimple<TrackCreateResponse>('/api/studio/tracks/create', {"), 'Track create must retain the existing Track Manager transport and intent.');
 assert.ok(phase4.includes('const responseManifest = payload.track;'), 'Build97 must anchor normal-success verification to the server-normalized create manifest.');
@@ -41,10 +42,10 @@ assert.ok(!phase4.includes('retryAdminTrackCreate'), 'Build97 must not add a Tra
 assert.ok(intake.includes("const result = await createAdminTrack(effectiveSlug, metadataPatch(resolution, 'draft'));"), 'Daily New Track intake must keep using the shared create service.');
 assert.ok(intake.includes("if (!result.clientVerified) throw new Phase4AdminError('The draft was created but its canonical reread could not be verified."), 'Daily New Track intake must stop before uploads when create verification fails.');
 
-if (['0.19.23', '0.19.24', '0.19.25', '0.19.26'].includes(pkg.version)) {
+if (['0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27'].includes(pkg.version)) {
   assert.ok(phase4.includes('const sizeVerified = payload.size == null || asset?.size === payload.size;'), 'Build101+ must compare Track asset server-response size with the private canonical reread.');
   assert.ok(phase4.includes('const contentTypeVerified = !payload.contentType || asset?.contentType === payload.contentType;'), 'Build101+ must compare Track asset server-response content type with the private canonical reread.');
-  if (['0.19.24', '0.19.25', '0.19.26'].includes(pkg.version)) {
+  if (['0.19.24', '0.19.25', '0.19.26', '0.19.27'].includes(pkg.version)) {
     assert.ok(phase4.includes('const etagVerified = !payload.etag || normalizeAssetEtag(asset?.etag) === normalizeAssetEtag(payload.etag);'), 'Build102+ must compare semantically identical R2 ETags after only outer HTTP-quote normalization.');
   } else {
     assert.ok(phase4.includes('const etagVerified = !payload.etag || asset?.etag === payload.etag;'), 'Build101 must compare Track asset server-response ETag with the private canonical reread.');
@@ -77,4 +78,4 @@ for (const inherited of [
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must retain ${inherited}`);
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Build97 must remain inside the repository-native full build gate.');
 
-console.log('Phase9 Build97 Track create success-verification guard passed through Build104: normal success still proves the complete server-normalized create manifest while Track asset fingerprint verification inherits the bounded ETag representation corrective.');
+console.log('Phase9 Build97 Track create success-verification guard passed through Build105: normal success still proves the complete server-normalized create manifest while Track asset fingerprint verification inherits the bounded ETag representation corrective.');
