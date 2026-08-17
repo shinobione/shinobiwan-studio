@@ -1,72 +1,165 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-08-17 after **Build102 REAL USER PASS** and current cross-stack reconciliation.
+Updated: 2026-08-17 after **Build106 REAL USER PASS**, final acceptance receipts, and **Phase9 program closeout audit**.
 
 This file records accepted runtime truth, automated proof boundaries, real-user evidence and major remaining unproven areas. Historical run-by-run detail belongs in `changelogs/` and `docs/`.
 
 ## Current accepted Studio runtime
 
 ```text
-Version                 v0.19.24
-Build                   Build102
+Version                 v0.19.28
+Build                   Build106
 Status                  REAL USER PASS
-Codename                studio-focus-slice4-phase9-track-asset-etag-representation-corrective
-Runtime PR              #193
-Exact tested head       cfebb5cfe5b87627a29890a7477bd5628ef60759
-Final CI                #524 · 31979380563 · SUCCESS
-Runtime merge           64ac5ed4d53daeafc4fa5b7a25ec66594eef274d
-Runtime Pages           #200 · 31979525479 · SUCCESS build + deploy
-Acceptance docs CI      #526 · 31980142885 · SUCCESS
-Acceptance docs merge   ae297162fd6579eabe2d455d65f57b129dce58bc
-Acceptance docs Pages   #206 · 31980208567 · SUCCESS
-Acceptance safety       safety/post-build102-real-user-pass-20260817-0142
+Codename                studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth
+Runtime PR              #208
+Exact tested head       61bca333a7f9898444c8d9e1610e3d6c6585664b
+Final runtime CI        #611 · 32058498867 · SUCCESS
+Runtime merge           9c8efcf2250d48d0798ff1ea58ebd80d63ea19be
+Runtime Pages           #219 · 32058828759 · SUCCESS build + deploy
+Candidate docs PR       #209
+Candidate docs CI       #612 · 32059364849 · SUCCESS
+Candidate docs merge    24125d13962d8394ff0026ebbe38341607726054
+Candidate docs Pages    #220 · 32059459541 · SUCCESS build + deploy
+Acceptance docs PR      #210
+Acceptance docs CI      #613 · 32062146377 · SUCCESS
+Acceptance docs merge   a79b5c44d86b45361fe4d649114f7f8b5c29849c
+Acceptance docs Pages   #221 · 32062257475 · SUCCESS build + deploy
+Final receipts PR       #211
+Final receipts CI       #614 · 32062830991 · SUCCESS
+Final receipts merge    0b576d0fc521b579d3ae88b2878003591e253ed1
+Final receipts Pages    #222 · 32062944646 · SUCCESS build + deploy
+Real-user smoke         PASS · private/incognito · PUBLIC READ-ONLY FALLBACK · Ghost Signal detail opened
 ```
 
-## Build102 automated coverage — GREEN
+Detailed receipt: [`docs/acceptance/BUILD106-REAL-USER-PASS.md`](docs/acceptance/BUILD106-REAL-USER-PASS.md).
 
-Official validation `31979380563` passed the complete repository-native `npm run build` chain on exact head `cfebb5cfe5b87627a29890a7477bd5628ef60759`, including inherited Phase 0–9 / Studio Focus guards, Build101 Track-asset success verification, the Build102 ETag representation regression, TypeScript and Vite.
+## Build106 automated coverage — GREEN
 
-Build102 normal-success proof remains:
+Official validation `32058498867` passed the repository-native validation/build chain on exact head `61bca333a7f9898444c8d9e1610e3d6c6585664b`, including inherited Phase0–9 / Studio Focus guards and the Build106 public-catalog fallback retry regression.
+
+Build106 public fallback contract:
 
 ```text
-Track asset upload HTTP success
-→ exact new canonical revision
-→ exact manifest filename
-→ private canonical presence
-→ exact server size/content type/duration when supplied
-→ ETag: trim + remove only one symmetric outer HTTP quote pair
-→ exact remaining ETag value
-→ Verified only if every required fact matches
+preferred private Track read
+→ accepted private bounded retry policy remains authoritative
+→ only after final private failure may public fallback become authoritative for read-only use
+
+first public request succeeds
+→ use it
+→ no second public request
+
+first public request failed transiently
+AND private ultimately failed
+→ exactly one public GET retry
+→ maximum 2 public attempts
+
+first public request failed deterministically / invalid JSON / invalid semantic payload
+→ no retry
 ```
 
-No automatic asset-upload retry was added.
-
-## Build102 real-user smoke — PASS
-
-The user performed one genuine normal-success cover upload and returned:
+Bounded public endpoints:
 
 ```text
-ASSET SAVED
-Canonical reread: Verified
-Catalog rebuilt: Yes
-Revision: 2026-08-16T23:42:38.231Z
+GET /health
+GET /tracks
+GET /tracks/<trackId>
 ```
 
-One upload only; no manufactured timeout, Access expiry, duplicate write or destructive failure branch.
+No generic HTTP retry, write retry, Worker change, Track Manager change, SonicTrace backend change, Deep Audio change or R2 mutation was introduced.
 
-## Build101 real-user smoke — REJECTED FALSE NEGATIVE
+## Build106 real-user smoke — PASS
 
-Build101's upload committed and persisted, but quoted `httpEtag` versus raw `object.etag` produced a single `asset ETag` mismatch. Its **DO NOT RETRY** behavior correctly prevented a duplicate write, but the candidate was not accepted. Build102 is the accepted corrective.
+The user performed the requested normal-path smoke in a private/incognito browser context without the private Cloudflare Access session.
 
-## Accepted Phase9 Studio regression baseline
+Visible evidence showed:
 
 ```text
-Build82–100  accepted Phase9 reliability/canonical-truth lineage   PASS
-Build101     rejected candidate / false-negative evidence          NOT ACCEPTED
-Build102     Track asset ETag representation corrective            PASS
+Studio release identity  v0.19.28 · Build 106
+Track                     Ghost Signal · PUBLISHED
+Fallback banner           PUBLIC READ-ONLY FALLBACK
+Fallback explanation      Private production tools are temporarily locked
+Read source               LaunchPAD public catalog
+Track detail              opened successfully
+Lyrics canonical source   lyrics.txt PRESENT · READ ONLY
 ```
 
-Detailed historical per-slice evidence remains under `changelogs/` and `docs/`.
+No Public Worker timeout, HTTP 503, network disconnect, Access sabotage or destructive failure was manufactured. Automated guards own transient-classification branches; the human smoke proved the normal degraded product path remains usable.
+
+Result: **PASS**.
+
+## Accepted Phase9 regression baseline — CLOSED PROGRAM
+
+```text
+Build82–100  accepted Phase9 reliability/canonical-truth lineage  PASS
+Build101     rejected Track-asset false-negative candidate         NOT ACCEPTED
+Build102     ETag representation corrective                        PASS
+Build103     canonical audio pre-compute transient retry           PASS
+Build104     rejected Deep Audio false-UNKNOWN candidate            NOT ACCEPTED
+Build105     Deep Audio pre-submit transport corrective             PASS
+Build106     public catalog fallback transient GET retry            PASS
+```
+
+Phase9 program closeout audit: [`docs/PHASE-9-PROGRAM-CLOSEOUT-AUDIT.md`](docs/PHASE-9-PROGRAM-CLOSEOUT-AUDIT.md).
+
+The post-Build106 read-only audit found no additional bounded Studio-only reliability slice that can be implemented truthfully under current backend contracts. **Phase9 is COMPLETE on accepted Build106. Build107 remains UNALLOCATED / UNUSED.**
+
+## Accepted reliability policies
+
+### Lost-response writes
+
+For accepted Phase9 write families:
+
+```text
+response lost / timeout
+→ no blind automatic retry
+→ private canonical reread
+→ committed / not committed / ambiguous / unverified
+```
+
+A recovery may be called committed only when the operation-specific canonical postcondition is positively verified.
+
+An explicit retry may be called safe only when canonical state positively proves the write did not commit and the pre-write state/revision remains suitable for retry.
+
+### Canonical read retries
+
+Accepted bounded read families include:
+
+- core private Track reads;
+- private Album reads;
+- canonical Lyrics reads;
+- private SonicTrace analysis/catalog reads;
+- canonical audio download before compute;
+- Track metadata non-mutating validation;
+- Lyrics non-mutating validation;
+- public Track-catalog fallback after final private failure.
+
+Retry remains limited to timeout, browser transport interruption, and explicitly accepted transient HTTP classes. Access/session failures, deterministic failures, invalid JSON and invalid semantic payloads do not become retryable merely because another family retries.
+
+### Deep Audio
+
+```text
+canonical audio GET
+→ one bounded transient retry allowed
+
+POST /api/studio/analyze
+→ ZERO automatic retries
+```
+
+Build105 distinguishes:
+
+```text
+transport/timeout before browser-observed upload start
+→ pre-submit unreachable
+→ no compute-UNKNOWN fence
+→ manual re-scan may be attempted after coordinator recovery
+
+transport/timeout after browser-observed upload start
+→ compute state UNKNOWN
+→ exact Track + source revision fenced in-page
+→ page reload required before deliberate manual resubmit
+```
+
+Further causal certainty requires coordinator-side operation identity/status/idempotency.
 
 ## Cross-stack accepted baseline
 
@@ -98,33 +191,45 @@ Automated regression proves:
 - ownership conflict fails closed;
 - a new catalog generation after Album publication restores visibility.
 
-Production human smoke proved the withholding side with `Pixels & Promises` canonically published but absent from public LaunchPAD while `Anh Yêu Em` remained Draft. The reverse Album-publication transition was not manufactured in production merely for smoke evidence.
+Production human smoke proved the withholding side with `Pixels & Promises` canonically published but absent from public LaunchPAD while `Anh Yêu Em` remained Draft. The reverse Album-publication transition was not manufactured merely for smoke evidence.
 
-The previously listed publication-projection question is therefore **closed cross-stack** and is not a Build103 candidate.
+## Historical rejected candidates remain rejected
 
-## Failure-path policy still protected
+### Build101
 
-For accepted Phase9 writes:
+Build101's Track asset upload committed and persisted, but quoted `httpEtag` versus raw canonical `etag` produced a false-negative ETag mismatch. Its no-blind-retry behavior prevented a duplicate write; Build102 corrected only the representation comparison and passed real-user acceptance.
 
-```text
-response lost / timeout
-→ no blind automatic retry
-→ private canonical reread
-→ committed / not committed / ambiguous / unverified
-```
+### Build104
 
-Failure-path acceptance does not require deliberately damaging production or forcing network/Access failures when automated guards prove bounded classification logic.
+Build104 correctly attempted to fence true Deep Audio response loss, but normal-path human testing proved pre-submit/node-offline transport was being classified as compute UNKNOWN. Build105 corrected the browser-observed upload-start boundary and passed real-user acceptance.
 
-## Remaining unproven / audit candidates
+Neither candidate is retroactively accepted.
 
-These are **not promises for Build103**. They must be reread against the current implementation before scope allocation:
+## Remaining unproven areas — backend-contract candidates
+
+These are no longer classified as unfinished Phase9 Studio work:
 
 - Album create lost-response causality / durable operation identity;
-- exact-byte or digest proof for binary upload families where the backend can expose trustworthy evidence;
-- remaining Track create/upload causality gaps;
-- Deep Audio duplicate-compute risk and expensive-analysis retry behavior;
-- degraded/offline behavior that materially affects the private Studio workflow.
+- Track create lost-response causality / durable operation identity;
+- exact-byte/digest proof for binary upload families;
+- catalog rebuild operation identity / generation evidence;
+- Deep Audio request status/idempotency if the coordinator gains an operation identity contract;
+- degraded/offline behavior only where a future audit proves material daily-workflow impact.
+
+Studio must not fabricate causal certainty when the backend does not expose authoritative evidence.
 
 ## Next QA gate
 
-Build103 remains **UNALLOCATED**. The next runtime mutation must follow a fresh read-only post-Build102 audit, select one independently reversible slice, pass the full repository-native validation chain, deploy on the exact merge SHA and preserve all accepted regression contracts above.
+**Phase10 scope audit comes before Build107.**
+
+Build107 remains **UNALLOCATED / UNUSED**. A future Phase10 runtime slice must:
+
+1. start from real GitHub/cross-stack state;
+2. prove one bounded progressive-extraction target;
+3. preserve standalone app behavior and singular authority;
+4. be independently reversible;
+5. pass the complete repository-native validation chain on the exact head;
+6. deploy on the exact merge SHA;
+7. receive real-user acceptance where behavior materially changes.
+
+A docs-only Phase9 closeout does not create a runtime build.
