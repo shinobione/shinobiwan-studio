@@ -17,18 +17,18 @@ Then verify real GitHub state before mutation.
 ## Current accepted state
 
 ```text
-Studio accepted        v0.19.25 · Build103 · REAL USER PASS
-Accepted runtime PR    #198
-Accepted runtime CI    #543 · 31981673322 · SUCCESS
-Accepted runtime merge 5732741bbe0c96d7f6c8d3e1b5b4989af1fa9b83
-Accepted runtime Pages #209 · 31981768144 · SUCCESS
-Build104               REJECTED · false UNKNOWN classification in real-user smoke
-Latest candidate       v0.19.27 · Build105 · REAL USER SMOKE PENDING
-Candidate runtime PR   #204
-Candidate tested head  efa188b8d7181a4aa03bdea4bf2da40534203e9e
-Candidate validation   #585 · 32002434543 · SUCCESS
-Candidate merge        f3a295d5e7bdbd0cfa05cc6d44901fab62e42c5b
-Candidate Pages        #215 · 32002484381 · SUCCESS build + deploy
+Studio accepted        v0.19.27 · Build105 · REAL USER PASS
+Accepted runtime PR    #204
+Accepted tested head   efa188b8d7181a4aa03bdea4bf2da40534203e9e
+Accepted runtime CI    #585 · 32002434543 · SUCCESS
+Accepted runtime merge f3a295d5e7bdbd0cfa05cc6d44901fab62e42c5b
+Accepted runtime Pages #215 · 32002484381 · SUCCESS build + deploy
+Candidate docs PR      #205
+Candidate docs CI      #586 · 32002709875 · SUCCESS
+Candidate docs merge   6de3709d4e89a2806cbf0cf9b598d71d49b1742f
+Candidate docs Pages   #216 · 32002755699 · SUCCESS build + deploy
+Real-user smoke        BUILD105 SMOKED 💨 · FULL profile ready · Deep Audio analysis complete
+Build104               REJECTED candidate · false UNKNOWN classification
 Build101               REJECTED candidate · ETag representation false negative
 Track Manager          v5.24 · REAL USER VERIFIED
 Studio bridge          v1.14
@@ -40,29 +40,13 @@ Deep Audio             2.0.3-alpha
 LRC Maker              6.3.8
 ```
 
-**Studio v0.19.25 · Build103 remains the current accepted Studio runtime.** Its non-mutating canonical master-audio GET before SonicTrace / Deep Audio compute may retry once for bounded transient failures; `POST /api/studio/analyze` remains strictly one-shot with **zero automatic retries**.
+**Studio v0.19.27 · Build105 is the current accepted Studio runtime.** It keeps the Build103 bounded canonical-audio pre-compute GET retry and corrects the rejected Build104 Deep Audio classification boundary: transport/timeout before browser-observed upload start is pre-submit unreachable and unfenced; transport/timeout after upload start remains compute-UNKNOWN and fenced for that exact Track/source. `POST /api/studio/analyze` remains strictly one-shot per explicit user action with **zero automatic retries**.
 
-**Build104 is rejected historical evidence.** Its duplicate-compute fence correctly treated true post-submit response loss as compute-UNKNOWN, but it armed that fence for every XHR transport failure, including failures where the browser had not observed upload start. The normal-path real-user smoke therefore produced a false `DEEP AUDIO STATE UNKNOWN` / `RELOAD BEFORE RESUBMIT` state.
-
-**Studio v0.19.27 · Build105 is the deployed corrective candidate.** It separates pre-submit coordinator transport failure from response loss after browser-observed upload start:
-
-```text
-transport / timeout before upload start
-→ PRE-SUBMIT UNREACHABLE
-→ no duplicate-compute fence
-→ zero automatic retry
-→ explicit manual re-scan allowed after coordinator recovery
-
-transport / timeout after upload start
-→ COMPUTE UNKNOWN
-→ exact Track/source fenced in-page
-→ zero automatic retry
-→ reload required before deliberate resubmit
-```
+**Build104 remains rejected historical evidence.** Its intended post-submit response-loss fence was valid, but its real-user smoke proved the fence could arm before any browser evidence of upload start, causing a false `DEEP AUDIO STATE UNKNOWN` / `RELOAD BEFORE RESUBMIT` state.
 
 Public Worker **v2.8** remains accepted cross-stack truth. It withholds a published Track from public list/detail/media while its canonical parent Album remains Draft/archived, using Album `trackIds` as ownership authority.
 
-Latest accepted Studio receipt: [`docs/acceptance/BUILD103-REAL-USER-PASS.md`](docs/acceptance/BUILD103-REAL-USER-PASS.md). Current candidate detail: [`changelogs/CHANGELOG-BUILD105.md`](changelogs/CHANGELOG-BUILD105.md).
+Latest accepted Studio receipt: [`docs/acceptance/BUILD105-REAL-USER-PASS.md`](docs/acceptance/BUILD105-REAL-USER-PASS.md).
 
 The Studio repository still publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
@@ -122,12 +106,13 @@ Phase 9 Slice20     Build102 · REAL USER PASS
 Phase 9 Slice21     Build103 · REAL USER PASS
 Build101            REJECTED candidate
 Build104            REJECTED candidate · false UNKNOWN classification
-Phase 9 Slice22     Build105 · DEPLOYED CORRECTIVE CANDIDATE · SMOKE PENDING
+Phase 9 Slice22     Build105 · REAL USER PASS
+Build106            UNALLOCATED · fresh read-only post-Build105 audit required
 Phase 10            FUTURE · progressive extraction
 Official Phase 11   NONE
 ```
 
-The immediate next action is the **normal-path Build105 real-user smoke with the local SonicTrace coordinator healthy**. Do not manufacture timeout/network loss to test the fence in production; automated guards already cover pre-submit versus post-upload response-loss behavior.
+The immediate next action is a **fresh read-only post-Build105 Phase9 audit**. Build106 must not be allocated until the current implementation proves one smallest coherent next gap.
 
 ## Frozen authority model
 
