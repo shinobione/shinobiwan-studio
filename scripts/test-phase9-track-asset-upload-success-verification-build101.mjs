@@ -6,13 +6,14 @@ const service = fs.readFileSync('src/services/phase4-admin-api.ts', 'utf8');
 const assets = fs.readFileSync('src/components/AssetsManager.tsx', 'utf8');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 
-assert.match(release, /version: '0\.19\.(?:23|24|25)'/);
-assert.match(release, /build: (?:101|102|103)/);
+assert.match(release, /version: '0\.19\.(?:23|24|25|26)'/);
+assert.match(release, /build: (?:101|102|103|104)/);
 assert.match(release, /studio-focus-slice4-phase9-/);
 assert.match(release, /build100AncestryMarker/);
-if (/build: (?:102|103)/.test(release)) assert.match(release, /build101AncestryMarker/);
-if (/build: 103/.test(release)) assert.match(release, /build102AncestryMarker/);
-assert.ok(['0.19.23', '0.19.24', '0.19.25'].includes(pkg.version));
+if (/build: (?:102|103|104)/.test(release)) assert.match(release, /build101AncestryMarker/);
+if (/build: (?:103|104)/.test(release)) assert.match(release, /build102AncestryMarker/);
+if (/build: 104/.test(release)) assert.match(release, /build103AncestryMarker/);
+assert.ok(['0.19.23', '0.19.24', '0.19.25', '0.19.26'].includes(pkg.version));
 assert.match(pkg.scripts['check:phase9'], /test-phase9-track-asset-upload-success-verification-build101\.mjs/);
 
 // Daily Track Visuals/Assets must still use the guarded service.
@@ -34,4 +35,4 @@ assert.match(service, /ASSET_UPLOAD_AMBIGUOUS/);
 assert.match(service, /recoveredAfterTransportFailure: true/);
 assert.doesNotMatch(service, /for \(let attempt.*uploadViaFetch/s);
 
-console.log('Build101 Track asset upload success verification guard PASS through bounded Build103 successor');
+console.log('Build101 Track asset upload success verification guard PASS through bounded Build104 successor');
