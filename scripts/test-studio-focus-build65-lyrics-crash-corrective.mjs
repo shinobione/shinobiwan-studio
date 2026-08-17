@@ -4,36 +4,37 @@ import fs from 'node:fs';
 const read = path => fs.readFileSync(path, 'utf8').replace(/\r\n/g, '\n');
 const release = read('src/release.ts');
 const pkg = JSON.parse(read('package.json'));
-if (['0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build99AncestryMarker'), 'Build100+ must preserve accepted Build99 Phase9 ancestry.');
-if (['0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build98AncestryMarker'), 'Build99+ must preserve accepted Build98 Phase9 ancestry.');
-if (['0.19.23', '0.19.24', '0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build100AncestryMarker'), 'Build101+ must preserve Build100 Phase9 ancestry.');
-if (['0.19.24', '0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build101AncestryMarker'), 'Build102+ must preserve Build101 candidate ancestry.');
-if (['0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build102AncestryMarker'), 'Build103+ must preserve accepted Build102 ancestry.');
-if (pkg.version === '0.19.26') assert.ok(release.includes('build103AncestryMarker'), 'Build104 must preserve accepted Build103 ancestry.');
+if (['0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27'].includes(pkg.version)) assert.ok(release.includes('build99AncestryMarker'), 'Build100+ must preserve accepted Build99 Phase9 ancestry.');
+if (['0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27'].includes(pkg.version)) assert.ok(release.includes('build98AncestryMarker'), 'Build99+ must preserve accepted Build98 Phase9 ancestry.');
+if (['0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27'].includes(pkg.version)) assert.ok(release.includes('build100AncestryMarker'), 'Build101+ must preserve Build100 Phase9 ancestry.');
+if (['0.19.24', '0.19.25', '0.19.26', '0.19.27'].includes(pkg.version)) assert.ok(release.includes('build101AncestryMarker'), 'Build102+ must preserve Build101 candidate ancestry.');
+if (['0.19.25', '0.19.26', '0.19.27'].includes(pkg.version)) assert.ok(release.includes('build102AncestryMarker'), 'Build103+ must preserve accepted Build102 ancestry.');
+if (['0.19.26', '0.19.27'].includes(pkg.version)) assert.ok(release.includes('build103AncestryMarker'), 'Build104+ must preserve accepted Build103 ancestry.');
+if (pkg.version === '0.19.27') assert.ok(release.includes('build104AncestryMarker'), 'Build105 must preserve rejected Build104 candidate ancestry.');
 const adapter = read('src/legacy-track-type-display-auto.ts');
 const lyrics = read('src/components/LyricsEditorPanel.tsx');
 
-assert.ok(['0.19.3', '0.19.4', '0.19.5', '0.19.6', '0.19.7', '0.19.8', '0.19.9', '0.19.10', '0.19.11', '0.19.12', '0.19.13', '0.19.14', '0.19.15', '0.19.16', '0.19.17', '0.19.18', '0.19.19', '0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26'].includes(pkg.version), 'Build65 guard only accepts the validated Studio successor line through Build104.');
-assert.match(release, /version:\s*'0\.19\.(?:3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26)'/);
+assert.ok(['0.19.3', '0.19.4', '0.19.5', '0.19.6', '0.19.7', '0.19.8', '0.19.9', '0.19.10', '0.19.11', '0.19.12', '0.19.13', '0.19.14', '0.19.15', '0.19.16', '0.19.17', '0.19.18', '0.19.19', '0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27'].includes(pkg.version), 'Build65 guard only accepts the validated Studio successor line through Build105.');
+assert.match(release, /version:\s*'0\.19\.(?:3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27)'/);
 assert.match(release, /build:\s*65/);
 assert.match(release, /codename:\s*'studio-focus-slice4-lyrics-crash-corrective'/);
-if (/build:\s*(?:82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104)/.test(release)) assert.ok(release.includes('build81AncestryMarker'), 'Phase9 successors must preserve accepted Build81 ancestry.');
-if (/build:\s*(?:83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104)/.test(release)) assert.ok(release.includes('build82AncestryMarker'), 'Build83+ must preserve accepted Build82 Phase9 ancestry.');
-if (/build:\s*(?:84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104)/.test(release)) assert.ok(release.includes('build83AncestryMarker'), 'Build84+ must preserve accepted Build83 Phase9 ancestry.');
-if (/build:\s*(?:85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104)/.test(release)) assert.ok(release.includes('build84AncestryMarker'), 'Build85+ must preserve accepted Build84 Phase9 ancestry.');
-if (/build:\s*(?:86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104)/.test(release)) assert.ok(release.includes('build85AncestryMarker'), 'Build86+ must preserve accepted Build85 Phase9 ancestry.');
-if (/build:\s*(?:87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104)/.test(release)) assert.ok(release.includes('build86AncestryMarker'), 'Build87+ must preserve accepted Build86 Phase9 ancestry.');
-if (/build:\s*(?:88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104)/.test(release)) assert.ok(release.includes('build87AncestryMarker'), 'Build88+ must preserve accepted Build87 Phase9 ancestry.');
-if (/build:\s*(?:89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104)/.test(release)) assert.ok(release.includes('build88AncestryMarker'), 'Build89+ must preserve accepted Build88 Phase9 ancestry.');
-if (/build:\s*(?:90|91|92|93|94|95|96|97|98|99|100|101|102|103|104)/.test(release)) assert.ok(release.includes('build89AncestryMarker'), 'Build90+ must preserve accepted Build89 Phase9 ancestry.');
-if (/build:\s*(?:91|92|93|94|95|96|97|98|99|100|101|102|103|104)/.test(release)) assert.ok(release.includes('build90AncestryMarker'), 'Build91+ must preserve accepted Build90 Phase9 ancestry.');
-if (/build:\s*(?:92|93|94|95|96|97|98|99|100|101|102|103|104)/.test(release)) assert.ok(release.includes('build91AncestryMarker'), 'Build92+ must preserve accepted Build91 Phase9 ancestry.');
-if (/build:\s*(?:93|94|95|96|97|98|99|100|101|102|103|104)/.test(release)) assert.ok(release.includes('build92AncestryMarker'), 'Build93+ must preserve accepted Build92 Phase9 ancestry.');
-if (/build:\s*(?:94|95|96|97|98|99|100|101|102|103|104)/.test(release)) assert.ok(release.includes('build93AncestryMarker'), 'Build94+ must preserve accepted Build93 Phase9 ancestry.');
-if (/build:\s*(?:95|96|97|98|99|100|101|102|103|104)/.test(release)) assert.ok(release.includes('build94AncestryMarker'), 'Build95+ must preserve accepted Build94 Phase9 ancestry.');
-if (/build:\s*(?:96|97|98|99|100|101|102|103|104)/.test(release)) assert.ok(release.includes('build95AncestryMarker'), 'Build96+ must preserve accepted Build95 Phase9 ancestry.');
-if (/build:\s*(?:97|98|99|100|101|102|103|104)/.test(release)) assert.ok(release.includes('build96AncestryMarker'), 'Build97+ must preserve accepted Build96 Phase9 ancestry.');
-if (/build:\s*(?:98|99|100|101|102|103|104)/.test(release)) assert.ok(release.includes('build97AncestryMarker'), 'Build98+ must preserve Build97 Phase9 ancestry.');
+if (/build:\s*(?:82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105)/.test(release)) assert.ok(release.includes('build81AncestryMarker'), 'Phase9 successors must preserve accepted Build81 ancestry.');
+if (/build:\s*(?:83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105)/.test(release)) assert.ok(release.includes('build82AncestryMarker'), 'Build83+ must preserve accepted Build82 Phase9 ancestry.');
+if (/build:\s*(?:84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105)/.test(release)) assert.ok(release.includes('build83AncestryMarker'), 'Build84+ must preserve accepted Build83 Phase9 ancestry.');
+if (/build:\s*(?:85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105)/.test(release)) assert.ok(release.includes('build84AncestryMarker'), 'Build85+ must preserve accepted Build84 Phase9 ancestry.');
+if (/build:\s*(?:86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105)/.test(release)) assert.ok(release.includes('build85AncestryMarker'), 'Build86+ must preserve accepted Build85 Phase9 ancestry.');
+if (/build:\s*(?:87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105)/.test(release)) assert.ok(release.includes('build86AncestryMarker'), 'Build87+ must preserve accepted Build86 Phase9 ancestry.');
+if (/build:\s*(?:88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105)/.test(release)) assert.ok(release.includes('build87AncestryMarker'), 'Build88+ must preserve accepted Build87 Phase9 ancestry.');
+if (/build:\s*(?:89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105)/.test(release)) assert.ok(release.includes('build88AncestryMarker'), 'Build89+ must preserve accepted Build88 Phase9 ancestry.');
+if (/build:\s*(?:90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105)/.test(release)) assert.ok(release.includes('build89AncestryMarker'), 'Build90+ must preserve accepted Build89 Phase9 ancestry.');
+if (/build:\s*(?:91|92|93|94|95|96|97|98|99|100|101|102|103|104|105)/.test(release)) assert.ok(release.includes('build90AncestryMarker'), 'Build91+ must preserve accepted Build90 Phase9 ancestry.');
+if (/build:\s*(?:92|93|94|95|96|97|98|99|100|101|102|103|104|105)/.test(release)) assert.ok(release.includes('build91AncestryMarker'), 'Build92+ must preserve accepted Build91 Phase9 ancestry.');
+if (/build:\s*(?:93|94|95|96|97|98|99|100|101|102|103|104|105)/.test(release)) assert.ok(release.includes('build92AncestryMarker'), 'Build93+ must preserve accepted Build92 Phase9 ancestry.');
+if (/build:\s*(?:94|95|96|97|98|99|100|101|102|103|104|105)/.test(release)) assert.ok(release.includes('build93AncestryMarker'), 'Build94+ must preserve accepted Build93 Phase9 ancestry.');
+if (/build:\s*(?:95|96|97|98|99|100|101|102|103|104|105)/.test(release)) assert.ok(release.includes('build94AncestryMarker'), 'Build95+ must preserve accepted Build94 Phase9 ancestry.');
+if (/build:\s*(?:96|97|98|99|100|101|102|103|104|105)/.test(release)) assert.ok(release.includes('build95AncestryMarker'), 'Build96+ must preserve accepted Build95 Phase9 ancestry.');
+if (/build:\s*(?:97|98|99|100|101|102|103|104|105)/.test(release)) assert.ok(release.includes('build96AncestryMarker'), 'Build97+ must preserve accepted Build96 Phase9 ancestry.');
+if (/build:\s*(?:98|99|100|101|102|103|104|105)/.test(release)) assert.ok(release.includes('build97AncestryMarker'), 'Build98+ must preserve Build97 Phase9 ancestry.');
 
 for (const required of [
   "heading.textContent?.trim() !== 'Add lyrics to begin'",
@@ -45,7 +46,7 @@ for (const required of [
 
 assert.equal((adapter.match(/summary\.textContent\s*=\s*'Add lyrics\.txt \/ plain-text editor'/g) || []).length, 1, 'Build 65 must have one summary text mutation only.');
 assert.ok(!adapter.includes("if (summary) summary.textContent = 'Add lyrics.txt / plain-text editor';"), 'Build 64 unconditional summary mutation must never return.');
-assert.match(adapter, /if \(summary && summary\.textContent\?\.trim\(\) !== 'Add lyrics\.txt \/ plain-text editor'\) \{\s*summary\.textContent = 'Add lyrics\.txt \/ plain-text editor';\s*\}/, 'Summary mutation must stay guarded by an exact value comparison.');
+assert.match(adapter, /if \(summary && summary\.textContent\?\.trim\(\) !== 'Add lyrics\.txt \/ plain-text editor'\) \{\s*summary\.textContent = 'Add lyrics.txt \/ plain-text editor';\s*\}/, 'Summary mutation must stay guarded by an exact value comparison.');
 
 for (const required of [
   "kinds={['lyrics']}",
@@ -57,4 +58,4 @@ assert.ok(!adapter.includes('fetch('), 'Presentation adapter must not add networ
 assert.ok(!adapter.includes('saveAdminTrackMetadata'), 'Presentation adapter must not add canonical writes.');
 assert.ok(!adapter.includes('uploadAdminTrackAsset'), 'Presentation adapter must not own asset writes.');
 
-console.log(`Studio ${pkg.version} Build65 guard passed through Build104: missing-lyrics presentation remains idempotent and AssetsManager owns guarded TXT upload.`);
+console.log(`Studio ${pkg.version} Build65 guard passed through Build105: missing-lyrics presentation remains idempotent and AssetsManager owns guarded TXT upload.`);
