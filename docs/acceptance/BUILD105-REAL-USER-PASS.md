@@ -18,7 +18,7 @@ Build105 corrects the false compute-UNKNOWN classification exposed by the reject
 - Build103 canonical-audio GET retry remains unchanged;
 - no SonicTrace coordinator/backend, Track Manager, Worker, Public Worker or R2 schema/data change occurred.
 
-## Runtime receipts
+## Runtime and closeout receipts
 
 ```text
 Base                     aa448498549964fe44bd14a1c1767c400ddb8e2d
@@ -31,6 +31,10 @@ Candidate docs PR        #205
 Candidate docs CI        #586 · 32002709875 · SUCCESS
 Candidate docs merge     6de3709d4e89a2806cbf0cf9b598d71d49b1742f
 Candidate docs Pages     #216 · 32002755699 · SUCCESS build + deploy
+Acceptance docs PR       #206
+Acceptance docs CI       #587 · 32003769748 · SUCCESS
+Acceptance docs merge    cd590a74d673c2470d4a247156380e7ff154fed9
+Acceptance docs Pages    #217 · 32003812513 · SUCCESS build + deploy
 Safety pre-build         safety/pre-build105-deep-audio-presubmit-corrective-20260817
 Safety green premerge    safety/post-build105-green-premerge-20260817-0838
 Safety post-deploy       safety/post-build105-deployed-candidate-20260817-0839
