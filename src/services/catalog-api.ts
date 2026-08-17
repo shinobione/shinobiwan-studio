@@ -128,7 +128,7 @@ function isTransientPublicCatalogReadError(reason: unknown): reason is PublicCat
   );
 }
 
-async function fetchPublicCatalogJsonOnce<T>(url: string, timeoutMs: number): Promise<T> {
+async function fetchPublicCatalogJsonOnce<T>(url: string, timeoutMs = 3500): Promise<T> {
   const controller = new AbortController();
   const timeout = globalThis.setTimeout(() => controller.abort(), timeoutMs);
 
@@ -161,27 +161,25 @@ async function fetchPublicCatalogJsonOnce<T>(url: string, timeoutMs: number): Pr
   }
 }
 
-async function fetchPublicCatalogJson<T>(url: string, timeoutMs = 3500): Promise<T> {
-  let firstTransientFailure: PublicCatalogReadError | null = null;
-  for (let attempt = 0; attempt < 2; attempt += 1) {
-    try {
-      return await fetchPublicCatalogJsonOnce<T>(url, timeoutMs);
-    } catch (reason) {
-      if (attempt === 0 && isTransientPublicCatalogReadError(reason)) {
-        firstTransientFailure = reason;
-        continue;
-      }
-      if (firstTransientFailure && reason instanceof PublicCatalogReadError) {
-        throw new PublicCatalogReadError(
-          reason.kind,
-          `LaunchPAD public catalog read failed after one bounded transient retry. ${reason.message}`,
-          reason.status,
-        );
-      }
-      throw reason;
+async function retryPublicCatalogFallbackAfterTransientFailure<T>(
+  initial: Settled<T>,
+  retry: () => Promise<T>,
+): Promise<T> {
+  if (initial.ok) return initial.value;
+  if (!isTransientPublicCatalogReadError(initial.error)) throw initial.error;
+
+  try {
+    return await retry();
+  } catch (reason) {
+    if (reason instanceof PublicCatalogReadError) {
+      throw new PublicCatalogReadError(
+        reason.kind,
+        `LaunchPAD public catalog fallback failed after one bounded transient retry. ${reason.message}`,
+        reason.status,
+      );
     }
+    throw reason;
   }
-  throw new PublicCatalogReadError('transport', 'LaunchPAD public catalog read retry loop ended unexpectedly.');
 }
 
 function stringList(value: unknown): string[] {
@@ -456,17 +454,17 @@ function mapLyricSegments(value: PublicTrack['lyrics']): StudioLyricSegment[] {
 }
 
 async function getPublicHealth(): Promise<PublicHealth> {
-  return fetchPublicCatalogJson<PublicHealth>(`${baseUrl()}/health`);
+  return fetchPublicCatalogJsonOnce<PublicHealth>(`${baseUrl()}/health`);
 }
 
 async function getPublicTracks(): Promise<StudioTrack[]> {
-  const payload = await fetchPublicCatalogJson<PublicTracksResponse>(`${baseUrl()}/tracks`, 6000);
+  const payload = await fetchPublicCatalogJsonOnce<PublicTracksResponse>(`${baseUrl()}/tracks`, 6000);
   if (payload.ok === false || !Array.isArray(payload.tracks)) throw new Error('LaunchPAD returned an invalid catalog response.');
   return payload.tracks.map(mapPublicTrack);
 }
 
 async function getPublicTrack(trackId: string): Promise<StudioTrackDetail> {
-  const payload = await fetchPublicCatalogJson<PublicTrackResponse>(`${baseUrl()}/tracks/${encodeURIComponent(trackId)}`, 6000);
+  const payload = await fetchPublicCatalogJsonOnce<PublicTrackResponse>(`${baseUrl()}/tracks/${encodeURIComponent(trackId)}`, 6000);
   if (payload.ok === false || !payload.track) throw new Error('LaunchPAD returned an invalid track response.');
   const track = mapPublicTrack(payload.track);
   const lyricSegments = mapLyricSegments(payload.track.lyrics);
@@ -501,9 +499,9 @@ export async function getCatalogHealth(): Promise<CatalogHealth> {
     };
   } catch (adminError) {
     const publicResult = await publicHealth;
-    if (!publicResult.ok) throw publicResult.error;
+    const publicValue = await retryPublicCatalogFallbackAfterTransientFailure(publicResult, getPublicHealth);
     return {
-      ...publicResult.value,
+      ...publicValue,
       readSource: 'public',
       bridgeVersion: null,
       trackManagerVersion: null,
@@ -530,8 +528,11 @@ export async function getCatalogTracks(): Promise<StudioTrack[]> {
     });
   } catch (adminError) {
     const publicResult = await publicResultPromise;
-    if (publicResult.ok) return publicResult.value;
-    throw new Error(`Private and public catalog reads failed. Private: ${failureMessage(adminError)} Public: ${failureMessage(publicResult.error)}`);
+    try {
+      return await retryPublicCatalogFallbackAfterTransientFailure(publicResult, getPublicTracks);
+    } catch (publicError) {
+      throw new Error(`Private and public catalog reads failed. Private: ${failureMessage(adminError)} Public: ${failureMessage(publicError)}`);
+    }
   }
 }
 
@@ -558,12 +559,16 @@ export async function getCatalogTrack(trackId: string): Promise<StudioTrackDetai
     return mapped;
   } catch (adminError) {
     const publicResult = await publicResultPromise;
-    if (publicResult.ok) return publicResult.value;
-    throw new Error(`Private and public track reads failed. Private: ${failureMessage(adminError)} Public: ${failureMessage(publicResult.error)}`);
+    try {
+      return await retryPublicCatalogFallbackAfterTransientFailure(publicResult, () => getPublicTrack(trackId));
+    } catch (publicError) {
+      throw new Error(`Private and public track reads failed. Private: ${failureMessage(adminError)} Public: ${failureMessage(publicError)}`);
+    }
   }
 }
 
 export const catalogReliabilityContract = {
   publicFallbackReadRetryPolicy: 'one-retry-timeout-transport-transient-http',
   publicFallbackReadMaxAttempts: 2,
+  publicFallbackRetryAfterPrivateFailureOnly: true,
 } as const;
