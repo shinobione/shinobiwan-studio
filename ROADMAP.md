@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-17 after **Build106 deployed candidate**. Build105 remains the latest accepted Studio runtime until Build106 real-user smoke.
+Updated: 2026-08-17 after **Build106 REAL USER PASS**.
 
 This file tracks only durable Done / Active / Next / Backlog state. Historical implementation detail belongs in `changelogs/`, `docs/` and acceptance receipts.
 
@@ -50,6 +50,7 @@ Build102  bounded ETag representation corrective              REAL USER PASS
 Build103  canonical audio pre-compute transient retry          REAL USER PASS
 Build104  Deep Audio response-loss fence candidate             REJECTED · false UNKNOWN classification
 Build105  Deep Audio pre-submit transport corrective           REAL USER PASS
+Build106  public catalog fallback transient GET retry           REAL USER PASS
 ```
 
 ### Cross-stack publication projection — CLOSED
@@ -103,11 +104,9 @@ Accepted receipt: [`docs/acceptance/BUILD105-REAL-USER-PASS.md`](docs/acceptance
 
 Build104 remains rejected historical evidence; Build105 acceptance does not rewrite that verdict.
 
-## In progress
-
 ### Phase 9 Slice23 — public catalog fallback transient retry
 
-**Deployed candidate: Build106 · v0.19.28 · REAL USER SMOKE PENDING**
+**Accepted runtime: Build106 · v0.19.28 · REAL USER PASS**
 
 Fresh read-only post-Build105 audit proved the public LaunchPAD Track catalog fallback was still one-shot. Build106 preserves the existing initial public read and allows one additional public GET only after the private canonical read has ultimately failed and the first public request failed transiently.
 
@@ -138,7 +137,7 @@ GET /tracks/<trackId>
 
 The generic HTTP helper stays one-shot. No write, Worker, Track Manager, Public Worker, SonicTrace backend, R2 or Deep Audio behavior changed. Public Album artwork fallback remains outside this slice.
 
-Candidate receipts:
+Accepted receipts:
 
 ```text
 Audit base              7dfda47ed1186adf815bfd60a9c2affa5e1b255e
@@ -147,31 +146,34 @@ Exact tested head       61bca333a7f9898444c8d9e1610e3d6c6585664b
 Final runtime CI        #611 · 32058498867 · SUCCESS
 Runtime merge           9c8efcf2250d48d0798ff1ea58ebd80d63ea19be
 Runtime Pages           #219 · 32058828759 · SUCCESS build + deploy
+Candidate docs PR       #209
+Candidate docs CI       #612 · 32059364849 · SUCCESS
+Candidate docs merge    24125d13962d8394ff0026ebbe38341607726054
+Candidate docs Pages    #220 · 32059459541 · SUCCESS build + deploy
+Human smoke             PASS · private/incognito · PUBLIC READ-ONLY FALLBACK · Ghost Signal opened
 Safety pre-build        safety/pre-build106-public-catalog-fallback-retry-20260817
 Safety green premerge   safety/post-build106-green-premerge-20260817-2112
 Safety post-deploy      safety/post-build106-deployed-candidate-20260817-2115
+Safety human pass       safety/post-build106-real-user-pass-20260817-2141
 ```
 
-Detailed candidate receipt: [`changelogs/CHANGELOG-BUILD106.md`](changelogs/CHANGELOG-BUILD106.md).
+The human smoke used an incognito/private browser context without private Cloudflare Access. Studio displayed `v0.19.28 · Build 106`, visibly entered **PUBLIC READ-ONLY FALLBACK**, and opened the published **Ghost Signal** Track workspace/detail with canonical lyrics source shown read-only.
 
-**Build105 remains the latest accepted runtime until the Build106 human smoke passes.**
+Detailed receipt: [`docs/acceptance/BUILD106-REAL-USER-PASS.md`](docs/acceptance/BUILD106-REAL-USER-PASS.md).
+
+## In progress
+
+### Phase 9 — post-Build106 read-only audit boundary
+
+No next build is allocated yet.
+
+**Build107 is UNALLOCATED** until a fresh read-only audit of the real current repository/runtime state proves one smallest coherent reliability or truth gap that is safe to address without widening authority or retry semantics.
 
 ## Next
 
-Perform one **normal-path public-fallback** Build106 smoke in a browser context without the private Cloudflare Access session.
+Perform a fresh **read-only post-Build106 Phase9 audit**.
 
-Expected:
-
-```text
-Studio v0.19.28 · Build106
-→ private read unavailable
-→ public LaunchPAD catalog loads published Tracks
-→ one published Track detail opens normally
-```
-
-Do not deliberately trigger Public Worker timeout/503/network failure. Automated Build106 guards prove the transient retry classification; production smoke proves ordinary public fallback remains usable.
-
-After explicit PASS: acceptance-closeout Build106, then a fresh read-only Phase9 audit before allocating another build. **Build107 remains UNALLOCATED.**
+The audit must start from real GitHub state and accepted runtime truth, not from an assumed next feature. If no bounded safe gap is proven, do not allocate Build107 merely to keep the build counter moving.
 
 ## Backlog
 
@@ -212,8 +214,8 @@ There is currently **no official Phase 11**.
 - Do not generalize one write family's recovery postcondition into another operation family.
 - Build101 remains rejected historical evidence; do not relabel it accepted because Build102 passed.
 - Build104 remains rejected historical evidence; do not relabel it accepted because Build105 passed.
-- Build106 must not be accepted until its normal-path public-fallback human smoke passes.
+- Build107 remains unallocated until the post-Build106 audit proves a bounded next gap.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for current runtime/cross-stack truth, `QA.md` for accepted validation boundaries, [`docs/acceptance/BUILD105-REAL-USER-PASS.md`](docs/acceptance/BUILD105-REAL-USER-PASS.md) for the latest accepted Studio receipt, and [`changelogs/CHANGELOG-BUILD106.md`](changelogs/CHANGELOG-BUILD106.md) for the deployed candidate boundary.
+See `PROJECT_STATE.md` for current runtime/cross-stack truth, `QA.md` for accepted validation boundaries, and [`docs/acceptance/BUILD106-REAL-USER-PASS.md`](docs/acceptance/BUILD106-REAL-USER-PASS.md) for the latest accepted Studio receipt.
