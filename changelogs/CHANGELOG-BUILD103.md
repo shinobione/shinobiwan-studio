@@ -1,7 +1,7 @@
 # CHANGELOG — Studio v0.19.25 · Build103
 
 Date: 2026-08-17
-Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+Status: **ACCEPTED · REAL USER PASS**
 Codename: `studio-focus-slice4-phase9-canonical-audio-download-transient-retry-truth`
 
 ## Why
@@ -46,6 +46,9 @@ Exact tested head        9d89aa1051b67b828836a45b648b6f45b69dbe74
 Final runtime CI         #543 · 31981673322 · SUCCESS
 Runtime merge SHA        5732741bbe0c96d7f6c8d3e1b5b4989af1fa9b83
 Runtime Pages            #209 · 31981768144 · SUCCESS build + deploy
+Candidate docs PR        #199
+Candidate docs merge     c98bfbba7c48d2cbf96b7b4760204b6d0523c228
+Candidate docs Pages     #210 · 31981993765 · SUCCESS build + deploy
 Post-deploy safety       safety/post-build103-deployed-candidate-20260817-0223
 Worker deploy            NONE
 Track Manager change     NONE
@@ -55,18 +58,12 @@ R2 migration/schema      NONE
 
 Detailed audit: [`../docs/PHASE9-BUILD103-CANONICAL-AUDIO-DOWNLOAD-RETRY.md`](../docs/PHASE9-BUILD103-CANONICAL-AUDIO-DOWNLOAD-RETRY.md).
 
-## Required human smoke
+## Real-user acceptance
 
-Use a normal Track whose canonical master audio is already known-good and run the ordinary SonicTrace / Deep Audio analysis flow in a healthy browser session.
+The requested normal-path smoke was completed on 2026-08-17 and explicitly reported **`BUILD103 SMOKED 💨`**.
 
-Expected normal-path evidence:
+Acceptance means the existing production SonicTrace / Deep Audio path completed without regression under the smoke contract: canonical audio acquisition succeeded, downstream analysis completed normally, and no duplicate automatic Deep Audio submit was observed or reported.
 
-1. canonical audio downloads successfully;
-2. browser DSP completes;
-3. Deep Audio compute starts once and completes normally;
-4. the result renders with the existing FULL / PARTIAL / UNAVAILABLE truth model;
-5. no duplicate analysis submit or unexpected retry UI appears.
+The transient-failure branch itself was deliberately **not** manufactured in production. Its bounded retry behavior remains repository-guard evidence; the human smoke confirms the normal path remains healthy.
 
-Do **not** manufacture a timeout, disconnect the network, corrupt Access, or otherwise force the retry path in production. The bounded transient-retry branch and zero-retry Deep Audio POST boundary are protected by the repository-native Build103 guard; the human smoke is a no-regression production-path confirmation.
-
-**Build102 remains the latest accepted Studio runtime until this Build103 smoke is explicitly passed.**
+**Build103 is now the latest accepted Studio runtime.** Build104 remains unallocated until a fresh post-acceptance read-only audit proves one smallest coherent next gap.
