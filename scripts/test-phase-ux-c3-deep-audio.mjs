@@ -28,8 +28,15 @@ for (const marker of [
 
 assert.ok(!panel.includes('SonicTrace Deep Audio is offline. Browser DSP completed'), 'C3 must not call every Deep Audio processing failure offline.');
 assert.ok(api.includes("provenance: { dsp: 'measured-in-browser', deepAudio: 'unavailable' }"), 'Browser-only fallback must keep explicit Deep Audio unavailable provenance.');
-assert.ok(api.includes('xhr.onerror = () => {') && api.includes("'DEEP_AUDIO_COMPUTE_TRANSPORT_UNVERIFIED'"), 'Transport response loss must remain typed and distinguishable from HTTP processing failures.');
-assert.ok(api.includes('xhr.ontimeout = () => {') && api.includes("'DEEP_AUDIO_COMPUTE_TIMEOUT_UNVERIFIED'"), 'Timeout response loss must remain typed and distinguishable from HTTP processing failures.');
+
+// C3 requires transport/timeout to remain distinguishable from HTTP processing failures.
+// Build105 further separates transport failures before observed upload start from response loss after upload start.
+assert.ok(api.includes('xhr.onerror = () => rejectTransportFailure(false);'), 'Deep Audio XHR transport failure must remain explicitly routed through typed transport classification.');
+assert.ok(api.includes('xhr.ontimeout = () => rejectTransportFailure(true);'), 'Deep Audio XHR timeout must remain explicitly routed through typed timeout classification.');
+assert.ok(api.includes("'DEEP_AUDIO_COMPUTE_PRESUBMIT_TRANSPORT'"), 'Pre-submit transport failure must stay typed and distinguishable.');
+assert.ok(api.includes("'DEEP_AUDIO_COMPUTE_PRESUBMIT_TIMEOUT'"), 'Pre-submit timeout must stay typed and distinguishable.');
+assert.ok(api.includes("'DEEP_AUDIO_COMPUTE_TRANSPORT_UNVERIFIED'"), 'Post-upload transport response loss must remain typed and distinguishable from HTTP processing failures.');
+assert.ok(api.includes("'DEEP_AUDIO_COMPUTE_TIMEOUT_UNVERIFIED'"), 'Post-upload timeout response loss must remain typed and distinguishable from HTTP processing failures.');
 assert.ok(api.includes('if (xhr.status < 200 || xhr.status >= 300)'), 'HTTP processing failures must remain a separate response path from transport/timeout response loss.');
 
 const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
@@ -41,4 +48,4 @@ const authorizedStudioFocusSuccessor = /^0\.(?:17|18|19)\.\d+$/.test(version) &&
 assert.ok(c3Line || authorizedPhase7Successor || authorizedStudioFocusSuccessor, `C3 Deep Audio behavior must remain inherited by the accepted C3 line or its explicitly authorized Phase 7 / Studio Focus successor, got ${version} / ${codename}.`);
 assert.ok(build >= 38, `C3 Studio build must be >= 38, got ${build}.`);
 
-console.log('C3 Deep Audio FULL/PARTIAL/UNAVAILABLE semantics and typed transport/timeout-vs-processing guards passed through the authorized Studio Focus successor.');
+console.log('C3 Deep Audio FULL/PARTIAL/UNAVAILABLE semantics and typed pre-submit/post-upload transport/timeout-vs-processing guards passed through the authorized Studio Focus successor.');
