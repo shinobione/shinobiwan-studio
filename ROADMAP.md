@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-17 after **Build105 REAL USER PASS**.
+Updated: 2026-08-17 after **Build106 deployed candidate**. Build105 remains the latest accepted Studio runtime until Build106 real-user smoke.
 
 This file tracks only durable Done / Active / Next / Backlog state. Historical implementation detail belongs in `changelogs/`, `docs/` and acceptance receipts.
 
@@ -82,9 +82,7 @@ Detailed receipt: [`docs/acceptance/BUILD103-REAL-USER-PASS.md`](docs/acceptance
 
 **Accepted runtime: Build105 · v0.19.27 · REAL USER PASS**
 
-Build104 attempted to fence true Deep Audio response loss after submit, but its normal-path real-user smoke proved every XHR transport error/timeout was being treated as if upload had already begun. That could create a false `DEEP AUDIO STATE UNKNOWN` / `RELOAD BEFORE RESUBMIT` when the local coordinator was unavailable before upload start.
-
-Build105 separates the two cases:
+Build104 attempted to fence true Deep Audio response loss after submit, but its normal-path real-user smoke proved every XHR transport error/timeout was being treated as if upload had already begun. Build105 corrected that boundary while retaining zero automatic Deep Audio retries.
 
 ```text
 transport / timeout BEFORE browser-observed upload start
@@ -101,44 +99,79 @@ transport / timeout AFTER browser-observed upload start
 → explicit page reload required before deliberate manual resubmit
 ```
 
-Synchronous `xhr.send()` failure is pre-submit and unfenced. The corrective changes only Studio; no SonicTrace backend, Track Manager, Worker, Public Worker or R2 schema/data deployment occurred.
-
-Accepted receipts:
-
-```text
-Runtime PR             #204
-Exact tested head      efa188b8d7181a4aa03bdea4bf2da40534203e9e
-Final runtime CI       #585 · 32002434543 · SUCCESS
-Runtime merge          f3a295d5e7bdbd0cfa05cc6d44901fab62e42c5b
-Runtime Pages          #215 · 32002484381 · SUCCESS build + deploy
-Candidate docs PR      #205
-Candidate docs CI      #586 · 32002709875 · SUCCESS
-Candidate docs merge   6de3709d4e89a2806cbf0cf9b598d71d49b1742f
-Candidate docs Pages   #216 · 32002755699 · SUCCESS build + deploy
-Human smoke            BUILD105 SMOKED 💨 · FULL profile ready · Deep Audio analysis complete
-Safety pre-build       safety/pre-build105-deep-audio-presubmit-corrective-20260817
-Safety green premerge  safety/post-build105-green-premerge-20260817-0838
-Safety post-deploy     safety/post-build105-deployed-candidate-20260817-0839
-Safety human pass      safety/post-build105-real-user-pass-20260817-0854
-```
-
-Detailed receipt: [`docs/acceptance/BUILD105-REAL-USER-PASS.md`](docs/acceptance/BUILD105-REAL-USER-PASS.md).
+Accepted receipt: [`docs/acceptance/BUILD105-REAL-USER-PASS.md`](docs/acceptance/BUILD105-REAL-USER-PASS.md).
 
 Build104 remains rejected historical evidence; Build105 acceptance does not rewrite that verdict.
 
 ## In progress
 
-### Phase 9 — post-Build105 read-only audit boundary
+### Phase 9 Slice23 — public catalog fallback transient retry
 
-No next build is allocated yet.
+**Deployed candidate: Build106 · v0.19.28 · REAL USER SMOKE PENDING**
 
-**Build106 is UNALLOCATED** until a fresh read-only audit of the real current repository/runtime state proves one smallest coherent reliability or truth gap that is safe to address without widening authority or retry semantics.
+Fresh read-only post-Build105 audit proved the public LaunchPAD Track catalog fallback was still one-shot. Build106 preserves the existing initial public read and allows one additional public GET only after the private canonical read has ultimately failed and the first public request failed transiently.
+
+```text
+private succeeds
+→ existing one-shot public enrichment only
+→ NO second GET
+
+private fails + public succeeds
+→ use public fallback
+
+private fails + public fails with timeout / browser transport
+or HTTP 408 / 425 / 429 / 500 / 502 / 503 / 504
+→ one retry
+→ max 2 public attempts total
+
+private fails + deterministic public failure / invalid response
+→ no retry
+```
+
+Bounded endpoints:
+
+```text
+GET /health
+GET /tracks
+GET /tracks/<trackId>
+```
+
+The generic HTTP helper stays one-shot. No write, Worker, Track Manager, Public Worker, SonicTrace backend, R2 or Deep Audio behavior changed. Public Album artwork fallback remains outside this slice.
+
+Candidate receipts:
+
+```text
+Audit base              7dfda47ed1186adf815bfd60a9c2affa5e1b255e
+Runtime PR              #208
+Exact tested head       61bca333a7f9898444c8d9e1610e3d6c6585664b
+Final runtime CI        #611 · 32058498867 · SUCCESS
+Runtime merge           9c8efcf2250d48d0798ff1ea58ebd80d63ea19be
+Runtime Pages           #219 · 32058828759 · SUCCESS build + deploy
+Safety pre-build        safety/pre-build106-public-catalog-fallback-retry-20260817
+Safety green premerge   safety/post-build106-green-premerge-20260817-2112
+Safety post-deploy      safety/post-build106-deployed-candidate-20260817-2115
+```
+
+Detailed candidate receipt: [`changelogs/CHANGELOG-BUILD106.md`](changelogs/CHANGELOG-BUILD106.md).
+
+**Build105 remains the latest accepted runtime until the Build106 human smoke passes.**
 
 ## Next
 
-Perform a fresh **read-only post-Build105 Phase9 audit**.
+Perform one **normal-path public-fallback** Build106 smoke in a browser context without the private Cloudflare Access session.
 
-The audit must start from real GitHub state and accepted runtime truth, not from an assumed next feature. If no bounded safe gap is proven, do not allocate Build106 merely to keep the build counter moving.
+Expected:
+
+```text
+Studio v0.19.28 · Build106
+→ private read unavailable
+→ public LaunchPAD catalog loads published Tracks
+→ one published Track detail opens normally
+```
+
+Do not deliberately trigger Public Worker timeout/503/network failure. Automated Build106 guards prove the transient retry classification; production smoke proves ordinary public fallback remains usable.
+
+After explicit PASS: acceptance-closeout Build106, then a fresh read-only Phase9 audit before allocating another build. **Build107 remains UNALLOCATED.**
 
 ## Backlog
 
@@ -179,8 +212,8 @@ There is currently **no official Phase 11**.
 - Do not generalize one write family's recovery postcondition into another operation family.
 - Build101 remains rejected historical evidence; do not relabel it accepted because Build102 passed.
 - Build104 remains rejected historical evidence; do not relabel it accepted because Build105 passed.
-- Build106 remains unallocated until the post-Build105 audit proves a bounded next gap.
+- Build106 must not be accepted until its normal-path public-fallback human smoke passes.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for current runtime/cross-stack truth, `QA.md` for accepted validation boundaries, and [`docs/acceptance/BUILD105-REAL-USER-PASS.md`](docs/acceptance/BUILD105-REAL-USER-PASS.md) for the latest accepted Studio receipt.
+See `PROJECT_STATE.md` for current runtime/cross-stack truth, `QA.md` for accepted validation boundaries, [`docs/acceptance/BUILD105-REAL-USER-PASS.md`](docs/acceptance/BUILD105-REAL-USER-PASS.md) for the latest accepted Studio receipt, and [`changelogs/CHANGELOG-BUILD106.md`](changelogs/CHANGELOG-BUILD106.md) for the deployed candidate boundary.

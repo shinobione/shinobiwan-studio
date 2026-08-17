@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-17 after **Build105 REAL USER PASS** and acceptance closeout.
+Updated: 2026-08-17 after **Build106 deployment candidate**. Build105 remains the latest accepted Studio runtime until Build106 real-user smoke passes.
 
 This is the short current checkpoint to read immediately after `AGENTS.md`. Historical implementation detail remains in `changelogs/` and milestone docs.
 
@@ -36,25 +36,53 @@ Public Worker change    NONE
 R2 migration/schema     NONE
 ```
 
-**Build105 is the current accepted Studio runtime.** It retains Build103's bounded pre-compute canonical-audio GET retry and narrows the Deep Audio response-loss fence to cases where the browser has observed upload start.
-
-```text
-transport/timeout before upload start
-→ PRE-SUBMIT UNREACHABLE
-→ no duplicate-compute fence
-→ zero automatic retry
-→ explicit manual re-scan allowed after coordinator recovery
-
-transport/timeout after upload start
-→ COMPUTE UNKNOWN
-→ exact Track/source fenced in-page
-→ zero automatic retry
-→ reload required before deliberate resubmit
-```
-
-Synchronous `xhr.send()` failure is pre-submit and unfenced. `POST /api/studio/analyze` remains one-shot per explicit user action.
+**Build105 is the current accepted Studio runtime.** It retains Build103's bounded pre-compute canonical-audio GET retry and narrows the Deep Audio response-loss fence to cases where the browser has observed upload start. `POST /api/studio/analyze` remains one-shot per explicit user action.
 
 Detailed receipt: [`docs/acceptance/BUILD105-REAL-USER-PASS.md`](docs/acceptance/BUILD105-REAL-USER-PASS.md).
+
+## Current deployed Studio candidate
+
+```text
+Studio version          v0.19.28
+Studio build            Build106
+Codename                studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth
+Acceptance              DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Audit base              7dfda47ed1186adf815bfd60a9c2affa5e1b255e
+Runtime PR              #208
+Exact tested head       61bca333a7f9898444c8d9e1610e3d6c6585664b
+Final runtime CI        #611 · 32058498867 · SUCCESS
+Runtime merge SHA       9c8efcf2250d48d0798ff1ea58ebd80d63ea19be
+Runtime Pages           #219 · 32058828759 · SUCCESS build + deploy
+Safety pre-build        safety/pre-build106-public-catalog-fallback-retry-20260817
+Safety green premerge   safety/post-build106-green-premerge-20260817-2112
+Safety post-deploy      safety/post-build106-deployed-candidate-20260817-2115
+Worker deploy           NONE
+Track Manager change    NONE
+Public Worker change    NONE
+SonicTrace backend      NONE
+R2 migration/schema     NONE
+```
+
+Build106 hardens only the public LaunchPAD fallback used after a private canonical Track Manager read ultimately fails. The existing initial public read remains one-shot and parallel for enrichment. A second public GET is allowed only if the private read has actually failed **and** the first public read failed with timeout, browser transport interruption, or HTTP `408/425/429/500/502/503/504`.
+
+```text
+private read succeeds
+→ no second public GET
+
+private read fails + first public read succeeds
+→ use public fallback immediately
+
+private read fails + first public read fails transiently
+→ exactly one public GET retry
+→ maximum 2 public attempts total
+
+private read fails + deterministic public failure
+→ no retry
+```
+
+The bounded public family is only `GET /health`, `GET /tracks`, and `GET /tracks/<trackId>`. Generic `src/services/http.ts` remains one-shot. Public Album artwork fallback remains unchanged. No write semantics changed.
+
+Detailed candidate receipt: [`changelogs/CHANGELOG-BUILD106.md`](changelogs/CHANGELOG-BUILD106.md).
 
 ## Rejected historical candidates
 
@@ -98,7 +126,7 @@ Deep Audio              2.0.3-alpha
 LRC Maker               6.3.8
 ```
 
-No Build104 or Build105 backend deployment occurred. Their Studio deployments perform no R2 mutation.
+No Build106 backend deployment occurred. Its Studio deployment performs no R2 mutation.
 
 ## Program position
 
@@ -115,7 +143,8 @@ Phase 9 Slice21         COMPLETE · Build103 REAL USER PASS
 Build101                REJECTED candidate · ETag representation false negative
 Build104                REJECTED candidate · false Deep Audio UNKNOWN classification
 Phase 9 Slice22         COMPLETE · Build105 REAL USER PASS
-Build106                UNALLOCATED
+Phase 9 Slice23         Build106 DEPLOYED CANDIDATE · SMOKE PENDING
+Build107                UNALLOCATED
 Phase 10                FUTURE · progressive extraction
 Official Phase 11       NONE
 ```
@@ -130,30 +159,23 @@ Official Phase 11       NONE
 - accepted Phase9 writes use: `response unavailable → no blind retry → private canonical reread → committed / not committed / ambiguous / unverified` with operation-specific postconditions.
 - Build103 retries only the pre-compute canonical-audio GET.
 - Build105 never automatically retries Deep Audio compute; it fences only after browser-observed upload start.
+- Build106 retries only a transient public **GET fallback** after final private-read failure; it never widens generic network helpers or write semantics.
 - rejected Build101 and Build104 evidence stays rejected; successor acceptance does not rewrite history.
-
-## Human acceptance evidence
-
-The normal-path Build105 smoke used **Ghost Signal** with a healthy local SonicTrace coordinator and visibly reached:
-
-```text
-FULL profile ready
-Audio match: Current
-History: 1 scan
-Deep Audio analysis complete
-Browser RMS: -14.7 dBFS
-LUFS: -12.5 LUFS
-True Peak: -0.3 dBTP
-Sections: 9
-```
-
-The review surface exposed DSP, MASTERING, NEURAL, EMBEDDING, STRUCTURE and SEMANTIC SUMMARY layers, with no `DEEP AUDIO STATE UNKNOWN` and no `RELOAD BEFORE RESUBMIT`.
 
 ## Immediate next action
 
-**Fresh read-only post-Build105 Phase9 audit.** Build106 stays **UNALLOCATED** until the current repository and runtime state prove one smallest coherent next gap.
+**Build106 normal-path public-fallback real-user smoke.** Use an incognito/private/separate browser context without the private Cloudflare Access session.
 
-Do not manufacture timeout, disconnect the network, stop the coordinator, or force Access failure as production QA. Automated guards own those classification boundaries.
+Expected healthy path:
+
+```text
+Studio v0.19.28 · Build106
+→ private canonical read unavailable
+→ public LaunchPAD catalog fallback loads published Tracks
+→ one published Track detail opens normally
+```
+
+Do not manufacture a Public Worker timeout, 503, network disconnect or other transient failure. Automated guards own retry classification. Build105 remains the latest accepted runtime until this smoke passes.
 
 ## Backlog kept intact
 

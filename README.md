@@ -40,13 +40,30 @@ Deep Audio             2.0.3-alpha
 LRC Maker              6.3.8
 ```
 
-**Studio v0.19.27 · Build105 is the current accepted Studio runtime.** It keeps the Build103 bounded canonical-audio pre-compute GET retry and corrects the rejected Build104 Deep Audio classification boundary: transport/timeout before browser-observed upload start is pre-submit unreachable and unfenced; transport/timeout after upload start remains compute-UNKNOWN and fenced for that exact Track/source. `POST /api/studio/analyze` remains strictly one-shot per explicit user action with **zero automatic retries**.
+**Studio v0.19.27 · Build105 remains the current accepted Studio runtime.** It keeps the Build103 bounded canonical-audio pre-compute GET retry and the accepted Deep Audio pre-submit/post-upload classification boundary. `POST /api/studio/analyze` remains strictly one-shot per explicit user action with **zero automatic retries**.
 
-**Build104 remains rejected historical evidence.** Its intended post-submit response-loss fence was valid, but its real-user smoke proved the fence could arm before any browser evidence of upload start, causing a false `DEEP AUDIO STATE UNKNOWN` / `RELOAD BEFORE RESUBMIT` state.
+## Current deployed candidate
+
+```text
+Studio candidate       v0.19.28 · Build106 · REAL USER SMOKE PENDING
+Codename               studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth
+Audit base             7dfda47ed1186adf815bfd60a9c2affa5e1b255e
+Runtime PR             #208
+Exact tested head      61bca333a7f9898444c8d9e1610e3d6c6585664b
+Validation             #611 · 32058498867 · SUCCESS
+Runtime merge          9c8efcf2250d48d0798ff1ea58ebd80d63ea19be
+Runtime Pages          #219 · 32058828759 · SUCCESS build + deploy
+Backend deploy         NONE
+R2 migration/schema    NONE
+```
+
+Build106 hardens only the **public LaunchPAD Track-catalog fallback after the preferred private canonical read has actually failed**. The initial public read remains the same one-shot parallel enrichment request. If private fails and that first public request also failed with timeout, browser transport interruption, or HTTP `408/425/429/500/502/503/504`, Studio may repeat the public GET exactly once. Maximum public attempts: **2**.
+
+Deterministic HTTP failures, invalid JSON and invalid semantic payloads do not retry. The generic HTTP helper stays one-shot. No write retry, Public Worker change, Track Manager change, SonicTrace backend change, Deep Audio change or R2 mutation was introduced.
 
 Public Worker **v2.8** remains accepted cross-stack truth. It withholds a published Track from public list/detail/media while its canonical parent Album remains Draft/archived, using Album `trackIds` as ownership authority.
 
-Latest accepted Studio receipt: [`docs/acceptance/BUILD105-REAL-USER-PASS.md`](docs/acceptance/BUILD105-REAL-USER-PASS.md).
+Latest accepted Studio receipt: [`docs/acceptance/BUILD105-REAL-USER-PASS.md`](docs/acceptance/BUILD105-REAL-USER-PASS.md). Build106 candidate detail: [`changelogs/CHANGELOG-BUILD106.md`](changelogs/CHANGELOG-BUILD106.md).
 
 The Studio repository still publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
@@ -107,12 +124,13 @@ Phase 9 Slice21     Build103 · REAL USER PASS
 Build101            REJECTED candidate
 Build104            REJECTED candidate · false UNKNOWN classification
 Phase 9 Slice22     Build105 · REAL USER PASS
-Build106            UNALLOCATED · fresh read-only post-Build105 audit required
+Phase 9 Slice23     Build106 · DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Build107            UNALLOCATED
 Phase 10            FUTURE · progressive extraction
 Official Phase 11   NONE
 ```
 
-The immediate next action is a **fresh read-only post-Build105 Phase9 audit**. Build106 must not be allocated until the current implementation proves one smallest coherent next gap.
+The immediate next action is a **normal-path Build106 public-fallback smoke in a browser context without the private Cloudflare Access session**. Confirm the public published Track inventory loads and one published Track detail opens. Do not deliberately manufacture a Public Worker timeout/503/network failure; the retry branch is covered by automated guards.
 
 ## Frozen authority model
 
@@ -132,6 +150,8 @@ The immediate next action is a **fresh read-only post-Build105 Phase9 audit**. B
 Private GET retry is bounded to accepted transient classes and at most one retry. It never authorizes write retry.
 
 Build103 retries only the canonical-audio pre-compute GET. Build105 keeps Deep Audio POST at one attempt per explicit user action and distinguishes pre-submit unreachable from true response-loss ambiguity using browser-observed upload phase evidence.
+
+Build106 adds one bounded retry only to the public read-only Track-catalog fallback **after final private-read failure**. It does not alter the generic HTTP helper and never authorizes write retry.
 
 For accepted Phase9 writes:
 
