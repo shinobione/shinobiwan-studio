@@ -40,7 +40,13 @@ for (const corePath of ["'/api/studio/health'", "'/api/studio/tracks'", '`/api/s
 }
 assert.ok(catalog.includes('const privatePayload = await getAdminTracks();'), 'Catalog must still prefer the private canonical Track inventory.');
 assert.ok(catalog.includes('const privatePayload = await getAdminTrack(trackId);'), 'Track detail must still prefer the private canonical Track read.');
-assert.ok(catalog.includes('if (publicResult.ok) return publicResult.value;'), 'Public fallback remains available only after private read ultimately fails.');
+
+// Build106 may strengthen the public fallback GET, but only after the private read has actually failed.
+assert.ok(catalog.includes('async function retryPublicCatalogFallbackAfterTransientFailure<T>('), 'Build106 fallback resolver must remain explicit and bounded.');
+assert.ok(catalog.includes('if (!isTransientPublicCatalogReadError(initial.error)) throw initial.error;'), 'Deterministic public failures must not gain retry semantics.');
+assert.ok(catalog.includes('catch (adminError) {\n    const publicResult = await publicResultPromise;\n    try {\n      return await retryPublicCatalogFallbackAfterTransientFailure(publicResult, getPublicTracks);'), 'Public Track inventory retry must remain inside the private-read failure path.');
+assert.ok(catalog.includes('catch (adminError) {\n    const publicResult = await publicResultPromise;\n    try {\n      return await retryPublicCatalogFallbackAfterTransientFailure(publicResult, () => getPublicTrack(trackId));'), 'Public Track detail retry must remain inside the private-read failure path.');
+assert.ok(catalog.includes('publicFallbackRetryAfterPrivateFailureOnly: true'), 'Build106 must explicitly freeze retry-after-private-failure-only semantics.');
 
 for (const inherited of [
   'test-phase9-destructive-write-ambiguity-build82.mjs',
@@ -53,4 +59,4 @@ for (const inherited of [
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must include ${inherited}`);
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Phase9 guards must remain in the full build gate.');
 
-console.log('Phase9 Build88 private-read retry guard passed as inherited ancestry: health/catalog/track GETs still retry once only for transient timeout/transport/HTTP failures, while Access/CORS, deterministic 4xx and invalid JSON remain non-retry and all write transports stay unchanged.');
+console.log('Phase9 Build88 private-read retry guard passed as inherited ancestry: private health/catalog/track GETs still retry once only for bounded transient failures, and Build106 public retry remains strictly downstream of final private-read failure without changing any write transport.');

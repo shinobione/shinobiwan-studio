@@ -7,10 +7,18 @@ const api = read('src/services/sonictrace-api.ts');
 const panel = read('src/components/SonicTracePanel.tsx');
 const pkg = JSON.parse(read('package.json'));
 
-assert.equal(pkg.version, '0.19.27');
-assert.match(release, /version: '0\.19\.27'/);
-assert.match(release, /build: 105/);
-assert.match(release, /studio-focus-slice4-phase9-deep-audio-presubmit-transport-corrective/);
+assert.ok(['0.19.27', '0.19.28'].includes(pkg.version), 'Build105 guard accepts Build105 and bounded Build106 successor.');
+if (pkg.version === '0.19.27') {
+  assert.match(release, /version: '0\.19\.27'/);
+  assert.match(release, /build: 105/);
+  assert.match(release, /studio-focus-slice4-phase9-deep-audio-presubmit-transport-corrective/);
+} else {
+  assert.match(release, /version: '0\.19\.28'/);
+  assert.match(release, /build: 106/);
+  assert.match(release, /studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth/);
+  assert.match(release, /build105AncestryMarker/);
+  assert.match(release, /version: 0\.19\.27 · build: 105 · codename: 'studio-focus-slice4-phase9-deep-audio-presubmit-transport-corrective'/);
+}
 assert.match(release, /build103AncestryMarker/);
 assert.match(release, /build104AncestryMarker/);
 assert.match(release, /version: 0\.19\.26 · build: 104 · codename: 'studio-focus-slice4-phase9-deep-audio-response-loss-fence'/);
@@ -62,4 +70,4 @@ assert.match(panel, /explicit re-scan is allowed/);
 assert.match(panel, /DEEP AUDIO STATE UNKNOWN/);
 assert.match(panel, /will not submit a second Deep Audio POST/);
 
-console.log('Build105 Deep Audio pre-submit transport corrective PASS: pre-upload unreachable no longer becomes false UNKNOWN, while response loss after upload start remains fenced with zero automatic retries.');
+console.log(`Build105 Deep Audio pre-submit transport corrective PASS under ${pkg.version}: pre-upload unreachable no longer becomes false UNKNOWN, while response loss after upload start remains fenced with zero automatic retries.`);
