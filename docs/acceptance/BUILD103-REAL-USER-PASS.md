@@ -15,7 +15,7 @@ Build103 hardens only the non-mutating canonical master-audio GET executed befor
 - `POST /api/studio/analyze` remains one-shot with **zero automatic retries**;
 - canonical write and SonicTrace save semantics are unchanged.
 
-## Runtime receipts
+## Runtime and closeout receipts
 
 ```text
 Base                     1b9934288043b85bbed537b0e8cf1ddc4f786184
@@ -27,9 +27,14 @@ Runtime Pages            #209 · 31981768144 · SUCCESS build + deploy
 Candidate docs PR        #199
 Candidate docs merge     c98bfbba7c48d2cbf96b7b4760204b6d0523c228
 Candidate docs Pages     #210 · 31981993765 · SUCCESS build + deploy
+Acceptance docs PR       #200
+Acceptance docs CI       #545 · 31982315109 · SUCCESS
+Acceptance docs merge    dc284afbb087ae98619534f565cf82d3263e97d0
+Acceptance docs Pages    #211 · 31982359259 · SUCCESS build + deploy
 Safety pre-build         safety/pre-build103-canonical-audio-download-retry-20260817
 Safety green premerge    safety/post-build103-green-premerge-20260817-0217
 Safety post-deploy       safety/post-build103-deployed-candidate-20260817-0223
+Safety post-acceptance   safety/post-build103-real-user-pass-20260817-0234
 Worker deploy            NONE
 Track Manager change     NONE
 Public Worker change     NONE

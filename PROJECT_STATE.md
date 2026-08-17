@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-17 after **Build103 REAL USER PASS**.
+Updated: 2026-08-17 after **Build103 REAL USER PASS** and acceptance closeout.
 
 This is the short current checkpoint to read immediately after `AGENTS.md`. Historical implementation detail remains in `changelogs/` and milestone docs.
 
@@ -20,10 +20,15 @@ Runtime Pages           #209 · 31981768144 · SUCCESS build + deploy
 Candidate docs PR       #199
 Candidate docs merge    c98bfbba7c48d2cbf96b7b4760204b6d0523c228
 Candidate docs Pages    #210 · 31981993765 · SUCCESS build + deploy
+Acceptance docs PR      #200
+Acceptance docs CI      #545 · 31982315109 · SUCCESS
+Acceptance docs merge   dc284afbb087ae98619534f565cf82d3263e97d0
+Acceptance docs Pages   #211 · 31982359259 · SUCCESS build + deploy
 Real-user smoke         BUILD103 SMOKED 💨
 Safety pre-build        safety/pre-build103-canonical-audio-download-retry-20260817
 Safety green premerge   safety/post-build103-green-premerge-20260817-0217
 Safety post-deploy      safety/post-build103-deployed-candidate-20260817-0223
+Safety post-acceptance  safety/post-build103-real-user-pass-20260817-0234
 Worker deploy           NONE
 Track Manager change    NONE
 Public Worker change    NONE
