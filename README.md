@@ -22,12 +22,13 @@ Accepted runtime PR    #198
 Accepted runtime CI    #543 · 31981673322 · SUCCESS
 Accepted runtime merge 5732741bbe0c96d7f6c8d3e1b5b4989af1fa9b83
 Accepted runtime Pages #209 · 31981768144 · SUCCESS
-Latest candidate       v0.19.26 · Build104 · REAL USER SMOKE PENDING
-Candidate runtime PR   #202
-Candidate tested head  8060a81b7fdb6a608244c768a042e56e630451f0
-Candidate validation   #564 · 31983472391 · SUCCESS
-Candidate merge        a0a082376eedc6c5c90bad59bbc5e92bf72e6cdd
-Candidate Pages        #213 · 31983514507 · SUCCESS
+Build104               REJECTED · false UNKNOWN classification in real-user smoke
+Latest candidate       v0.19.27 · Build105 · REAL USER SMOKE PENDING
+Candidate runtime PR   #204
+Candidate tested head  efa188b8d7181a4aa03bdea4bf2da40534203e9e
+Candidate validation   #585 · 32002434543 · SUCCESS
+Candidate merge        f3a295d5e7bdbd0cfa05cc6d44901fab62e42c5b
+Candidate Pages        #215 · 32002484381 · SUCCESS build + deploy
 Build101               REJECTED candidate · ETag representation false negative
 Track Manager          v5.24 · REAL USER VERIFIED
 Studio bridge          v1.14
@@ -39,13 +40,29 @@ Deep Audio             2.0.3-alpha
 LRC Maker              6.3.8
 ```
 
-**Studio v0.19.25 · Build103 remains the current accepted Studio runtime.** Build103 hardens only the non-mutating canonical master-audio GET performed before SonicTrace / Deep Audio compute. That GET may retry once for bounded transient failures; the expensive `POST /api/studio/analyze` remains strictly one-shot with **zero automatic retries**.
+**Studio v0.19.25 · Build103 remains the current accepted Studio runtime.** Its non-mutating canonical master-audio GET before SonicTrace / Deep Audio compute may retry once for bounded transient failures; `POST /api/studio/analyze` remains strictly one-shot with **zero automatic retries**.
 
-**Studio v0.19.26 · Build104 is deployed as a candidate awaiting real-user smoke.** The fresh audit proved that timeout/transport after a Deep Audio POST submit cannot safely be treated as “not started” or retry-safe. Build104 therefore fences that exact Track + canonical source revision in the current page, reports **COMPUTE UNKNOWN**, refuses a second Deep Audio POST for the fenced source, and requires an explicit page reload before a deliberate manual resubmit. It does not add any automatic compute retry.
+**Build104 is rejected historical evidence.** Its duplicate-compute fence correctly treated true post-submit response loss as compute-UNKNOWN, but it armed that fence for every XHR transport failure, including failures where the browser had not observed upload start. The normal-path real-user smoke therefore produced a false `DEEP AUDIO STATE UNKNOWN` / `RELOAD BEFORE RESUBMIT` state.
+
+**Studio v0.19.27 · Build105 is the deployed corrective candidate.** It separates pre-submit coordinator transport failure from response loss after browser-observed upload start:
+
+```text
+transport / timeout before upload start
+→ PRE-SUBMIT UNREACHABLE
+→ no duplicate-compute fence
+→ zero automatic retry
+→ explicit manual re-scan allowed after coordinator recovery
+
+transport / timeout after upload start
+→ COMPUTE UNKNOWN
+→ exact Track/source fenced in-page
+→ zero automatic retry
+→ reload required before deliberate resubmit
+```
 
 Public Worker **v2.8** remains accepted cross-stack truth. It withholds a published Track from public list/detail/media while its canonical parent Album remains Draft/archived, using Album `trackIds` as ownership authority.
 
-Latest accepted Studio receipt: [`docs/acceptance/BUILD103-REAL-USER-PASS.md`](docs/acceptance/BUILD103-REAL-USER-PASS.md). Build104 candidate detail: [`docs/PHASE9-BUILD104-DEEP-AUDIO-RESPONSE-LOSS-FENCE.md`](docs/PHASE9-BUILD104-DEEP-AUDIO-RESPONSE-LOSS-FENCE.md).
+Latest accepted Studio receipt: [`docs/acceptance/BUILD103-REAL-USER-PASS.md`](docs/acceptance/BUILD103-REAL-USER-PASS.md). Current candidate detail: [`changelogs/CHANGELOG-BUILD105.md`](changelogs/CHANGELOG-BUILD105.md).
 
 The Studio repository still publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
@@ -103,13 +120,14 @@ Phase 9             ACTIVE
 Phase 9 Slice1–19   Build82→Build100 · REAL USER PASS
 Phase 9 Slice20     Build102 · REAL USER PASS
 Phase 9 Slice21     Build103 · REAL USER PASS
-Phase 9 Slice22     Build104 · DEPLOYED CANDIDATE · SMOKE PENDING
 Build101            REJECTED candidate
+Build104            REJECTED candidate · false UNKNOWN classification
+Phase 9 Slice22     Build105 · DEPLOYED CORRECTIVE CANDIDATE · SMOKE PENDING
 Phase 10            FUTURE · progressive extraction
 Official Phase 11   NONE
 ```
 
-The immediate next action is the **normal-path Build104 real-user smoke**. Do not manufacture timeout/network loss to test the fence in production; automated guards already cover that failure path.
+The immediate next action is the **normal-path Build105 real-user smoke with the local SonicTrace coordinator healthy**. Do not manufacture timeout/network loss to test the fence in production; automated guards already cover pre-submit versus post-upload response-loss behavior.
 
 ## Frozen authority model
 
@@ -128,7 +146,7 @@ The immediate next action is the **normal-path Build104 real-user smoke**. Do no
 
 Private GET retry is bounded to accepted transient classes and at most one retry. It never authorizes write retry.
 
-Build103 extends that bounded philosophy to the canonical-audio pre-compute GET only. Build104 does **not** retry Deep Audio compute: timeout/transport after submit becomes UNKNOWN and blocks a second same-source POST until page reload.
+Build103 retries only the canonical-audio pre-compute GET. Build105 keeps Deep Audio POST at one attempt per explicit user action and distinguishes pre-submit unreachable from true response-loss ambiguity using browser-observed upload phase evidence.
 
 For accepted Phase9 writes:
 
