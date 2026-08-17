@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-08-17 after **Build105 REAL USER PASS**.
+Updated: 2026-08-17 after **Build105 REAL USER PASS** and acceptance closeout.
 
 This is the short current checkpoint to read immediately after `AGENTS.md`. Historical implementation detail remains in `changelogs/` and milestone docs.
 
@@ -20,12 +20,15 @@ Candidate docs PR       #205
 Candidate docs CI       #586 · 32002709875 · SUCCESS
 Candidate docs merge    6de3709d4e89a2806cbf0cf9b598d71d49b1742f
 Candidate docs Pages    #216 · 32002755699 · SUCCESS build + deploy
+Acceptance docs PR      #206
+Acceptance docs CI      #587 · 32003769748 · SUCCESS
+Acceptance docs merge   cd590a74d673c2470d4a247156380e7ff154fed9
+Acceptance docs Pages   #217 · 32003812513 · SUCCESS build + deploy
 Real-user smoke         BUILD105 SMOKED 💨 · FULL profile ready · Deep Audio analysis complete
 Safety pre-build        safety/pre-build105-deep-audio-presubmit-corrective-20260817
 Safety green premerge   safety/post-build105-green-premerge-20260817-0838
 Safety post-deploy      safety/post-build105-deployed-candidate-20260817-0839
 Safety post-acceptance  safety/post-build105-real-user-pass-20260817-0854
-Acceptance closeout     docs/build105-acceptance-closeout-20260817
 Worker deploy           NONE
 Track Manager change    NONE
 SonicTrace backend      NONE
