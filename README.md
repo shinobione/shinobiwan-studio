@@ -17,17 +17,18 @@ Then verify real GitHub state before mutation.
 ## Current accepted state
 
 ```text
-Studio accepted        v0.19.27 · Build105 · REAL USER PASS
-Accepted runtime PR    #204
-Accepted tested head   efa188b8d7181a4aa03bdea4bf2da40534203e9e
-Accepted runtime CI    #585 · 32002434543 · SUCCESS
-Accepted runtime merge f3a295d5e7bdbd0cfa05cc6d44901fab62e42c5b
-Accepted runtime Pages #215 · 32002484381 · SUCCESS build + deploy
-Candidate docs PR      #205
-Candidate docs CI      #586 · 32002709875 · SUCCESS
-Candidate docs merge   6de3709d4e89a2806cbf0cf9b598d71d49b1742f
-Candidate docs Pages   #216 · 32002755699 · SUCCESS build + deploy
-Real-user smoke        BUILD105 SMOKED 💨 · FULL profile ready · Deep Audio analysis complete
+Studio accepted        v0.19.28 · Build106 · REAL USER PASS
+Accepted runtime PR    #208
+Accepted tested head   61bca333a7f9898444c8d9e1610e3d6c6585664b
+Accepted runtime CI    #611 · 32058498867 · SUCCESS
+Accepted runtime merge 9c8efcf2250d48d0798ff1ea58ebd80d63ea19be
+Accepted runtime Pages #219 · 32058828759 · SUCCESS build + deploy
+Candidate docs PR      #209
+Candidate docs CI      #612 · 32059364849 · SUCCESS
+Candidate docs merge   24125d13962d8394ff0026ebbe38341607726054
+Candidate docs Pages   #220 · 32059459541 · SUCCESS build + deploy
+Real-user smoke        PRIVATE/INCOGNITO · PUBLIC READ-ONLY FALLBACK · Ghost Signal detail opened
+Build105               ACCEPTED predecessor · Deep Audio pre-submit corrective
 Build104               REJECTED candidate · false UNKNOWN classification
 Build101               REJECTED candidate · ETag representation false negative
 Track Manager          v5.24 · REAL USER VERIFIED
@@ -40,30 +41,17 @@ Deep Audio             2.0.3-alpha
 LRC Maker              6.3.8
 ```
 
-**Studio v0.19.27 · Build105 remains the current accepted Studio runtime.** It keeps the Build103 bounded canonical-audio pre-compute GET retry and the accepted Deep Audio pre-submit/post-upload classification boundary. `POST /api/studio/analyze` remains strictly one-shot per explicit user action with **zero automatic retries**.
+**Studio v0.19.28 · Build106 is the current accepted Studio runtime.** The real-user smoke used a private/incognito browser context without the private Cloudflare Access session. Studio visibly entered **PUBLIC READ-ONLY FALLBACK**, loaded the published Track workspace and opened **Ghost Signal** detail/lyrics while displaying the Build106 release identity.
 
-## Current deployed candidate
-
-```text
-Studio candidate       v0.19.28 · Build106 · REAL USER SMOKE PENDING
-Codename               studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth
-Audit base             7dfda47ed1186adf815bfd60a9c2affa5e1b255e
-Runtime PR             #208
-Exact tested head      61bca333a7f9898444c8d9e1610e3d6c6585664b
-Validation             #611 · 32058498867 · SUCCESS
-Runtime merge          9c8efcf2250d48d0798ff1ea58ebd80d63ea19be
-Runtime Pages          #219 · 32058828759 · SUCCESS build + deploy
-Backend deploy         NONE
-R2 migration/schema    NONE
-```
-
-Build106 hardens only the **public LaunchPAD Track-catalog fallback after the preferred private canonical read has actually failed**. The initial public read remains the same one-shot parallel enrichment request. If private fails and that first public request also failed with timeout, browser transport interruption, or HTTP `408/425/429/500/502/503/504`, Studio may repeat the public GET exactly once. Maximum public attempts: **2**.
+Build106 hardens only the **public LaunchPAD Track-catalog fallback after the preferred private canonical read has actually failed**. The initial public read remains the existing one-shot parallel enrichment request. If private fails and that first public request also failed with timeout, browser transport interruption, or HTTP `408/425/429/500/502/503/504`, Studio may repeat the public GET exactly once. Maximum public attempts: **2**.
 
 Deterministic HTTP failures, invalid JSON and invalid semantic payloads do not retry. The generic HTTP helper stays one-shot. No write retry, Public Worker change, Track Manager change, SonicTrace backend change, Deep Audio change or R2 mutation was introduced.
 
+Build105 remains accepted predecessor truth. Build104 remains rejected historical evidence for its false Deep Audio UNKNOWN classification, and Build101 remains rejected historical evidence for its ETag-representation false negative.
+
 Public Worker **v2.8** remains accepted cross-stack truth. It withholds a published Track from public list/detail/media while its canonical parent Album remains Draft/archived, using Album `trackIds` as ownership authority.
 
-Latest accepted Studio receipt: [`docs/acceptance/BUILD105-REAL-USER-PASS.md`](docs/acceptance/BUILD105-REAL-USER-PASS.md). Build106 candidate detail: [`changelogs/CHANGELOG-BUILD106.md`](changelogs/CHANGELOG-BUILD106.md).
+Latest accepted Studio receipt: [`docs/acceptance/BUILD106-REAL-USER-PASS.md`](docs/acceptance/BUILD106-REAL-USER-PASS.md).
 
 The Studio repository still publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
@@ -124,13 +112,13 @@ Phase 9 Slice21     Build103 · REAL USER PASS
 Build101            REJECTED candidate
 Build104            REJECTED candidate · false UNKNOWN classification
 Phase 9 Slice22     Build105 · REAL USER PASS
-Phase 9 Slice23     Build106 · DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
-Build107            UNALLOCATED
+Phase 9 Slice23     Build106 · REAL USER PASS
+Build107            UNALLOCATED · fresh read-only post-Build106 audit required
 Phase 10            FUTURE · progressive extraction
 Official Phase 11   NONE
 ```
 
-The immediate next action is a **normal-path Build106 public-fallback smoke in a browser context without the private Cloudflare Access session**. Confirm the public published Track inventory loads and one published Track detail opens. Do not deliberately manufacture a Public Worker timeout/503/network failure; the retry branch is covered by automated guards.
+The immediate next action is a **fresh read-only post-Build106 Phase9 audit**. Build107 must not be allocated until the real current implementation proves one smallest coherent next gap.
 
 ## Frozen authority model
 

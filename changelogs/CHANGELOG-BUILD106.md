@@ -1,7 +1,7 @@
 # CHANGELOG — Studio v0.19.28 · Build106
 
 Date: 2026-08-17
-Status: **DEPLOYED CANDIDATE · REAL USER SMOKE PENDING**
+Status: **REAL USER PASS · ACCEPTED**
 Codename: `studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth`
 
 ## Trigger
@@ -38,7 +38,7 @@ GET /tracks/<trackId>
 
 The generic `src/services/http.ts` helper remains one-shot. Public Album artwork fallback is unchanged. Private Track Manager authority remains preferred. All writes and Deep Audio compute semantics remain unchanged.
 
-## Validation and deployment receipts
+## Validation, deployment and candidate-doc receipts
 
 ```text
 Accepted predecessor     Studio v0.19.27 · Build105 · REAL USER PASS
@@ -52,7 +52,12 @@ Green premerge safety    safety/post-build106-green-premerge-20260817-2112
 Runtime merge SHA        9c8efcf2250d48d0798ff1ea58ebd80d63ea19be
 Runtime Pages            #219 · 32058828759 · SUCCESS build + deploy
 Post-deploy safety       safety/post-build106-deployed-candidate-20260817-2115
-Real-user smoke          PENDING
+Candidate docs PR        #209
+Candidate docs CI        #612 · 32059364849 · SUCCESS
+Candidate docs merge     24125d13962d8394ff0026ebbe38341607726054
+Candidate docs Pages     #220 · 32059459541 · SUCCESS build + deploy
+Real-user smoke          PASS · private/incognito · PUBLIC READ-ONLY FALLBACK · Ghost Signal detail opened
+Human-pass safety        safety/post-build106-real-user-pass-20260817-2141
 Worker deploy            NONE
 Track Manager change     NONE
 Public Worker change     NONE
@@ -90,15 +95,30 @@ Historical guards were extended only to recognize Build106 as a bounded successo
 - no create/upload causality work;
 - no public Album artwork retry change.
 
-## Human acceptance boundary
+## Real-user acceptance
 
-Use a safe browser context without the private Cloudflare Access session and confirm Studio still falls back to the public LaunchPAD catalog:
+The requested smoke was performed in a browser **private/incognito** context without the private Cloudflare Access session.
+
+Visible evidence showed:
 
 ```text
-Studio v0.19.28 · Build106
-→ private Track Manager read unavailable
-→ public published Track catalog loads
-→ one published Track detail opens normally
+Studio footer           v0.19.28 · Build 106
+Track                    Ghost Signal · PUBLISHED
+Fallback banner          PUBLIC READ-ONLY FALLBACK
+Fallback state           Private production tools are temporarily locked
+Read source              LaunchPAD public catalog
+Track detail             opened successfully
+Lyrics canonical source  lyrics.txt PRESENT · READ ONLY
 ```
 
-Do **not** deliberately break the Public Worker, network or Cloudflare to manufacture a transient failure. Automated guards own retry classification. Build105 remains the latest accepted Studio runtime until this smoke passes.
+This proves the ordinary fallback path remains usable when private production reads are unavailable. No Public Worker timeout, 503, network disconnect or other artificial fault was manufactured. Automated guards remain the authority for the bounded transient retry branch.
+
+Result: **PASS**.
+
+## Acceptance boundary
+
+Build106 is now the latest accepted Studio runtime. Build105 remains its accepted predecessor. Build101 and Build104 remain rejected historical candidates and are not rewritten by successor acceptance.
+
+This acceptance does **not** authorize automatic retry of writes, Deep Audio compute, or generic HTTP calls.
+
+Next action: fresh read-only post-Build106 Phase9 audit. **Build107 stays unallocated until that audit proves one bounded next gap.**
