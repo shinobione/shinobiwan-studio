@@ -6,18 +6,19 @@ const release = read('src/release.ts');
 const lyrics = read('src/services/lyrics-admin-api.ts');
 const ui = read('src/components/LyricsEditorPanel.tsx');
 const pkg = JSON.parse(read('package.json'));
-if (['0.19.22', '0.19.23', '0.19.24', '0.19.25'].includes(pkg.version)) assert.ok(release.includes('build99AncestryMarker'), 'Build100+ must preserve accepted Build99 ancestry.');
+if (['0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build99AncestryMarker'), 'Build100+ must preserve accepted Build99 ancestry.');
 
 assert.ok(release.includes('build94AncestryMarker'), 'Build95+ must preserve accepted Build94 ancestry.');
 assert.ok(release.includes("version: 0.19.16 · build: 94 · codename: 'studio-focus-slice4-phase9-lyrics-validation-transient-retry-truth'"));
-assert.ok(['0.19.16', '0.19.17', '0.19.18', '0.19.19', '0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25'].includes(pkg.version), 'Build94 guard accepts Build94 and bounded successors through Build103.');
-if (['0.19.18', '0.19.19', '0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25'].includes(pkg.version)) assert.ok(release.includes('build95AncestryMarker'), 'Build96+ must preserve accepted Build95 ancestry while inheriting Build94 validation truth.');
-if (['0.19.19', '0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25'].includes(pkg.version)) assert.ok(release.includes('build96AncestryMarker'), 'Build97+ must preserve accepted Build96 ancestry while inheriting Build94 validation truth.');
-if (['0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25'].includes(pkg.version)) assert.ok(release.includes('build97AncestryMarker'), 'Build98+ must preserve Build97 ancestry while inheriting Build94 validation truth.');
-if (['0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25'].includes(pkg.version)) assert.ok(release.includes('build98AncestryMarker'), 'Build99+ must preserve accepted Build98 ancestry while inheriting Build94 validation truth.');
-if (['0.19.23', '0.19.24', '0.19.25'].includes(pkg.version)) assert.ok(release.includes('build100AncestryMarker'), 'Build101+ must preserve Build100 ancestry while inheriting Build94 validation truth.');
-if (['0.19.24', '0.19.25'].includes(pkg.version)) assert.ok(release.includes('build101AncestryMarker'), 'Build102+ must preserve Build101 candidate ancestry while inheriting Build94 validation truth.');
-if (pkg.version === '0.19.25') assert.ok(release.includes('build102AncestryMarker'), 'Build103 must preserve accepted Build102 ancestry while inheriting Build94 validation truth.');
+assert.ok(['0.19.16', '0.19.17', '0.19.18', '0.19.19', '0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26'].includes(pkg.version), 'Build94 guard accepts Build94 and bounded successors through Build104.');
+if (['0.19.18', '0.19.19', '0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build95AncestryMarker'), 'Build96+ must preserve accepted Build95 ancestry while inheriting Build94 validation truth.');
+if (['0.19.19', '0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build96AncestryMarker'), 'Build97+ must preserve accepted Build96 ancestry while inheriting Build94 validation truth.');
+if (['0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build97AncestryMarker'), 'Build98+ must preserve Build97 ancestry while inheriting Build94 validation truth.');
+if (['0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build98AncestryMarker'), 'Build99+ must preserve accepted Build98 ancestry while inheriting Build94 validation truth.');
+if (['0.19.23', '0.19.24', '0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build100AncestryMarker'), 'Build101+ must preserve Build100 ancestry while inheriting Build94 validation truth.');
+if (['0.19.24', '0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build101AncestryMarker'), 'Build102+ must preserve Build101 candidate ancestry while inheriting Build94 validation truth.');
+if (['0.19.25', '0.19.26'].includes(pkg.version)) assert.ok(release.includes('build102AncestryMarker'), 'Build103+ must preserve accepted Build102 ancestry while inheriting Build94 validation truth.');
+if (pkg.version === '0.19.26') assert.ok(release.includes('build103AncestryMarker'), 'Build104 must preserve accepted Build103 ancestry while inheriting Build94 validation truth.');
 
 assert.ok(lyrics.includes("const LYRICS_VALIDATION_INTENT = 'lyrics-validate-v1';"), 'Build94 must preserve the canonical non-mutating Lyrics validation intent.');
 assert.ok(lyrics.includes('const TRANSIENT_LYRICS_VALIDATION_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);'), 'Lyrics validation transient HTTP allowlist must stay explicit and bounded.');

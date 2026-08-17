@@ -28,7 +28,9 @@ for (const marker of [
 
 assert.ok(!panel.includes('SonicTrace Deep Audio is offline. Browser DSP completed'), 'C3 must not call every Deep Audio processing failure offline.');
 assert.ok(api.includes("provenance: { dsp: 'measured-in-browser', deepAudio: 'unavailable' }"), 'Browser-only fallback must keep explicit Deep Audio unavailable provenance.');
-assert.ok(api.includes("xhr.onerror = () => reject(new SonicTraceError('SonicTrace Deep Audio node is offline or blocked by the browser."), 'Transport failures must remain distinguishable from HTTP processing failures.');
+assert.ok(api.includes('xhr.onerror = () => {') && api.includes("'DEEP_AUDIO_COMPUTE_TRANSPORT_UNVERIFIED'"), 'Transport response loss must remain typed and distinguishable from HTTP processing failures.');
+assert.ok(api.includes('xhr.ontimeout = () => {') && api.includes("'DEEP_AUDIO_COMPUTE_TIMEOUT_UNVERIFIED'"), 'Timeout response loss must remain typed and distinguishable from HTTP processing failures.');
+assert.ok(api.includes('if (xhr.status < 200 || xhr.status >= 300)'), 'HTTP processing failures must remain a separate response path from transport/timeout response loss.');
 
 const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
@@ -39,4 +41,4 @@ const authorizedStudioFocusSuccessor = /^0\.(?:17|18|19)\.\d+$/.test(version) &&
 assert.ok(c3Line || authorizedPhase7Successor || authorizedStudioFocusSuccessor, `C3 Deep Audio behavior must remain inherited by the accepted C3 line or its explicitly authorized Phase 7 / Studio Focus successor, got ${version} / ${codename}.`);
 assert.ok(build >= 38, `C3 Studio build must be >= 38, got ${build}.`);
 
-console.log('C3 Deep Audio FULL/PARTIAL/UNAVAILABLE semantics and transport-vs-processing guards passed through the authorized Studio Focus successor.');
+console.log('C3 Deep Audio FULL/PARTIAL/UNAVAILABLE semantics and typed transport/timeout-vs-processing guards passed through the authorized Studio Focus successor.');

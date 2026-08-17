@@ -48,6 +48,14 @@ function layerState(analysis: SonicTraceAnalysis, field: keyof SonicTraceAnalysi
   return analysis[field] ? 'ready' : 'missing';
 }
 
+function deepFailureIsResponseLoss(error: unknown): boolean {
+  return error instanceof SonicTraceError && [
+    'DEEP_AUDIO_COMPUTE_TRANSPORT_UNVERIFIED',
+    'DEEP_AUDIO_COMPUTE_TIMEOUT_UNVERIFIED',
+    'DEEP_AUDIO_COMPUTE_RELOAD_REQUIRED',
+  ].includes(error.code || '');
+}
+
 function deepFailureIsTransport(error: unknown): boolean {
   if (!(error instanceof SonicTraceError) || error.status != null) return false;
   return /offline|blocked by the browser|timed out/i.test(error.message);
@@ -60,7 +68,9 @@ function displaySonicTraceError(error: unknown): string {
     ? 'RETRY SAFE AFTER RECONNECT'
     : ['SONICTRACE_SAVE_AMBIGUOUS', 'SONICTRACE_SAVE_UNVERIFIED'].includes(code)
       ? 'DO NOT RETRY'
-      : null;
+      : deepFailureIsResponseLoss(error)
+        ? 'DEEP AUDIO STATE UNKNOWN · RELOAD BEFORE RESUBMIT'
+        : null;
   return `${state ? `${state} · ` : ''}${error.message}${code ? ` · ${code}` : ''}`;
 }
 
@@ -133,9 +143,11 @@ export function SonicTracePanel({ track, onSaved }: { track: StudioTrackDetail; 
         if (!dsp) throw new Error(`${message} Browser DSP is also unavailable: ${dspError || 'unknown browser decoding error'}`);
         setDraft(browserOnlyAnalysis(track.id, current.currentSourceVersion, dsp, message));
         setNotice(
-          deepFailureIsTransport(deepError)
-            ? 'SonicTrace coordinator is unreachable. Browser DSP completed and can be saved as an UNAVAILABLE-deep fallback profile.'
-            : 'SonicTrace coordinator responded but Deep Audio processing failed before it could return retained layers. Browser DSP completed as a fallback; review the processing error before saving.',
+          deepFailureIsResponseLoss(deepError)
+            ? 'DEEP AUDIO STATE UNKNOWN · The submitted compute may already have run or may still be running. Studio will not submit a second Deep Audio POST for this exact Track/audio revision in this page. Browser DSP is reviewable, but saving it does not prove Deep Audio did not run. Reload Studio before any explicit re-scan.'
+            : deepFailureIsTransport(deepError)
+              ? 'SonicTrace coordinator is unreachable. Browser DSP completed and can be saved as an UNAVAILABLE-deep fallback profile.'
+              : 'SonicTrace coordinator responded but Deep Audio processing failed before it could return retained layers. Browser DSP completed as a fallback; review the processing error before saving.',
         );
       }
     } catch (reason) {
