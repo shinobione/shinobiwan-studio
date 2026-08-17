@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Decisions
 
-Updated: 2026-08-15.
+Updated: 2026-08-17 after **Phase9 program closeout**.
 
 This file records durable product, architecture and safety decisions. It is not a changelog. Add an entry only when a decision is introduced, changed or explicitly superseded.
 
@@ -79,7 +79,7 @@ Whole-track deletion remains outside the Studio bridge unless a future explicit 
 
 ## D-008 — Lost-response write policy
 
-**Status:** active / Phase9 authority
+**Status:** active / frozen Phase9 authority
 
 A lost HTTP response does not prove whether a write committed.
 
@@ -96,7 +96,7 @@ An explicit retry may be presented as safe only when canonical reread proves the
 
 A lost-response operation may be recovered as success only when its exact canonical postcondition is positively verified.
 
-Build82 applies this specifically to Track asset delete and Album asset delete. Do not silently generalize its implementation to other writes without a bounded audit.
+Build82 first applied this to Track asset delete and Album asset delete; later Phase9 slices extended the same decision only with operation-specific postconditions. Phase9 closeout freezes the policy but does not authorize generic retry/recovery code.
 
 ## D-009 — Acceptance states remain separate
 
@@ -160,12 +160,13 @@ Prefer source guards, typecheck/build, stale protection, canonical reread verifi
 
 ## D-014 — Version/build discipline
 
-**Status:** active
+**Status:** active / frozen
 
 - A runtime build is allocated only for a proven runtime scope.
 - Docs-only governance/closeout work does not bump Studio version/build.
 - A candidate does not become accepted retroactively because a later candidate passes.
 - Historical failed/superseded builds retain their real status.
+- Closing a phase does not consume the next build number merely for bookkeeping.
 
 ## D-015 — Repository memory is canonical and bounded
 
@@ -182,6 +183,33 @@ QA.md
 ```
 
 Historical `docs/` and `changelogs/` are evidence, not mandatory startup context. Significant accepted closeouts must update the canonical checkpoint files so a new session can resume from repository truth without a copied chat transcript.
+
+## D-016 — Client-side reliability must stop where backend evidence stops
+
+**Status:** active / frozen · introduced by Phase9 closeout
+
+Phase9 established the maximum truthful Studio-side reliability boundary under the current backend contracts.
+
+Studio may classify or recover a lost-response operation only when available canonical evidence positively proves the operation-specific postcondition. It must **not** infer causality merely because current state looks plausible after a transport failure.
+
+Examples that require stronger backend evidence before further hardening:
+
+- Track/Album create response-loss causality without durable operation identity;
+- exact-byte binary upload causality without trustworthy digest/equivalent exact-object proof;
+- catalog rebuild causality without operation identity/generation token/status;
+- expensive Deep Audio compute completion without coordinator operation identity/status/idempotency.
+
+```text
+backend exposes enough authoritative evidence
+→ a future bounded slice may use it
+
+backend does not expose enough authoritative evidence
+→ Studio reports ambiguity/unverified truthfully
+→ no blind retry
+→ no fake client-side certainty
+```
+
+**Consequence:** Phase9 is complete on accepted Build106. Build107 remains unallocated until a Phase10 scope audit proves a new bounded runtime objective; it is not a filler reliability build.
 
 ## Changing a decision
 

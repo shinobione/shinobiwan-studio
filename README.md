@@ -27,6 +27,14 @@ Candidate docs PR      #209
 Candidate docs CI      #612 · 32059364849 · SUCCESS
 Candidate docs merge   24125d13962d8394ff0026ebbe38341607726054
 Candidate docs Pages   #220 · 32059459541 · SUCCESS build + deploy
+Acceptance docs PR     #210
+Acceptance docs CI     #613 · 32062146377 · SUCCESS
+Acceptance docs merge  a79b5c44d86b45361fe4d649114f7f8b5c29849c
+Acceptance docs Pages  #221 · 32062257475 · SUCCESS build + deploy
+Final receipts PR      #211
+Final receipts CI      #614 · 32062830991 · SUCCESS
+Final receipts merge   0b576d0fc521b579d3ae88b2878003591e253ed1
+Final receipts Pages   #222 · 32062944646 · SUCCESS build + deploy
 Real-user smoke        PRIVATE/INCOGNITO · PUBLIC READ-ONLY FALLBACK · Ghost Signal detail opened
 Build105               ACCEPTED predecessor · Deep Audio pre-submit corrective
 Build104               REJECTED candidate · false UNKNOWN classification
@@ -52,6 +60,8 @@ Build105 remains accepted predecessor truth. Build104 remains rejected historica
 Public Worker **v2.8** remains accepted cross-stack truth. It withholds a published Track from public list/detail/media while its canonical parent Album remains Draft/archived, using Album `trackIds` as ownership authority.
 
 Latest accepted Studio receipt: [`docs/acceptance/BUILD106-REAL-USER-PASS.md`](docs/acceptance/BUILD106-REAL-USER-PASS.md).
+
+Phase9 program closeout audit: [`docs/PHASE-9-PROGRAM-CLOSEOUT-AUDIT.md`](docs/PHASE-9-PROGRAM-CLOSEOUT-AUDIT.md).
 
 The Studio repository still publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
@@ -105,7 +115,7 @@ Phase 7-A           COMPLETE · REAL USER PASS
 Phase 7-B           COMPLETE · REAL USER PASS
 Phase 7-C           COMPLETE · program closeout
 Phase 8             COMPLETE · Build81 closeout
-Phase 9             ACTIVE
+Phase 9             COMPLETE · program closeout on accepted Build106
 Phase 9 Slice1–19   Build82→Build100 · REAL USER PASS
 Phase 9 Slice20     Build102 · REAL USER PASS
 Phase 9 Slice21     Build103 · REAL USER PASS
@@ -113,12 +123,14 @@ Build101            REJECTED candidate
 Build104            REJECTED candidate · false UNKNOWN classification
 Phase 9 Slice22     Build105 · REAL USER PASS
 Phase 9 Slice23     Build106 · REAL USER PASS
-Build107            UNALLOCATED · fresh read-only post-Build106 audit required
-Phase 10            FUTURE · progressive extraction
+Build107            UNALLOCATED / UNUSED
+Phase 10            NEXT · progressive extraction · SCOPE AUDIT REQUIRED
 Official Phase 11   NONE
 ```
 
-The immediate next action is a **fresh read-only post-Build106 Phase9 audit**. Build107 must not be allocated until the real current implementation proves one smallest coherent next gap.
+The fresh read-only post-Build106 audit found **no additional honest Studio-only Phase9 runtime gap**. Remaining causality questions require stronger backend evidence such as operation identity, digest or durable request status. Build107 is therefore not allocated to Phase9.
+
+The immediate next action is a **read-only Phase10 scope audit**. Phase10 does not become active, and Build107 must not be allocated, until that audit proves one bounded independently reversible progressive-extraction slice.
 
 ## Frozen authority model
 
@@ -150,17 +162,19 @@ response lost / timeout
 → classify committed / not committed / ambiguous / unverified
 ```
 
-Each write family keeps operation-specific postconditions.
+Each write family keeps operation-specific postconditions. Phase9 closeout freezes these contracts; it does not generalize them into generic retry machinery.
 
 ## Roadmap continuity
 
 Preserved backlog includes:
 
-- Album/Track create and upload causality gaps that require stronger operation identity or digest evidence;
+- Album/Track create response-loss causality requiring stronger operation identity;
+- exact-byte/digest evidence for binary upload families;
+- catalog rebuild operation identity/generation evidence;
 - stronger Deep Audio operation identity/status only if the coordinator gains a safe backend contract;
 - degraded/offline workflow work only when a bounded product slice is proven;
 - premium interaction polish: tactile press/release, restrained glow/focus, coherent hover/active states, smooth panel/tab transitions and reduced-motion-safe motion;
 - Phase10 progressive extraction of mature LRC / SonicTrace / catalog engines while Studio remains orchestrator;
 - no official Phase11.
 
-See [`ROADMAP.md`](ROADMAP.md) for current Done / Active / Next / Backlog state and [`QA.md`](QA.md) for accepted test boundaries.
+See [`ROADMAP.md`](ROADMAP.md) for current Done / Next / Backlog state and [`QA.md`](QA.md) for accepted test boundaries.

@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-17 after **Build106 REAL USER PASS**.
+Updated: 2026-08-17 after **Phase9 program closeout audit** on accepted Build106.
 
 This file tracks only durable Done / Active / Next / Backlog state. Historical implementation detail belongs in `changelogs/`, `docs/` and acceptance receipts.
 
@@ -23,7 +23,9 @@ Identity → Core media → Lyrics → Intelligence → Release
 
 Accepted through Build81. Content Health, Album Health, publication truth and Sonic/provider semantic cleanup are closed and must not be reopened merely for refactoring.
 
-### Phase 9 — accepted reliability / canonical truth lineage
+### Phase 9 — reliability / canonical truth — PROGRAM COMPLETE
+
+Phase9 is closed on accepted **Studio v0.19.28 · Build106** after a fresh read-only post-Build106 audit found no additional honest Studio-only runtime slice under current backend contracts.
 
 ```text
 Build82   destructive Track/Album asset-delete ambiguity       REAL USER PASS
@@ -53,135 +55,65 @@ Build105  Deep Audio pre-submit transport corrective           REAL USER PASS
 Build106  public catalog fallback transient GET retry           REAL USER PASS
 ```
 
+Accepted Build106 receipt: [`docs/acceptance/BUILD106-REAL-USER-PASS.md`](docs/acceptance/BUILD106-REAL-USER-PASS.md).
+
+Phase9 closeout audit: [`docs/PHASE-9-PROGRAM-CLOSEOUT-AUDIT.md`](docs/PHASE-9-PROGRAM-CLOSEOUT-AUDIT.md).
+
+The closeout audit explicitly checked the remaining one-shot/read seams and rejected fake work:
+
+- public Album visuals do not rescue Albums without private canonical Album truth;
+- SonicTrace `/api/live` is diagnostic System Status only;
+- Album migration dry-run is archived maintenance, not daily workflow;
+- Home / Workflow / Track Workspace converge through the already hardened catalog layer;
+- Album / Lyrics / SonicTrace canonical reads and metadata/Lyrics validations are already bounded;
+- catalog rebuild lost-response causality cannot be proven client-side from catalog count alone;
+- create lost-response and exact-byte binary causality require stronger backend evidence;
+- further Deep Audio ambiguity hardening requires coordinator operation identity/status/idempotency.
+
+**Build107 remains UNALLOCATED / UNUSED.** Phase9 does not consume it.
+
 ### Cross-stack publication projection — CLOSED
 
 LaunchPAD-APP Public Worker **v2.8** gates public list/detail/media visibility from canonical Album `trackIds` ownership. Published Tracks owned by Draft/archived Albums are withheld; standalone published Tracks and Tracks owned by published Albums remain public. This is accepted cross-stack truth and is not a Studio build candidate.
 
-### Phase 9 Slice20 — Track asset normal-success verification truth
+## Active
 
-**Accepted runtime: Build102 · v0.19.24 · REAL USER PASS**
+No runtime phase is active.
 
-Build101 introduced the stronger Track asset normal-success proof but failed real-user acceptance because identical R2 object ETags arrived in quoted HTTP and raw canonical representations. Build102 normalizes only one symmetric outer quote pair before exact comparison and preserves exact revision, filename, presence, size, content type, duration and zero-auto-retry semantics.
-
-Detailed receipt: [`docs/acceptance/BUILD102-REAL-USER-PASS.md`](docs/acceptance/BUILD102-REAL-USER-PASS.md).
-
-### Phase 9 Slice21 — canonical audio pre-compute transient retry
-
-**Accepted runtime: Build103 · v0.19.25 · REAL USER PASS**
-
-Build103 adds exactly one bounded retry to the non-mutating canonical master-audio GET before SonicTrace / Deep Audio compute for timeout, browser transport interruption, or HTTP `408/425/429/500/502/503/504`.
-
-```text
-canonical audio GET        one bounded transient retry allowed
-POST /api/studio/analyze   ZERO automatic retries
-canonical writes           unchanged / operation-specific no-blind-retry rules
-```
-
-Detailed receipt: [`docs/acceptance/BUILD103-REAL-USER-PASS.md`](docs/acceptance/BUILD103-REAL-USER-PASS.md).
-
-### Phase 9 Slice22 — Deep Audio pre-submit transport corrective
-
-**Accepted runtime: Build105 · v0.19.27 · REAL USER PASS**
-
-Build104 attempted to fence true Deep Audio response loss after submit, but its normal-path real-user smoke proved every XHR transport error/timeout was being treated as if upload had already begun. Build105 corrected that boundary while retaining zero automatic Deep Audio retries.
-
-```text
-transport / timeout BEFORE browser-observed upload start
-→ PRE-SUBMIT UNREACHABLE
-→ no duplicate-compute fence
-→ Browser DSP fallback remains reviewable
-→ ZERO automatic retry
-→ explicit manual re-scan allowed after coordinator recovery
-
-transport / timeout AFTER browser-observed upload start
-→ COMPUTE UNKNOWN
-→ exact Track + canonical source revision fenced in-page
-→ ZERO automatic retry
-→ explicit page reload required before deliberate manual resubmit
-```
-
-Accepted receipt: [`docs/acceptance/BUILD105-REAL-USER-PASS.md`](docs/acceptance/BUILD105-REAL-USER-PASS.md).
-
-Build104 remains rejected historical evidence; Build105 acceptance does not rewrite that verdict.
-
-### Phase 9 Slice23 — public catalog fallback transient retry
-
-**Accepted runtime: Build106 · v0.19.28 · REAL USER PASS**
-
-Fresh read-only post-Build105 audit proved the public LaunchPAD Track catalog fallback was still one-shot. Build106 preserves the existing initial public read and allows one additional public GET only after the private canonical read has ultimately failed and the first public request failed transiently.
-
-```text
-private succeeds
-→ existing one-shot public enrichment only
-→ NO second GET
-
-private fails + public succeeds
-→ use public fallback
-
-private fails + public fails with timeout / browser transport
-or HTTP 408 / 425 / 429 / 500 / 502 / 503 / 504
-→ one retry
-→ max 2 public attempts total
-
-private fails + deterministic public failure / invalid response
-→ no retry
-```
-
-Bounded endpoints:
-
-```text
-GET /health
-GET /tracks
-GET /tracks/<trackId>
-```
-
-The generic HTTP helper stays one-shot. No write, Worker, Track Manager, Public Worker, SonicTrace backend, R2 or Deep Audio behavior changed. Public Album artwork fallback remains outside this slice.
-
-Accepted receipts:
-
-```text
-Audit base              7dfda47ed1186adf815bfd60a9c2affa5e1b255e
-Runtime PR              #208
-Exact tested head       61bca333a7f9898444c8d9e1610e3d6c6585664b
-Final runtime CI        #611 · 32058498867 · SUCCESS
-Runtime merge           9c8efcf2250d48d0798ff1ea58ebd80d63ea19be
-Runtime Pages           #219 · 32058828759 · SUCCESS build + deploy
-Candidate docs PR       #209
-Candidate docs CI       #612 · 32059364849 · SUCCESS
-Candidate docs merge    24125d13962d8394ff0026ebbe38341607726054
-Candidate docs Pages    #220 · 32059459541 · SUCCESS build + deploy
-Human smoke             PASS · private/incognito · PUBLIC READ-ONLY FALLBACK · Ghost Signal opened
-Safety pre-build        safety/pre-build106-public-catalog-fallback-retry-20260817
-Safety green premerge   safety/post-build106-green-premerge-20260817-2112
-Safety post-deploy      safety/post-build106-deployed-candidate-20260817-2115
-Safety human pass       safety/post-build106-real-user-pass-20260817-2141
-```
-
-The human smoke used an incognito/private browser context without private Cloudflare Access. Studio displayed `v0.19.28 · Build 106`, visibly entered **PUBLIC READ-ONLY FALLBACK**, and opened the published **Ghost Signal** Track workspace/detail with canonical lyrics source shown read-only.
-
-Detailed receipt: [`docs/acceptance/BUILD106-REAL-USER-PASS.md`](docs/acceptance/BUILD106-REAL-USER-PASS.md).
-
-## In progress
-
-### Phase 9 — post-Build106 read-only audit boundary
-
-No next build is allocated yet.
-
-**Build107 is UNALLOCATED** until a fresh read-only audit of the real current repository/runtime state proves one smallest coherent reliability or truth gap that is safe to address without widening authority or retry semantics.
+The project is intentionally at a **transition boundary** between closed Phase9 and future Phase10. No version/build is allocated by this docs-only state transition.
 
 ## Next
 
-Perform a fresh **read-only post-Build106 Phase9 audit**.
+### Phase 10 — progressive extraction — SCOPE AUDIT REQUIRED
 
-The audit must start from real GitHub state and accepted runtime truth, not from an assumed next feature. If no bounded safe gap is proven, do not allocate Build107 merely to keep the build counter moving.
+Perform a fresh read-only cross-repository scope audit before any implementation.
+
+Phase10's durable direction is **progressive extraction of mature LRC / SonicTrace / catalog capabilities while Studio remains the orchestrator**. The audit must prove one smallest independently reversible slice rather than assuming extraction is automatically beneficial.
+
+Before allocating Build107, verify:
+
+```text
+1. which engine capability is genuinely mature enough to extract/reuse;
+2. where its canonical authority already lives;
+3. whether extraction removes duplication instead of creating a second source of truth;
+4. whether standalone LaunchPAD / Track Manager / SonicTrace / LRC Maker remain functional;
+5. whether Studio remains orchestration/UI rather than becoming a monolith;
+6. exact rollback boundary;
+7. exact CI + real-user acceptance boundary.
+```
+
+**Do not allocate Build107 until this audit yields one bounded Phase10 slice.**
 
 ## Backlog
 
 ### Reliability candidates requiring stronger backend contracts
 
+These are intentionally carried beyond Phase9; they are not unfinished Studio client work:
+
 - Album create lost-response causality / operation identity;
 - Track create lost-response causality / operation identity;
 - exact-byte/digest proof for binary upload families;
+- catalog rebuild operation identity/generation evidence;
 - Deep Audio request status/idempotency if the coordinator later gains an operation identity contract;
 - degraded/offline behavior that materially affects the private Studio workflow.
 
@@ -196,9 +128,16 @@ Rolling, non-blocking product polish remains explicitly preserved:
 - reduced-motion-safe animation;
 - no decorative motion that obscures state or slows work.
 
-### Phase 10 — progressive extraction
+This polish may be folded into a future bounded product slice only when it does not blur the scope or acceptance boundary.
 
-Potential future extraction of mature LRC / SonicTrace / catalog engines while Studio remains orchestrator.
+### Phase 10 — progressive extraction candidates
+
+Potential future extraction/reuse areas to audit, not promises:
+
+- mature LRC synchronization engine boundaries;
+- mature SonicTrace analysis/profile/catalog logic;
+- catalog projection/normalization logic where duplication is proven;
+- shared contracts/types only when authority remains singular and standalone apps remain safe.
 
 There is currently **no official Phase 11**.
 
@@ -212,10 +151,12 @@ There is currently **no official Phase 11**.
 - Do not generalize GET retry into write retry.
 - Do not generalize non-mutating validation retry into write retry.
 - Do not generalize one write family's recovery postcondition into another operation family.
+- Do not fake causal proof when the backend exposes no operation identity/digest/status evidence.
 - Build101 remains rejected historical evidence; do not relabel it accepted because Build102 passed.
 - Build104 remains rejected historical evidence; do not relabel it accepted because Build105 passed.
-- Build107 remains unallocated until the post-Build106 audit proves a bounded next gap.
+- Phase9 is complete; do not allocate Build107 as a Phase9 filler build.
+- Build107 may be allocated only after the Phase10 scope audit proves one bounded runtime slice.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for current runtime/cross-stack truth, `QA.md` for accepted validation boundaries, and [`docs/acceptance/BUILD106-REAL-USER-PASS.md`](docs/acceptance/BUILD106-REAL-USER-PASS.md) for the latest accepted Studio receipt.
+See `PROJECT_STATE.md` for current runtime/cross-stack truth, `QA.md` for accepted validation boundaries, [`docs/acceptance/BUILD106-REAL-USER-PASS.md`](docs/acceptance/BUILD106-REAL-USER-PASS.md) for the latest accepted Studio runtime receipt, and [`docs/PHASE-9-PROGRAM-CLOSEOUT-AUDIT.md`](docs/PHASE-9-PROGRAM-CLOSEOUT-AUDIT.md) for the Phase9 program-closeout decision.
