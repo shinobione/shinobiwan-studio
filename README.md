@@ -37,11 +37,29 @@ Deep Audio            2.0.3-alpha
 LRC Maker             6.3.8
 ```
 
-**Studio v0.19.24 · Build102 is the current accepted Studio runtime.** Build102 preserves the stronger Build101 Track-asset success proof and corrects only the quoted-HTTP-vs-raw-canonical ETag representation mismatch. Automatic asset upload retries remain zero.
+**Studio v0.19.24 · Build102 remains the current accepted Studio runtime.** Build102 preserves the stronger Build101 Track-asset success proof and corrects only the quoted-HTTP-vs-raw-canonical ETag representation mismatch. Automatic asset upload retries remain zero.
 
-Public Worker **v2.8** is also accepted cross-stack truth. It closes the previously observed public projection leak without changing Studio publication state: a published Track owned by a Draft/archived canonical Album is withheld from public list/detail/media until the parent Album is published. Canonical ownership comes from Album `trackIds`, never Track-side compatibility cache. The production smoke passed with `Pixels & Promises` hidden while `Anh Yêu Em` remained Draft.
+## Current deployed candidate
+
+```text
+Studio candidate       v0.19.25 · Build103 · REAL USER SMOKE PENDING
+Codename               studio-focus-slice4-phase9-canonical-audio-download-transient-retry-truth
+Runtime PR             #198
+Exact tested head      9d89aa1051b67b828836a45b648b6f45b69dbe74
+Validation             #543 · 31981673322 · SUCCESS
+Runtime merge          5732741bbe0c96d7f6c8d3e1b5b4989af1fa9b83
+Runtime Pages          #209 · 31981768144 · SUCCESS build + deploy
+Backend deploy         NONE
+R2 migration/schema    NONE
+```
+
+Build103 hardens only the **non-mutating canonical-audio GET performed before SonicTrace Deep Audio compute**. That GET may make one bounded transient retry for timeout, browser transport interruption, or HTTP `408/425/429/500/502/503/504`. The expensive `POST /api/studio/analyze` remains strictly one-shot with **zero automatic retries**. Access failures, deterministic ordinary HTTP failures, and empty/invalid successful responses do not retry.
+
+Public Worker **v2.8** remains accepted cross-stack truth. It closes the previously observed public projection leak without changing Studio publication state: a published Track owned by a Draft/archived canonical Album is withheld from public list/detail/media until the parent Album is published. Canonical ownership comes from Album `trackIds`, never Track-side compatibility cache. The production smoke passed with `Pixels & Promises` hidden while `Anh Yêu Em` remained Draft.
 
 Detailed Build102 receipt: [`docs/acceptance/BUILD102-REAL-USER-PASS.md`](docs/acceptance/BUILD102-REAL-USER-PASS.md).
+
+Build103 candidate contract: [`changelogs/CHANGELOG-BUILD103.md`](changelogs/CHANGELOG-BUILD103.md).
 
 The Studio repository still publishes **no formal GitHub Release objects and no Git tags**. Runtime release identity is carried by code, docs and Pages.
 
@@ -99,12 +117,13 @@ Phase 9             ACTIVE
 Phase 9 Slice1–19   Build82→Build100 · REAL USER PASS
 Phase 9 Slice20     Build102 · REAL USER PASS
 Build101            REJECTED candidate
-Build103            UNALLOCATED · fresh read-only post-Build102 audit required
+Build103            DEPLOYED CANDIDATE · REAL USER SMOKE PENDING
+Build104            UNALLOCATED
 Phase 10            FUTURE · progressive extraction
 Official Phase 11   NONE
 ```
 
-The immediate next action is a **fresh read-only post-Build102 Phase9 audit**. The publication-projection item is already closed cross-stack by Public Worker v2.8 and is not a Build103 candidate.
+The immediate next action is a **normal-path Build103 SonicTrace / Deep Audio real-user smoke** using a known-good existing Track with canonical master audio. Do not deliberately manufacture a timeout, network loss or Access failure merely to exercise the retry path. If Build103 passes, close its acceptance first and only then perform a fresh read-only audit before allocating Build104.
 
 ## Frozen authority model
 
@@ -123,6 +142,8 @@ The immediate next action is a **fresh read-only post-Build102 Phase9 audit**. T
 
 Private GET retry is bounded to accepted transient classes and at most one retry. It never authorizes write retry.
 
+Build103 extends that same bounded philosophy to the canonical-audio pre-compute GET only. It does not authorize automatic Deep Audio POST retry.
+
 For accepted Phase9 writes:
 
 ```text
@@ -138,6 +159,9 @@ Each write family keeps operation-specific postconditions.
 
 Preserved backlog includes:
 
+- Album/Track create and upload causality gaps that require stronger operation identity or digest evidence;
+- Deep Audio duplicate-compute boundaries beyond the safe pre-compute GET;
+- degraded/offline workflow work only when a bounded product slice is proven;
 - premium interaction polish: tactile press/release, restrained glow/focus, coherent hover/active states, smooth panel/tab transitions and reduced-motion-safe motion;
 - Phase10 progressive extraction of mature LRC / SonicTrace / catalog engines while Studio remains orchestrator;
 - no official Phase11.
