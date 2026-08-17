@@ -1,8 +1,8 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-17 after **Build102 REAL USER PASS**.
+Updated: 2026-08-17 after **Build102 REAL USER PASS** and reconciliation of the already-accepted Public Worker v2.8 corrective.
 
-This file tracks only durable Done / Active / Next / Backlog state. Historical implementation detail belongs in `changelogs/`, `docs/` and the acceptance receipts.
+This file tracks only durable Done / Active / Next / Backlog state. Historical implementation detail belongs in `changelogs/`, `docs/` and acceptance receipts.
 
 ## Done
 
@@ -25,7 +25,7 @@ Accepted through Build81. Content Health, Album Health, publication truth and So
 
 ### Phase 9 — reliability / canonical truth
 
-Accepted lineage:
+Accepted Studio lineage:
 
 ```text
 Build82   destructive Track/Album asset-delete ambiguity       REAL USER PASS
@@ -51,44 +51,39 @@ Build101  Track asset success verifier candidate               REJECTED · false
 Build102  bounded ETag representation corrective              REAL USER PASS
 ```
 
-### Phase 9 Slice20 — Track asset normal-success verification truth
+### Cross-stack publication projection — CLOSED
 
-**Accepted runtime: Build102 · v0.19.24 · REAL USER PASS**
+The post-Build100 audit separately proved a public visibility leak: a Track could already be `published` while its canonical parent Album remained Draft. This was **not a Studio runtime gap** and did not need a Studio build.
 
-Build101 introduced the intended stronger Track asset normal-success proof but failed real-user acceptance because identical R2 object ETags arrived in two syntax representations:
+LaunchPAD-APP Public Worker **v2.8** now gates public list/detail/media visibility from canonical Album `trackIds` ownership:
 
 ```text
-Track Manager upload response → httpEtag with surrounding HTTP quotes
-private canonical reread      → raw object.etag without quotes
+published Track + no canonical Album owner          → PUBLIC
+published Track + published canonical Album owner   → PUBLIC
+published Track + draft/archived canonical owner    → WITHHELD
+ownership conflict                                  → WITHHELD / fail closed
 ```
-
-The user did not retry. A refresh showed the cover persisted, proving the write was committed and Build101's `asset ETag` mismatch was a verification false negative.
-
-Build102 is the bounded corrective:
-
-- trims whitespace;
-- removes only one symmetric outer pair of double quotes when present;
-- compares the remaining ETag exactly;
-- preserves exact revision, filename, presence, size, content type and duration verification;
-- preserves zero automatic upload retries and existing response-loss safety semantics;
-- changes no Track Manager, Worker, Public Worker, R2 schema or Album behavior.
 
 Accepted receipts:
 
 ```text
-Runtime PR              #193
-Exact tested head       cfebb5cfe5b87627a29890a7477bd5628ef60759
-Validation              #524 · 31979380563 · SUCCESS
-Runtime merge           64ac5ed4d53daeafc4fa5b7a25ec66594eef274d
-Runtime Pages           #200 · 31979525479 · SUCCESS build + deploy
-Candidate docs PR       #194
-Candidate docs CI       #525 · 31979629544 · SUCCESS
-Candidate docs merge    68b39ce99e29745c14e004ae8e6fd1218f66b18c
-Candidate docs Pages    #201 · 31979667787 · SUCCESS
-Real-user result        ASSET SAVED · Canonical reread Verified · Catalog rebuilt Yes
-Canonical revision      2026-08-16T23:42:38.231Z
-Acceptance safety       safety/post-build102-real-user-pass-20260817-0142
+LaunchPAD PR            #241
+Source merge            b99ff00bb2483b46c7b1e02c874ebfc22892156d
+Cloudflare deploy       31974132377 · target public
+Public Worker           v2.8
+Cloudflare Version ID   49d87191-a13e-41a7-80c8-d1fd9362af77
+Real-user smoke         Pixels & Promises hidden while Anh Yêu Em remained Draft
+Admin Worker            SKIPPED / unchanged TM v5.24
+R2 write/schema         NONE
 ```
+
+The reverse Draft→Published visibility restoration remains automated-regression evidence; the production human smoke did not publish the Album merely to manufacture proof.
+
+### Phase 9 Slice20 — Track asset normal-success verification truth
+
+**Accepted runtime: Build102 · v0.19.24 · REAL USER PASS**
+
+Build101 introduced the intended stronger Track asset normal-success proof but failed real-user acceptance because identical R2 object ETags arrived in quoted HTTP and raw canonical representations. Build102 normalizes only one symmetric outer quote pair before exact comparison and preserves exact revision, filename, presence, size, content type, duration and zero-auto-retry semantics.
 
 Detailed receipt: [`docs/acceptance/BUILD102-REAL-USER-PASS.md`](docs/acceptance/BUILD102-REAL-USER-PASS.md).
 
@@ -96,26 +91,21 @@ Detailed receipt: [`docs/acceptance/BUILD102-REAL-USER-PASS.md`](docs/acceptance
 
 ### Post-Build102 fresh audit
 
-Build102 is accepted. Phase9 returns to **read-only audit mode**.
-
-No new runtime slice is allocated yet.
+Build102 is accepted. Phase9 is back in **read-only audit mode**.
 
 **Build103 remains UNALLOCATED.**
 
 ## Next
 
-Run a fresh read-only audit against the current Studio/Track Manager/LaunchPAD contracts and select exactly one smallest coherent gap.
-
-Re-evaluate, without assuming the winner:
+Reread current Studio / Track Manager contracts and select exactly one smallest coherent gap. Remaining candidates are:
 
 - Album create lost-response causality / operation identity;
-- exact-byte or digest proof for binary upload families where the backend can provide a trustworthy contract;
+- exact-byte or digest proof for binary upload families where the backend can provide trustworthy evidence;
 - remaining Track create/upload causality gaps;
 - Deep Audio duplicate-compute risk and expensive-analysis retry boundaries;
-- degraded/offline/PWA behavior;
-- publication projection where a public Track may coexist with a canonical parent Album still Draft.
+- degraded/offline behavior that materially affects the private Studio workflow.
 
-Do not allocate Build103 from memory. Do not bundle unrelated fixes.
+The public Track-vs-Draft-Album projection item is already closed by Public Worker v2.8 and must not be reallocated as Build103.
 
 ## Backlog
 
@@ -151,4 +141,4 @@ There is currently **no official Phase 11**.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for the current runtime checkpoint, `QA.md` for the Build102 acceptance boundary, and [`docs/acceptance/BUILD102-REAL-USER-PASS.md`](docs/acceptance/BUILD102-REAL-USER-PASS.md) for the detailed real-user receipt.
+See `PROJECT_STATE.md` for current runtime/cross-stack truth, `QA.md` for accepted validation boundaries, and [`docs/acceptance/BUILD102-REAL-USER-PASS.md`](docs/acceptance/BUILD102-REAL-USER-PASS.md) for the detailed Build102 receipt.
