@@ -8,7 +8,7 @@ const membership = read('src/services/album-membership-admin-api.ts');
 const c25d = read('scripts/test-phase-ux-c2-5-d-albums.mjs');
 const pkg = JSON.parse(read('package.json'));
 
-assert.ok(['0.19.22', '0.19.23', '0.19.24'].includes(pkg.version), 'Build100 guard accepts Build100 and bounded successors through Build102.');
+assert.ok(['0.19.22', '0.19.23', '0.19.24', '0.19.25'].includes(pkg.version), 'Build100 guard accepts Build100 and bounded successors through Build103.');
 if (pkg.version === '0.19.22') {
   assert.ok(release.includes("version: '0.19.22'"), 'Build100 release version mismatch.');
   assert.ok(release.includes('build: 100'), 'Build100 release identity is missing.');
@@ -16,11 +16,12 @@ if (pkg.version === '0.19.22') {
 }
 assert.ok(release.includes('build99AncestryMarker'), 'Build100+ must preserve accepted Build99 ancestry.');
 assert.ok(release.includes("version: 0.19.21 · build: 99 · codename: 'studio-focus-slice4-phase9-album-asset-upload-success-verification-truth'"), 'Accepted Build99 identity must remain immutable in Build100+ ancestry.');
-if (['0.19.23', '0.19.24'].includes(pkg.version)) {
+if (['0.19.23', '0.19.24', '0.19.25'].includes(pkg.version)) {
   assert.ok(release.includes('build100AncestryMarker'), 'Build101+ must preserve accepted Build100 ancestry.');
   assert.ok(release.includes("version: 0.19.22 · build: 100 · codename: 'studio-focus-slice4-phase9-album-first-track-intake'"), 'Accepted Build100 identity must remain immutable in successor ancestry.');
 }
-if (pkg.version === '0.19.24') assert.ok(release.includes('build101AncestryMarker'), 'Build102 must preserve rejected Build101 candidate ancestry while correcting only ETag representation.');
+if (['0.19.24', '0.19.25'].includes(pkg.version)) assert.ok(release.includes('build101AncestryMarker'), 'Build102+ must preserve rejected Build101 candidate ancestry while retaining its stronger verification boundary.');
+if (pkg.version === '0.19.25') assert.ok(release.includes('build102AncestryMarker'), 'Build103 must preserve accepted Build102 corrective ancestry.');
 
 // Canonical Album manifests, not Track compatibility caches, decide whether a Track is available for intake.
 assert.ok(workspace.includes('const canonicalOwnerByTrackId = useMemo(() => {'), 'Build100 must derive canonical ownership from loaded Albums.');
@@ -63,4 +64,4 @@ for (const inherited of [
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must retain ${inherited}`);
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Build100 must remain inside the repository-native full build gate.');
 
-console.log('Phase9 Build100 Album first-track intake guard passed through Build102: daily Tracklist intake still derives ownership from canonical Albums while Build87 remains the sole guarded membership write.');
+console.log('Phase9 Build100 Album first-track intake guard passed through Build103: daily Tracklist intake still derives ownership from canonical Albums while Build87 remains the sole guarded membership write.');
