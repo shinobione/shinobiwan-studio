@@ -1,7 +1,7 @@
 export const studioRelease = {
-  version: '0.19.24',
-  build: 102,
-  codename: 'studio-focus-slice4-phase9-track-asset-etag-representation-corrective',
+  version: '0.19.25',
+  build: 103,
+  codename: 'studio-focus-slice4-phase9-canonical-audio-download-transient-retry-truth',
   releasedAt: '2026-08-17',
 } as const;
 
@@ -44,3 +44,4 @@ export const build98AncestryMarker = "version: 0.19.20 · build: 98 · codename:
 export const build99AncestryMarker = "version: 0.19.21 · build: 99 · codename: 'studio-focus-slice4-phase9-album-asset-upload-success-verification-truth'";
 export const build100AncestryMarker = "version: 0.19.22 · build: 100 · codename: 'studio-focus-slice4-phase9-album-first-track-intake'";
 export const build101AncestryMarker = "version: 0.19.23 · build: 101 · codename: 'studio-focus-slice4-phase9-track-asset-upload-success-verification-truth'";
+export const build102AncestryMarker = "version: 0.19.24 · build: 102 · codename: 'studio-focus-slice4-phase9-track-asset-etag-representation-corrective'";
