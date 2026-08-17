@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-08-17 after **Build103 deployment candidate**; Build102 remains the latest accepted Studio runtime pending Build103 real-user smoke.
+Updated: 2026-08-17 after **Build103 REAL USER PASS**.
 
 This file tracks only durable Done / Active / Next / Backlog state. Historical implementation detail belongs in `changelogs/`, `docs/` and acceptance receipts.
 
@@ -49,53 +49,26 @@ Build99   Album asset upload normal-success verification       REAL USER PASS
 Build100  Album first-track intake continuity                  REAL USER PASS
 Build101  Track asset success verifier candidate               REJECTED · false-negative ETag representation
 Build102  bounded ETag representation corrective              REAL USER PASS
+Build103  canonical audio pre-compute transient retry          REAL USER PASS
 ```
 
 ### Cross-stack publication projection — CLOSED
 
-The post-Build100 audit separately proved a public visibility leak: a Track could already be `published` while its canonical parent Album remained Draft. This was **not a Studio runtime gap** and did not need a Studio build.
-
-LaunchPAD-APP Public Worker **v2.8** now gates public list/detail/media visibility from canonical Album `trackIds` ownership:
-
-```text
-published Track + no canonical Album owner          → PUBLIC
-published Track + published canonical Album owner   → PUBLIC
-published Track + draft/archived canonical owner    → WITHHELD
-ownership conflict                                  → WITHHELD / fail closed
-```
-
-Accepted receipts:
-
-```text
-LaunchPAD PR            #241
-Source merge            b99ff00bb2483b46c7b1e02c874ebfc22892156d
-Cloudflare deploy       31974132377 · target public
-Public Worker           v2.8
-Cloudflare Version ID   49d87191-a13e-41a7-80c8-d1fd9362af77
-Real-user smoke         Pixels & Promises hidden while Anh Yêu Em remained Draft
-Admin Worker            SKIPPED / unchanged TM v5.24
-R2 write/schema         NONE
-```
-
-The reverse Draft→Published visibility restoration remains automated-regression evidence; the production human smoke did not publish the Album merely to manufacture proof.
+LaunchPAD-APP Public Worker **v2.8** gates public list/detail/media visibility from canonical Album `trackIds` ownership. Published Tracks owned by Draft/archived Albums are withheld; standalone published Tracks and Tracks owned by published Albums remain public. This is accepted cross-stack truth and is not a Studio build candidate.
 
 ### Phase 9 Slice20 — Track asset normal-success verification truth
 
 **Accepted runtime: Build102 · v0.19.24 · REAL USER PASS**
 
-Build101 introduced the intended stronger Track asset normal-success proof but failed real-user acceptance because identical R2 object ETags arrived in quoted HTTP and raw canonical representations. Build102 normalizes only one symmetric outer quote pair before exact comparison and preserves exact revision, filename, presence, size, content type, duration and zero-auto-retry semantics.
+Build101 introduced the stronger Track asset normal-success proof but failed real-user acceptance because identical R2 object ETags arrived in quoted HTTP and raw canonical representations. Build102 normalizes only one symmetric outer quote pair before exact comparison and preserves exact revision, filename, presence, size, content type, duration and zero-auto-retry semantics.
 
 Detailed receipt: [`docs/acceptance/BUILD102-REAL-USER-PASS.md`](docs/acceptance/BUILD102-REAL-USER-PASS.md).
 
-## In progress
+### Phase 9 Slice21 — canonical audio pre-compute transient retry
 
-### Phase 9 Slice21 candidate — canonical audio pre-compute transient retry
+**Accepted runtime: Build103 · v0.19.25 · REAL USER PASS**
 
-**Deployed candidate: Build103 · v0.19.25 · REAL USER SMOKE PENDING**
-
-Fresh post-Build102 audit selected the smallest coherent remaining gap: the non-mutating canonical master-audio GET performed before SonicTrace Deep Audio compute had no transient retry.
-
-Build103 adds exactly one bounded retry for timeout, browser transport interruption, or HTTP `408/425/429/500/502/503/504`, with at most two total GET attempts. Access failures, deterministic ordinary HTTP failures, and empty/invalid successful responses remain non-retry.
+Build103 adds exactly one bounded retry to the non-mutating canonical master-audio GET before SonicTrace / Deep Audio compute for timeout, browser transport interruption, or HTTP `408/425/429/500/502/503/504`.
 
 Critical boundary remains frozen:
 
@@ -105,7 +78,7 @@ POST /api/studio/analyze   ZERO automatic retries
 canonical writes           unchanged / operation-specific no-blind-retry rules
 ```
 
-Deployment receipts:
+Accepted receipts:
 
 ```text
 Runtime PR             #198
@@ -113,37 +86,33 @@ Exact tested head      9d89aa1051b67b828836a45b648b6f45b69dbe74
 Final runtime CI       #543 · 31981673322 · SUCCESS
 Runtime merge          5732741bbe0c96d7f6c8d3e1b5b4989af1fa9b83
 Runtime Pages          #209 · 31981768144 · SUCCESS build + deploy
-Green premerge safety  safety/post-build103-green-premerge-20260817-0217
-Post-deploy safety     safety/post-build103-deployed-candidate-20260817-0223
-Backend deploy         NONE
-R2 schema/data         NONE
+Candidate docs PR      #199
+Candidate docs merge   c98bfbba7c48d2cbf96b7b4760204b6d0523c228
+Candidate docs Pages   #210 · 31981993765 · SUCCESS build + deploy
+Real-user smoke        BUILD103 SMOKED 💨
 ```
 
-Detailed candidate contract: [`changelogs/CHANGELOG-BUILD103.md`](changelogs/CHANGELOG-BUILD103.md).
+Detailed receipt: [`docs/acceptance/BUILD103-REAL-USER-PASS.md`](docs/acceptance/BUILD103-REAL-USER-PASS.md).
+
+## In progress
+
+### Post-Build103 fresh audit
+
+Build103 is accepted. Phase9 is back in **read-only audit mode**.
+
+**Build104 remains UNALLOCATED** until the audit proves one smallest coherent next gap.
 
 ## Next
 
-Run one **normal-path real-user SonicTrace / Deep Audio smoke** against a known-good existing Track with canonical master audio.
-
-Expected:
-
-- canonical audio loads;
-- browser DSP completes;
-- Deep Audio compute starts once and completes;
-- FULL / PARTIAL / UNAVAILABLE truth remains intact;
-- no duplicate submit and no unexpected retry UI.
-
-Do not deliberately manufacture timeout/network loss/Access failure in production to exercise the retry branch. The automated Build103 guard owns that proof.
-
-If the smoke passes: close Build103 acceptance first, then perform a fresh read-only Phase9 audit before allocating Build104.
-
-Remaining candidates after Build103 acceptance are still:
+Re-read the current Studio / Track Manager / SonicTrace contracts and select exactly one bounded gap. Candidates to re-evaluate include:
 
 - Album create lost-response causality / operation identity;
 - exact-byte or digest proof for binary upload families where the backend can provide trustworthy evidence;
 - remaining Track create/upload causality gaps;
 - Deep Audio duplicate-compute risk and expensive-analysis retry boundaries beyond the safe pre-compute GET;
 - degraded/offline behavior that materially affects the private Studio workflow.
+
+Do not pre-select a candidate merely because it appears in this list.
 
 ## Backlog
 
@@ -175,9 +144,8 @@ There is currently **no official Phase 11**.
 - Do not generalize non-mutating validation retry into write retry.
 - Do not generalize one write family's recovery postcondition into another operation family.
 - Build101 remains rejected historical evidence; do not relabel it accepted because Build102 passed.
-- Build102 remains the latest accepted Studio runtime until Build103 human acceptance.
 - Do not allocate Build104 before Build103 acceptance and a fresh post-acceptance read-only audit prove its scope.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for current runtime/cross-stack truth, `QA.md` for accepted validation boundaries, [`docs/acceptance/BUILD102-REAL-USER-PASS.md`](docs/acceptance/BUILD102-REAL-USER-PASS.md) for the latest accepted Studio receipt, and [`changelogs/CHANGELOG-BUILD103.md`](changelogs/CHANGELOG-BUILD103.md) for the deployed Build103 candidate contract.
+See `PROJECT_STATE.md` for current runtime/cross-stack truth, `QA.md` for accepted validation boundaries, and [`docs/acceptance/BUILD103-REAL-USER-PASS.md`](docs/acceptance/BUILD103-REAL-USER-PASS.md) for the latest accepted Studio receipt.
