@@ -148,7 +148,7 @@ export function SonicTracePanel({ track, onSaved }: { track: StudioTrackDetail; 
           deepFailureIsResponseLoss(deepError)
             ? 'DEEP AUDIO STATE UNKNOWN · The submitted compute may already have run or may still be running. Studio will not submit a second Deep Audio POST for this exact Track/audio revision in this page. Browser DSP is reviewable, but saving it does not prove Deep Audio did not run. Reload Studio before any explicit re-scan.'
             : deepFailureIsPreSubmitTransport(deepError)
-              ? 'SonicTrace coordinator is unreachable before Deep Audio upload began. Browser DSP completed; this attempt did not arm the duplicate-compute fence. Restore the local coordinator, then an explicit re-scan is allowed.'
+              ? 'SonicTrace coordinator is unreachable before Deep Audio upload began. Browser DSP completed as an UNAVAILABLE-deep fallback; this attempt did not arm the duplicate-compute fence. Restore the local coordinator, then an explicit re-scan is allowed.'
               : 'SonicTrace coordinator responded but Deep Audio processing failed before it could return retained layers. Browser DSP completed as a fallback; review the processing error before saving.',
         );
       }
