@@ -11,6 +11,7 @@ import type {
 
 const SAVE_INTENT = 'sonictrace-analysis-save-v1';
 const TRANSIENT_SONICTRACE_READ_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
+const TRANSIENT_CANONICAL_AUDIO_READ_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
 
 export interface SonicTraceHealth {
   status?: string;
@@ -105,6 +106,16 @@ function isTransientSonicTraceReadError(reason: unknown): reason is SonicTraceEr
     reason.code === 'SONICTRACE_READ_TIMEOUT'
     || reason.code === 'SONICTRACE_READ_TRANSPORT'
     || (reason.status !== null && TRANSIENT_SONICTRACE_READ_STATUSES.has(reason.status))
+  );
+}
+
+function isTransientCanonicalAudioReadError(reason: unknown): reason is SonicTraceError {
+  return reason instanceof SonicTraceError && (
+    reason.code === 'CANONICAL_AUDIO_READ_TIMEOUT'
+    || reason.code === 'CANONICAL_AUDIO_READ_TRANSPORT'
+    || (reason.code === 'CANONICAL_AUDIO_READ_HTTP'
+      && reason.status !== null
+      && TRANSIENT_CANONICAL_AUDIO_READ_STATUSES.has(reason.status))
   );
 }
 
@@ -329,7 +340,7 @@ export async function saveSonicTraceAnalysis(trackId: string, analysis: SonicTra
   };
 }
 
-export function fetchCanonicalAudio(asset: StudioAsset, onProgress?: (percent: number) => void): Promise<File> {
+function fetchCanonicalAudioOnce(asset: StudioAsset, onProgress?: (percent: number) => void): Promise<File> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     const audioUrl = asset.fullUrl || asset.url;
@@ -340,11 +351,34 @@ export function fetchCanonicalAudio(asset: StudioAsset, onProgress?: (percent: n
     xhr.onprogress = event => {
       if (event.lengthComputable) onProgress?.(Math.round((event.loaded / event.total) * 35));
     };
-    xhr.onerror = () => reject(new SonicTraceError('Canonical audio could not be downloaded for temporary analysis.'));
-    xhr.ontimeout = () => reject(new SonicTraceError('Canonical audio download timed out.'));
+    xhr.onerror = () => reject(new SonicTraceError(
+      'Canonical audio download transport was interrupted before Deep Audio compute began.',
+      null,
+      'CANONICAL_AUDIO_READ_TRANSPORT',
+    ));
+    xhr.ontimeout = () => reject(new SonicTraceError(
+      'Canonical audio download timed out before Deep Audio compute began.',
+      null,
+      'CANONICAL_AUDIO_READ_TIMEOUT',
+    ));
     xhr.onload = () => {
-      if (xhr.status < 200 || xhr.status >= 300 || !(xhr.response instanceof Blob) || xhr.response.size === 0) {
-        reject(new SonicTraceError(`Canonical audio download returned HTTP ${xhr.status || 0}.`, xhr.status || null));
+      if (xhr.status < 200 || xhr.status >= 300) {
+        const access = xhr.status === 401 || xhr.status === 403;
+        reject(new SonicTraceError(
+          access
+            ? `Canonical audio download is blocked by the current access session (HTTP ${xhr.status}).`
+            : `Canonical audio download returned HTTP ${xhr.status || 0}.`,
+          xhr.status || null,
+          access ? 'CANONICAL_AUDIO_READ_ACCESS' : 'CANONICAL_AUDIO_READ_HTTP',
+        ));
+        return;
+      }
+      if (!(xhr.response instanceof Blob) || xhr.response.size === 0) {
+        reject(new SonicTraceError(
+          'Canonical audio download returned an empty or invalid audio response.',
+          xhr.status || null,
+          'CANONICAL_AUDIO_READ_INVALID_RESPONSE',
+        ));
         return;
       }
       onProgress?.(35);
@@ -352,6 +386,31 @@ export function fetchCanonicalAudio(asset: StudioAsset, onProgress?: (percent: n
     };
     xhr.send();
   });
+}
+
+export async function fetchCanonicalAudio(asset: StudioAsset, onProgress?: (percent: number) => void): Promise<File> {
+  let firstTransientFailure: SonicTraceError | null = null;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      return await fetchCanonicalAudioOnce(asset, onProgress);
+    } catch (reason) {
+      if (attempt === 0 && isTransientCanonicalAudioReadError(reason)) {
+        firstTransientFailure = reason;
+        continue;
+      }
+      if (attempt === 1 && firstTransientFailure && isTransientCanonicalAudioReadError(reason)) {
+        throw new SonicTraceError(
+          'Canonical audio download failed after one bounded transient retry. Deep Audio compute was not submitted.',
+          reason.status,
+          reason.code,
+          false,
+          [firstTransientFailure.message, reason.message].join(' · '),
+        );
+      }
+      throw reason;
+    }
+  }
+  throw new SonicTraceError('Canonical audio download retry loop ended unexpectedly.', null, 'CANONICAL_AUDIO_READ_UNEXPECTED');
 }
 
 export async function analyzeBrowserDsp(file: File): Promise<Record<string, unknown>> {
@@ -483,4 +542,7 @@ export const sonicTraceService = Object.freeze({
   lostResponsePolicy: 'private-canonical-latest-history-reread-no-blind-retry',
   privateReadRetryPolicy: 'one-retry-timeout-transport-transient-http-no-access-retry',
   privateReadMaxAttempts: 2,
+  canonicalAudioReadRetryPolicy: 'one-retry-timeout-transport-transient-http-before-deep-audio-post',
+  canonicalAudioReadMaxAttempts: 2,
+  deepAudioComputeRetryPolicy: 'zero-automatic-retries',
 });
