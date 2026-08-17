@@ -5,11 +5,12 @@ const release = fs.readFileSync('src/release.ts', 'utf8');
 const service = fs.readFileSync('src/services/phase4-admin-api.ts', 'utf8');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 
-assert.match(release, /version: '0\.19\.24'/);
-assert.match(release, /build: 102/);
-assert.match(release, /track-asset-etag-representation-corrective/);
+const build102 = /version: '0\.19\.24'/.test(release) && /build: 102/.test(release) && /track-asset-etag-representation-corrective/.test(release);
+const build103Successor = /version: '0\.19\.25'/.test(release) && /build: 103/.test(release) && /canonical-audio-download-transient-retry-truth/.test(release);
+assert.ok(build102 || build103Successor, 'Build102 ETag contract must remain inherited by Build102 or the bounded Build103 successor.');
 assert.match(release, /build101AncestryMarker/);
-assert.equal(pkg.version, '0.19.24');
+if (build103Successor) assert.match(release, /build102AncestryMarker/);
+assert.ok(['0.19.24', '0.19.25'].includes(pkg.version));
 assert.match(pkg.scripts['check:phase9'], /test-phase9-track-asset-etag-representation-build102\.mjs/);
 
 // Real-user Build101 smoke proved Track Manager's quoted httpEtag and the private reread's raw R2 etag
@@ -31,4 +32,4 @@ assert.match(service, /ASSET_UPLOAD_AMBIGUOUS/);
 assert.match(service, /recoveredAfterTransportFailure: true/);
 assert.doesNotMatch(service, /for \(let attempt.*uploadViaFetch/s);
 
-console.log('Build102 Track asset ETag representation corrective guard PASS');
+console.log('Build102 Track asset ETag representation corrective guard PASS through bounded Build103 successor');
