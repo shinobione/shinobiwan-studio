@@ -13,7 +13,8 @@ const main = fs.readFileSync('src/main.tsx', 'utf8');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 
 for (const required of ["create: 'album-create-v1'","metadata: 'album-metadata-save-v1'","membership: 'album-membership-save-v1'","move: 'album-track-move-v1'","upload: 'album-asset-upload-v1'","deleteAsset: 'album-asset-delete-v1'","'/api/studio/albums'","credentials: 'include'","'Content-Type': 'text/plain;charset=UTF-8'","requireManage('album-create')","requireManage('album-metadata')","requireManage('album-membership')","requireManage('album-move')","requireManage('album-assets')",'getAdminAlbum(albumId)']) assert.ok(albumApi.includes(required), `C2.5-D Album client missing: ${required}`);
-if (['0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31', '0.19.32'].includes(pkg.version)) {
+const modernSuccessor = /^0\.19\.(?:21|22|23|24|25|26|27|28|29|30|31|32|33)$/.test(pkg.version);
+if (modernSuccessor) {
   assert.ok(albumApi.includes('return verify(albumId, payload, { expectedAsset: {'), 'Build99+ successor must preserve Track Manager authority while strengthening Album asset normal-success verification.');
   assert.ok(albumApi.includes('maxAutomaticAssetUploadRetries: 0'), 'Build99+ successor must retain zero automatic Album asset upload retries.');
 } else {
@@ -42,4 +43,4 @@ assert.ok(main.includes("import './c3-albums-ux.css';"), 'Focused C3 Album UX st
 assert.ok(main.includes("import './c2-5-d-navigation.css';"), 'Legacy mobile navigation override must remain loaded for route compatibility.');
 assert.ok(String(pkg.scripts?.['check:ux'] || '').includes('test-phase-ux-c2-5-d-albums.mjs'));
 
-console.log('C2.5-D historical guard passed through Build110: Track Manager remains the sole Album write authority and LRC Maker 6.3.8 remains pinned at the embedded integration seam.');
+console.log(`C2.5-D historical guard passed through ${pkg.version}: Track Manager remains the sole Album write authority and LRC Maker 6.3.8 remains pinned at the embedded integration seam.`);
