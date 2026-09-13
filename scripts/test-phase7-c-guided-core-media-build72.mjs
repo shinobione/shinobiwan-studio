@@ -7,9 +7,15 @@ const workspace = fs.readFileSync('src/components/TrackWorkspace.tsx', 'utf8');
 const assets = fs.readFileSync('src/components/AssetsManager.tsx', 'utf8');
 const phase4Api = fs.readFileSync('src/services/phase4-admin-api.ts', 'utf8');
 
-assert.match(release, /build:\s*(72|73)/);
-assert.match(release, /codename:\s*'studio-focus-slice4-phase7c-(slice2-guided-core-media|slice2-status-truth-corrective)'/);
-assert.ok(release.includes("build71AncestryMarker"));
+const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
+assert.match(version, /^0\.19\.\d+$/);
+assert.ok(build >= 72, `Guided Core Media successor must be Build72 or later, got Build${build}.`);
+assert.ok(codename.startsWith('studio-focus-'));
+assert.ok(release.includes('build71AncestryMarker'));
+assert.ok(release.includes('build72AncestryMarker'));
+if (build >= 110) assert.ok(release.includes('build109AncestryMarker'));
 
 // Workflow truth: aggregate release quality must not masquerade as an Identity problem.
 assert.ok(workflow.includes('do not collapse every canonical quality error into Identity'));
@@ -22,7 +28,7 @@ assert.ok(workflow.includes("const priority: WorkflowStageId[] = ['identity', 'm
 assert.ok(workflow.includes('const errors = qualityErrorCount(track);'));
 assert.ok(workflow.includes('quality error${errors === 1 ? \'\' : \'s\'} block release'));
 
-// The routed destinations must contain the operation-specific surfaces they claim to open.
+// Routed destinations retain the operation-specific surfaces they claim to open.
 assert.ok(workspace.includes("section === 'overview'"));
 assert.ok(workspace.includes("kinds={['audio']}"));
 assert.ok(workspace.includes('title="Master audio"'));
@@ -42,4 +48,4 @@ assert.ok(phase4Api.includes('const reread = await getAdminTrack(trackId);'));
 assert.ok(phase4Api.includes('durationVerified'));
 assert.ok(!phase4Api.includes('saveTrack('));
 
-console.log('Phase 7-C Slice 2 Build 72/73 guided Core Media checks passed.');
+console.log(`Phase 7-C guided Core Media contract passes under Studio ${version} Build${build}: workflow destinations and guarded asset authority remain intact.`);
