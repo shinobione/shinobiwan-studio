@@ -17,8 +17,8 @@ const boundedPhase8Wrapper = app.includes("import { AlbumHealthWorkspace } from 
   && healthWrapper.includes('<AlbumsWorkspace />');
 assert.ok(directC3Route || boundedPhase8Wrapper, 'Albums route must preserve the focused C3 AlbumsWorkspace, directly or inside the bounded Phase8 read-only wrapper.');
 assert.ok(!app.includes("{route === 'albums' && <><AlbumManager /><AlbumMigrationPanel /></>}"), 'Daily Albums route must not stack the migration cockpit.');
-assert.ok(app.includes('Album migration archive · C2.5 complete'), 'Completed migration tooling must remain archived under System.');
-assert.ok(app.includes('className="panel c3-album-maintenance"'), 'Migration archive must be collapsed maintenance UI.');
+assert.ok(app.includes("route === 'administration'") && app.includes('<AlbumMigrationPanel />'), 'Completed migration tooling must remain archived under System.');
+assert.ok(app.includes('className="panel c3-album-maintenance"'), 'Migration archive must remain collapsed maintenance UI.');
 
 for (const marker of [
   'c3-album-library-card',
@@ -47,4 +47,4 @@ assert.ok(styles.includes('.c3-album-tabs'), 'Focused Album tabs styles are miss
 assert.ok(styles.includes('.c3-album-palette-block'), 'Album palette must have a focused Overview presentation.');
 assert.ok(styles.includes('@media(max-width:760px)'), 'Focused Album workspace must include a mobile layout guard.');
 
-console.log('C3 UX focused Album library/editor, canonical palette controls and migration-archive guards passed.');
+console.log('C3 UX focused Album library/editor, canonical palette controls and structural migration-archive guards passed.');
