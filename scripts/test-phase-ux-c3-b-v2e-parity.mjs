@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import ts from 'typescript';
+import { pathToFileURL } from 'node:url';
+import path from 'node:path';
 
 const source = fs.readFileSync('src/catalog-intelligence.ts', 'utf8');
 const ui = fs.readFileSync('src/components/CatalogIntelligenceView.tsx', 'utf8');
@@ -8,7 +10,7 @@ const clarityCss = fs.readFileSync('src/c3-b-map-clarity.css', 'utf8');
 const compiled = ts.transpileModule(source, {
   compilerOptions: { module: ts.ModuleKind.ES2022, target: ts.ScriptTarget.ES2022 },
 }).outputText;
-const moduleUrl = `data:text/javascript;base64,${Buffer.from(compiled).toString('base64')}`;
+const moduleUrl = `data:text/javascript;base64,${Buffer.from(compiled.replaceAll("'./vendor/catalog-projection-kernel.mjs'", JSON.stringify(pathToFileURL(path.resolve('src/vendor/catalog-projection-kernel.mjs')).href))).toString('base64')}`;
 const {
   analyzeCatalog,
   analyzeProject,

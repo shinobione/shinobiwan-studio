@@ -1,5 +1,7 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
+> **Local Build107 overlay — 2026-09-13:** Local active slice: Build107 shared catalog numerical kernel, implemented without committing or deploying. Only normalization, dot product and powerComponent are extracted; SonicTrace owns the source and Studio uses a verified distribution. Review the local implementation and validation limitations before any separately authorized release work. Prior Phase9/audit-only roadmap text below remains historical context. See [local implementation receipt](docs/BUILD107-LOCAL-IMPLEMENTATION.md).
+
 Updated: 2026-08-17 after **Phase9 program closeout audit** on accepted Build106.
 
 This file tracks only durable Done / Active / Next / Backlog state. Historical implementation detail belongs in `changelogs/`, `docs/` and acceptance receipts.

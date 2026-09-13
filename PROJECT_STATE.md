@@ -1,5 +1,7 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
+> **Local Build107 overlay — 2026-09-13:** Build107 is now a locally implemented, uncommitted Phase10 numerical extraction under the explicit 2026-09-13 request. Build106 remains the accepted deployed runtime. GitHub main was verified at c44b1e6920435e71896dfce3ca8c9f27d98aabd1 (final Phase9 closeout PR #213). Next action: review the local receipt; no commit, push, PR or deployment is authorized. The earlier audit-only next action below is historical for this local slice. See [local implementation receipt](docs/BUILD107-LOCAL-IMPLEMENTATION.md).
+
 Updated: 2026-08-17 after **Build106 REAL USER PASS**, acceptance closeout, and **Phase9 program closeout audit**.
 
 This is the short current checkpoint to read immediately after `AGENTS.md`. Historical implementation detail remains in `changelogs/` and milestone docs.
