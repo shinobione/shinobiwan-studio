@@ -8,17 +8,25 @@ const genericHttp = read('src/services/http.ts');
 const publicAlbums = read('src/services/public-albums-api.ts');
 const pkg = JSON.parse(read('package.json'));
 
-assert.ok(['0.19.28', '0.19.29'].includes(pkg.version), 'Build106 guard accepts Build106 and bounded Build107 successor.');
+assert.ok(['0.19.28', '0.19.29', '0.19.30'].includes(pkg.version), 'Build106 guard accepts Build106 and bounded Build107/Build108 successors.');
 if (pkg.version === '0.19.28') {
   assert.match(release, /version: '0\.19\.28'/);
   assert.match(release, /build: 106/);
   assert.match(release, /studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth/);
-} else {
+} else if (pkg.version === '0.19.29') {
   assert.match(release, /version: '0\.19\.29'/);
   assert.match(release, /build: 107/);
   assert.match(release, /studio-focus-slice4-phase10-shared-catalog-projection-kernel/);
   assert.match(release, /build106AncestryMarker/);
   assert.match(release, /version: '0\.19\.28' · build: 106 · codename: 'studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth'/);
+} else {
+  assert.match(release, /version: '0\.19\.30'/);
+  assert.match(release, /build: 108/);
+  assert.match(release, /studio-focus-slice4-catalog-rebuild-generation-identity/);
+  assert.match(release, /build106AncestryMarker/);
+  assert.match(release, /build107AncestryMarker/);
+  assert.match(release, /version: '0\.19\.28' · build: 106 · codename: 'studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth'/);
+  assert.match(release, /version: '0\.19\.29' · build: 107 · codename: 'studio-focus-slice4-phase10-shared-catalog-projection-kernel'/);
 }
 assert.match(release, /build105AncestryMarker/);
 assert.match(release, /version: 0\.19\.27 · build: 105 · codename: 'studio-focus-slice4-phase9-deep-audio-presubmit-transport-corrective'/);

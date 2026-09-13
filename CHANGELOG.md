@@ -4,71 +4,62 @@ This is the **current concise changelog**. Detailed per-build records live under
 
 ## Current accepted release
 
-### v0.19.24 · Build102 — 2026-08-17
+### v0.19.30 · Build108 — 2026-09-13
 
-Codename: `studio-focus-slice4-phase9-track-asset-etag-representation-corrective`  
+Codename: `studio-focus-slice4-catalog-rebuild-generation-identity`  
 Status: **REAL USER PASS — ACCEPTED**
 
-Build102 is the bounded corrective for the Build101 real-user false negative. Build101 correctly hardened Track asset normal-success verification, but identical R2 ETags were compared as quoted HTTP `httpEtag` versus raw canonical `object.etag`, causing `ASSET_UPLOAD_UNVERIFIED` even though the cover write had committed and persisted after refresh.
+Build108 closes one specific reliability gap: causal proof for the explicit Studio catalog rebuild.
 
-Build102 trims whitespace, removes only one symmetric outer pair of double quotes when present, then compares the remaining ETag exactly. Exact revision, filename, presence, size, content type and duration checks remain intact. Automatic Track asset upload retries remain zero.
+Studio now generates one browser UUID per explicit rebuild. Track Manager persists it as the canonical catalog `generationId`, verifies it before success response, and exposes it through the private catalog read model. Studio then rereads canonical state and requires the exact UUID match before declaring the rebuild verified. Lost-response handling remains zero-blind-retry: exact canonical generation proof can recover success; missing/mismatched proof remains ambiguous or unverified.
 
 ```text
-Runtime PR                #193
-Exact tested head         cfebb5cfe5b87627a29890a7477bd5628ef60759
-Validation #524           31979380563 · SUCCESS
-Runtime merge             64ac5ed4d53daeafc4fa5b7a25ec66594eef274d
-Runtime Pages #200        31979525479 · SUCCESS build + deploy
-Candidate docs PR         #194
-Candidate docs CI #525    31979629544 · SUCCESS
-Candidate docs merge      68b39ce99e29745c14e004ae8e6fd1218f66b18c
-Candidate docs Pages #201 31979667787 · SUCCESS
-Safety post-acceptance    safety/post-build102-real-user-pass-20260817-0142
-Real-user smoke           ASSET SAVED · Canonical reread Verified · Catalog rebuilt Yes
-Canonical revision        2026-08-16T23:42:38.231Z
-Track Manager             v5.24 · unchanged
-Studio bridge             v1.14
-Public Worker             v2.7 · unchanged
-Worker deploy             NONE
-R2 schema migration       NONE
-Build103                  UNALLOCATED pending fresh read-only post-Build102 audit
+Backend PR               LaunchPAD-APP #275
+Backend merge            31675ba4444282691c6e4d55d098f187ab3c4bad
+Admin deploy             34753041082 · SUCCESS · admin only
+Admin Worker version     ff037b48-b717-49a4-82ad-395aa06b6f6f
+Studio PR                #216
+Studio head              b27a2891d2041d79aad4ab2910a150516af74ad4
+Studio CI                #639 · 34752807960 · SUCCESS
+Studio merge             e380a6ab098bddad8b744812515df36fe3ef5906
+Studio Pages             #227 · 34753099885 · SUCCESS build + deploy
+Real-user smoke          CATALOG REBUILT · 45 tracks · canonical reread verified
+generation               c4072021-707b-4d03-be8e-d21324a348b4
+generatedAt              2026-09-13T10:57:36.269Z
+Public Worker            unchanged
+R2 schema migration      NONE
 ```
 
-Detailed accepted record: [`changelogs/CHANGELOG-BUILD102.md`](changelogs/CHANGELOG-BUILD102.md).  
-Real-user receipt: [`docs/acceptance/BUILD102-REAL-USER-PASS.md`](docs/acceptance/BUILD102-REAL-USER-PASS.md).
-
-## Rejected candidate
-
-### v0.19.23 · Build101 — 2026-08-16
-
-Codename: `studio-focus-slice4-phase9-track-asset-upload-success-verification-truth`  
-Status: **REAL USER FALSE NEGATIVE — NOT ACCEPTED — SUPERSEDED BY BUILD102**
-
-Build101's write safety was correct: after the verifier reported only an `asset ETag` mismatch, the user did not retry; a refresh showed the new cover remained present. The candidate is rejected because the normal-success verifier confused HTTP-quoted and raw ETag representations. Build102 preserves Build101's stronger proof boundary and corrects only that syntax mismatch.
-
-Detailed record: [`changelogs/CHANGELOG-BUILD101.md`](changelogs/CHANGELOG-BUILD101.md).
+Detailed accepted record: [`changelogs/CHANGELOG-BUILD108.md`](changelogs/CHANGELOG-BUILD108.md).  
+Real-user receipt: [`docs/acceptance/BUILD108-REAL-USER-PASS.md`](docs/acceptance/BUILD108-REAL-USER-PASS.md).
 
 ## Accepted predecessor
 
-### v0.19.22 · Build100 — 2026-08-16
+### v0.19.29 · Build107 — 2026-09-13
 
-Codename: `studio-focus-slice4-phase9-album-first-track-intake`  
+Codename: `studio-focus-slice4-phase10-shared-catalog-projection-kernel`  
 Status: **REAL USER PASS — ACCEPTED**
 
-Build100 closed the daily Album first-track intake deadlock without creating a second ownership authority. Canonical ownership remains `album.trackIds`; **Add to tracklist** stages locally and **Save tracklist** continues to use the accepted Build87 resilient membership transaction.
+Build107 is the first accepted Phase10 extraction slice. SonicTrace owns the singular editable numerical projection kernel and Studio consumes a generated digest-pinned copy. Build108 does not alter that architecture.
 
-Detailed accepted record: [`changelogs/CHANGELOG-BUILD100.md`](changelogs/CHANGELOG-BUILD100.md).
+Detailed accepted record: [`changelogs/CHANGELOG-BUILD107.md`](changelogs/CHANGELOG-BUILD107.md).  
+Real-user receipt: [`docs/acceptance/BUILD107-REAL-USER-PASS.md`](docs/acceptance/BUILD107-REAL-USER-PASS.md).
 
-## Earlier accepted Phase9 lineage
+## Rejected historical candidates
+
+- **Build101** — Track asset normal-success false negative caused by quoted/raw ETag representation mismatch; superseded by accepted Build102.
+- **Build104** — falsely classified pre-submit/node-offline Deep Audio transport as compute UNKNOWN; superseded by accepted Build105.
+
+## Accepted lineage
 
 ```text
-Build82–94   reliability / response-loss / bounded-read validation truth
-Build95      daily Albums resilient-service convergence
-Build96      Album create normal-success verification
-Build97      Track create normal-success verification
-Build98      TM5.24 / bridge1.14 compatibility corrective
-Build99      Album asset upload normal-success verification
-Build100     Album first-track intake continuity
+Build82–100   Phase9 reliability / canonical-truth lineage
+Build102      ETag representation corrective
+Build103      canonical audio pre-compute transient retry
+Build105      Deep Audio pre-submit transport corrective
+Build106      public catalog fallback transient GET retry
+Build107      Phase10 shared catalog projection kernel
+Build108      explicit catalog rebuild generation identity
 ```
 
 All detailed per-build receipts remain preserved under `changelogs/` and `docs/`.
