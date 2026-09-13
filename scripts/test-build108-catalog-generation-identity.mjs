@@ -5,9 +5,21 @@ const read = path => fs.readFileSync(path, 'utf8').replace(/\r\n/g, '\n');
 const service = read('src/services/catalog-rebuild-identity.ts');
 const panel = read('src/components/CatalogRebuildPanel.tsx');
 const phase4 = read('src/services/phase4-admin-api.ts');
+const release = read('src/release.ts');
 const pkg = JSON.parse(read('package.json'));
 
-assert.equal(pkg.version, '0.19.29', 'Build108 remains a candidate on accepted Build107 identity until real-user acceptance closeout.');
+assert.ok(['0.19.29', '0.19.30'].includes(pkg.version), 'Build108 guard accepts the Build107-hosted candidate and accepted Build108 successor.');
+if (pkg.version === '0.19.29') {
+  assert.match(release, /version: '0\.19\.29'/);
+  assert.match(release, /build: 107/);
+  assert.match(release, /studio-focus-slice4-phase10-shared-catalog-projection-kernel/);
+} else {
+  assert.match(release, /version: '0\.19\.30'/);
+  assert.match(release, /build: 108/);
+  assert.match(release, /studio-focus-slice4-catalog-rebuild-generation-identity/);
+  assert.match(release, /build107AncestryMarker/);
+  assert.match(release, /version: '0\.19\.29' · build: 107 · codename: 'studio-focus-slice4-phase10-shared-catalog-projection-kernel'/);
+}
 assert.match(pkg.scripts['check:build108'], /test-build108-catalog-generation-identity\.mjs/);
 assert.match(pkg.scripts.build, /check:build108/);
 
@@ -47,4 +59,4 @@ assert.match(panel, /operation UUID/);
 assert.match(phase4, /trackCreateLostResponsePolicy: 'not-covered-no-operation-id-no-blind-retry'/);
 assert.match(phase4, /maxAutomaticTrackCreateRetries: 0/);
 
-console.log('Build108 Studio catalog generation identity PASS: explicit rebuilds use one browser UUID, response-loss recovery proves the exact private canonical generationId, mismatches remain non-retryable, and accepted Build107 runtime identity stays unchanged pending real-user acceptance.');
+console.log(`Build108 Studio catalog generation identity PASS under ${pkg.version}: explicit rebuilds use one browser UUID, response-loss recovery proves the exact private canonical generationId, mismatches remain non-retryable, and no unrelated write family was widened.`);
