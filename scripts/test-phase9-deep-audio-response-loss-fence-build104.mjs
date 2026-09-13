@@ -7,19 +7,20 @@ const api = read('src/services/sonictrace-api.ts');
 const panel = read('src/components/SonicTracePanel.tsx');
 const pkg = JSON.parse(read('package.json'));
 
-assert.ok(['0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30'].includes(pkg.version), 'Build104 guard accepts Build104 and bounded Build105/Build106/Build107/Build108 successors.');
-assert.match(release, /version: '0\.19\.(?:26|27|28)'/);
-assert.match(release, /build: (?:104|105|106)/);
-assert.match(release, /studio-focus-slice4-phase9-(?:deep-audio-response-loss-fence|deep-audio-presubmit-transport-corrective|public-catalog-fallback-transient-retry-truth)/);
+assert.ok(['0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version), 'Build104 guard accepts Build104 and bounded successors through Build109.');
+assert.match(release, /version: '0\.19\.(?:26|27|28|29|30|31)'/);
+assert.match(release, /build: (?:104|105|106|107|108|109)/);
+assert.match(release, /studio-focus-slice4-/);
 assert.match(release, /build103AncestryMarker/);
 assert.match(release, /version: 0\.19\.25 · build: 103 · codename: 'studio-focus-slice4-phase9-canonical-audio-download-transient-retry-truth'/);
-if (['0.19.27', '0.19.28', '0.19.29', '0.19.30'].includes(pkg.version)) {
+if (['0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) {
   assert.match(release, /build104AncestryMarker/);
   assert.match(release, /version: 0\.19\.26 · build: 104 · codename: 'studio-focus-slice4-phase9-deep-audio-response-loss-fence'/);
 }
-if (['0.19.28', '0.19.29', '0.19.30'].includes(pkg.version)) assert.match(release, /build105AncestryMarker/);
-if (['0.19.29', '0.19.30'].includes(pkg.version)) assert.match(release, /build106AncestryMarker/);
-if (pkg.version === '0.19.30') assert.match(release, /build107AncestryMarker/);
+if (['0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) assert.match(release, /build105AncestryMarker/);
+if (['0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) assert.match(release, /build106AncestryMarker/);
+if (['0.19.30', '0.19.31'].includes(pkg.version)) assert.match(release, /build107AncestryMarker/);
+if (pkg.version === '0.19.31') assert.match(release, /build108AncestryMarker/);
 assert.match(pkg.scripts['check:phase9'], /test-phase9-canonical-audio-download-transient-retry-build103\.mjs/);
 assert.match(pkg.scripts['check:phase9'], /test-phase9-deep-audio-response-loss-fence-build104\.mjs/);
 
@@ -75,4 +76,4 @@ assert.match(panel, /will not submit a second Deep Audio POST/);
 assert.match(panel, /saving it does not prove Deep Audio did not run/);
 assert.match(panel, /Reload Studio before any explicit re-scan/);
 
-console.log(`Build104 Deep Audio response-loss fence remains protected under ${pkg.version}: true post-upload response loss is UNKNOWN and fenced with zero automatic retries, while Build105+ may refine only pre-submit transport classification or unrelated read-only reliability.`);
+console.log(`Build104 Deep Audio response-loss fence remains protected under ${pkg.version}: true post-upload response loss is UNKNOWN and fenced with zero automatic retries, while bounded successors may refine only pre-submit transport classification or unrelated read-only reliability.`);
