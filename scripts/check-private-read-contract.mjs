@@ -116,8 +116,11 @@ for (const required of [
   '<WorkflowView />',
   '<CatalogRebuildPanel privateRead={privateRead} />',
   '<CatalogIntelligenceView />',
-  "SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.24 · bridge v1.14'",
+  'SUPPORTED_PRIVATE_READ_LINEAGE',
+  'payload.trackManagerVersion',
+  'payload.bridgeVersion',
 ]) assert.ok(app.includes(required), `Studio shell integration contract missing ${required}.`);
+assert.match(app, /const SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v\d+\.\d+ · bridge v\d+\.\d+';/, 'Studio shell must keep an explicit supported backend fallback lineage without freezing this cross-stack guard to one patch level.');
 
 for (const required of [
   "const SAVE_INTENT = 'sonictrace-analysis-save-v1'", '/api/studio/analyze', '/analysis/sonictrace',
@@ -178,4 +181,4 @@ for (const script of ['check:private-read', 'check:phase5', 'check:phase6', 'che
 assert.ok(String(pkg.scripts?.['check:c3'] || '').includes('test-phase-ux-c3-b-v2e-parity.mjs'), 'C3 build guard must include V2-E parity.');
 assert.ok(String(pkg.scripts?.['check:c3'] || '').includes('test-phase-ux-c3-c-premium-feel.mjs'), 'C3 build guard must include premium-feel regression.');
 
-console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves canonical private-read/write authority while allowing human-facing presentation to evolve.`);
+console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves canonical private-read/write authority while allowing human-facing presentation and backend patch lineage to evolve.`);

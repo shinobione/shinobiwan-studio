@@ -6,15 +6,24 @@ const pkg = JSON.parse(read('package.json'));
 const release = read('src/release.ts');
 const panel = read('src/components/TrackToMarketPanel.tsx');
 const css = read('src/release-campaign.css');
+const currentBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+const currentVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 
-assert.equal(pkg.version, '0.19.35', 'Build113 must publish Studio v0.19.35.');
-assert.match(release, /version:\s*'0\.19\.35'/);
-assert.match(release, /build:\s*113/);
-assert.match(release, /phase:\s*10/);
-assert.match(release, /studio-focus-build113-soundcloud-pack-priority/);
-assert.match(release, /build112AncestryMarker/);
+assert.ok(currentBuild >= 113, `Build113 guard requires Build113 or a successor, got Build${currentBuild}.`);
+assert.equal(pkg.version, currentVersion, 'package.json must match the active Studio release version.');
+if (currentBuild === 113) {
+  assert.equal(pkg.version, '0.19.35', 'Build113 must publish Studio v0.19.35.');
+  assert.match(release, /version:\s*'0\.19\.35'/);
+  assert.match(release, /build:\s*113/);
+  assert.match(release, /phase:\s*10/);
+  assert.match(release, /studio-focus-build113-soundcloud-pack-priority/);
+  assert.match(release, /build112AncestryMarker/);
+} else {
+  assert.match(release, /build113AncestryMarker/, `Build${currentBuild} must preserve accepted Build113 ancestry.`);
+  assert.match(release, /phase:\s*10/, `Build${currentBuild} must stay on the active Phase10 program while inheriting Build113.`);
+}
 assert.match(pkg.scripts['check:build113'], /test-build113-soundcloud-pack-priority\.mjs/);
-assert.match(pkg.scripts.build, /check:build112 && npm run check:build113 && npm run check:focus/);
+assert.match(pkg.scripts.build, /npm run check:build113/, 'Successor production builds must keep the Build113 guard in the full gate.');
 
 for (const required of [
   'SOUNDCLOUD · FROM MUSIC PACK',
@@ -47,4 +56,4 @@ for (const forbidden of ['saveAdmin', 'uploadAdmin', 'deleteAdmin', 'phase4-admi
   assert.ok(!panel.includes(forbidden), `Build113 Release UI must remain non-canonical/read-only: ${forbidden}`);
 }
 
-console.log('Build113 SoundCloud Pack priority PASS: imported description, tags and highlight are visible immediately, while secondary PACK COMPLET data remains collapsed and no manual/canonical authoring path is restored.');
+console.log(`Build113 SoundCloud Pack priority ancestry PASS under Studio ${currentVersion} Build${currentBuild}: imported description, tags and highlight remain visible immediately, secondary PACK COMPLET data stays collapsed, and no manual/canonical authoring path is restored.`);

@@ -37,8 +37,13 @@ for (const required of [
   '/api/studio/albums/${encodeURIComponent(albumId)}/media/${kind}',
   'getAdminTrack(input.trackId)',
   'trackCacheMatches',
-  'Track Manager v5.23-v5.24 / bridges v1.13-v1.14',
 ]) assert.ok(albumApi.includes(required), `Build64 Album API contract is missing current bounded successor ${required}.`);
+const albumTransport = albumApi.match(/transport:\s*'([^']+)'/)?.[1] || '';
+if (build >= 114) {
+  assert.equal(albumTransport, 'Track Manager v5.23-v5.25 / bridges v1.13-v1.15', 'Build114+ must keep the explicitly bounded TM5.23-v5.25 / bridge1.13-v1.15 Album transport line.');
+} else {
+  assert.equal(albumTransport, 'Track Manager v5.23-v5.24 / bridges v1.13-v1.14', 'Pre-Build114 successors must keep the bounded TM5.23-v5.24 / bridge1.13-v1.14 Album transport line.');
+}
 
 const albumVisuals = read('src/services/public-albums-api.ts');
 for (const required of [

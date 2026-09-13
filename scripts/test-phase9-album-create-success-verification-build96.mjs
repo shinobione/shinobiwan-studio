@@ -20,20 +20,28 @@ if (currentBuild === 96) {
   assert.ok(release.includes('build96AncestryMarker'), `Build${currentBuild} must preserve accepted Build96 ancestry.`);
   assert.ok(release.includes("version: 0.19.18 · build: 96 · codename: 'studio-focus-slice4-phase9-album-create-success-verification-truth'"), 'Accepted Build96 identity must remain immutable in ancestry.');
 }
-for (let build = 97; build <= Math.min(currentBuild - 1, 110); build += 1) {
+for (let build = 97; build <= Math.min(currentBuild - 1, 113); build += 1) {
   assert.ok(release.includes(`build${build}AncestryMarker`), `Build${currentBuild} must preserve Build${build} ancestry while inheriting Build96 Album create truth.`);
 }
 
-// Build96 tightens only normal-success canonical verification for Album create.
-assert.ok(albumApi.includes("const payload = await writeJson('/api/studio/albums', { intent: INTENT.create, album });"), 'Album create must retain the existing Track Manager write intent and transport.');
-assert.ok(albumApi.includes('const { id, ...metadata } = album;'), 'Album create must separate immutable id from the exact requested metadata postcondition.');
-assert.ok(albumApi.includes('return verify(id, payload, { expectedMetadata: metadata });'), 'Album create normal success must reread and compare the exact requested metadata.');
+// Build96 normal-success truth remains mandatory; Build114 adds exact operation identity without weakening it.
+if (currentBuild >= 114) {
+  assert.ok(albumApi.includes("body: JSON.stringify({ intent: INTENT.create, operationId, album })"), 'Build114 Album create must retain album-create-v1 while adding one explicit operation identity.');
+  assert.ok(albumApi.includes('const { id, ...metadata } = album;'), 'Album create must still separate immutable id from the exact requested metadata postcondition.');
+  assert.ok(albumApi.includes('expectedMetadata: metadata, expectedCreationOperationId: operationId'), 'Build114 normal success must preserve exact requested metadata verification and add exact creation identity.');
+  assert.ok(albumApi.includes("createSuccessVerificationPolicy: 'canonical-reread-revision-requested-metadata-plus-private-creation-operation-id'"));
+  assert.ok(albumApi.includes("createLostResponsePolicy: 'private-creation-operation-id-exact-match-no-blind-retry'"));
+} else {
+  assert.ok(albumApi.includes("const payload = await writeJson('/api/studio/albums', { intent: INTENT.create, album });"), 'Album create must retain the historical Track Manager write intent and transport.');
+  assert.ok(albumApi.includes('const { id, ...metadata } = album;'), 'Album create must separate immutable id from the exact requested metadata postcondition.');
+  assert.ok(albumApi.includes('return verify(id, payload, { expectedMetadata: metadata });'), 'Album create normal success must reread and compare the exact requested metadata.');
+  assert.ok(albumApi.includes("createSuccessVerificationPolicy: 'canonical-reread-revision-plus-requested-metadata'"));
+  assert.ok(albumApi.includes("createLostResponsePolicy: 'not-covered-no-operation-id-no-blind-retry'"), 'Historical Build96 successors before Build114 must state create response loss remained out of scope.');
+}
 assert.ok(!albumApi.includes('return verify(album.id, payload);'), 'Revision-only Album create verification must not return.');
-assert.ok(albumApi.includes('function metadataMismatch('), 'Build96 must reuse the existing exact metadata comparator rather than introduce a second truth model.');
-assert.ok(albumApi.includes("createSuccessVerificationPolicy: 'canonical-reread-revision-plus-requested-metadata'"));
-assert.ok(albumApi.includes("createLostResponsePolicy: 'not-covered-no-operation-id-no-blind-retry'"), 'Build96 must state that create lost-response recovery remains out of scope.');
+assert.ok(albumApi.includes('function metadataMismatch('), 'Build96 must reuse the exact metadata comparator rather than introduce a second truth model.');
 assert.ok(albumApi.includes('maxAutomaticCreateRetries: 0'), 'Album create must retain zero automatic retries.');
-assert.ok(!albumApi.includes('retryAdminAlbumCreate'), 'Build96 must not add an Album create retry helper.');
+assert.ok(!albumApi.includes('retryAdminAlbumCreate'), 'Album create must never add a blind retry helper.');
 
 // Upload is deliberately not generalized: exact-byte proof still requires stronger digest/operation identity.
 assert.ok(albumApi.includes("form.set('intent', INTENT.upload)"), 'Album asset upload must retain its existing transport.');
@@ -43,7 +51,7 @@ if (currentBuild >= 99) {
   assert.ok(albumApi.includes('return verify(albumId, payload);'), 'Build96 historical runtime must leave upload verification semantics unchanged.');
 }
 
-// Both existing create surfaces inherit the service fix and still refuse unverified success.
+// Both existing create surfaces inherit the shared canonical service and still refuse unverified success.
 for (const [name, source] of [['focused', focused], ['legacy', legacy]]) {
   assert.ok(source.includes('createAdminAlbum'), `${name} Album create surface must keep using the shared canonical create service.`);
   assert.match(source, /if\s*\(\s*!\w+\.clientVerified\s*\)/, `${name} Album create surface must reject a create that the canonical reread cannot verify.`);
@@ -69,4 +77,4 @@ for (const inherited of [
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must retain ${inherited}`);
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Build96 must remain inside the repository-native full build gate.');
 
-console.log(`Phase9 Build96 Album create success-verification guard passed through Build${currentBuild}: normal success proves revision + exact requested metadata, while create lost-response recovery and binary upload remain explicitly out of scope with zero automatic create retries.`);
+console.log(`Phase9 Build96 Album create guard passed through Build${currentBuild}: normal success still proves revision + exact requested metadata; Build114 successors additionally require exact private creation operation identity while preserving zero automatic retries.`);

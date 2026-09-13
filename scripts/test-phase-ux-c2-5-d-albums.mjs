@@ -35,7 +35,8 @@ const wrappedAlbumsRoute = app.includes("{route === 'albums' && <AlbumHealthWork
   && healthWrapper.includes("import { AlbumsWorkspace } from './AlbumsWorkspace';")
   && healthWrapper.includes('<AlbumsWorkspace />');
 assert.ok(directAlbumsRoute || wrappedAlbumsRoute, 'Albums route must mount the focused workspace while preserving canonical APIs, directly or through the bounded Phase8 read-only wrapper.');
-assert.ok(app.includes('Track Manager v5.24 · bridge v1.14'), 'Studio must surface the current supported Track Manager / bridge lineage in System status.');
+assert.match(app, /const SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v\d+\.\d+ · bridge v\d+\.\d+';/, 'Studio must keep an explicit supported Track Manager / bridge fallback lineage without freezing this historical UX guard to one patch level.');
+assert.ok(app.includes('payload.trackManagerVersion') && app.includes('payload.bridgeVersion'), 'System status must prefer live backend lineage when available.');
 assert.ok(embeddedLyrics.includes("const EMBED_VERSION = '6.3.8'"), 'Embedded Lyrics Studio must keep the accepted LRC Maker 6.3.8 integration even when Studio hides infrastructure versions from daily work.');
 assert.ok(router.includes("'albums'"), 'Router must recognize Albums.');
 assert.ok(types.includes("| 'albums'"), 'StudioRoute must include Albums.');

@@ -53,7 +53,12 @@ if (currentBuild >= 101) {
 } else {
   assert.ok(phase4.includes("const clientVerified = manifest?.updatedAt === payload.updatedAt && manifest?.assets?.[kind] === payload.filename && asset?.present === true && durationVerified;"), 'Track asset upload normal-success verification must remain unchanged through Build100.');
 }
-assert.ok(albumApi.includes("createSuccessVerificationPolicy: 'canonical-reread-revision-plus-requested-metadata'"), 'Accepted Build96 Album create verification must remain intact.');
+if (currentBuild >= 114) {
+  assert.ok(albumApi.includes("createSuccessVerificationPolicy: 'canonical-reread-revision-requested-metadata-plus-private-creation-operation-id'"), 'Build114+ must preserve Build96 metadata verification while strengthening create success with exact private creation identity.');
+  assert.ok(albumApi.includes("createLostResponsePolicy: 'private-creation-operation-id-exact-match-no-blind-retry'"), 'Build114+ Album create response-loss recovery must require exact private creation identity.');
+} else {
+  assert.ok(albumApi.includes("createSuccessVerificationPolicy: 'canonical-reread-revision-plus-requested-metadata'"), 'Accepted Build96 Album create verification must remain intact.');
+}
 assert.ok(albumApi.includes('maxAutomaticCreateRetries: 0'), 'Accepted Build96 Album create retry boundary must remain intact.');
 
 for (const inherited of [

@@ -30,7 +30,11 @@ assert.ok(!album.includes("reason.kind === 'invalid-response'\n    ||"), 'Invali
 assert.ok(album.includes("getAdminAlbums(): Promise<AdminAlbumsResponse> { const payload = await readJson<AdminAlbumsResponse>('/api/studio/albums')"), 'Album collection must use the bounded private-read helper.');
 assert.ok(album.includes('getAdminAlbum(albumId: string): Promise<AdminAlbumResponse>'), 'Canonical Album detail read must remain present.');
 assert.ok(album.includes('const reread = await getAdminAlbum(albumId);'), 'Existing Album write verification must keep using canonical Album reread.');
-assert.equal((album.match(/method:\s*'POST'/g) || []).length, 3, 'Build89 ancestry must not add or duplicate Album write POST paths.');
+const readHelperStart = album.indexOf('async function readJsonOnce<T>');
+const readHelperEnd = album.indexOf('async function writeJson(', readHelperStart);
+assert.ok(readHelperStart >= 0 && readHelperEnd > readHelperStart, 'Build89 private-read helper boundary must remain structurally identifiable.');
+const readHelpers = album.slice(readHelperStart, readHelperEnd);
+assert.ok(!readHelpers.includes("method: 'POST'"), 'Build89 private-read retry helpers must never issue or duplicate Album writes.');
 assert.ok(!album.includes('retryAlbumWrite'), 'Build89 must never introduce automatic Album write retry.');
 assert.ok(!album.includes('retryAdminAlbumAsset'), 'Build89 must never introduce automatic Album asset write retry.');
 
@@ -46,4 +50,4 @@ for (const inherited of [
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must include ${inherited}`);
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Phase9 guards must remain in the full build gate.');
 
-console.log('Phase9 Build89 Album private-read retry guard passed as inherited ancestry: Album collection/detail GETs still retry once only for transient timeout/transport/HTTP failures while Access/CORS, deterministic 4xx and invalid JSON remain non-retry and Album writes stay unchanged.');
+console.log('Phase9 Build89 Album private-read retry guard passed as inherited ancestry: Album collection/detail GETs still retry once only for transient timeout/transport/HTTP failures while Access/CORS, deterministic 4xx and invalid JSON remain non-retry, and private-read helpers cannot issue writes.');

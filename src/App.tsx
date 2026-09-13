@@ -19,7 +19,7 @@ import { getSonicTraceHealth } from './services/sonictrace-api';
 import type { ServiceStatus, StudioReadSource, StudioRoute, WorkspaceSection } from './types/studio';
 
 const LAST_TRACK_KEY = 'shinobiwan-studio:last-track-id';
-const SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.24 · bridge v1.14';
+const SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.25 · bridge v1.15';
 
 const DAILY_NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
   { route: 'dashboard', label: 'Home', glyph: '⌂' },

@@ -60,11 +60,8 @@ assert.ok(workflowView.includes('same Workflow stages and accepted Next Actions'
 assert.ok(workflowView.includes('item.nextAction.label'));
 assert.ok(workflowView.includes('item.nextAction.section'));
 assert.ok(!workflowView.includes('saveTrack('));
-assert.ok(
-  app.includes("SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.22 · bridge v1.12'")
-  || app.includes("SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.23 · bridge v1.13'")
-  || app.includes("SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.24 · bridge v1.14'"),
-);
+assert.match(app, /const SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v\d+\.\d+ · bridge v\d+\.\d+';/, 'Health drilldown must coexist with an explicit supported private-read lineage without pinning this historical guard to one backend patch.');
+assert.ok(app.includes('payload.trackManagerVersion') && app.includes('payload.bridgeVersion'), 'Health drilldown shell must prefer live backend lineage when available.');
 assert.ok(
   app.includes('<span className="phase-tag">PHASE 8</span>')
   || app.includes('<span className="phase-tag">PHASE {studioRelease.phase}</span>')
@@ -78,4 +75,4 @@ assert.ok(
 assert.ok(css.includes('.focus-health-axis-link'));
 assert.ok(css.includes('.phase8-health-drilldown'));
 
-console.log('Phase 8 Build75 health drill-down checks passed through the Build110 human-first Studio successor.');
+console.log('Phase 8 Build75 health drill-down checks passed through the human-first Studio successor with backend patch lineage allowed to evolve.');

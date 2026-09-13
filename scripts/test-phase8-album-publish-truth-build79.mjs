@@ -5,12 +5,13 @@ const release = read('src/release.ts');
 const api = read('src/services/album-admin-api.ts');
 const workspace = read('src/components/AlbumsWorkspace.tsx');
 const pkg = JSON.parse(read('package.json'));
+const currentBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 
 function expect(condition, message) {
   if (!condition) throw new Error(`Build79 guard failed: ${message}`);
 }
 
-expect(/build:\s*(?:79|80)/.test(release), 'release identity must remain Build79 or its explicit Build80 successor');
+expect(/build:\s*(?:79|80)/.test(release), 'release identity must preserve Build79/80 ancestry');
 expect(
   release.includes("codename: 'studio-focus-slice4-phase8-album-publish-truth'")
   || release.includes("codename: 'studio-focus-slice4-phase8-duration-evidence-successor-compat'"),
@@ -28,7 +29,11 @@ expect(api.includes('function metadataMismatch('), 'client must compare requeste
 expect(api.includes('expectedMetadata?: AdminAlbumMetadataPatch'), 'metadata reread verification must receive the requested patch');
 expect(api.includes('return verify(albumId, payload, { expectedMetadata: metadata });'), 'metadata save must verify the requested fields');
 expect(api.includes('Canonical Album reread mismatch:'), 'canonical mismatch must produce a visible verification warning');
-expect(api.includes("transport: 'Track Manager v5.23-v5.24 / bridges v1.13-v1.14'"), 'Album write transport must retain the bounded TM5.23-v5.24 / bridge1.13-v1.14 successor line');
+if (currentBuild >= 114) {
+  expect(api.includes("transport: 'Track Manager v5.23-v5.25 / bridges v1.13-v1.15'"), 'Build114 Album writes must extend the bounded successor line through TM5.25 / bridge1.15');
+} else {
+  expect(api.includes("transport: 'Track Manager v5.23-v5.24 / bridges v1.13-v1.14'"), 'Historical Album write transport must retain the bounded TM5.23-v5.24 / bridge1.13-v1.14 successor line');
+}
 expect(api.includes('verificationDetail?: string | null'), 'Worker verification details must survive the client boundary');
 expect(api.includes('quality?: AdminAlbumQuality | null'), 'Worker quality details must survive the client boundary');
 
@@ -42,4 +47,4 @@ expect(api.includes("metadata: 'album-metadata-save-v1'"), 'existing scoped Albu
 expect(!api.includes('/publish'), 'Build79 must not introduce a separate Album publish write route');
 expect(pkg.scripts['check:phase8']?.includes('test-phase8-album-publish-truth-build79.mjs'), 'Build79 guard must run in check:phase8');
 
-console.log('Build79 Album publish truth guard passed through its bounded Build80 successor and current TM5.23-v5.24 transport line.');
+console.log(`Build79 Album publish truth guard passed through Build${currentBuild}: publish remains metadata-driven and the bounded Track Manager successor transport can advance without changing publication authority.`);
