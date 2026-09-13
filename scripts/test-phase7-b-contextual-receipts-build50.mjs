@@ -31,10 +31,10 @@ for (const token of [
   "'campaign-exported'",
   "'canonical-write'",
   "'review-only'",
-]) assert.ok(receipts.includes(token), `Receipt contract missing ${token}.`);
+]) assert.ok(receipts.includes(token), `Receipt contract missing historical token ${token}.`);
 
 assert.ok(receipts.includes('SOURCE_OPERATIONS'), 'Receipt source/operation/effect allowlist must remain explicit.');
-assert.ok(receipts.includes("'release-campaign': new Map([['campaign-exported', 'review-only']])"), 'Release Campaign must remain review-only.');
+assert.ok(receipts.includes("'release-campaign': new Map([['campaign-exported', 'review-only']])"), 'Historical Release Campaign export receipts must remain classified review-only.');
 assert.ok(receipts.includes("'lrc-maker': new Map([['lyrics-saved', 'canonical-write']])"), 'Lyrics receipts must require canonical verification.');
 assert.ok(receipts.includes("sonictrace: new Map([['analysis-saved', 'canonical-write']])"), 'SonicTrace receipts must require canonical verification.');
 
@@ -51,9 +51,15 @@ assert.ok(verifier.includes("receipt.operation === 'analysis-saved' && !canonica
 assert.ok(embeddedLyrics.includes("source: 'lrc-maker'"), 'Embedded LRC Maker must emit a typed receipt.');
 assert.ok(workspace.includes('<ContinuationReceiptBanner'), 'Track Workspace must render the contextual receipt status.');
 assert.ok(workspace.includes("source: 'sonictrace'"), 'SonicTrace completion must emit a typed receipt.');
-assert.ok(releaseCampaign.includes("source: 'release-campaign'"), 'Native Release Campaign must emit a review-only receipt.');
-assert.ok(releaseCampaign.includes("effect: 'review-only'"), 'Release Campaign receipt may not claim canonical persistence.');
-assert.ok(releaseCampaign.includes('canonicalWrite: false'), 'Native Release Campaign export must keep its no-write manifest contract.');
+if (releaseBuild < 111) {
+  assert.ok(releaseCampaign.includes("source: 'release-campaign'"), 'Historical Native Release Campaign must emit a review-only receipt.');
+  assert.ok(releaseCampaign.includes("effect: 'review-only'"), 'Historical Release Campaign receipt may not claim canonical persistence.');
+  assert.ok(releaseCampaign.includes('canonicalWrite: false'), 'Historical Release Campaign export must keep its no-write manifest contract.');
+} else {
+  assert.ok(!releaseCampaign.includes("source: 'release-campaign'"), 'Build111 has no local campaign-export action and must not emit a fake completion receipt.');
+  assert.ok(!releaseCampaign.includes('campaign-exported'), 'Build111 must retire the obsolete local campaign-export event.');
+  assert.ok(releaseCampaign.includes('Prompts ready for Flow'), 'Build111 must replace export receipts with the explicit Flow handoff surface.');
+}
 assert.ok(styles.includes('@media (prefers-reduced-motion: reduce)'), 'Receipt motion must respect reduced-motion preferences.');
 
 for (const forbidden of ['uploadTrackAsset', 'replaceTrackAsset', 'saveTrackMetadata', 'rebuildCatalog', '/api/studio/track/write', '/api/studio/write']) {
@@ -61,4 +67,4 @@ for (const forbidden of ['uploadTrackAsset', 'replaceTrackAsset', 'saveTrackMeta
   assert.ok(!verifier.includes(forbidden), `Receipt verifier must remain read-only: ${forbidden}`);
 }
 
-console.log(`Phase 7-B Build 50 contract survives ${releaseVersion} Build ${releaseBuild}: typed allowlisted receipts, exact trackId, private canonical reread, stale protection and review-only native Release Campaign remain intact through Studio Focus.`);
+console.log(`Phase 7-B Build 50 contract survives ${releaseVersion} Build ${releaseBuild}: canonical receipts remain guarded; Build111 intentionally removes the obsolete local Release Campaign export receipt because the action itself no longer exists.`);
