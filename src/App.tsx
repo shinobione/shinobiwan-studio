@@ -18,10 +18,10 @@ import { studioConfig } from './services/config';
 import { getSonicTraceHealth } from './services/sonictrace-api';
 import type { ServiceStatus, StudioReadSource, StudioRoute, WorkspaceSection } from './types/studio';
 
-// PHASE 7-B receipt authority remains inherited unchanged under the Phase8 shell.
-// Historical C2.5 diagnostic lineage marker: Track Manager v5.19 · bridge v1.11. Current accepted backend is v5.22 / bridge v1.12.
+// PHASE 7-B receipt authority remains inherited unchanged under the current Studio shell.
+// Historical C2.5 diagnostic lineage marker: Track Manager v5.19 · bridge v1.11. Current accepted backend is v5.24 / bridge v1.14.
 const LAST_TRACK_KEY = 'shinobiwan-studio:last-track-id';
-const SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.22 · bridge v1.12';
+const SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.24 · bridge v1.14';
 
 const DAILY_NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
   { route: 'dashboard', label: 'Home', glyph: '⌂' },
@@ -127,7 +127,7 @@ export default function App() {
           <summary>Advanced</summary>
           <nav className="nav-list" aria-label="Advanced Studio navigation">{ADVANCED_NAV.map(item => <a key={item.route} className={route === item.route ? 'active' : ''} href={routeHref(item.route)} aria-current={route === item.route ? 'page' : undefined}><span className="nav-glyph" aria-hidden="true">{item.glyph}</span><span>{item.label}</span></a>)}</nav>
         </details>
-        <div className="sidebar-foot"><span className="phase-tag">PHASE 8</span><p>v{studioRelease.version} · Build {studioRelease.build}<br />Content health + guided actions</p></div>
+        <div className="sidebar-foot"><span className="phase-tag">PHASE {studioRelease.phase}</span><p>v{studioRelease.version} · Build {studioRelease.build}<br />{studioRelease.summary}</p></div>
       </aside>
 
       <main className="main-area">
