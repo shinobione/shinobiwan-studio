@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-09-13 after **Build109 REAL USER PASS** and release closeout.
+Updated: 2026-09-13 after **Build109 REAL USER PASS**, release closeout, and post-mortem operational guardrails.
 
 This file tracks durable Done / Active / Next / Backlog state. Historical implementation detail belongs in `changelogs/`, `docs/` and acceptance receipts.
 
@@ -105,6 +105,128 @@ Phase10 Slice2 remains unallocated. Build108/109 are independently bounded relia
 
 Accepted runtime identity must advance with each allocated build. `src/release.ts` and `package.json` are canonical release metadata, and `check:release` now rejects stale build/version metadata relative to the latest `check:buildNNN` gate.
 
+### Operational execution guardrails — MANDATORY
+
+These rules are the post-mortem outcome of the Build107–109 work and are part of the roadmap, not optional housekeeping.
+
+#### 1. Assistant orchestrates; Codex/Astra execute only bounded missions
+
+- Do not launch broad multi-repo exploration just because a stronger model is available.
+- No `inspect all repos`, open-ended architecture audit, or subagent fan-out by default.
+- One concrete objective, one bounded repo scope, explicit stop condition, explicit expected output.
+- Cross-repo work is allowed only when the contract genuinely spans those repos and the exact pair is named up front.
+- Mechanical GitHub state checks, workflow checks, PR/merge/deploy inspection and simple closeout work should be handled directly without burning Codex/Astra quota.
+
+#### 2. Codex / Work quota is a scarce resource
+
+Before starting any substantial Codex/Work/Astra run:
+
+- check remaining quota and reset time in the UI;
+- do not burn a reset to reconstruct context already known by the assistant or present in GitHub;
+- do not spend a large quota block on open-ended discovery when a bounded GitHub diff/log inspection can answer the question;
+- if Codex is quota-blocked, treat it as idle — it is not continuing useful work in the background and can be closed safely.
+
+The default decision rule is **value per quota**, not maximum model strength.
+
+#### 3. Remote/local truth must be checked before any audit or implementation
+
+GitHub accepted `main` is the canonical accepted repository state. A local checkout may be stale, dirty, on the wrong branch, or contain EOL-only churn. Never ask Codex/Astra to audit or implement against a local checkout before proving its relation to GitHub.
+
+For every participating local repo, run a bounded preflight equivalent to:
+
+```powershell
+git -C $repo remote -v
+git -C $repo fetch origin --prune
+git -C $repo status --short --branch
+git -C $repo rev-parse HEAD
+git -C $repo rev-parse origin/main
+git -C $repo rev-list --left-right --count HEAD...origin/main
+git -C $repo diff --name-status
+git -C $repo diff --name-status origin/main...HEAD
+```
+
+Interpretation must be explicit before work starts:
+
+```text
+local HEAD == origin/main        → clean canonical base
+local branch ahead of main       → inspect exact intentional delta
+local branch behind main         → update/rebase before audit
+working tree dirty               → classify every local change first
+unexpected remote/path/branch    → STOP
+```
+
+For cross-repo work, do this for **every repo**, not just the first one.
+
+#### 4. Diff first, model second
+
+Before spending model quota, compare the exact accepted GitHub base with the intended candidate/local head. The question is always:
+
+```text
+What is actually different?
+```
+
+Use commit/file diffs and changed-file allowlists before asking for architectural interpretation. If the local checkout and GitHub history disagree, resolve that discrepancy first; do not let an agent infer project state from stale files.
+
+#### 5. No EOL / formatting explosions
+
+- Never normalize the whole repository unless that is the explicit task.
+- Large unexpected `M` sets after an agent run are presumed suspicious until proven semantic.
+- Use changed-file allowlists and ignore-space/EOL comparisons to distinguish real edits from line-ending churn.
+- Restore EOL-only changes before commit; do not carry them into a feature PR.
+
+#### 6. One bounded fix → one grouped commit/CI cycle
+
+When CI fails:
+
+1. read the failing job/log first;
+2. identify the complete family of the same stale assumption;
+3. patch that family together;
+4. launch one new CI cycle.
+
+Do **not** fix historical successor/version guards one file at a time and trigger a chain of redundant CI runs.
+
+#### 7. Build identity is allocated at build start, not at closeout
+
+As soon as a new Studio build is allocated:
+
+- increment `src/release.ts`;
+- increment `package.json`;
+- add/update the matching `check:buildNNN` gate;
+- verify `check:release` before functional closeout.
+
+A build is never accepted while the visible/runtime metadata still names its predecessor.
+
+#### 8. Validation is not deployment
+
+Always distinguish:
+
+```text
+CI / dry-run / validation
+from
+actual production deployment
+```
+
+A green validation workflow is not evidence that a Worker was deployed. For backend-contract changes, identify the actual deployment topology and confirm the production deployment run/version explicitly. Respect backend-first rollout when Studio depends on a new backend capability.
+
+#### 9. Closeout checklist is fixed and short
+
+Before declaring a build closed:
+
+```text
+candidate diff bounded and reviewed
+CI green
+merge SHA known
+required backend deploy confirmed
+Studio deploy confirmed
+real-user smoke performed when required
+smoke data cleaned up
+release metadata matches build number
+local checkout compared/synchronized with GitHub main
+no unexplained local changes remain
+```
+
+Do not add extra audits after these conditions are satisfied unless new evidence shows a concrete problem.
+
 ## Next
 
 ### No Build110 allocated
@@ -112,6 +234,8 @@ Accepted runtime identity must advance with each allocated build. `src/release.t
 Do not allocate Build110 until a fresh bounded audit proves a specific safe scope, rollback boundary, validation matrix and acceptance condition.
 
 The next candidate may come from reliability, product polish or Phase10 extraction, but it must be selected by evidence rather than by build-number momentum.
+
+For the next build, prefer a **visible user/workflow benefit** over another micro-reliability slice unless production evidence shows a reliability problem that materially blocks Studio use.
 
 ## Backlog
 
@@ -164,6 +288,9 @@ There is currently **no official Phase 11**.
 - Build108 and Build109 are accepted reliability work outside Phase10 Slice2.
 - Any Phase10 Slice2 still requires a fresh bounded audit.
 - Every allocated build must increment the canonical Studio build/version metadata and pass `check:release` before acceptance.
+- Every substantial Codex/Astra task must pass the quota + local-vs-GitHub preflight above before execution.
+- Never audit a stale or unexplained local checkout as if it were canonical.
+- Never declare closeout from CI alone when a production deployment is required.
 
 ## Current acceptance pointer
 
