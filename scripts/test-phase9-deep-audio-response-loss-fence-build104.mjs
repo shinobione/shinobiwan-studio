@@ -7,20 +7,21 @@ const api = read('src/services/sonictrace-api.ts');
 const panel = read('src/components/SonicTracePanel.tsx');
 const pkg = JSON.parse(read('package.json'));
 
-assert.ok(['0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version), 'Build104 guard accepts Build104 and bounded successors through Build109.');
-assert.match(release, /version: '0\.19\.(?:26|27|28|29|30|31)'/);
-assert.match(release, /build: (?:104|105|106|107|108|109)/);
-assert.match(release, /studio-focus-slice4-/);
+assert.ok(['0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31', '0.19.32'].includes(pkg.version), 'Build104 guard accepts Build104 and bounded successors through Build110.');
+assert.match(release, /version: '0\.19\.(?:26|27|28|29|30|31|32)'/);
+assert.match(release, /build: (?:104|105|106|107|108|109|110)/);
+assert.match(release, /studio-focus-/);
 assert.match(release, /build103AncestryMarker/);
 assert.match(release, /version: 0\.19\.25 · build: 103 · codename: 'studio-focus-slice4-phase9-canonical-audio-download-transient-retry-truth'/);
-if (['0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) {
+if (['0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31', '0.19.32'].includes(pkg.version)) {
   assert.match(release, /build104AncestryMarker/);
   assert.match(release, /version: 0\.19\.26 · build: 104 · codename: 'studio-focus-slice4-phase9-deep-audio-response-loss-fence'/);
 }
-if (['0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) assert.match(release, /build105AncestryMarker/);
-if (['0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) assert.match(release, /build106AncestryMarker/);
-if (['0.19.30', '0.19.31'].includes(pkg.version)) assert.match(release, /build107AncestryMarker/);
-if (pkg.version === '0.19.31') assert.match(release, /build108AncestryMarker/);
+if (['0.19.28', '0.19.29', '0.19.30', '0.19.31', '0.19.32'].includes(pkg.version)) assert.match(release, /build105AncestryMarker/);
+if (['0.19.29', '0.19.30', '0.19.31', '0.19.32'].includes(pkg.version)) assert.match(release, /build106AncestryMarker/);
+if (['0.19.30', '0.19.31', '0.19.32'].includes(pkg.version)) assert.match(release, /build107AncestryMarker/);
+if (['0.19.31', '0.19.32'].includes(pkg.version)) assert.match(release, /build108AncestryMarker/);
+if (pkg.version === '0.19.32') assert.match(release, /build109AncestryMarker/);
 assert.match(pkg.scripts['check:phase9'], /test-phase9-canonical-audio-download-transient-retry-build103\.mjs/);
 assert.match(pkg.scripts['check:phase9'], /test-phase9-deep-audio-response-loss-fence-build104\.mjs/);
 
