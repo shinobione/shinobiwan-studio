@@ -6,26 +6,27 @@ const release = read('src/release.ts');
 const api = read('src/services/sonictrace-api.ts');
 const panel = read('src/components/SonicTracePanel.tsx');
 const pkg = JSON.parse(read('package.json'));
+const currentBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 
-assert.ok(['0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31', '0.19.32'].includes(pkg.version), 'Build104 guard accepts Build104 and bounded successors through Build110.');
-assert.match(release, /version: '0\.19\.(?:26|27|28|29|30|31|32)'/);
-assert.match(release, /build: (?:104|105|106|107|108|109|110)/);
+assert.ok(currentBuild >= 104, `Build104 guard requires Build104 or a successor, got Build${currentBuild}.`);
 assert.match(release, /studio-focus-/);
 assert.match(release, /build103AncestryMarker/);
 assert.match(release, /version: 0\.19\.25 · build: 103 · codename: 'studio-focus-slice4-phase9-canonical-audio-download-transient-retry-truth'/);
-if (['0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31', '0.19.32'].includes(pkg.version)) {
+if (currentBuild === 104) {
+  assert.match(release, /version: '0\.19\.26'/);
+  assert.match(release, /build: 104/);
+  assert.match(release, /deep-audio-response-loss-fence/);
+} else {
   assert.match(release, /build104AncestryMarker/);
   assert.match(release, /version: 0\.19\.26 · build: 104 · codename: 'studio-focus-slice4-phase9-deep-audio-response-loss-fence'/);
 }
-if (['0.19.28', '0.19.29', '0.19.30', '0.19.31', '0.19.32'].includes(pkg.version)) assert.match(release, /build105AncestryMarker/);
-if (['0.19.29', '0.19.30', '0.19.31', '0.19.32'].includes(pkg.version)) assert.match(release, /build106AncestryMarker/);
-if (['0.19.30', '0.19.31', '0.19.32'].includes(pkg.version)) assert.match(release, /build107AncestryMarker/);
-if (['0.19.31', '0.19.32'].includes(pkg.version)) assert.match(release, /build108AncestryMarker/);
-if (pkg.version === '0.19.32') assert.match(release, /build109AncestryMarker/);
+for (let build = 105; build <= Math.min(currentBuild - 1, 110); build += 1) {
+  assert.match(release, new RegExp(`build${build}AncestryMarker`), `Build${currentBuild} must preserve Build${build} ancestry.`);
+}
+assert.equal(pkg.version, release.match(/version:\s*'([^']+)'/)?.[1]);
 assert.match(pkg.scripts['check:phase9'], /test-phase9-canonical-audio-download-transient-retry-build103\.mjs/);
 assert.match(pkg.scripts['check:phase9'], /test-phase9-deep-audio-response-loss-fence-build104\.mjs/);
 
-// Build104 core truth remains: once Deep Audio upload has begun, response loss is compute-unknown and never retry-safe.
 assert.match(api, /const deepAudioResponseLossFence = new Set<string>\(\)/);
 assert.match(api, /function deepAudioFenceKey\(trackId: string, sourceVersion: SonicTraceSourceVersion\)/);
 assert.match(api, /DEEP_AUDIO_COMPUTE_TRANSPORT_UNVERIFIED/);
@@ -45,7 +46,7 @@ assert.doesNotMatch(deepFunction, /setTimeout\([^)]*runSonicTraceAnalysis/);
 assert.ok(deepFunction.indexOf('deepAudioResponseLossFence.has(fenceKey)') < deepFunction.indexOf("xhr.open('POST'"), 'Reload-required fence must run before creating another Deep Audio POST.');
 assert.match(deepFunction, /deepAudioResponseLossFence\.add\(fenceKey\)/);
 
-if (pkg.version === '0.19.26') {
+if (currentBuild === 104) {
   assert.match(deepFunction, /xhr\.onerror = \(\) => \{\s*deepAudioResponseLossFence\.add\(fenceKey\)/);
   assert.match(deepFunction, /xhr\.ontimeout = \(\) => \{\s*deepAudioResponseLossFence\.add\(fenceKey\)/);
 } else {
@@ -55,7 +56,6 @@ if (pkg.version === '0.19.26') {
   assert.match(deepFunction, /DEEP_AUDIO_COMPUTE_PRESUBMIT_TIMEOUT/);
 }
 
-// Build103 pre-compute GET retry stays bounded and separate from the compute fence.
 const audioStart = api.indexOf('export async function fetchCanonicalAudio(');
 const audioEnd = api.indexOf('\n\nexport async function analyzeBrowserDsp(', audioStart);
 const audioFunction = api.slice(audioStart, audioEnd);
@@ -64,7 +64,6 @@ assert.match(api, /canonicalAudioReadMaxAttempts: 2/);
 assert.match(api, /deepAudioComputeRetryPolicy: 'zero-automatic-retries'/);
 assert.match(api, /deepAudioResponseLossFence: 'in-memory-track-source-fence/);
 
-// Visible UX must preserve UNKNOWN after true response loss and Browser DSP review without pretending compute absence.
 assert.match(panel, /function deepFailureIsResponseLoss\(error: unknown\)/);
 for (const code of [
   'DEEP_AUDIO_COMPUTE_TRANSPORT_UNVERIFIED',
@@ -77,4 +76,4 @@ assert.match(panel, /will not submit a second Deep Audio POST/);
 assert.match(panel, /saving it does not prove Deep Audio did not run/);
 assert.match(panel, /Reload Studio before any explicit re-scan/);
 
-console.log(`Build104 Deep Audio response-loss fence remains protected under ${pkg.version}: true post-upload response loss is UNKNOWN and fenced with zero automatic retries, while bounded successors may refine only pre-submit transport classification or unrelated read-only reliability.`);
+console.log(`Build104 Deep Audio response-loss fence remains protected under ${pkg.version} / Build${currentBuild}: true post-upload response loss is UNKNOWN and fenced with zero automatic retries.`);
