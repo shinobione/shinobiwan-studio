@@ -6,25 +6,22 @@ const release = read('src/release.ts');
 const albumApi = read('src/services/album-admin-api.ts');
 const workspace = read('src/components/AlbumsWorkspace.tsx');
 const pkg = JSON.parse(read('package.json'));
+const currentBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 
-assert.ok(['0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31', '0.19.32'].includes(pkg.version), 'Build99 guard accepts Build99 and bounded successors through Build110.');
-if (pkg.version === '0.19.21') {
+assert.ok(currentBuild >= 99, `Build99 guard requires Build99 or a successor, got Build${currentBuild}.`);
+assert.ok(release.includes('build98AncestryMarker'), 'Build99+ must preserve accepted Build98 ancestry.');
+assert.ok(release.includes("version: 0.19.20 · build: 98 · codename: 'studio-focus-slice4-phase9-tm524-duration-evidence-compat-corrective'"), 'Accepted Build98 identity must remain immutable in Build99 ancestry.');
+if (currentBuild === 99) {
   assert.ok(release.includes("version: '0.19.21'"), 'Build99 release version mismatch.');
   assert.ok(release.includes('build: 99'), 'Build99 release identity is missing.');
   assert.ok(release.includes("codename: 'studio-focus-slice4-phase9-album-asset-upload-success-verification-truth'"), 'Build99 codename mismatch.');
-}
-assert.ok(release.includes('build98AncestryMarker'), 'Build99+ must preserve accepted Build98 ancestry.');
-assert.ok(release.includes("version: 0.19.20 · build: 98 · codename: 'studio-focus-slice4-phase9-tm524-duration-evidence-compat-corrective'"), 'Accepted Build98 identity must remain immutable in Build99 ancestry.');
-if (['0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31', '0.19.32'].includes(pkg.version)) {
-  assert.ok(release.includes('build99AncestryMarker'), 'Build100+ must preserve accepted Build99 ancestry.');
+} else {
+  assert.ok(release.includes('build99AncestryMarker'), `Build${currentBuild} must preserve accepted Build99 ancestry.`);
   assert.ok(release.includes("version: 0.19.21 · build: 99 · codename: 'studio-focus-slice4-phase9-album-asset-upload-success-verification-truth'"), 'Accepted Build99 identity must remain immutable in successor ancestry.');
 }
-if (['0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31', '0.19.32'].includes(pkg.version)) assert.ok(release.includes('build100AncestryMarker'), 'Build101+ must preserve accepted Build100 ancestry.');
-if (['0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31', '0.19.32'].includes(pkg.version)) assert.ok(release.includes('build101AncestryMarker'), 'Build102+ must preserve Build101 candidate ancestry.');
-if (['0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31', '0.19.32'].includes(pkg.version)) assert.ok(release.includes('build102AncestryMarker'), 'Build103+ must preserve accepted Build102 ancestry.');
-if (['0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31', '0.19.32'].includes(pkg.version)) assert.ok(release.includes('build103AncestryMarker'), 'Build104+ must preserve accepted Build103 ancestry.');
-if (['0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31', '0.19.32'].includes(pkg.version)) assert.ok(release.includes('build104AncestryMarker'), 'Build105+ must preserve rejected Build104 candidate ancestry.');
-if (['0.19.28', '0.19.29', '0.19.30', '0.19.31', '0.19.32'].includes(pkg.version)) assert.ok(release.includes('build105AncestryMarker'), 'Build106+ must preserve accepted Build105 ancestry.');
+for (let build = 100; build <= Math.min(currentBuild - 1, 110); build += 1) {
+  assert.ok(release.includes(`build${build}AncestryMarker`), `Build${currentBuild} must preserve Build${build} ancestry while inheriting Build99 Album asset truth.`);
+}
 
 // Build99 closes only normal-success Album asset verification. It does not claim exact selected-byte proof.
 for (const field of [
@@ -71,4 +68,4 @@ for (const inherited of [
 ]) assert.ok(pkg.scripts['check:phase9']?.includes(inherited), `Phase9 gate must retain ${inherited}`);
 assert.ok(pkg.scripts.build?.includes('npm run check:phase9'), 'Build99 must remain inside the repository-native full build gate.');
 
-console.log('Phase9 Build99 Album asset upload success-verification guard passed through Build110: normal success proves response revision + requested slot/path + canonical presence and available server fingerprint fields, while exact selected-byte and lost-response causality remain explicitly out of scope with zero automatic retries.');
+console.log(`Phase9 Build99 Album asset upload success-verification guard passed through Build${currentBuild}: normal success proves response revision + requested slot/path + canonical presence and available server fingerprint fields, while exact selected-byte and lost-response causality remain explicitly out of scope with zero automatic retries.`);

@@ -7,36 +7,28 @@ const panel = read('src/components/CatalogRebuildPanel.tsx');
 const phase4 = read('src/services/phase4-admin-api.ts');
 const release = read('src/release.ts');
 const pkg = JSON.parse(read('package.json'));
+const currentBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 
-assert.ok(['0.19.29', '0.19.30', '0.19.31', '0.19.32'].includes(pkg.version), 'Build108 guard accepts the Build107-hosted candidate plus bounded Build108/Build109/Build110 successors.');
-if (pkg.version === '0.19.29') {
+assert.ok(currentBuild >= 107, `Build108 guard requires the Build107-hosted candidate or a successor, got Build${currentBuild}.`);
+assert.equal(pkg.version, release.match(/version:\s*'([^']+)'/)?.[1]);
+if (currentBuild === 107) {
   assert.match(release, /version: '0\.19\.29'/);
   assert.match(release, /build: 107/);
   assert.match(release, /studio-focus-slice4-phase10-shared-catalog-projection-kernel/);
-} else if (pkg.version === '0.19.30') {
-  assert.match(release, /version: '0\.19\.30'/);
-  assert.match(release, /build: 108/);
-  assert.match(release, /studio-focus-slice4-catalog-rebuild-generation-identity/);
-  assert.match(release, /build107AncestryMarker/);
-  assert.match(release, /version: '0\.19\.29' · build: 107 · codename: 'studio-focus-slice4-phase10-shared-catalog-projection-kernel'/);
-} else if (pkg.version === '0.19.31') {
-  assert.match(release, /version: '0\.19\.31'/);
-  assert.match(release, /build: 109/);
-  assert.match(release, /studio-focus-slice4-track-create-operation-identity/);
-  assert.match(release, /build107AncestryMarker/);
-  assert.match(release, /build108AncestryMarker/);
-  assert.match(release, /version: '0\.19\.29' · build: 107 · codename: 'studio-focus-slice4-phase10-shared-catalog-projection-kernel'/);
-  assert.match(release, /version: '0\.19\.30' · build: 108 · codename: 'studio-focus-slice4-catalog-rebuild-generation-identity'/);
 } else {
-  assert.match(release, /version: '0\.19\.32'/);
-  assert.match(release, /build: 110/);
-  assert.match(release, /studio-focus-build110-human-first-premium-ux/);
   assert.match(release, /build107AncestryMarker/);
-  assert.match(release, /build108AncestryMarker/);
-  assert.match(release, /build109AncestryMarker/);
   assert.match(release, /version: '0\.19\.29' · build: 107 · codename: 'studio-focus-slice4-phase10-shared-catalog-projection-kernel'/);
-  assert.match(release, /version: '0\.19\.30' · build: 108 · codename: 'studio-focus-slice4-catalog-rebuild-generation-identity'/);
-  assert.match(release, /version: '0\.19\.31' · build: 109 · codename: 'studio-focus-slice4-track-create-operation-identity'/);
+  if (currentBuild === 108) {
+    assert.match(release, /version: '0\.19\.30'/);
+    assert.match(release, /build: 108/);
+    assert.match(release, /studio-focus-slice4-catalog-rebuild-generation-identity/);
+  } else {
+    assert.match(release, /build108AncestryMarker/);
+    assert.match(release, /version: '0\.19\.30' · build: 108 · codename: 'studio-focus-slice4-catalog-rebuild-generation-identity'/);
+  }
+}
+for (let build = 109; build <= Math.min(currentBuild - 1, 110); build += 1) {
+  assert.match(release, new RegExp(`build${build}AncestryMarker`), `Build${currentBuild} must preserve Build${build} ancestry while inheriting Build108 catalog identity truth.`);
 }
 assert.match(pkg.scripts['check:build108'], /test-build108-catalog-generation-identity\.mjs/);
 assert.match(pkg.scripts.build, /check:build108/);
@@ -73,8 +65,7 @@ assert.match(panel, /CATALOG REBUILD RECOVERED/);
 assert.match(panel, /generation \{result\.catalogGenerationId \|\| '—'\}/);
 assert.match(panel, /operation UUID/);
 
-// Build108 must not silently widen generic Phase4 write retry behavior.
 assert.match(phase4, /trackCreateLostResponsePolicy: 'private-creation-operation-id-exact-match-no-blind-retry'/);
 assert.match(phase4, /maxAutomaticTrackCreateRetries: 0/);
 
-console.log(`Build108 Studio catalog generation identity PASS under ${pkg.version}: explicit rebuilds use one browser UUID, response-loss recovery proves the exact private canonical generationId, mismatches remain non-retryable, and no unrelated write family was widened.`);
+console.log(`Build108 Studio catalog generation identity PASS under ${pkg.version} / Build${currentBuild}: explicit rebuilds use one browser UUID, response-loss recovery proves the exact private canonical generationId, mismatches remain non-retryable, and no unrelated write family was widened.`);

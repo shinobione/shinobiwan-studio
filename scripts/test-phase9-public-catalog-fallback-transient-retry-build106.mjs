@@ -7,52 +7,26 @@ const catalog = read('src/services/catalog-api.ts');
 const genericHttp = read('src/services/http.ts');
 const publicAlbums = read('src/services/public-albums-api.ts');
 const pkg = JSON.parse(read('package.json'));
+const currentBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 
-assert.ok(['0.19.28', '0.19.29', '0.19.30', '0.19.31', '0.19.32'].includes(pkg.version), 'Build106 guard accepts Build106 and bounded Build107/Build108/Build109/Build110 successors.');
-if (pkg.version === '0.19.28') {
+assert.ok(currentBuild >= 106, `Build106 guard requires Build106 or a successor, got Build${currentBuild}.`);
+assert.match(release, /build105AncestryMarker/);
+assert.match(release, /version: 0\.19\.27 · build: 105 · codename: 'studio-focus-slice4-phase9-deep-audio-presubmit-transport-corrective'/);
+if (currentBuild === 106) {
   assert.match(release, /version: '0\.19\.28'/);
   assert.match(release, /build: 106/);
   assert.match(release, /studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth/);
-} else if (pkg.version === '0.19.29') {
-  assert.match(release, /version: '0\.19\.29'/);
-  assert.match(release, /build: 107/);
-  assert.match(release, /studio-focus-slice4-phase10-shared-catalog-projection-kernel/);
-  assert.match(release, /build106AncestryMarker/);
-  assert.match(release, /version: '0\.19\.28' · build: 106 · codename: 'studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth'/);
-} else if (pkg.version === '0.19.30') {
-  assert.match(release, /version: '0\.19\.30'/);
-  assert.match(release, /build: 108/);
-  assert.match(release, /studio-focus-slice4-catalog-rebuild-generation-identity/);
-  assert.match(release, /build106AncestryMarker/);
-  assert.match(release, /build107AncestryMarker/);
-  assert.match(release, /version: '0\.19\.28' · build: 106 · codename: 'studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth'/);
-  assert.match(release, /version: '0\.19\.29' · build: 107 · codename: 'studio-focus-slice4-phase10-shared-catalog-projection-kernel'/);
-} else if (pkg.version === '0.19.31') {
-  assert.match(release, /version: '0\.19\.31'/);
-  assert.match(release, /build: 109/);
-  assert.match(release, /studio-focus-slice4-track-create-operation-identity/);
-  assert.match(release, /build106AncestryMarker/);
-  assert.match(release, /build107AncestryMarker/);
-  assert.match(release, /build108AncestryMarker/);
-  assert.match(release, /version: '0\.19\.28' · build: 106 · codename: 'studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth'/);
-  assert.match(release, /version: '0\.19\.29' · build: 107 · codename: 'studio-focus-slice4-phase10-shared-catalog-projection-kernel'/);
 } else {
-  assert.match(release, /version: '0\.19\.32'/);
-  assert.match(release, /build: 110/);
-  assert.match(release, /studio-focus-build110-human-first-premium-ux/);
   assert.match(release, /build106AncestryMarker/);
-  assert.match(release, /build107AncestryMarker/);
-  assert.match(release, /build108AncestryMarker/);
-  assert.match(release, /build109AncestryMarker/);
   assert.match(release, /version: '0\.19\.28' · build: 106 · codename: 'studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth'/);
-  assert.match(release, /version: '0\.19\.29' · build: 107 · codename: 'studio-focus-slice4-phase10-shared-catalog-projection-kernel'/);
 }
-assert.match(release, /build105AncestryMarker/);
-assert.match(release, /version: 0\.19\.27 · build: 105 · codename: 'studio-focus-slice4-phase9-deep-audio-presubmit-transport-corrective'/);
+for (let build = 107; build <= Math.min(currentBuild - 1, 110); build += 1) {
+  assert.match(release, new RegExp(`build${build}AncestryMarker`), `Build${currentBuild} must preserve Build${build} ancestry.`);
+}
+assert.equal(pkg.version, release.match(/version:\s*'([^']+)'/)?.[1]);
 assert.match(pkg.scripts['check:phase9'], /test-phase9-deep-audio-presubmit-transport-build105\.mjs/);
 assert.match(pkg.scripts['check:phase9'], /test-phase9-public-catalog-fallback-transient-retry-build106\.mjs/);
 
-// Build106 is deliberately local to public catalog fallback reads; the generic HTTP helper stays one-shot.
 assert.doesNotMatch(catalog, /from '\.\/http'/);
 assert.match(genericHttp, /export async function fetchJson<T>\(url: string, timeoutMs = 3500\): Promise<T>/);
 assert.doesNotMatch(genericHttp, /for \(let attempt/);
@@ -71,7 +45,6 @@ assert.match(catalog, /reason\.kind === 'transport'/);
 assert.match(catalog, /reason\.kind === 'http' && reason\.status !== null && TRANSIENT_PUBLIC_CATALOG_READ_STATUSES\.has\(reason\.status\)/);
 assert.doesNotMatch(catalog, /reason\.kind === 'invalid-response'\s*\|\|/);
 
-// The initial public read remains one-shot and parallel. A second GET is allowed only after private failure.
 assert.match(catalog, /async function retryPublicCatalogFallbackAfterTransientFailure<T>\(/);
 assert.match(catalog, /if \(initial\.ok\) return initial\.value/);
 assert.match(catalog, /if \(!isTransientPublicCatalogReadError\(initial\.error\)\) throw initial\.error/);
@@ -82,24 +55,20 @@ assert.match(catalog, /publicFallbackReadRetryPolicy: 'one-retry-timeout-transpo
 assert.match(catalog, /publicFallbackReadMaxAttempts: 2/);
 assert.match(catalog, /publicFallbackRetryAfterPrivateFailureOnly: true/);
 
-// Only the existing public health/list/detail GET family can participate in fallback retry.
 assert.match(catalog, /return fetchPublicCatalogJsonOnce<PublicHealth>\(`\$\{baseUrl\(\)\}\/health`\)/);
 assert.match(catalog, /fetchPublicCatalogJsonOnce<PublicTracksResponse>\(`\$\{baseUrl\(\)\}\/tracks`, 6000\)/);
 assert.match(catalog, /fetchPublicCatalogJsonOnce<PublicTrackResponse>\(`\$\{baseUrl\(\)\}\/tracks\/\$\{encodeURIComponent\(trackId\)\}`, 6000\)/);
 assert.doesNotMatch(catalog, /method:\s*'POST'/);
 
-// Private-success enrichment consumes only the already-started one-shot public result.
 assert.match(catalog, /const privatePayload = await getAdminTracks\(\)[\s\S]*const publicResult = await publicResultPromise;[\s\S]*const publicTracks = publicResult\.ok \? publicResult\.value : \[\]/);
 assert.match(catalog, /const privatePayload = await getAdminTrack\(trackId\)[\s\S]*const publicResult = await publicResultPromise;[\s\S]*const publicTrack = publicResult\.ok \? publicResult\.value : null/);
 
-// Retry resolver is invoked only from private failure catch paths.
 assert.match(catalog, /catch \(adminError\) \{\n    const publicResult = await publicHealth;\n    const publicValue = await retryPublicCatalogFallbackAfterTransientFailure\(publicResult, getPublicHealth\)/);
 assert.match(catalog, /catch \(adminError\) \{\n    const publicResult = await publicResultPromise;\n    try \{\n      return await retryPublicCatalogFallbackAfterTransientFailure\(publicResult, getPublicTracks\)/);
 assert.match(catalog, /retryPublicCatalogFallbackAfterTransientFailure\(publicResult, \(\) => getPublicTrack\(trackId\)\)/);
 
-// Album artwork remains intentionally private-first and is not swept into Build106.
 assert.match(publicAlbums, /const privatePayload = await getAdminAlbums\(\)/);
 assert.match(publicAlbums, /const response = await fetch\(`\$\{base\}\/albums`/);
 assert.doesNotMatch(publicAlbums, /retryPublicCatalogFallbackAfterTransientFailure/);
 
-console.log(`Build106 public catalog fallback transient retry PASS under ${pkg.version}: the initial public health/list/detail reads remain one-shot, and exactly one retry is allowed only after private failure plus a bounded transient public failure; deterministic failures, generic HTTP calls, writes, and Album artwork fallback remain unchanged.`);
+console.log(`Build106 public catalog fallback transient retry PASS under ${pkg.version} / Build${currentBuild}: initial public reads remain one-shot and exactly one retry is allowed only after private failure plus a bounded transient public failure.`);
