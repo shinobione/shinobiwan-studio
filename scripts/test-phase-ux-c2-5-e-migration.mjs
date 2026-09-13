@@ -44,9 +44,9 @@ const wrappedAlbumsRoute = app.includes("{route === 'albums' && <AlbumHealthWork
   && healthWrapper.includes('<AlbumsWorkspace />')
   && !healthWrapper.includes('AlbumMigrationPanel');
 assert.ok(directAlbumsRoute || wrappedAlbumsRoute, 'Daily Albums route must keep canonical management separate from the completed migration cockpit.');
-assert.ok(app.includes('Album migration archive · C2.5 complete'), 'C2.5-E cockpit must live under the collapsed System maintenance archive after migration completion.');
+assert.ok(app.includes("route === 'administration'") && app.includes('<AlbumMigrationPanel />'), 'C2.5-E cockpit must remain archived under System after migration completion.');
 assert.ok(app.includes('className="panel c3-album-maintenance"'), 'Migration archive must be collapsed maintenance UI, not daily Album content.');
-assert.ok(app.includes('Track Manager v5.19 · bridge v1.11'), 'Studio must retain the current validated migration/backend diagnostic fallback.');
+assert.ok(app.includes('Track Manager v5.24 · bridge v1.14'), 'Studio must surface the current supported backend lineage in System status.');
 assert.ok(main.includes("import './c2-5-e-migration.css';"), 'C2.5-E styles must remain loaded for the preserved maintenance cockpit.');
 assert.ok(css.includes('.album-migration-stack') && css.includes('@media(max-width:560px)'), 'Migration cockpit must retain desktop and mobile styling when maintenance is opened.');
 
@@ -61,4 +61,4 @@ assert.ok(releaseBuild >= 35, 'C2.5-E ancestry must remain at Build 35 or later.
 assert.equal(pkg.version, releaseVersion, 'package.json must match the active Studio release.');
 assert.ok(String(pkg.scripts?.['check:ux'] || '').includes('test-phase-ux-c2-5-e-migration.mjs'));
 
-console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves the guarded one-Album-at-a-time C2.5-E cockpit as collapsed maintenance while Studio Focus remains presentation-only.`);
+console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves the guarded one-Album-at-a-time C2.5-E cockpit as collapsed System maintenance without restoring technical clutter to daily Studio.`);
