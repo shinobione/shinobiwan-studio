@@ -21,18 +21,19 @@ for (const marker of [
   "{ route: 'dashboard', label: 'Home', glyph: '⌂' }",
   "{ route: 'catalog', label: 'Tracks', glyph: '♫' }",
   "{ route: 'albums', label: 'Albums', glyph: '▣' }",
-  'const ADVANCED_NAV',
-  "{ route: 'workflow', label: 'Workflow', glyph: '↳' }",
+  'const TOOL_NAV',
   "{ route: 'intelligence', label: 'Intelligence', glyph: '◇' }",
   "{ route: 'administration', label: 'System', glyph: '⌘' }",
   '<FocusHome />',
   'focus-advanced-nav',
-]) assert.ok(app.includes(marker), `Studio Focus shell is missing ${marker}.`);
+  '<summary>Tools</summary>',
+]) assert.ok(app.includes(marker), `Studio Focus human-first shell is missing ${marker}.`);
 
 assert.ok(!app.includes("{ route: 'dashboard', label: 'Dashboard'"), 'Dashboard must not return as a daily navigation label.');
-assert.ok(app.includes("route === 'workflow' && <WorkflowView />"), 'Detailed Phase 7 workflow must remain available behind Advanced.');
-assert.ok(app.includes("route === 'intelligence' && <CatalogIntelligenceView />"), 'Catalog Intelligence must remain available behind Advanced.');
-assert.ok(app.includes('Track Manager remains the protected write authority'), 'System fallback authority wording must remain intact.');
+assert.ok(!app.includes("{ route: 'workflow', label: 'Workflow'"), 'Build110 must not restore duplicate Workflow in global navigation.');
+assert.ok(app.includes("route === 'workflow' && <WorkflowView />"), 'Detailed workflow route must remain available for contextual deep links.');
+assert.ok(app.includes("route === 'intelligence' && <CatalogIntelligenceView />"), 'Catalog Intelligence must remain available under Tools.');
+assert.ok(app.includes('Maintenance and fallback tools.'), 'System maintenance purpose must remain explicit without backend jargon in daily navigation.');
 
 for (const marker of [
   'Make the track. Finish the release.',
@@ -48,7 +49,7 @@ for (const marker of [
 assert.ok(!home.includes('writeTrack'), 'Focus Home must not gain a direct Track write path.');
 assert.ok(!home.includes('fetch('), 'Focus Home must use validated service adapters instead of ad-hoc network writes.');
 assert.ok(main.includes("import './studio-focus.css';"), 'Studio Focus CSS must remain loaded after the validated baseline styles.');
-assert.ok(focusCss.includes('.focus-advanced-nav'), 'Advanced progressive disclosure styling is missing.');
+assert.ok(focusCss.includes('.focus-advanced-nav'), 'Tools progressive-disclosure styling must remain available.');
 assert.ok(focusCss.includes('.focus-continue'), 'Continue surface styling is missing.');
 
-console.log(`Studio Focus Build 53 ancestry passed under ${version} Build ${build}: production-first shell/Home remain intact while successor slices evolve artist-facing surfaces.`);
+console.log(`Studio Focus Build53 ancestry passed under ${version} Build ${build}: human-first Home/Tracks/Albums navigation preserves contextual Workflow, specialist Tools and validated production behavior.`);

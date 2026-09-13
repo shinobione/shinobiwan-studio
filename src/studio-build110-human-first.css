@@ -1,0 +1,155 @@
+/* Build110 — human-first simplification + premium interaction layer.
+   This file is intentionally loaded last so accepted behavior stays intact while
+   the daily Studio surface becomes quieter, clearer and more tactile. */
+
+.build110-human-first .topbar{
+  min-height:72px;
+}
+
+.build110-human-first .topbar h1{
+  letter-spacing:-.025em;
+}
+
+.build110-human-first .sidebar-foot{
+  opacity:.55;
+}
+
+.build110-human-first .sidebar-foot p{
+  margin:0;
+  font-size:11px;
+  line-height:1.4;
+}
+
+.build110-human-first .system-release{
+  display:block;
+  margin-top:8px;
+  opacity:.55;
+  font-size:11px;
+}
+
+.build110-human-first .focus-home-heading .eyebrow,
+.build110-human-first .phase8-album-heading .eyebrow,
+.build110-human-first .workspace-private-read-notice .eyebrow,
+.build110-human-first .metadata-write-badge{
+  display:none!important;
+}
+
+/* Home: one next action + one short queue. The old Phase8 dashboard remains
+   available through the existing detailed Workflow route, but no longer
+   competes with the artist's immediate task. */
+.build110-human-first .focus-health{
+  display:none!important;
+}
+
+.build110-human-first .focus-summary{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+}
+
+.build110-human-first .focus-summary>article:nth-child(4){
+  display:none!important;
+}
+
+.build110-human-first .focus-summary article small{
+  opacity:.65;
+}
+
+.build110-human-first .focus-section-heading .eyebrow{
+  display:none;
+}
+
+/* Track: hide machine-facing proof from the normal artist path. The accepted
+   verification logic remains active underneath. */
+.build110-human-first .phase7c-guided-action,
+.build110-human-first .workspace-focus-details .workspace-metadata-list,
+.build110-human-first .metadata-duration-evidence,
+.build110-human-first .metadata-validation-result .workspace-footnote,
+.build110-human-first .metadata-album-authority>small{
+  display:none!important;
+}
+
+.build110-human-first .workspace-focus-subpage-head p,
+.build110-human-first .workspace-focus-handoff p,
+.build110-human-first .phase8-album-heading p{
+  max-width:64ch;
+  opacity:.7;
+}
+
+/* Album health: keep human status and actions, drop internal identifiers and
+   implementation commentary from the normal view. */
+.build110-human-first .phase8-album-card-title code,
+.build110-human-first .phase8-album-clear span,
+.build110-human-first .phase8-album-card-actions>span{
+  display:none!important;
+}
+
+.build110-human-first .phase8-album-card-title .phase8-album-meta-row{
+  opacity:.65;
+}
+
+.build110-human-first .phase8-album-unverified span{
+  opacity:.72;
+}
+
+/* Technical receipts still verify writes, but only the outcome needs to shout. */
+.build110-human-first .continuation-receipt-copy>span,
+.build110-human-first .continuation-receipt-copy>small{
+  opacity:.58;
+  font-size:11px;
+}
+
+/* Tactile, restrained interaction language. */
+.build110-human-first :is(button,.primary-btn,.ghost-btn,.catalog-continue-btn,.workspace-tab-links a,.nav-list a,.focus-advanced-nav>summary,.system-status>summary){
+  transition:transform 120ms ease,box-shadow 160ms ease,border-color 160ms ease,background-color 160ms ease,opacity 160ms ease;
+}
+
+.build110-human-first :is(button,.primary-btn,.ghost-btn,.catalog-continue-btn):not(:disabled):hover{
+  transform:translateY(-1px);
+}
+
+.build110-human-first :is(button,.primary-btn,.ghost-btn,.catalog-continue-btn):not(:disabled):active{
+  transform:translateY(0) scale(.98);
+}
+
+.build110-human-first :is(.nav-list a,.workspace-tab-links a):hover{
+  transform:translateX(1px);
+}
+
+.build110-human-first :is(.catalog-card,.focus-queue-item,.phase8-album-card,.tool-card){
+  transition:transform 160ms ease,border-color 180ms ease,box-shadow 180ms ease,background-color 180ms ease;
+}
+
+.build110-human-first :is(.catalog-card,.focus-queue-item,.phase8-album-card,.tool-card):hover{
+  transform:translateY(-2px);
+}
+
+.build110-human-first :is(button,a,input,select,textarea,summary):focus-visible{
+  outline:2px solid currentColor;
+  outline-offset:3px;
+}
+
+.build110-human-first details>summary{
+  cursor:pointer;
+}
+
+.build110-human-first .workspace-tabs,
+.build110-human-first .topbar,
+.build110-human-first .sidebar{
+  backdrop-filter:saturate(115%) blur(10px);
+}
+
+@media (max-width:900px){
+  .build110-human-first .focus-summary{
+    grid-template-columns:1fr!important;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .build110-human-first *,
+  .build110-human-first *::before,
+  .build110-human-first *::after{
+    scroll-behavior:auto!important;
+    transition-duration:.001ms!important;
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+  }
+}

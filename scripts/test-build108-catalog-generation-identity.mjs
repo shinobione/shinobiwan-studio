@@ -8,7 +8,7 @@ const phase4 = read('src/services/phase4-admin-api.ts');
 const release = read('src/release.ts');
 const pkg = JSON.parse(read('package.json'));
 
-assert.ok(['0.19.29', '0.19.30', '0.19.31'].includes(pkg.version), 'Build108 guard accepts the Build107-hosted candidate plus bounded Build108/Build109 successors.');
+assert.ok(['0.19.29', '0.19.30', '0.19.31', '0.19.32'].includes(pkg.version), 'Build108 guard accepts the Build107-hosted candidate plus bounded Build108/Build109/Build110 successors.');
 if (pkg.version === '0.19.29') {
   assert.match(release, /version: '0\.19\.29'/);
   assert.match(release, /build: 107/);
@@ -19,7 +19,7 @@ if (pkg.version === '0.19.29') {
   assert.match(release, /studio-focus-slice4-catalog-rebuild-generation-identity/);
   assert.match(release, /build107AncestryMarker/);
   assert.match(release, /version: '0\.19\.29' · build: 107 · codename: 'studio-focus-slice4-phase10-shared-catalog-projection-kernel'/);
-} else {
+} else if (pkg.version === '0.19.31') {
   assert.match(release, /version: '0\.19\.31'/);
   assert.match(release, /build: 109/);
   assert.match(release, /studio-focus-slice4-track-create-operation-identity/);
@@ -27,6 +27,16 @@ if (pkg.version === '0.19.29') {
   assert.match(release, /build108AncestryMarker/);
   assert.match(release, /version: '0\.19\.29' · build: 107 · codename: 'studio-focus-slice4-phase10-shared-catalog-projection-kernel'/);
   assert.match(release, /version: '0\.19\.30' · build: 108 · codename: 'studio-focus-slice4-catalog-rebuild-generation-identity'/);
+} else {
+  assert.match(release, /version: '0\.19\.32'/);
+  assert.match(release, /build: 110/);
+  assert.match(release, /studio-focus-build110-human-first-premium-ux/);
+  assert.match(release, /build107AncestryMarker/);
+  assert.match(release, /build108AncestryMarker/);
+  assert.match(release, /build109AncestryMarker/);
+  assert.match(release, /version: '0\.19\.29' · build: 107 · codename: 'studio-focus-slice4-phase10-shared-catalog-projection-kernel'/);
+  assert.match(release, /version: '0\.19\.30' · build: 108 · codename: 'studio-focus-slice4-catalog-rebuild-generation-identity'/);
+  assert.match(release, /version: '0\.19\.31' · build: 109 · codename: 'studio-focus-slice4-track-create-operation-identity'/);
 }
 assert.match(pkg.scripts['check:build108'], /test-build108-catalog-generation-identity\.mjs/);
 assert.match(pkg.scripts.build, /check:build108/);

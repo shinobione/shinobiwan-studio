@@ -23,9 +23,9 @@ assert.ok(pkg.scripts.build.includes('check:phase7'), 'Production build must exe
 
 assert.ok(types.includes("| 'workflow'"), 'StudioRoute must include workflow.');
 assert.ok(router.includes("'workflow',"), 'Router must recognize #/workflow.');
-assert.ok(app.includes("{ route: 'workflow', label: 'Workflow'"), 'Workflow must remain available in Studio navigation, even when Studio Focus places it under Advanced.');
-assert.ok(app.includes("{route === 'workflow' && <WorkflowView />}"), 'App must render the Phase 7 Workflow view.');
-assert.ok(app.includes('PHASE 7-A') || app.includes('PHASE 7-B'), 'Studio shell must identify the accepted Phase 7 ancestry.');
+assert.ok(app.includes("route === 'workflow' && <WorkflowView />"), 'App must preserve the Workflow route even when Build110 removes it from global navigation.');
+assert.ok(!app.includes("{ route: 'workflow', label: 'Workflow'"), 'Build110 must not restore Workflow as global navigation clutter.');
+assert.ok(release.includes('build69AncestryMarker'), 'Accepted Phase 7-C ancestry must remain in canonical release metadata instead of daily UI copy.');
 
 for (const marker of [
   "type WorkflowStageId = 'identity' | 'media' | 'lyrics' | 'intelligence' | 'release'",
@@ -43,27 +43,18 @@ for (const marker of [
 
 assert.ok(view.includes("import { getCatalogTracks } from '../services/catalog-api'"), 'Phase 7-A must read the existing canonical catalog service.');
 assert.ok(view.includes('trackHref(track.id, item.nextAction.section)'), 'Next Action must deep-link to the existing guarded Track Workspace.');
-assert.ok(view.includes('This first Phase 7 slice is read-only'), 'Read-only boundary must be explicit in the detailed Workflow surface.');
+assert.ok(view.includes('This first Phase 7 slice is read-only'), 'Read-only boundary must remain explicit inside the detailed Workflow surface.');
 assert.ok(view.includes('no writes'), 'Workflow result line must state the no-write boundary.');
 assert.ok(styles.includes('.phase7-stage.state-blocked'), 'Blocked workflow stages need explicit styling.');
 assert.ok(styles.includes('@media(prefers-reduced-motion:reduce)'), 'Phase 7-A must inherit reduced-motion accessibility.');
 
-const forbiddenImports = [
-  'updateTrackMetadata',
-  'uploadTrackAsset',
-  'deleteTrackAsset',
-  'saveSonicTrace',
-  'createAdminTrack',
-  'rebuildCatalog',
-  'updateAlbum',
-];
+const forbiddenImports = ['updateTrackMetadata','uploadTrackAsset','deleteTrackAsset','saveSonicTrace','createAdminTrack','rebuildCatalog','updateAlbum'];
 for (const symbol of forbiddenImports) {
   assert.ok(!view.includes(symbol), `Phase 7-A Workflow must not import mutation surface ${symbol}.`);
   assert.ok(!workflow.includes(symbol), `Phase 7-A readiness model must not import mutation surface ${symbol}.`);
 }
-
 assert.doesNotMatch(view, /fetch\s*\(/, 'Phase 7-A view must not issue direct HTTP requests.');
 assert.doesNotMatch(view, /method\s*:\s*['"](?:POST|PUT|PATCH|DELETE)['"]/i, 'Phase 7-A view must not declare a write HTTP method.');
 assert.doesNotMatch(workflow, /method\s*:\s*['"](?:POST|PUT|PATCH|DELETE)['"]/i, 'Phase 7-A readiness model must not declare a write HTTP method.');
 
-console.log(`Studio ${version} Build ${build} keeps Phase 7-A workflow orchestration read-only, canonical and deep-linked while Studio Focus reuses the same model for artist-facing continuation.`);
+console.log(`Studio ${version} Build ${build} keeps Phase 7 workflow orchestration read-only and deep-linked while Build110 removes historical workflow/phase labels from global navigation.`);

@@ -40,11 +40,14 @@ if (releaseBuild >= 107 && releasePhase !== 10) {
   throw new Error(`Release metadata guard: Build${releaseBuild} belongs to the active Phase10 program, got phase ${releasePhase}`);
 }
 
-if (!appSource.includes('PHASE {studioRelease.phase}')) {
-  throw new Error('Release metadata guard: sidebar phase must be rendered from studioRelease.phase');
+if (!appSource.includes('v{studioRelease.version} · {studioRelease.build}')) {
+  throw new Error('Release metadata guard: the human-visible shell must expose the current Studio version/build from studioRelease.');
 }
-if (!appSource.includes('{studioRelease.summary}')) {
-  throw new Error('Release metadata guard: sidebar summary must be rendered from studioRelease.summary');
+if (appSource.includes('className="phase-tag"')) {
+  throw new Error('Release metadata guard: Build110+ must not expose internal phase bookkeeping in the daily sidebar.');
+}
+if (appSource.includes('{studioRelease.summary}')) {
+  throw new Error('Release metadata guard: Build110+ must not expose internal release-summary copy in the daily sidebar.');
 }
 
 console.log(`Release metadata PASS: v${releaseVersion} · Build${releaseBuild} · Phase${releasePhase} · latest gate aligned.`);

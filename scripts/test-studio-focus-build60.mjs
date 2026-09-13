@@ -16,15 +16,15 @@ const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 assert.match(version, /^0\.19\.\d+$/);
-assert.ok(build >= 60, `Slice 4 successor must remain Build 60 or later, got ${build}.`);
-assert.ok(codename.startsWith('studio-focus-slice4-'), `Slice 4 successor codename must remain explicit, got ${codename}.`);
+assert.ok(build >= 60, `Studio Focus successor must remain Build 60 or later, got ${build}.`);
+assert.ok(codename.startsWith('studio-focus-'), `Studio Focus successor codename must remain explicit, got ${codename}.`);
 assert.equal(pkg.version, version);
 assert.ok(pkg.scripts['check:focus']?.includes('test-studio-focus-build60.mjs'), 'Build 60 guard must run in the Studio Focus chain.');
-assert.ok(main.indexOf("import './studio-focus-sonictrace-summary.css';") > main.indexOf("import './studio-focus-workshop.css';"), 'Slice 4 presentation must layer after the accepted Track Workshop styles.');
+assert.ok(main.indexOf("import './studio-focus-sonictrace-summary.css';") > main.indexOf("import './studio-focus-workshop.css';"), 'Build 60 presentation must layer after the accepted Track Workshop styles.');
 
 assert.ok(workspace.includes("import { SonicTraceArtistSummary } from './SonicTraceArtistSummary';"), 'Track Workspace must import the compact artist SonicTrace surface.');
 assert.ok(workspace.includes('<SonicTraceArtistSummary track={track} />'), 'Artist SonicTrace summary must live directly in the Track overview.');
-assert.ok(workspace.includes("section === 'intelligence'"), 'Full SonicTrace diagnostics must remain available behind the Advanced/deep-link surface.');
+assert.ok(workspace.includes("section === 'intelligence'"), 'Full SonicTrace diagnostics must remain available behind the contextual/deep-link surface.');
 assert.ok(workspace.includes('<SonicTracePanel track={track}'), 'Existing full SonicTrace panel must remain intact.');
 
 for (const marker of [
@@ -34,7 +34,7 @@ for (const marker of [
   'Details / Advanced →',
   'Analyze with SonicTrace →',
   'protected canonical SonicTrace sidecar',
-]) assert.ok(summaryComponent.includes(marker), `Slice 4 SonicTrace artist surface is missing ${marker}.`);
+]) assert.ok(summaryComponent.includes(marker), `Build 60 SonicTrace artist surface is missing ${marker}.`);
 
 for (const marker of [
   'sonicTraceProfileState',
@@ -51,7 +51,7 @@ for (const marker of [
   "profileState === 'unavailable'",
   "profileState === 'full'",
   'Useful sound profile, with limits',
-]) assert.ok(summaryModel.includes(marker), `Slice 4 truthful summary model is missing ${marker}.`);
+]) assert.ok(summaryModel.includes(marker), `Build 60 truthful summary model is missing ${marker}.`);
 
 for (const forbidden of [
   'embedding.vector',
@@ -75,7 +75,6 @@ for (const marker of [
   'NEEDS ATTENTION',
   'PRODUCTION COMPLETE',
   'PUBLISHED',
-  'DRAFTS',
   'What needs attention',
   'Production workflow has a next action',
 ]) assert.ok(home.includes(marker), `Build 60 Home terminology clarification is missing ${marker}.`);
@@ -97,7 +96,6 @@ for (const marker of [
   '.sonic-artist-profile.partial',
   '.sonic-artist-profile.unavailable',
   '@media(max-width:760px)',
-  '.focus-summary{grid-template-columns:repeat(4,minmax(0,1fr))}',
 ]) assert.ok(css.includes(marker), `Build 60 compact/responsive presentation is missing ${marker}.`);
 
-console.log(`Studio Focus Build 60 ancestry passed under ${version} Build ${build}: compact truthful SonicTrace conclusions, Advanced diagnostics and production/publication semantics remain intact.`);
+console.log(`Studio Focus Build60 ancestry passed under ${version} Build ${build}: compact truthful SonicTrace conclusions and production/publication semantics remain intact while Build110 may reduce duplicate Home presentation.`);

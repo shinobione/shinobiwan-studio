@@ -13,7 +13,7 @@ const main = fs.readFileSync('src/main.tsx', 'utf8');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 
 for (const required of ["create: 'album-create-v1'","metadata: 'album-metadata-save-v1'","membership: 'album-membership-save-v1'","move: 'album-track-move-v1'","upload: 'album-asset-upload-v1'","deleteAsset: 'album-asset-delete-v1'","'/api/studio/albums'","credentials: 'include'","'Content-Type': 'text/plain;charset=UTF-8'","requireManage('album-create')","requireManage('album-metadata')","requireManage('album-membership')","requireManage('album-move')","requireManage('album-assets')",'getAdminAlbum(albumId)']) assert.ok(albumApi.includes(required), `C2.5-D Album client missing: ${required}`);
-if (['0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) {
+if (['0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31', '0.19.32'].includes(pkg.version)) {
   assert.ok(albumApi.includes('return verify(albumId, payload, { expectedAsset: {'), 'Build99+ successor must preserve Track Manager authority while strengthening Album asset normal-success verification.');
   assert.ok(albumApi.includes('maxAutomaticAssetUploadRetries: 0'), 'Build99+ successor must retain zero automatic Album asset upload retries.');
 } else {
@@ -33,8 +33,8 @@ const wrappedAlbumsRoute = app.includes("{route === 'albums' && <AlbumHealthWork
   && healthWrapper.includes("import { AlbumsWorkspace } from './AlbumsWorkspace';")
   && healthWrapper.includes('<AlbumsWorkspace />');
 assert.ok(directAlbumsRoute || wrappedAlbumsRoute, 'Albums route must mount the focused workspace while preserving canonical APIs, directly or through the bounded Phase8 read-only wrapper.');
-assert.ok(app.includes('Track Manager v5.19 · bridge v1.11'), 'Studio must retain the validated Track Manager v5.19 / bridge v1.11 diagnostic fallback.');
-assert.ok(embeddedLyrics.includes("const EMBED_VERSION = '6.3.8'"), 'Embedded Lyrics Studio must keep the accepted LRC Maker 6.3.8 integration even when Studio Focus hides infrastructure versions from Home.');
+assert.ok(app.includes('Track Manager v5.24 · bridge v1.14'), 'Studio must surface the current supported Track Manager / bridge lineage in System status.');
+assert.ok(embeddedLyrics.includes("const EMBED_VERSION = '6.3.8'"), 'Embedded Lyrics Studio must keep the accepted LRC Maker 6.3.8 integration even when Studio hides infrastructure versions from daily work.');
 assert.ok(router.includes("'albums'"), 'Router must recognize Albums.');
 assert.ok(types.includes("| 'albums'"), 'StudioRoute must include Albums.');
 assert.ok(main.includes("import './album-management.css';"), 'Historical Album styles must remain loaded during C3 UX correction.');
@@ -42,4 +42,4 @@ assert.ok(main.includes("import './c3-albums-ux.css';"), 'Focused C3 Album UX st
 assert.ok(main.includes("import './c2-5-d-navigation.css';"), 'Legacy mobile navigation override must remain loaded for route compatibility.');
 assert.ok(String(pkg.scripts?.['check:ux'] || '').includes('test-phase-ux-c2-5-d-albums.mjs'));
 
-console.log('C2.5-D historical guard passed through Build109 / Studio Focus: Track Manager remains the sole Album write authority and LRC Maker 6.3.8 remains pinned at the actual embedded integration seam.');
+console.log('C2.5-D historical guard passed through Build110: Track Manager remains the sole Album write authority and LRC Maker 6.3.8 remains pinned at the embedded integration seam.');

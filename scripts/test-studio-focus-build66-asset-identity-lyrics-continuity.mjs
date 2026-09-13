@@ -4,42 +4,20 @@ import fs from 'node:fs';
 const read = path => fs.readFileSync(path, 'utf8').replace(/\r\n/g, '\n');
 const pkg = JSON.parse(read('package.json'));
 const release = read('src/release.ts');
-if (['0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) assert.ok(release.includes('build99AncestryMarker'), 'Build100+ must preserve accepted Build99 Phase9 ancestry.');
-if (['0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) assert.ok(release.includes('build98AncestryMarker'), 'Build99+ must preserve accepted Build98 Phase9 ancestry.');
-if (['0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) assert.ok(release.includes('build100AncestryMarker'), 'Build101+ must preserve Build100 Phase9 ancestry.');
-if (['0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) assert.ok(release.includes('build101AncestryMarker'), 'Build102+ must preserve rejected Build101 candidate ancestry.');
-if (['0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) assert.ok(release.includes('build102AncestryMarker'), 'Build103+ must preserve accepted Build102 ancestry.');
-if (['0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) assert.ok(release.includes('build103AncestryMarker'), 'Build104+ must preserve accepted Build103 ancestry.');
-if (['0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) assert.ok(release.includes('build104AncestryMarker'), 'Build105+ must preserve rejected Build104 candidate ancestry.');
-if (['0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) assert.ok(release.includes('build105AncestryMarker'), 'Build106+ must preserve accepted Build105 ancestry.');
-if (['0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) assert.ok(release.includes('build106AncestryMarker'), 'Build107+ must preserve accepted Build106 ancestry.');
-if (['0.19.30', '0.19.31'].includes(pkg.version)) assert.ok(release.includes('build107AncestryMarker'), 'Build108+ must preserve accepted Build107 ancestry.');
-if (pkg.version === '0.19.31') assert.ok(release.includes('build108AncestryMarker'), 'Build109 must preserve accepted Build108 ancestry.');
 const lyrics = read('src/components/LyricsEditorPanel.tsx');
 const css = read('src/studio-focus-build66-assets.css');
 const main = read('src/main.tsx');
 
-assert.ok(['0.19.3', '0.19.4', '0.19.5', '0.19.6', '0.19.7', '0.19.8', '0.19.9', '0.19.10', '0.19.11', '0.19.12', '0.19.13', '0.19.14', '0.19.15', '0.19.16', '0.19.17', '0.19.18', '0.19.19', '0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version), 'Build66 guard only accepts the validated Studio successor line through Build109.');
-assert.match(release, /version:\s*'0\.19\.(?:3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31)'/);
-assert.match(release, /build:\s*66/);
-assert.match(release, /codename:\s*'studio-focus-slice4-asset-identity-lyrics-continuity'/);
-if (/build:\s*(?:82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105|106)/.test(release)) assert.ok(release.includes('build81AncestryMarker'), 'Phase9 successors must preserve accepted Build81 ancestry.');
-if (/build:\s*(?:83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105|106)/.test(release)) assert.ok(release.includes('build82AncestryMarker'), 'Build83+ must preserve accepted Build82 Phase9 ancestry.');
-if (/build:\s*(?:84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105|106)/.test(release)) assert.ok(release.includes('build83AncestryMarker'), 'Build84+ must preserve accepted Build83 Phase9 ancestry.');
-if (/build:\s*(?:85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105|106)/.test(release)) assert.ok(release.includes('build84AncestryMarker'), 'Build85+ must preserve accepted Build84 Phase9 ancestry.');
-if (/build:\s*(?:86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105|106)/.test(release)) assert.ok(release.includes('build85AncestryMarker'), 'Build86+ must preserve accepted Build85 Phase9 ancestry.');
-if (/build:\s*(?:87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105|106)/.test(release)) assert.ok(release.includes('build86AncestryMarker'), 'Build87+ must preserve accepted Build86 Phase9 ancestry.');
-if (/build:\s*(?:88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105|106)/.test(release)) assert.ok(release.includes('build87AncestryMarker'), 'Build88+ must preserve accepted Build87 Phase9 ancestry.');
-if (/build:\s*(?:89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105|106)/.test(release)) assert.ok(release.includes('build88AncestryMarker'), 'Build89+ must preserve accepted Build88 Phase9 ancestry.');
-if (/build:\s*(?:90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105|106)/.test(release)) assert.ok(release.includes('build89AncestryMarker'), 'Build90+ must preserve accepted Build89 Phase9 ancestry.');
-if (/build:\s*(?:91|92|93|94|95|96|97|98|99|100|101|102|103|104|105|106)/.test(release)) assert.ok(release.includes('build90AncestryMarker'), 'Build91+ must preserve accepted Build90 Phase9 ancestry.');
-if (/build:\s*(?:92|93|94|95|96|97|98|99|100|101|102|103|104|105|106)/.test(release)) assert.ok(release.includes('build91AncestryMarker'), 'Build92+ must preserve accepted Build91 Phase9 ancestry.');
-if (/build:\s*(?:93|94|95|96|97|98|99|100|101|102|103|104|105|106)/.test(release)) assert.ok(release.includes('build92AncestryMarker'), 'Build93+ must preserve accepted Build92 Phase9 ancestry.');
-if (/build:\s*(?:94|95|96|97|98|99|100|101|102|103|104|105|106)/.test(release)) assert.ok(release.includes('build93AncestryMarker'), 'Build94+ must preserve accepted Build93 Phase9 ancestry.');
-if (/build:\s*(?:95|96|97|98|99|100|101|102|103|104|105|106)/.test(release)) assert.ok(release.includes('build94AncestryMarker'), 'Build95+ must preserve accepted Build94 Phase9 ancestry.');
-if (/build:\s*(?:96|97|98|99|100|101|102|103|104|105|106)/.test(release)) assert.ok(release.includes('build95AncestryMarker'), 'Build96+ must preserve accepted Build95 Phase9 ancestry.');
-if (/build:\s*(?:97|98|99|100|101|102|103|104|105|106)/.test(release)) assert.ok(release.includes('build96AncestryMarker'), 'Build97+ must preserve accepted Build96 Phase9 ancestry.');
-if (/build:\s*(?:98|99|100|101|102|103|104|105|106)/.test(release)) assert.ok(release.includes('build97AncestryMarker'), 'Build98+ must preserve Build97 Phase9 ancestry.');
+const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+assert.match(version, /^0\.19\.\d+$/, 'Build66 asset/Lyrics contract must remain on the validated 0.19.x Studio line.');
+assert.ok(build >= 66, `Build66 contract requires Build66 or later, got Build ${build}.`);
+assert.equal(pkg.version, version);
+assert.ok(release.includes('build: 66'), 'Build66 ancestry marker must remain present.');
+assert.ok(release.includes("codename: 'studio-focus-slice4-asset-identity-lyrics-continuity'"), 'Build66 accepted codename must remain immutable in ancestry.');
+for (const acceptedBuild of [81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109]) {
+  assert.ok(release.includes(`build${acceptedBuild}AncestryMarker`), `Build110 successor must preserve accepted Build${acceptedBuild} ancestry marker.`);
+}
 
 for (const required of [
   'const sourceManager = (',
@@ -48,7 +26,7 @@ for (const required of [
   'Master audio required for synchronization',
   "trackHref(track.id, 'overview')",
   'Add master audio →',
-]) assert.ok(lyrics.includes(required), `Build 66 Lyrics continuity is missing ${required}.`);
+]) assert.ok(lyrics.includes(required), `Build66 Lyrics continuity is missing ${required}.`);
 
 for (const required of [
   'Master audio · playback + lyrics timing',
@@ -58,10 +36,10 @@ for (const required of [
   'Video / Canvas · motion artwork',
   '.workspace-lyrics-plain>.phase4-assets-manager{display:block!important',
   '.workspace-lyrics-plain>.lyrics-sync-prerequisite{display:flex!important',
-]) assert.ok(css.includes(required), `Build 66 asset identity CSS is missing ${required}.`);
+]) assert.ok(css.includes(required), `Build66 asset identity CSS is missing ${required}.`);
 
-assert.ok(main.includes("import './studio-focus-build66-assets.css';"), 'Build 66 CSS must be loaded after the inherited Studio Focus styles.');
+assert.ok(main.includes("import './studio-focus-build66-assets.css';"), 'Build66 CSS must be loaded after the inherited Studio Focus styles.');
 assert.ok(!lyrics.includes('uploadAdminTrackAsset'), 'Lyrics continuity presentation must not own asset transport writes.');
 assert.ok(!lyrics.includes('deleteAdminTrackAsset'), 'Lyrics continuity presentation must not own asset deletion writes.');
 
-console.log(`Studio ${pkg.version} Build66 guard passed through Build109: asset roles, Lyrics source continuity and write ownership remain intact.`);
+console.log(`Studio ${pkg.version} Build66 guard passed through Build${build}: asset roles, Lyrics source continuity and write ownership remain intact.`);
