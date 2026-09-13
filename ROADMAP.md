@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-09-13 after **Build108 REAL USER PASS** and acceptance closeout.
+Updated: 2026-09-13 after **Build109 REAL USER PASS** and release closeout.
 
 This file tracks durable Done / Active / Next / Backlog state. Historical implementation detail belongs in `changelogs/`, `docs/` and acceptance receipts.
 
@@ -54,22 +54,44 @@ explicit Studio rebuild
 
 Lost HTTP response never causes blind automatic write retry. Success recovery is allowed only when canonical reread proves the exact operation UUID.
 
+Accepted Build108 receipt: [`docs/acceptance/BUILD108-REAL-USER-PASS.md`](docs/acceptance/BUILD108-REAL-USER-PASS.md).
+
+### Build109 — explicit Track-create operation identity — REAL USER PASS
+
+Build109 is a separately bounded reliability/backend-contract slice, **not Phase10 Slice2**.
+
+Accepted contract:
+
+```text
+explicit Track create
+→ one browser UUID operationId
+→ one create POST
+→ Track Manager persists private immutable creationOperationId
+→ normal success keeps exact canonical verification
+→ lost response triggers private canonical reread only
+→ exact creationOperationId match = committed / recovered
+→ mismatch / missing / unreadable proof = ambiguous or unverified
+```
+
+Compatibility remains intact for old callers without `operationId`. Existing slug uniqueness / `TRACK_EXISTS` authority remains unchanged. The private creation identity is stripped from public catalog/projection output.
+
 Evidence:
 
 ```text
-Backend PR             LaunchPAD-APP #275
-Backend merge          31675ba4444282691c6e4d55d098f187ab3c4bad
-Admin deploy           34753041082 · SUCCESS · admin only
-Admin Worker version   ff037b48-b717-49a4-82ad-395aa06b6f6f
-Studio PR              #216
-Studio head            b27a2891d2041d79aad4ab2910a150516af74ad4
-Studio CI              #639 · 34752807960 · SUCCESS
-Studio merge           e380a6ab098bddad8b744812515df36fe3ef5906
-Studio Pages           #227 · 34753099885 · SUCCESS
-Real-user smoke        PASS · 45 tracks · generation c4072021-707b-4d03-be8e-d21324a348b4 · verified
+Backend PR             LaunchPAD-APP #276
+Backend candidate      3cf55f7338b9b139586b7a62c6eebfb6100f370f
+Backend merge          5472d43eaf5d7fcbe3413ef9f6e1d088a2f80b80
+Admin deploy           #44 · 34762956165 · SUCCESS · admin only
+Studio PR              #218
+Studio candidate       5114875db99af8cfc9bc7f5747674321faf1fe7b
+Studio CI              #660 · 34762678307 · SUCCESS
+Studio merge           4a2014ba8828063d566c4f5df77c4f1095c0355f
+Studio Pages           #229 · 34762759192 · SUCCESS
+Real-user smoke        PASS · creationOperationId 77ce7e21-90b9-46a3-b166-6148003d50a8
+Smoke cleanup          build109-smoke-20260913 deleted
 ```
 
-Accepted Build108 receipt: [`docs/acceptance/BUILD108-REAL-USER-PASS.md`](docs/acceptance/BUILD108-REAL-USER-PASS.md).
+Accepted Build109 receipt: [`docs/acceptance/BUILD109-REAL-USER-PASS.md`](docs/acceptance/BUILD109-REAL-USER-PASS.md).
 
 ## Active
 
@@ -77,43 +99,30 @@ Accepted Build108 receipt: [`docs/acceptance/BUILD108-REAL-USER-PASS.md`](docs/a
 
 Phase10 remains active as a **program**, not as permission for continuous refactoring.
 
-The post-Build107 fresh audit found no justified Slice2 extraction. Slice2 remains unallocated.
+Phase10 Slice2 remains unallocated. Build108/109 are independently bounded reliability work and do not consume that slice.
 
-### Reliability contract hardening
+### Release discipline
 
-Build108 proves that stronger backend evidence can safely close one causality gap without generalizing write retry. Future slices must be independently scoped and must not assume Build108's generation identity applies to unrelated write families.
+Accepted runtime identity must advance with each allocated build. `src/release.ts` and `package.json` are canonical release metadata, and `check:release` now rejects stale build/version metadata relative to the latest `check:buildNNN` gate.
 
 ## Next
 
-### Fresh bounded Track-create operation-identity audit
+### No Build110 allocated
 
-Before Build109 or any code change, perform a read-only Studio + Track Manager audit of Track Create.
+Do not allocate Build110 until a fresh bounded audit proves a specific safe scope, rollback boundary, validation matrix and acceptance condition.
 
-The audit must prove all of the following:
-
-```text
-1. one durable client operation identity can be bound to a single intended Track creation;
-2. duplicate create after response loss cannot silently create a second canonical Track;
-3. canonical reread can distinguish committed / not committed / ambiguous truthfully;
-4. no automatic blind write retry is introduced;
-5. existing TRACK_EXISTS / slug / manifest authority remains intact;
-6. old clients remain compatible or the migration boundary is explicit;
-7. backend and Studio can be rolled out in a safe order;
-8. CI and real-user acceptance boundaries are exact and non-destructive.
-```
-
-Do not allocate Build109 until this audit passes.
+The next candidate may come from reliability, product polish or Phase10 extraction, but it must be selected by evidence rather than by build-number momentum.
 
 ## Backlog
 
 ### Reliability candidates requiring stronger backend contracts
 
 - Album create lost-response causality / durable operation identity;
-- Track create lost-response causality / durable operation identity — **next audit candidate**;
 - exact-byte/digest proof for binary upload families;
 - Deep Audio request status/idempotency if the coordinator later gains an operation identity contract;
 - degraded/offline behavior that materially affects the private Studio workflow.
 
+Track-create operation identity is no longer backlog: Build109 accepted that exact path.
 Catalog rebuild operation identity/generation evidence is no longer backlog: Build108 accepted that exact path.
 
 ### Premium interaction polish
@@ -147,14 +156,15 @@ There is currently **no official Phase 11**.
 - Do not deliberately damage or interrupt production merely to prove retry/ambiguity behavior.
 - Do not generalize GET retry into write retry.
 - Do not generalize non-mutating validation retry into write retry.
-- Do not generalize Build108's `generationId` into unrelated write families without a fresh contract audit.
+- Do not generalize Build108 `generationId` or Build109 `creationOperationId` into unrelated write families without a fresh contract audit.
 - Do not fake causal proof when the backend exposes no operation identity/digest/status evidence.
 - Build101 and Build104 remain rejected historical evidence.
 - Phase9 is complete.
 - Build107 remains accepted Phase10 Slice1 and must not expand retroactively.
-- Build108 is accepted reliability work outside Phase10 Slice2.
+- Build108 and Build109 are accepted reliability work outside Phase10 Slice2.
 - Any Phase10 Slice2 still requires a fresh bounded audit.
+- Every allocated build must increment the canonical Studio build/version metadata and pass `check:release` before acceptance.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for current runtime/cross-stack truth, `QA.md` for accepted validation boundaries, and [`docs/acceptance/BUILD108-REAL-USER-PASS.md`](docs/acceptance/BUILD108-REAL-USER-PASS.md) for the latest accepted Studio runtime receipt.
+See `PROJECT_STATE.md` for current runtime/cross-stack truth, `QA.md` for accepted validation boundaries, and [`docs/acceptance/BUILD109-REAL-USER-PASS.md`](docs/acceptance/BUILD109-REAL-USER-PASS.md) for the latest accepted Studio runtime receipt.
