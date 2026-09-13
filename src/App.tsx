@@ -18,8 +18,6 @@ import { studioConfig } from './services/config';
 import { getSonicTraceHealth } from './services/sonictrace-api';
 import type { ServiceStatus, StudioReadSource, StudioRoute, WorkspaceSection } from './types/studio';
 
-// PHASE 7-B receipt authority remains inherited unchanged under the current Studio shell.
-// Historical C2.5 diagnostic lineage marker: Track Manager v5.19 · bridge v1.11. Current accepted backend is v5.24 / bridge v1.14.
 const LAST_TRACK_KEY = 'shinobiwan-studio:last-track-id';
 const SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.24 · bridge v1.14';
 
@@ -29,42 +27,53 @@ const DAILY_NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
   { route: 'albums', label: 'Albums', glyph: '▣' },
 ];
 
-const ADVANCED_NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
-  { route: 'workflow', label: 'Workflow', glyph: '↳' },
+const TOOL_NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
   { route: 'intelligence', label: 'Intelligence', glyph: '◇' },
   { route: 'administration', label: 'System', glyph: '⌘' },
 ];
 
+const ROUTE_TITLES: Partial<Record<StudioRoute, string>> = {
+  dashboard: 'Home',
+  catalog: 'Tracks',
+  albums: 'Albums',
+  workflow: 'Production queue',
+  intelligence: 'Intelligence',
+  administration: 'System',
+  lyrics: 'Lyrics',
+  assets: 'Assets',
+  publishing: 'Publishing',
+};
+
 const shellCopy: Record<Exclude<StudioRoute, 'catalog' | 'albums' | 'workflow'>, { eyebrow: string; title: string; body: string }> = {
   dashboard: {
-    eyebrow: 'STUDIO FOCUS',
+    eyebrow: 'STUDIO',
     title: 'Make the track. Finish the release.',
-    body: 'Studio keeps the validated canonical machinery underneath and puts daily artist work first.',
+    body: 'Everything important, without the machinery getting in your way.',
   },
   intelligence: {
-    eyebrow: 'SONICTRACE / C3',
-    title: 'Audio Intelligence is catalog-linked.',
-    body: 'SonicTrace analyses are persisted as private R2 sidecars under the canonical trackId, with truthful FULL/PARTIAL/UNAVAILABLE status, 512D similarity, history and source-version freshness checks.',
+    eyebrow: 'INTELLIGENCE',
+    title: 'Explore how your catalog sounds.',
+    body: 'Similarity, analysis and sonic relationships stay here when you need them.',
   },
   lyrics: {
-    eyebrow: 'LYRICS / CANONICAL',
-    title: 'lyrics.txt is the single canonical source.',
-    body: 'Studio can upload missing lyrics TXT from Assets, edit existing canonical lyrics with manifest+ETag concurrency, and preserve timestamp-derived synchronization. .lrc remains optional compatibility/export only.',
+    eyebrow: 'LYRICS',
+    title: 'Write and synchronize lyrics.',
+    body: 'Open a Track and use its Lyrics tab.',
   },
   assets: {
-    eyebrow: 'CONTENT / ASSETS',
-    title: 'Canonical asset management is operational.',
-    body: 'Per-track Audio, Cover, Thumbnail, Lyrics TXT and Canvas/video can be uploaded or replaced with progress. Individual asset deletion is guarded and confirmed explicitly.',
+    eyebrow: 'ASSETS',
+    title: 'Manage media from the Track.',
+    body: 'Audio, cover, Canvas and lyrics stay attached to the Track that owns them.',
   },
   publishing: {
-    eyebrow: 'CATALOG / PUBLISHING',
-    title: 'Catalog operations stay explicit.',
-    body: 'Metadata, lyrics and assets rebuild the catalog as part of guarded writes. Administration also exposes an explicit standalone catalog rebuild. Published-track quality guards remain authoritative.',
+    eyebrow: 'RELEASE',
+    title: 'Prepare and review the release.',
+    body: 'Open a Track and use its Release tab.',
   },
   administration: {
-    eyebrow: 'ADVANCED / SYSTEM',
-    title: 'Operational fallbacks and maintenance stay out of daily workflows.',
-    body: 'Track Manager remains the protected write authority and fallback. Completed migration tooling is archived here instead of being mixed into normal artist work.',
+    eyebrow: 'SYSTEM',
+    title: 'Maintenance and fallback tools.',
+    body: 'Rare operations live here so daily production stays clean.',
   },
 };
 
@@ -113,25 +122,33 @@ export default function App() {
     return () => { active = false; };
   }, []);
 
-  const navTitle = trackId ? 'Track Workspace' : [...DAILY_NAV, ...ADVANCED_NAV].find(item => item.route === route)?.label || 'Studio';
+  const navTitle = trackId ? 'Track' : ROUTE_TITLES[route] || 'Studio';
   const privateRead = readSource === 'private';
-  const advancedActive = ADVANCED_NAV.some(item => item.route === route);
+  const toolsActive = TOOL_NAV.some(item => item.route === route);
 
   return (
-    <div className="studio-shell">
+    <div className="studio-shell build110-human-first">
       <aside className="sidebar">
         <a className="brand" href={routeHref('dashboard')} aria-label="SHINOBIWAN Studio home"><div className="brand-mark"><span>S</span></div><div><strong>SHINOBIWAN</strong><small>STUDIO</small></div></a>
-        <div className="nav-section-label">Studio</div>
         <nav className="nav-list" aria-label="Studio navigation">{DAILY_NAV.map(item => <a key={item.route} className={route === item.route ? 'active' : ''} href={routeHref(item.route)} aria-current={route === item.route ? 'page' : undefined}><span className="nav-glyph" aria-hidden="true">{item.glyph}</span><span>{item.label}</span></a>)}</nav>
-        <details className="focus-advanced-nav" open={advancedActive ? true : undefined}>
-          <summary>Advanced</summary>
-          <nav className="nav-list" aria-label="Advanced Studio navigation">{ADVANCED_NAV.map(item => <a key={item.route} className={route === item.route ? 'active' : ''} href={routeHref(item.route)} aria-current={route === item.route ? 'page' : undefined}><span className="nav-glyph" aria-hidden="true">{item.glyph}</span><span>{item.label}</span></a>)}</nav>
+        <details className="focus-advanced-nav" open={toolsActive ? true : undefined}>
+          <summary>Tools</summary>
+          <nav className="nav-list" aria-label="Studio tools">{TOOL_NAV.map(item => <a key={item.route} className={route === item.route ? 'active' : ''} href={routeHref(item.route)} aria-current={route === item.route ? 'page' : undefined}><span className="nav-glyph" aria-hidden="true">{item.glyph}</span><span>{item.label}</span></a>)}</nav>
         </details>
-        <div className="sidebar-foot"><span className="phase-tag">PHASE {studioRelease.phase}</span><p>v{studioRelease.version} · Build {studioRelease.build}<br />{studioRelease.summary}</p></div>
+        <div className="sidebar-foot"><p>v{studioRelease.version} · {studioRelease.build}</p></div>
       </aside>
 
       <main className="main-area">
-        <header className="topbar"><div><span className="top-kicker">SHINOBIWAN / PRODUCTION STUDIO</span><h1>{navTitle}</h1></div><div className="top-actions">{adminMode && <span className="admin-badge">ADMIN UI</span>}<details className="system-status"><summary><span className={`system-status-dot ${catalog.state === 'offline' || sonic.state === 'offline' ? 'has-issue' : ''}`} />System status</summary><div className="system-status-popover"><ServicePill name="Catalog" status={catalog} /><ServicePill name="SonicTrace" status={sonic} /></div></details></div></header>
+        <header className="topbar">
+          <div><h1>{navTitle}</h1></div>
+          <div className="top-actions">
+            {adminMode && <span className="admin-badge">ADMIN</span>}
+            <details className="system-status">
+              <summary><span className={`system-status-dot ${catalog.state === 'offline' || sonic.state === 'offline' ? 'has-issue' : ''}`} />Status</summary>
+              <div className="system-status-popover"><ServicePill name="Catalog" status={catalog} /><ServicePill name="SonicTrace" status={sonic} /><small className="system-release">Studio v{studioRelease.version} · Build {studioRelease.build}</small></div>
+            </details>
+          </div>
+        </header>
 
         {route === 'dashboard' && <FocusHome />}
         {route === 'workflow' && <WorkflowView />}
@@ -146,13 +163,12 @@ export default function App() {
               <>
                 <CatalogRebuildPanel privateRead={privateRead} />
                 <section className="tool-grid">
-                  <a className="tool-card panel" href={adminService.fallbackUrl} target="_blank" rel="noreferrer"><b>LP</b><span>Track Manager</span><small>Protected fallback / legacy full surface ↗</small></a>
-                  <a className="tool-card panel" href={studioConfig.sonicTraceUrl} target="_blank" rel="noreferrer"><b>ST</b><span>SonicTrace</span><small>Standalone engine fallback ↗</small></a>
-                  <a className="tool-card panel" href={studioConfig.lrcMakerUrl} target="_blank" rel="noreferrer"><b>LM</b><span>LRC Maker</span><small>Advanced lyrics synchronization ↗</small></a>
+                  <a className="tool-card panel" href={adminService.fallbackUrl} target="_blank" rel="noreferrer"><b>LP</b><span>Track Manager</span><small>Fallback ↗</small></a>
+                  <a className="tool-card panel" href={studioConfig.sonicTraceUrl} target="_blank" rel="noreferrer"><b>ST</b><span>SonicTrace</span><small>Standalone ↗</small></a>
+                  <a className="tool-card panel" href={studioConfig.lrcMakerUrl} target="_blank" rel="noreferrer"><b>LM</b><span>LRC Maker</span><small>Standalone ↗</small></a>
                 </section>
                 <details className="panel c3-album-maintenance">
-                  <summary>Album migration archive · C2.5 complete</summary>
-                  <p className="c3-album-maintenance-copy">Historical one-Album-at-a-time migration tooling is preserved for diagnostics and audit, but removed from the daily Albums workspace. It stays closed by default.</p>
+                  <summary>Archived Album migration tools</summary>
                   <AlbumMigrationPanel />
                 </details>
               </>
