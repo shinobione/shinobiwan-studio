@@ -1,3 +1,4 @@
+import { normalize as normalizeVector, dot, powerComponent } from './vendor/catalog-projection-kernel.mjs';
 import type { SonicTraceCatalogEntry, SonicTraceEmbedding, StudioTrack } from './types/studio';
 
 export interface SimilarTrack {
@@ -208,39 +209,6 @@ export function nearestTracks(selected: SonicTraceCatalogEntry, entries: SonicTr
     }))
     .sort((left, right) => right.similarity - left.similarity || left.entry.trackId.localeCompare(right.entry.trackId))
     .slice(0, limit);
-}
-
-function normalizeVector(vector: number[]): number[] {
-  const norm = Math.sqrt(vector.reduce((sum, value) => sum + value * value, 0));
-  if (!norm) return vector.map(() => 0);
-  return vector.map(value => value / norm);
-}
-
-function dot(left: number[], right: number[]): number {
-  let result = 0;
-  for (let index = 0; index < Math.min(left.length, right.length); index += 1) result += left[index] * right[index];
-  return result;
-}
-
-function powerComponent(rows: number[][], orthogonalTo: number[] | null): number[] {
-  if (!rows.length || !rows[0]?.length) return [];
-  const dimension = rows[0].length;
-  let vector = normalizeVector(Array.from({ length: dimension }, (_, index) => ((index * 37 + 11) % 101) / 101 - 0.5));
-  for (let iteration = 0; iteration < 42; iteration += 1) {
-    const next = Array.from({ length: dimension }, () => 0);
-    for (const row of rows) {
-      const scale = dot(row, vector);
-      for (let index = 0; index < dimension; index += 1) next[index] += row[index] * scale;
-    }
-    if (orthogonalTo?.length) {
-      const projection = dot(next, orthogonalTo);
-      for (let index = 0; index < dimension; index += 1) next[index] -= projection * orthogonalTo[index];
-    }
-    const normalized = normalizeVector(next);
-    if (!normalized.some(value => Math.abs(value) > 1e-12)) break;
-    vector = normalized;
-  }
-  return vector;
 }
 
 function normalizeProjection(raw: Array<{ trackId: string; x: number; y: number }>): ProjectionPoint[] {

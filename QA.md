@@ -1,5 +1,7 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
+> **Local Build107 overlay — 2026-09-13:** Local Build107 numerical, whole-catalog, integrity and loader checks passed. The complete Studio chain passed in an isolated LF copy; the original CRLF checkout hits an existing LF-only Build79 assertion. Working-checkout typecheck/build passed. SonicTrace contracts passed; real-model smoke is blocked by missing librosa. No new CI, deployment or real-user acceptance is claimed. See [local implementation receipt](docs/BUILD107-LOCAL-IMPLEMENTATION.md).
+
 Updated: 2026-08-17 after **Build106 REAL USER PASS**, final acceptance receipts, and **Phase9 program closeout audit**.
 
 This file records accepted runtime truth, automated proof boundaries, real-user evidence and major remaining unproven areas. Historical run-by-run detail belongs in `changelogs/` and `docs/`.
