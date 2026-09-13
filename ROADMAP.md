@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-09-13 after **Build109 REAL USER PASS**, release closeout, and post-mortem operational guardrails.
+Updated: 2026-09-13 after **Build109 REAL USER PASS**, release closeout, post-mortem operational guardrails, and Build110 UX planning.
 
 This file tracks durable Done / Active / Next / Backlog state. Historical implementation detail belongs in `changelogs/`, `docs/` and acceptance receipts.
 
@@ -187,14 +187,14 @@ Do **not** fix historical successor/version guards one file at a time and trigge
 
 #### 7. Build identity is allocated at build start, not at closeout
 
-As soon as a new Studio build is allocated:
+As soon as a new Studio build is allocated for implementation:
 
 - increment `src/release.ts`;
 - increment `package.json`;
 - add/update the matching `check:buildNNN` gate;
 - verify `check:release` before functional closeout.
 
-A build is never accepted while the visible/runtime metadata still names its predecessor.
+A planned roadmap candidate may be named before implementation starts, but the accepted/runtime identity remains on the current build until the implementation branch begins. A build is never accepted while the visible/runtime metadata still names its predecessor.
 
 #### 8. Validation is not deployment
 
@@ -229,13 +229,107 @@ Do not add extra audits after these conditions are satisfied unless new evidence
 
 ## Next
 
-### No Build110 allocated
+### Build110 — Studio simplification + premium interaction polish — PLANNED / NOT STARTED
 
-Do not allocate Build110 until a fresh bounded audit proves a specific safe scope, rollback boundary, validation matrix and acceptance condition.
+Build110 is now the preferred next Studio candidate. Its purpose is deliberately **human-visible**: make Studio calmer, faster to understand, more coherent, and more pleasant to use without changing canonical ownership or backend contracts.
 
-The next candidate may come from reliability, product polish or Phase10 extraction, but it must be selected by evidence rather than by build-number momentum.
+Runtime remains **v0.19.31 · Build109** until the Build110 implementation branch actually begins. At implementation start, release metadata must advance immediately to **v0.19.32 · Build110** before feature work proceeds.
 
-For the next build, prefer a **visible user/workflow benefit** over another micro-reliability slice unless production evidence shows a reliability problem that materially blocks Studio use.
+#### Product objective
+
+Studio must stop behaving like a diagnostic cockpit presented directly to a human operator. The default UI should show **only what is useful for the current human task**.
+
+Target experience:
+
+```text
+open Studio
+→ immediately understand where I am
+→ see the next useful action
+→ perform it without hunting through duplicate controls or technical noise
+→ get clear visual feedback
+→ move naturally to the next step
+```
+
+#### Scope A — information architecture / decluttering
+
+Perform a bounded Studio-only UI inventory and remove or demote ambient clutter:
+
+- remove duplicated facts, duplicated actions and repeated status copy;
+- collapse multiple entry points that perform the same human action unless there is a proven workflow reason to keep both;
+- remove explanatory text that merely restates labels or obvious UI behavior;
+- remove or hide internal implementation vocabulary from default surfaces;
+- move raw IDs, UUIDs, revisions, ETags, transport details, provider/debug state and similar machine-oriented evidence out of normal human workflow surfaces;
+- keep technical diagnostics available only where genuinely useful, preferably under `Advanced`, an explicit disclosure, or a dedicated diagnostics surface;
+- eliminate empty/dead cards, placeholder sections, decorative status boxes and panels that consume space without enabling an action;
+- avoid showing the same Track/Album state simultaneously in sidebar, header, card and body unless each occurrence has a distinct human purpose;
+- shorten verbose banners/messages to the minimum human-meaningful state + action;
+- preserve one clear source of truth in the UI for each important fact and each primary action.
+
+The default screen should be **quiet by design**. Information earns visible space only if it helps the human decide or act.
+
+#### Scope B — workflow coherence
+
+Preserve the accepted authority chain:
+
+```text
+Identity → Core media → Lyrics → Intelligence → Release
+```
+
+But present it as a fluid human workflow rather than a collection of historical modules:
+
+- navigation labels and page hierarchy must use consistent language;
+- Track workspace should make the current task and next logical task obvious;
+- primary actions should be visually dominant; secondary maintenance/diagnostic actions should not compete with them;
+- progressive disclosure should replace permanently visible specialist controls where possible;
+- avoid forcing the user to understand which historical phase/build/module produced a control;
+- deep links and specialist capabilities may remain for compatibility, but they must not clutter the normal daily path.
+
+#### Scope C — premium interaction feel
+
+Apply a coherent interaction language across Studio:
+
+- tactile but restrained button press/release feedback;
+- coherent hover, active, selected, disabled and focus states;
+- short smooth transitions for tabs, panels and selection changes;
+- restrained glow/highlight only where it communicates focus or successful interaction;
+- clear loading → success/error feedback without layout jumping;
+- reduced-motion-safe behavior;
+- no gratuitous animation, long easing, pulsing decoration or effects that slow repetitive work.
+
+The target is **premium and responsive**, not flashy.
+
+#### Scope D — explicit non-scope / safety boundary
+
+Build110 should be presentation-first:
+
+- no Track Manager backend redesign;
+- no Worker/R2 schema change;
+- no new generic write service;
+- no change to Album/Track/Lyrics/SonicTrace canonical authority;
+- no retry/idempotency expansion;
+- no Phase10 extraction bundled into the UX cleanup;
+- no multi-repo architecture audit unless a concrete UI dependency proves it necessary;
+- no removal of a functional capability merely because it is hidden from the default view — specialist capability must remain reachable where required.
+
+#### Build110 acceptance bar
+
+Build110 is not accepted merely because CSS looks nicer. Real-user smoke must demonstrate that normal daily tasks are **simpler**.
+
+Acceptance should verify at minimum:
+
+```text
+fewer competing visible actions / duplicate facts
+no loss of required Track workflow capability
+clear primary action on key daily screens
+technical diagnostics absent from default path unless actionable
+navigation + terminology coherent
+buttons/tabs/panels visibly responsive and consistent
+no obvious layout regressions at desktop ultrawide and normal widths
+prefers-reduced-motion remains usable
+canonical writes/read authorities unchanged
+```
+
+A short before/after UI inventory should document what was removed, merged, demoted to Advanced, or retained and why.
 
 ## Backlog
 
@@ -251,14 +345,7 @@ Catalog rebuild operation identity/generation evidence is no longer backlog: Bui
 
 ### Premium interaction polish
 
-Rolling, non-blocking product polish remains preserved:
-
-- tactile press/release feedback;
-- restrained glow/focus transitions;
-- coherent hover/active states;
-- smooth panel/tab transitions;
-- reduced-motion-safe animation;
-- no decorative motion that obscures state or slows work.
+Promoted into the planned Build110 scope. Additional polish after Build110 should remain rolling and non-blocking rather than becoming another open-ended program.
 
 ### Future Phase10 extraction candidates
 
@@ -287,10 +374,12 @@ There is currently **no official Phase 11**.
 - Build107 remains accepted Phase10 Slice1 and must not expand retroactively.
 - Build108 and Build109 are accepted reliability work outside Phase10 Slice2.
 - Any Phase10 Slice2 still requires a fresh bounded audit.
-- Every allocated build must increment the canonical Studio build/version metadata and pass `check:release` before acceptance.
+- Every allocated implementation build must increment the canonical Studio build/version metadata and pass `check:release` before acceptance.
 - Every substantial Codex/Astra task must pass the quota + local-vs-GitHub preflight above before execution.
 - Never audit a stale or unexplained local checkout as if it were canonical.
 - Never declare closeout from CI alone when a production deployment is required.
+- Build110 must reduce human-visible complexity; adding another always-visible status, diagnostic panel or duplicate action requires explicit justification.
+- Machine-oriented evidence belongs outside the default human workflow unless it directly changes the user's next decision.
 
 ## Current acceptance pointer
 
