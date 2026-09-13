@@ -1,9 +1,9 @@
 export const studioRelease = {
-  version: '0.19.33',
-  build: 111,
+  version: '0.19.34',
+  build: 112,
   phase: 10,
-  codename: 'studio-focus-build111-release-handoff',
-  summary: 'Release handoff simplification + persistent SHINOBIWAN logo rule',
+  codename: 'studio-focus-build112-music-pack-import',
+  summary: 'MUSIC Pack JSON import + local release handoff',
   releasedAt: '2026-09-13',
 } as const;
 
@@ -55,3 +55,4 @@ export const build107AncestryMarker = "version: '0.19.29' · build: 107 · coden
 export const build108AncestryMarker = "version: '0.19.30' · build: 108 · codename: 'studio-focus-slice4-catalog-rebuild-generation-identity'";
 export const build109AncestryMarker = "version: '0.19.31' · build: 109 · codename: 'studio-focus-slice4-track-create-operation-identity'";
 export const build110AncestryMarker = "version: '0.19.32' · build: 110 · codename: 'studio-focus-build110-human-first-premium-ux'";
+export const build111AncestryMarker = "version: '0.19.33' · build: 111 · codename: 'studio-focus-build111-release-handoff'";
