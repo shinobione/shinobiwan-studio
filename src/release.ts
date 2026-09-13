@@ -1,9 +1,9 @@
 export const studioRelease = {
-  version: '0.19.36',
-  build: 114,
+  version: '0.19.37',
+  build: 115,
   phase: 10,
-  codename: 'studio-focus-build114-album-create-operation-identity',
-  summary: 'Album creation lost-response operation identity',
+  codename: 'studio-focus-build115-safe-album-delete',
+  summary: 'Safe canonical Album deletion',
   releasedAt: '2026-09-13',
 } as const;
 
@@ -58,3 +58,4 @@ export const build110AncestryMarker = "version: '0.19.32' · build: 110 · coden
 export const build111AncestryMarker = "version: '0.19.33' · build: 111 · codename: 'studio-focus-build111-release-handoff'";
 export const build112AncestryMarker = "version: '0.19.34' · build: 112 · codename: 'studio-focus-build112-music-pack-import'";
 export const build113AncestryMarker = "version: '0.19.35' · build: 113 · codename: 'studio-focus-build113-soundcloud-pack-priority'";
+export const build114AncestryMarker = "version: '0.19.36' · build: 114 · codename: 'studio-focus-build114-album-create-operation-identity'";
