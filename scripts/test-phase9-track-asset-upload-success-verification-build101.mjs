@@ -5,26 +5,18 @@ const release = fs.readFileSync('src/release.ts', 'utf8');
 const service = fs.readFileSync('src/services/phase4-admin-api.ts', 'utf8');
 const assets = fs.readFileSync('src/components/AssetsManager.tsx', 'utf8');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+const currentBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 
-assert.match(release, /version: '0\.19\.(?:23|24|25|26|27|28|29|30|31|32)'/);
-assert.match(release, /build: (?:101|102|103|104|105|106|107|108|109|110)/);
-assert.match(release, /studio-focus-slice4-/);
+assert.ok(currentBuild >= 101, `Build101 guard requires Build101 or a successor, got Build${currentBuild}.`);
+assert.match(release, /studio-focus-(?:slice4-|build)/);
 assert.match(release, /build100AncestryMarker/);
-if (/build: (?:102|103|104|105|106|107|108|109|110)/.test(release)) assert.match(release, /build101AncestryMarker/);
-if (/build: (?:103|104|105|106|107|108|109|110)/.test(release)) assert.match(release, /build102AncestryMarker/);
-if (/build: (?:104|105|106|107|108|109|110)/.test(release)) assert.match(release, /build103AncestryMarker/);
-if (/build: (?:105|106|107|108|109|110)/.test(release)) assert.match(release, /build104AncestryMarker/);
-if (/build: (?:106|107|108|109|110)/.test(release)) assert.match(release, /build105AncestryMarker/);
-if (/build: (?:107|108|109|110)/.test(release)) assert.match(release, /build106AncestryMarker/);
-if (/build: (?:108|109|110)/.test(release)) assert.match(release, /build107AncestryMarker/);
-if (/build: (?:109|110)/.test(release)) assert.match(release, /build108AncestryMarker/);
-assert.ok(['0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31', '0.19.32'].includes(pkg.version));
+for (let build = 101; build <= Math.min(currentBuild - 1, 110); build += 1) {
+  assert.match(release, new RegExp(`build${build}AncestryMarker`), `Build${currentBuild} must preserve Build${build} ancestry.`);
+}
+assert.equal(pkg.version, release.match(/version:\s*'([^']+)'/)?.[1]);
 assert.match(pkg.scripts['check:phase9'], /test-phase9-track-asset-upload-success-verification-build101\.mjs/);
 
-// Daily Track Visuals/Assets must still use the guarded service.
 assert.match(assets, /uploadAdminTrackAsset\(track\.id, def\.kind, revision, file/);
-
-// A normal HTTP success is not enough: reread must match the response fingerprint.
 assert.match(service, /const sizeVerified = payload\.size == null \|\| asset\?\.size === payload\.size/);
 assert.match(service, /const contentTypeVerified = !payload\.contentType \|\| asset\?\.contentType === payload\.contentType/);
 assert.match(service, /const etagVerified = !payload\.etag \|\| normalizeAssetEtag\(asset\?\.etag\) === normalizeAssetEtag\(payload\.etag\)/);
@@ -34,10 +26,9 @@ assert.match(service, /asset\?\.present === true/);
 assert.match(service, /ASSET_UPLOAD_UNVERIFIED/);
 assert.match(service, /Do not retry until the track is reloaded and inspected/);
 
-// Existing response-loss semantics remain bounded and retry-safe only when non-commit is proven.
 assert.match(service, /ASSET_UPLOAD_NOT_COMMITTED/);
 assert.match(service, /ASSET_UPLOAD_AMBIGUOUS/);
 assert.match(service, /recoveredAfterTransportFailure: true/);
 assert.doesNotMatch(service, /for \(let attempt.*uploadViaFetch/s);
 
-console.log('Build101 Track asset upload success verification guard PASS through bounded Build110 successor');
+console.log(`Build101 Track asset upload success verification guard PASS through bounded Build${currentBuild} successor`);
