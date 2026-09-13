@@ -46,7 +46,8 @@ const wrappedAlbumsRoute = app.includes("{route === 'albums' && <AlbumHealthWork
 assert.ok(directAlbumsRoute || wrappedAlbumsRoute, 'Daily Albums route must keep canonical management separate from the completed migration cockpit.');
 assert.ok(app.includes("route === 'administration'") && app.includes('<AlbumMigrationPanel />'), 'C2.5-E cockpit must remain archived under System after migration completion.');
 assert.ok(app.includes('className="panel c3-album-maintenance"'), 'Migration archive must be collapsed maintenance UI, not daily Album content.');
-assert.ok(app.includes('Track Manager v5.24 · bridge v1.14'), 'Studio must surface the current supported backend lineage in System status.');
+assert.match(app, /const SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v\d+\.\d+ · bridge v\d+\.\d+';/, 'System must retain a supported backend lineage without historical migration tests freezing the active patch level.');
+assert.ok(app.includes('payload.trackManagerVersion') && app.includes('payload.bridgeVersion'), 'System status must prefer live backend lineage when available.');
 assert.ok(main.includes("import './c2-5-e-migration.css';"), 'C2.5-E styles must remain loaded for the preserved maintenance cockpit.');
 assert.ok(css.includes('.album-migration-stack') && css.includes('@media(max-width:560px)'), 'Migration cockpit must retain desktop and mobile styling when maintenance is opened.');
 
