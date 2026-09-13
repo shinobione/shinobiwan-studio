@@ -1,9 +1,9 @@
 export const studioRelease = {
-  version: '0.19.34',
-  build: 112,
+  version: '0.19.35',
+  build: 113,
   phase: 10,
-  codename: 'studio-focus-build112-music-pack-import',
-  summary: 'MUSIC Pack JSON import + local release handoff',
+  codename: 'studio-focus-build113-soundcloud-pack-priority',
+  summary: 'MUSIC Pack SoundCloud handoff surfaced in primary Release flow',
   releasedAt: '2026-09-13',
 } as const;
 
@@ -56,3 +56,4 @@ export const build108AncestryMarker = "version: '0.19.30' · build: 108 · coden
 export const build109AncestryMarker = "version: '0.19.31' · build: 109 · codename: 'studio-focus-slice4-track-create-operation-identity'";
 export const build110AncestryMarker = "version: '0.19.32' · build: 110 · codename: 'studio-focus-build110-human-first-premium-ux'";
 export const build111AncestryMarker = "version: '0.19.33' · build: 111 · codename: 'studio-focus-build111-release-handoff'";
+export const build112AncestryMarker = "version: '0.19.34' · build: 112 · codename: 'studio-focus-build112-music-pack-import'";
