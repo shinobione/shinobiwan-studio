@@ -6,25 +6,21 @@ const pkg = JSON.parse(read('package.json'));
 const release = read('src/release.ts');
 const receipt = read('docs/acceptance/BUILD108-REAL-USER-PASS.md');
 const state = read('PROJECT_STATE.md');
+const currentBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 
-assert.ok(['0.19.30', '0.19.31', '0.19.32'].includes(pkg.version), 'Build108 acceptance closeout must remain valid under accepted Build109 and Build110 successors.');
-if (pkg.version === '0.19.30') {
+assert.ok(currentBuild >= 108, `Build108 acceptance closeout requires Build108 or a successor, got Build${currentBuild}.`);
+assert.equal(pkg.version, release.match(/version:\s*'([^']+)'/)?.[1]);
+assert.match(release, /build107AncestryMarker/);
+if (currentBuild === 108) {
   assert.match(release, /version: '0\.19\.30'/);
   assert.match(release, /build: 108/);
   assert.match(release, /studio-focus-slice4-catalog-rebuild-generation-identity/);
-} else if (pkg.version === '0.19.31') {
-  assert.match(release, /version: '0\.19\.31'/);
-  assert.match(release, /build: 109/);
-  assert.match(release, /studio-focus-slice4-track-create-operation-identity/);
-  assert.match(release, /build108AncestryMarker/);
 } else {
-  assert.match(release, /version: '0\.19\.32'/);
-  assert.match(release, /build: 110/);
-  assert.match(release, /studio-focus-build110-human-first-premium-ux/);
   assert.match(release, /build108AncestryMarker/);
-  assert.match(release, /build109AncestryMarker/);
 }
-assert.match(release, /build107AncestryMarker/);
+for (let build = 109; build <= Math.min(currentBuild - 1, 110); build += 1) {
+  assert.match(release, new RegExp(`build${build}AncestryMarker`), `Build${currentBuild} must preserve Build${build} ancestry after accepted Build108.`);
+}
 
 for (const required of [
   'Status: **ACCEPTED · REAL USER PASS**',
@@ -43,4 +39,4 @@ assert.match(state, /Build108\s+COMPLETE|Build108 remains the accepted predecess
 assert.match(state, /Build109/);
 assert.match(state, /Acceptance\s+REAL USER PASS/);
 
-console.log('Build108 acceptance closeout PASS as immutable accepted ancestry under the current Studio successor runtime.');
+console.log(`Build108 acceptance closeout PASS as immutable accepted ancestry under Studio Build${currentBuild}.`);
