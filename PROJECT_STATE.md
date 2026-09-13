@@ -1,54 +1,58 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-09-13 after **Build108 REAL USER PASS** and acceptance closeout.
+Updated: 2026-09-13 after **Build109 REAL USER PASS** and release-metadata closeout.
 
 This is the short current checkpoint to read immediately after `AGENTS.md`. Historical implementation detail remains in `changelogs/` and milestone docs.
 
 ## Current accepted Studio runtime
 
 ```text
-Studio version          v0.19.30
-Studio build            Build108
-Codename                studio-focus-slice4-catalog-rebuild-generation-identity
+Studio version          v0.19.31
+Studio build            Build109
+Codename                studio-focus-slice4-track-create-operation-identity
 Acceptance              REAL USER PASS
-Studio PR               #216
-Exact implementation    b27a2891d2041d79aad4ab2910a150516af74ad4
-Studio CI               #639 · 34752807960 · SUCCESS
-Studio merge            e380a6ab098bddad8b744812515df36fe3ef5906
-Studio Pages            #227 · 34753099885 · SUCCESS build + deploy
-Backend PR              LaunchPAD-APP #275
-Backend merge           31675ba4444282691c6e4d55d098f187ab3c4bad
-Admin deploy            34753041082 · SUCCESS · admin only
-Admin Worker version    ff037b48-b717-49a4-82ad-395aa06b6f6f
-Public Worker deploy    NONE / skipped
+Studio PR               #218
+Exact candidate         5114875db99af8cfc9bc7f5747674321faf1fe7b
+Studio CI               #660 · 34762678307 · SUCCESS
+Studio merge            4a2014ba8828063d566c4f5df77c4f1095c0355f
+Studio Pages            #229 · 34762759192 · SUCCESS build + deploy
+Backend PR              LaunchPAD-APP #276
+Backend candidate       3cf55f7338b9b139586b7a62c6eebfb6100f370f
+Backend merge           5472d43eaf5d7fcbe3413ef9f6e1d088a2f80b80
+Admin deploy            #44 · 34762956165 · SUCCESS · admin only
+Public Worker deploy    NONE / unchanged
 R2 schema migration     NONE
-Catalog projection      rebuilt explicitly for smoke
-Real-user smoke         PASS · 45 tracks · exact generation UUID · canonical reread verified
-generation              c4072021-707b-4d03-be8e-d21324a348b4
-generatedAt             2026-09-13T10:57:36.269Z
+Real-user smoke         PASS · disposable Track create + private canonical reread
+creationOperationId     77ce7e21-90b9-46a3-b166-6148003d50a8
+Smoke cleanup           build109-smoke-20260913 deleted after verification
 ```
 
-**Build108 is the current accepted Studio runtime identity.**
+**Build109 is the current accepted Studio runtime identity.**
 
-Build108 is a bounded reliability/backend-contract slice for explicit catalog rebuild only. Studio generates one browser UUID per explicit rebuild. Track Manager persists that identity as the canonical `catalog/index.json` `generationId`, verifies it server-side, and exposes the current canonical projection identity through the private read model. Studio accepts success only after an exact private canonical reread match.
+Build109 is a bounded reliability/backend-contract slice for explicit Track creation. Studio generates one browser UUID per explicit create and Track Manager persists it privately as immutable canonical `creationOperationId` evidence. The create POST remains one-shot. On a lost response, Studio performs only a private canonical reread and recovers success only when the exact operation UUID matches.
 
-Lost-response policy remains:
+Lost-response policy:
 
 ```text
-response unavailable
-→ no blind automatic write retry
-→ private canonical catalog reread
-→ exact generationId match = committed / recovered
-→ mismatch / missing proof = ambiguous or unverified
+explicit create
+→ one browser UUID operationId
+→ one POST
+→ response unavailable
+→ no blind automatic second POST
+→ private canonical Track reread
+→ exact creationOperationId match = committed / recovered
+→ mismatch / missing / unreadable proof = ambiguous or unverified
 ```
 
-Detailed acceptance receipt: [`docs/acceptance/BUILD108-REAL-USER-PASS.md`](docs/acceptance/BUILD108-REAL-USER-PASS.md).
+Detailed acceptance receipt: [`docs/acceptance/BUILD109-REAL-USER-PASS.md`](docs/acceptance/BUILD109-REAL-USER-PASS.md).
 
-Detailed changelog: [`changelogs/CHANGELOG-BUILD108.md`](changelogs/CHANGELOG-BUILD108.md).
+Detailed changelog: [`changelogs/CHANGELOG-BUILD109.md`](changelogs/CHANGELOG-BUILD109.md).
 
 ## Accepted predecessor / historical lineage
 
-Build107 remains the accepted predecessor and the first accepted Phase10 progressive-extraction slice. Its SonicTrace-owned catalog projection kernel remains unchanged and singular.
+Build108 remains the accepted predecessor for explicit catalog-rebuild causal identity via canonical `generationId`.
+
+Build107 remains the first accepted Phase10 progressive-extraction slice. Its SonicTrace-owned catalog projection kernel remains unchanged and singular.
 
 Build106 remains accepted Phase9 predecessor truth for bounded public catalog fallback retry.
 
@@ -58,15 +62,15 @@ Build104 remains **REJECTED** historical evidence because it falsely classified 
 
 Build101 remains **REJECTED** historical evidence because quoted R2 `httpEtag` versus raw canonical `etag` caused a Track-asset verification false negative. Build102 corrected only that representation comparison.
 
-Build108 does not alter any of those verdicts.
+Build109 does not alter any of those verdicts.
 
 ## Current ecosystem baseline
 
 ```text
 Track Manager           v5.24 · protected canonical write authority
 Studio bridge           v1.14
-TM admin Worker         ff037b48-b717-49a4-82ad-395aa06b6f6f
-Public Worker           v2.8 · REAL USER PASS · unchanged by Build108
+Admin Worker            Build109 admin deploy #44 · 34762956165 · SUCCESS
+Public Worker           v2.8 · REAL USER PASS · unchanged by Build109
 LaunchPAD public        2026.08.12.102 · REAL USER PASS
 SonicTrace              V2-E Build08 · REAL USER PASS
 Build107 kernel owner   SonicTrace
@@ -74,7 +78,7 @@ Deep Audio              2.0.3-alpha
 LRC Maker               6.3.8
 ```
 
-Build108 changed only the protected admin Worker and Studio catalog-rebuild consumer. It introduced no Public Worker change, no schema migration and no Track/Album/media mutation path.
+Build109 changed only the protected admin Worker Track-create contract and the Studio Track-create consumer. It introduced no Public Worker change and no R2 schema migration.
 
 ## Program position
 
@@ -88,13 +92,14 @@ Phase 9                 COMPLETE · program closeout on accepted Build106
 Build101                REJECTED candidate · ETag representation false negative
 Build104                REJECTED candidate · false Deep Audio UNKNOWN classification
 Phase 10 Slice1         COMPLETE · Build107 REAL USER PASS
-Phase 10 Slice2         UNALLOCATED · fresh audit found no justified extraction
+Phase 10 Slice2         UNALLOCATED · no justified extraction allocated
 Phase 10                ACTIVE · progressive extraction by bounded audited slices
-Build108                COMPLETE · reliability/backend-contract slice · REAL USER PASS
+Build108                COMPLETE · catalog rebuild identity · REAL USER PASS
+Build109                COMPLETE · Track-create operation identity · REAL USER PASS
 Official Phase 11       NONE
 ```
 
-Build108 is deliberately **outside Phase10 Slice2**. The fresh cross-repository audit did not justify another extraction slice; Build108 instead closed one separately proven backend evidence gap.
+Build108 and Build109 are separately bounded reliability/backend-contract work and do not retroactively become Phase10 Slice2.
 
 ## Frozen authority and reliability rules
 
@@ -109,36 +114,43 @@ Build108 is deliberately **outside Phase10 Slice2**. The fresh cross-repository 
 - Build106 retries only a transient public GET fallback after final private-read failure.
 - Build107 changes no persistence/write authority and keeps SonicTrace as singular editable projection-kernel owner.
 - Build108 proves only explicit catalog-rebuild causality using a browser UUID persisted as canonical `generationId`.
-- Build108 does **not** authorize generic operation-ID infrastructure or retry for Track create, Album create, assets, Lyrics, SonicTrace or Deep Audio.
+- Build109 proves only explicit Track-create causality using a browser UUID persisted privately as immutable `creationOperationId`.
+- Build109 does **not** authorize generic idempotency infrastructure or automatic write retry for Album create, assets, Lyrics, SonicTrace or Deep Audio.
 - no Studio-only code may claim write causality that current backend evidence cannot prove.
 
 ## Human acceptance evidence
 
-The Build108 smoke was performed against the deployed Studio candidate after the protected admin Worker deployment.
+The Build109 smoke was performed against the deployed Studio and deployed protected admin Worker.
 
-Visible evidence:
+Visible/canonical evidence:
 
 ```text
-CATALOG REBUILT
-45 tracks
-generated               2026-09-13T10:57:36.269Z
-generation              c4072021-707b-4d03-be8e-d21324a348b4
-canonical reread        verified
+Track                   build109-smoke-20260913
+status                  draft
+Album                   Singles
+creationOperationId     77ce7e21-90b9-46a3-b166-6148003d50a8
+private canonical read  verified
+cleanup                 disposable Track deleted
 ```
 
 Result: **PASS**.
 
-The smoke intentionally rebuilt only the canonical catalog projection from current manifests. No Track manifest, Album manifest, media object, Lyrics file or SonicTrace sidecar was modified.
+Production was not intentionally interrupted to manufacture a response-loss condition. The deployed operation-identity path was proved non-destructively; deterministic automated tests cover timeout/transport/body-loss/mismatch/legacy/unreadable branches.
+
+## Release identity rule
+
+Runtime identity is canonical in `src/release.ts` and must match `package.json`. The build now runs `check:release`, which fails when the latest `check:buildNNN` gate does not match `studioRelease.build`, when package/release versions drift, or when the current 0.19 build/version sequence is not incremented.
+
+The sidebar phase/version/build/summary are rendered from `studioRelease` rather than hard-coded historical copy.
 
 ## Immediate next action
 
-**Fresh bounded Track-create operation-identity audit before any Build109 implementation.**
+**No Build110 is allocated.**
 
-Track Create remains the clearest next reliability candidate because its current lost-response policy still lacks durable operation identity. Do not allocate Build109 until a read-only backend + Studio audit proves a singular durable identity, safe canonical reread semantics, no duplicate-create risk, explicit rollback/compatibility boundaries and exact CI + real-user acceptance gates.
+Any next build requires a fresh bounded scope/audit first. Do not consume Build110 merely for opportunistic refactoring or cleanup.
 
 ## Backlog kept intact
 
-- Track create lost-response causality / durable operation identity;
 - Album create lost-response causality / durable operation identity;
 - exact-byte/digest proof for binary upload families;
 - future Deep Audio operation status/idempotency only if the coordinator gains a safe contract;
@@ -147,7 +159,8 @@ Track Create remains the clearest next reliability candidate because its current
 - further Phase10 progressive extraction only after fresh scope proof;
 - no official Phase11.
 
-Catalog rebuild operation identity/generation evidence is **removed from backlog** because Build108 accepted it for the explicit Studio rebuild path.
+Track-create operation identity is **removed from backlog** because Build109 accepted that exact path.
+Catalog-rebuild operation identity/generation evidence remains accepted from Build108.
 
 ## Release mechanics
 
