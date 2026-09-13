@@ -8,10 +8,18 @@ const genericHttp = read('src/services/http.ts');
 const publicAlbums = read('src/services/public-albums-api.ts');
 const pkg = JSON.parse(read('package.json'));
 
-assert.equal(pkg.version, '0.19.28');
-assert.match(release, /version: '0\.19\.28'/);
-assert.match(release, /build: 106/);
-assert.match(release, /studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth/);
+assert.ok(['0.19.28', '0.19.29'].includes(pkg.version), 'Build106 guard accepts Build106 and bounded Build107 successor.');
+if (pkg.version === '0.19.28') {
+  assert.match(release, /version: '0\.19\.28'/);
+  assert.match(release, /build: 106/);
+  assert.match(release, /studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth/);
+} else {
+  assert.match(release, /version: '0\.19\.29'/);
+  assert.match(release, /build: 107/);
+  assert.match(release, /studio-focus-slice4-phase10-shared-catalog-projection-kernel/);
+  assert.match(release, /build106AncestryMarker/);
+  assert.match(release, /version: '0\.19\.28' · build: 106 · codename: 'studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth'/);
+}
 assert.match(release, /build105AncestryMarker/);
 assert.match(release, /version: 0\.19\.27 · build: 105 · codename: 'studio-focus-slice4-phase9-deep-audio-presubmit-transport-corrective'/);
 assert.match(pkg.scripts['check:phase9'], /test-phase9-deep-audio-presubmit-transport-build105\.mjs/);
@@ -67,4 +75,4 @@ assert.match(publicAlbums, /const privatePayload = await getAdminAlbums\(\)/);
 assert.match(publicAlbums, /const response = await fetch\(`\$\{base\}\/albums`/);
 assert.doesNotMatch(publicAlbums, /retryPublicCatalogFallbackAfterTransientFailure/);
 
-console.log('Build106 public catalog fallback transient retry PASS: the initial public health/list/detail reads remain one-shot, and exactly one retry is allowed only after private failure plus a bounded transient public failure; deterministic failures, generic HTTP calls, writes, and Album artwork fallback remain unchanged.');
+console.log(`Build106 public catalog fallback transient retry PASS under ${pkg.version}: the initial public health/list/detail reads remain one-shot, and exactly one retry is allowed only after private failure plus a bounded transient public failure; deterministic failures, generic HTTP calls, writes, and Album artwork fallback remain unchanged.`);
