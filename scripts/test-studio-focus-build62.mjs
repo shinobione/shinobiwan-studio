@@ -45,7 +45,7 @@ assert.ok(correctiveCss.includes("content:'TRACK / SONIC'"), 'Full SonicTrace su
 assert.ok(main.indexOf("import './studio-focus-build62-closeout-corrective.css';") > main.indexOf("import './studio-focus-build61-polish.css';"), 'Build 62 corrective styles must layer after Build 61.');
 assert.ok(campaign.includes("const GOOGLE_FLOW_URL = 'https://labs.google/fx/fr/tools/flow/'"), 'Google Flow direct handoff must remain available.');
 assert.ok(campaign.includes('Open Google Flow ↗'), 'Google Flow shortcut must remain available after provider-selector cleanup.');
-assert.ok(campaign.includes('buildMasterPrompt(track, false)'), 'MASTER prompt generation remains provider-independent.');
+assert.ok(campaign.includes('buildMasterPrompt(track)'), 'MASTER prompt generation remains provider-independent and Build111 now applies the permanent branding rule by default.');
 assert.ok(campaign.includes("buildVariantPrompt(track, '1:1')"));
 assert.ok(campaign.includes("buildVariantPrompt(track, '9:16')"));
 
