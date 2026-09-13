@@ -9,19 +9,20 @@ const router = fs.readFileSync('src/router.ts', 'utf8');
 const app = fs.readFileSync('src/App.tsx', 'utf8');
 const css = fs.readFileSync('src/phase8-content-health.css', 'utf8');
 
-assert.match(release, /build:\s*(?:75|76|77|78|79)/);
+assert.match(release, /build:\s*(?:75|76|77|78|79|110)/);
 assert.ok(
   release.includes("codename: 'studio-focus-slice4-phase8-health-drilldown'")
   || release.includes("codename: 'studio-focus-slice4-phase8-album-health-truth'")
   || release.includes("codename: 'studio-focus-slice4-phase8-album-health-visual-polish'")
   || release.includes("codename: 'studio-focus-slice4-phase8-album-health-cache-drift-human-ux'")
-  || release.includes("codename: 'studio-focus-slice4-phase8-album-publish-truth'"),
+  || release.includes("codename: 'studio-focus-slice4-phase8-album-publish-truth'")
+  || release.includes("codename: 'studio-focus-build110-human-first-premium-ux'"),
 );
 assert.ok(release.includes('build74AncestryMarker'));
-if (/build:\s*(?:76|77|78|79)/.test(release)) assert.ok(release.includes('build75AncestryMarker'));
-if (/build:\s*(?:77|78|79)/.test(release)) assert.ok(release.includes('build76AncestryMarker'));
-if (/build:\s*(?:78|79)/.test(release)) assert.ok(release.includes('build77AncestryMarker'));
-if (/build:\s*79/.test(release)) assert.ok(release.includes('build78AncestryMarker'));
+if (/build:\s*(?:76|77|78|79|110)/.test(release)) assert.ok(release.includes('build75AncestryMarker'));
+if (/build:\s*(?:77|78|79|110)/.test(release)) assert.ok(release.includes('build76AncestryMarker'));
+if (/build:\s*(?:78|79|110)/.test(release)) assert.ok(release.includes('build77AncestryMarker'));
+if (/build:\s*(?:79|110)/.test(release)) assert.ok(release.includes('build78AncestryMarker'));
 
 assert.ok(health.includes('export type CatalogHealthDrilldownId'));
 assert.ok(health.includes('export function catalogHealthDrilldownMatches'));
@@ -64,9 +65,17 @@ assert.ok(
   || app.includes("SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.23 · bridge v1.13'")
   || app.includes("SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.24 · bridge v1.14'"),
 );
-assert.ok(app.includes('<span className="phase-tag">PHASE 8</span>') || app.includes('<span className="phase-tag">PHASE {studioRelease.phase}</span>'));
-assert.ok(app.includes('Content health + guided actions') || app.includes('{studioRelease.summary}'));
+assert.ok(
+  app.includes('<span className="phase-tag">PHASE 8</span>')
+  || app.includes('<span className="phase-tag">PHASE {studioRelease.phase}</span>')
+  || app.includes('className="studio-shell build110-human-first"'),
+);
+assert.ok(
+  app.includes('Content health + guided actions')
+  || app.includes('{studioRelease.summary}')
+  || app.includes('v{studioRelease.version} · {studioRelease.build}'),
+);
 assert.ok(css.includes('.focus-health-axis-link'));
 assert.ok(css.includes('.phase8-health-drilldown'));
 
-console.log('Phase 8 Build75 health drill-down checks passed through the Build109 Studio successor.');
+console.log('Phase 8 Build75 health drill-down checks passed through the Build110 human-first Studio successor.');
