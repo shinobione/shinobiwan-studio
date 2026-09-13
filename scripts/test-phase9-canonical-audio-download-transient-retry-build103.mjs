@@ -7,15 +7,16 @@ const api = read('src/services/sonictrace-api.ts');
 const panel = read('src/components/SonicTracePanel.tsx');
 const pkg = JSON.parse(read('package.json'));
 
-assert.ok(['0.19.25', '0.19.26', '0.19.27', '0.19.28'].includes(pkg.version), 'Build103 guard accepts Build103 and bounded Build104/Build105/Build106 successors.');
+assert.ok(['0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29'].includes(pkg.version), 'Build103 guard accepts Build103 and bounded Build104/Build105/Build106/Build107 successors.');
 if (pkg.version === '0.19.25') {
   assert.match(release, /version: '0\.19\.25'/);
   assert.match(release, /build: 103/);
 } else {
   assert.match(release, /build103AncestryMarker/);
   assert.match(release, /version: 0\.19\.25 · build: 103 · codename: 'studio-focus-slice4-phase9-canonical-audio-download-transient-retry-truth'/);
-  if (['0.19.27', '0.19.28'].includes(pkg.version)) assert.match(release, /build104AncestryMarker/);
-  if (pkg.version === '0.19.28') assert.match(release, /build105AncestryMarker/);
+  if (['0.19.27', '0.19.28', '0.19.29'].includes(pkg.version)) assert.match(release, /build104AncestryMarker/);
+  if (['0.19.28', '0.19.29'].includes(pkg.version)) assert.match(release, /build105AncestryMarker/);
+  if (pkg.version === '0.19.29') assert.match(release, /build106AncestryMarker/);
 }
 assert.match(release, /studio-focus-slice4-phase9-(?:canonical-audio-download-transient-retry-truth|deep-audio-response-loss-fence|deep-audio-presubmit-transport-corrective|public-catalog-fallback-transient-retry-truth)/);
 assert.match(release, /build102AncestryMarker/);

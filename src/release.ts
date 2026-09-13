@@ -1,8 +1,8 @@
 export const studioRelease = {
-  version: '0.19.28',
-  build: 106,
-  codename: 'studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth',
-  releasedAt: '2026-08-17',
+  version: '0.19.29',
+  build: 107,
+  codename: 'studio-focus-slice4-phase10-shared-catalog-projection-kernel',
+  releasedAt: '2026-09-13',
 } as const;
 
 // Historical candidate markers retained only so exact earlier guards remain immutable.
@@ -48,3 +48,4 @@ export const build102AncestryMarker = "version: 0.19.24 · build: 102 · codenam
 export const build103AncestryMarker = "version: 0.19.25 · build: 103 · codename: 'studio-focus-slice4-phase9-canonical-audio-download-transient-retry-truth'";
 export const build104AncestryMarker = "version: 0.19.26 · build: 104 · codename: 'studio-focus-slice4-phase9-deep-audio-response-loss-fence'";
 export const build105AncestryMarker = "version: 0.19.27 · build: 105 · codename: 'studio-focus-slice4-phase9-deep-audio-presubmit-transport-corrective'";
+export const build106AncestryMarker = "version: '0.19.28' · build: 106 · codename: 'studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth'";

@@ -10,13 +10,15 @@ const build103Successor = /version: '0\.19\.25'/.test(release) && /build: 103/.t
 const build104Successor = /version: '0\.19\.26'/.test(release) && /build: 104/.test(release) && /deep-audio-response-loss-fence/.test(release);
 const build105Successor = /version: '0\.19\.27'/.test(release) && /build: 105/.test(release) && /deep-audio-presubmit-transport-corrective/.test(release);
 const build106Successor = /version: '0\.19\.28'/.test(release) && /build: 106/.test(release) && /public-catalog-fallback-transient-retry-truth/.test(release);
-assert.ok(build102 || build103Successor || build104Successor || build105Successor || build106Successor, 'Build102 ETag contract must remain inherited by Build102 or bounded Build103/Build104/Build105/Build106 successors.');
+const build107Successor = /version: '0\.19\.29'/.test(release) && /build: 107/.test(release) && /phase10-shared-catalog-projection-kernel/.test(release);
+assert.ok(build102 || build103Successor || build104Successor || build105Successor || build106Successor || build107Successor, 'Build102 ETag contract must remain inherited by Build102 or bounded Build103/Build104/Build105/Build106/Build107 successors.');
 assert.match(release, /build101AncestryMarker/);
-if (build103Successor || build104Successor || build105Successor || build106Successor) assert.match(release, /build102AncestryMarker/);
-if (build104Successor || build105Successor || build106Successor) assert.match(release, /build103AncestryMarker/);
-if (build105Successor || build106Successor) assert.match(release, /build104AncestryMarker/);
-if (build106Successor) assert.match(release, /build105AncestryMarker/);
-assert.ok(['0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28'].includes(pkg.version));
+if (build103Successor || build104Successor || build105Successor || build106Successor || build107Successor) assert.match(release, /build102AncestryMarker/);
+if (build104Successor || build105Successor || build106Successor || build107Successor) assert.match(release, /build103AncestryMarker/);
+if (build105Successor || build106Successor || build107Successor) assert.match(release, /build104AncestryMarker/);
+if (build106Successor || build107Successor) assert.match(release, /build105AncestryMarker/);
+if (build107Successor) assert.match(release, /build106AncestryMarker/);
+assert.ok(['0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29'].includes(pkg.version));
 assert.match(pkg.scripts['check:phase9'], /test-phase9-track-asset-etag-representation-build102\.mjs/);
 
 // Real-user Build101 smoke proved Track Manager's quoted httpEtag and the private reread's raw R2 etag
@@ -38,4 +40,4 @@ assert.match(service, /ASSET_UPLOAD_AMBIGUOUS/);
 assert.match(service, /recoveredAfterTransportFailure: true/);
 assert.doesNotMatch(service, /for \(let attempt.*uploadViaFetch/s);
 
-console.log('Build102 Track asset ETag representation corrective guard PASS through bounded Build106 successor');
+console.log('Build102 Track asset ETag representation corrective guard PASS through bounded Build107 successor');
