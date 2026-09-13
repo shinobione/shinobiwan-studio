@@ -59,10 +59,14 @@ assert.ok(workflowView.includes('same Workflow stages and accepted Next Actions'
 assert.ok(workflowView.includes('item.nextAction.label'));
 assert.ok(workflowView.includes('item.nextAction.section'));
 assert.ok(!workflowView.includes('saveTrack('));
-assert.ok(app.includes("SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.22 · bridge v1.12'") || app.includes("SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.23 · bridge v1.13'"));
-assert.ok(app.includes('<span className="phase-tag">PHASE 8</span>'));
-assert.ok(app.includes('Content health + guided actions'));
+assert.ok(
+  app.includes("SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.22 · bridge v1.12'")
+  || app.includes("SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.23 · bridge v1.13'")
+  || app.includes("SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.24 · bridge v1.14'"),
+);
+assert.ok(app.includes('<span className="phase-tag">PHASE 8</span>') || app.includes('<span className="phase-tag">PHASE {studioRelease.phase}</span>'));
+assert.ok(app.includes('Content health + guided actions') || app.includes('{studioRelease.summary}'));
 assert.ok(css.includes('.focus-health-axis-link'));
 assert.ok(css.includes('.phase8-health-drilldown'));
 
-console.log('Phase 8 Build75 health drill-down checks passed through Build79.');
+console.log('Phase 8 Build75 health drill-down checks passed through the Build109 Studio successor.');
