@@ -56,7 +56,7 @@ assert.match(panel, /generation \{result\.catalogGenerationId \|\| '—'\}/);
 assert.match(panel, /operation UUID/);
 
 // Build108 must not silently widen generic Phase4 write retry behavior.
-assert.match(phase4, /trackCreateLostResponsePolicy: 'not-covered-no-operation-id-no-blind-retry'/);
+assert.match(phase4, /trackCreateLostResponsePolicy: 'private-creation-operation-id-exact-match-no-blind-retry'/);
 assert.match(phase4, /maxAutomaticTrackCreateRetries: 0/);
 
 console.log(`Build108 Studio catalog generation identity PASS under ${pkg.version}: explicit rebuilds use one browser UUID, response-loss recovery proves the exact private canonical generationId, mismatches remain non-retryable, and no unrelated write family was widened.`);

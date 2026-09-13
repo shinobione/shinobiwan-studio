@@ -26,7 +26,7 @@ if (['0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30'].includes(pkg.version
 if (['0.19.27', '0.19.28', '0.19.29', '0.19.30'].includes(pkg.version)) assert.ok(release.includes('build104AncestryMarker'), 'Build105+ must preserve rejected Build104 candidate ancestry.');
 if (['0.19.28', '0.19.29', '0.19.30'].includes(pkg.version)) assert.ok(release.includes('build105AncestryMarker'), 'Build106+ must preserve accepted Build105 ancestry.');
 
-assert.ok(phase4.includes("const payload = await postSimple<TrackCreateResponse>('/api/studio/tracks/create', {"), 'Track create must retain the existing Track Manager transport and intent.');
+assert.ok(phase4.includes("payload = await postSimple<TrackCreateResponse>('/api/studio/tracks/create', {"), 'Track create must retain the existing Track Manager transport and intent.');
 assert.ok(phase4.includes('const responseManifest = payload.track;'), 'Build97 must anchor normal-success verification to the server-normalized create manifest.');
 assert.ok(phase4.includes("!responseManifest?.updatedAt || responseManifest.slug !== slug || responseManifest.status !== 'draft'"), 'Create response must prove trackId, draft state and canonical revision before verification.');
 assert.ok(phase4.includes('const canonicalManifest = reread.track?.manifest;'), 'Build97 must retain a second private canonical Track reread.');
@@ -36,7 +36,7 @@ assert.ok(phase4.includes('function stableCreateManifestJson(value: unknown): st
 assert.ok(!phase4.includes("const clientVerified = reread.track?.manifest?.slug === slug && reread.track?.manifest?.status === 'draft';"), 'Legacy slug+draft-only create verification must not return.');
 
 assert.ok(phase4.includes("trackCreateSuccessVerificationPolicy: 'server-normalized-manifest-plus-private-reread-exact-match'"));
-assert.ok(phase4.includes("trackCreateLostResponsePolicy: 'not-covered-no-operation-id-no-blind-retry'"), 'Build97 must not pretend create response-loss causality is solved.');
+assert.ok(phase4.includes("trackCreateLostResponsePolicy: 'private-creation-operation-id-exact-match-no-blind-retry'"), 'Build109 must prove exact private creation identity while preserving Build97 normal-success proof.');
 assert.ok(phase4.includes('maxAutomaticTrackCreateRetries: 0'), 'Track create must retain zero automatic retries.');
 assert.ok(!phase4.includes('retryAdminTrackCreate'), 'Build97 must not add a Track create retry helper.');
 
