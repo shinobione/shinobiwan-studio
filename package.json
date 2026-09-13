@@ -1,10 +1,11 @@
 {
   "name": "shinobiwan-studio",
   "private": true,
-  "version": "0.19.30",
+  "version": "0.19.31",
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "check:release": "node scripts/check-release-metadata.mjs",
     "check:private-read": "node scripts/check-private-read-contract.mjs",
     "check:phase5": "node scripts/test-phase5-algorithms.mjs",
     "check:phase6": "node scripts/test-phase6-lyrics.mjs",
@@ -17,7 +18,7 @@
     "check:focus": "node scripts/test-studio-focus-build53.mjs && node scripts/test-studio-focus-build54.mjs && node scripts/test-studio-focus-build55.mjs && node scripts/test-studio-focus-build56.mjs && node scripts/test-studio-focus-build57.mjs && node scripts/test-studio-focus-build58.mjs && node scripts/test-studio-focus-build60.mjs && node scripts/test-studio-focus-build61.mjs && node scripts/test-studio-focus-build62.mjs && node scripts/test-studio-focus-build64-foundation-repair.mjs && node scripts/test-studio-focus-build65-lyrics-crash-corrective.mjs && node scripts/test-studio-focus-build66-asset-identity-lyrics-continuity.mjs && node scripts/test-studio-focus-build67-lyrics-source-anchor.mjs && node scripts/test-studio-focus-build68-home-lead-priority.mjs",
     "check:ux": "node scripts/test-phase-ux-foundation.mjs && node scripts/test-phase-ux-catalog.mjs && node scripts/test-phase-ux-workspace.mjs && node scripts/test-phase-ux-modules.mjs && node scripts/test-phase-ux-closeout.mjs && node scripts/test-phase-ux-live-smoke-corrections.mjs && node scripts/test-phase-ux-final-integration.mjs && node scripts/test-phase-ux-c2-5-a-polish.mjs && node scripts/test-phase-ux-c2-5-d-albums.mjs && node scripts/test-phase-ux-c2-5-d2-intake.mjs && node scripts/test-phase-ux-c2-5-e-migration.mjs && node scripts/test-phase-ux-c2-5-e2-review-pack.mjs && node scripts/test-phase-ux-c2-5-e3-diagnostics.mjs && node scripts/test-build52-tracks-nav-polish.mjs",
     "typecheck": "tsc --noEmit",
-    "build": "npm run check:phase10 && npm run check:private-read && npm run check:phase5 && npm run check:phase6 && npm run check:c3 && npm run check:ux && npm run check:phase7 && npm run check:phase8 && npm run check:phase9 && npm run check:build108 && npm run check:build109 && npm run check:focus && npm run typecheck && vite build",
+    "build": "npm run check:release && npm run check:phase10 && npm run check:private-read && npm run check:phase5 && npm run check:phase6 && npm run check:c3 && npm run check:ux && npm run check:phase7 && npm run check:phase8 && npm run check:phase9 && npm run check:build108 && npm run check:build109 && npm run check:focus && npm run typecheck && vite build",
     "preview": "vite preview",
     "check:phase10": "node scripts/verify-catalog-projection-kernel.mjs && node scripts/test-build107-integrity.mjs && node scripts/test-build107-kernel.mjs"
   },

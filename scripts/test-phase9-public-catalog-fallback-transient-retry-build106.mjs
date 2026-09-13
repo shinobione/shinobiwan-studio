@@ -8,7 +8,7 @@ const genericHttp = read('src/services/http.ts');
 const publicAlbums = read('src/services/public-albums-api.ts');
 const pkg = JSON.parse(read('package.json'));
 
-assert.ok(['0.19.28', '0.19.29', '0.19.30'].includes(pkg.version), 'Build106 guard accepts Build106 and bounded Build107/Build108 successors.');
+assert.ok(['0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version), 'Build106 guard accepts Build106 and bounded Build107/Build108/Build109 successors.');
 if (pkg.version === '0.19.28') {
   assert.match(release, /version: '0\.19\.28'/);
   assert.match(release, /build: 106/);
@@ -19,12 +19,21 @@ if (pkg.version === '0.19.28') {
   assert.match(release, /studio-focus-slice4-phase10-shared-catalog-projection-kernel/);
   assert.match(release, /build106AncestryMarker/);
   assert.match(release, /version: '0\.19\.28' · build: 106 · codename: 'studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth'/);
-} else {
+} else if (pkg.version === '0.19.30') {
   assert.match(release, /version: '0\.19\.30'/);
   assert.match(release, /build: 108/);
   assert.match(release, /studio-focus-slice4-catalog-rebuild-generation-identity/);
   assert.match(release, /build106AncestryMarker/);
   assert.match(release, /build107AncestryMarker/);
+  assert.match(release, /version: '0\.19\.28' · build: 106 · codename: 'studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth'/);
+  assert.match(release, /version: '0\.19\.29' · build: 107 · codename: 'studio-focus-slice4-phase10-shared-catalog-projection-kernel'/);
+} else {
+  assert.match(release, /version: '0\.19\.31'/);
+  assert.match(release, /build: 109/);
+  assert.match(release, /studio-focus-slice4-track-create-operation-identity/);
+  assert.match(release, /build106AncestryMarker/);
+  assert.match(release, /build107AncestryMarker/);
+  assert.match(release, /build108AncestryMarker/);
   assert.match(release, /version: '0\.19\.28' · build: 106 · codename: 'studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth'/);
   assert.match(release, /version: '0\.19\.29' · build: 107 · codename: 'studio-focus-slice4-phase10-shared-catalog-projection-kernel'/);
 }

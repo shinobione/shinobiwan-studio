@@ -1,7 +1,9 @@
 export const studioRelease = {
-  version: '0.19.30',
-  build: 108,
-  codename: 'studio-focus-slice4-catalog-rebuild-generation-identity',
+  version: '0.19.31',
+  build: 109,
+  phase: 10,
+  codename: 'studio-focus-slice4-track-create-operation-identity',
+  summary: 'Track creation reliability + guided actions',
   releasedAt: '2026-09-13',
 } as const;
 
@@ -50,3 +52,4 @@ export const build104AncestryMarker = "version: 0.19.26 · build: 104 · codenam
 export const build105AncestryMarker = "version: 0.19.27 · build: 105 · codename: 'studio-focus-slice4-phase9-deep-audio-presubmit-transport-corrective'";
 export const build106AncestryMarker = "version: '0.19.28' · build: 106 · codename: 'studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth'";
 export const build107AncestryMarker = "version: '0.19.29' · build: 107 · codename: 'studio-focus-slice4-phase10-shared-catalog-projection-kernel'";
+export const build108AncestryMarker = "version: '0.19.30' · build: 108 · codename: 'studio-focus-slice4-catalog-rebuild-generation-identity'";

@@ -1,106 +1,108 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-09-13 after **Build108 REAL USER PASS** and acceptance closeout.
+Updated: 2026-09-13 after **Build109 REAL USER PASS** and release closeout.
 
 This file records accepted runtime truth, automated proof boundaries, real-user evidence and major remaining unproven areas. Historical run-by-run detail belongs in `changelogs/` and `docs/`.
 
 ## Current accepted Studio runtime
 
 ```text
-Version                 v0.19.30
-Build                   Build108
+Version                 v0.19.31
+Build                   Build109
 Status                  REAL USER PASS
-Codename                studio-focus-slice4-catalog-rebuild-generation-identity
-Studio PR               #216
-Exact implementation    b27a2891d2041d79aad4ab2910a150516af74ad4
-Studio CI               #639 · 34752807960 · SUCCESS
-Studio merge            e380a6ab098bddad8b744812515df36fe3ef5906
-Studio Pages            #227 · 34753099885 · SUCCESS build + deploy
-Backend PR              LaunchPAD-APP #275
-Backend merge           31675ba4444282691c6e4d55d098f187ab3c4bad
-Admin deploy            34753041082 · SUCCESS · admin only
-Admin Worker version    ff037b48-b717-49a4-82ad-395aa06b6f6f
-Real-user smoke         PASS · 45 tracks · exact generation UUID · canonical reread verified
+Codename                studio-focus-slice4-track-create-operation-identity
+Studio PR               #218
+Exact candidate         5114875db99af8cfc9bc7f5747674321faf1fe7b
+Studio CI               #660 · 34762678307 · SUCCESS
+Studio merge            4a2014ba8828063d566c4f5df77c4f1095c0355f
+Studio Pages            #229 · 34762759192 · SUCCESS build + deploy
+Backend PR              LaunchPAD-APP #276
+Backend candidate       3cf55f7338b9b139586b7a62c6eebfb6100f370f
+Backend merge           5472d43eaf5d7fcbe3413ef9f6e1d088a2f80b80
+Admin deploy            #44 · 34762956165 · SUCCESS · admin only
+Real-user smoke         PASS · disposable Track create · exact creationOperationId reread
+creationOperationId     77ce7e21-90b9-46a3-b166-6148003d50a8
 ```
 
-Detailed receipt: [`docs/acceptance/BUILD108-REAL-USER-PASS.md`](docs/acceptance/BUILD108-REAL-USER-PASS.md).
+Detailed receipt: [`docs/acceptance/BUILD109-REAL-USER-PASS.md`](docs/acceptance/BUILD109-REAL-USER-PASS.md).
 
-## Build108 automated coverage — GREEN
+## Build109 automated coverage — GREEN
 
 ### Backend
 
-LaunchPAD / Track Manager PR #275 added a bounded generation-identity decorator around explicit Studio catalog rebuilds.
+LaunchPAD / Track Manager PR #276 added a bounded creation-operation identity contract around explicit Studio Track creation.
 
 Automated proof covered:
 
-- malformed operation UUID rejection;
-- `generationId` persistence in the canonical catalog projection;
-- private read exposure of canonical projection identity;
-- exact server-side identity verification before success response;
-- compatibility for implicit catalog writers when no generation identity is supplied;
-- zero automatic write retries;
-- no Track/Album/media destructive mutation added by the slice;
+- optional strict UUID v4 `operationId` for backward-compatible callers;
+- private canonical `creationOperationId` persistence;
+- immutability/preservation across later canonical Track mutations;
+- public catalog/projection stripping of private creation identity;
+- existing slug uniqueness and `TRACK_EXISTS` behavior;
+- compatibility for legacy clients without operation identity;
+- zero automatic create-write retries;
+- lost-response evidence remaining operation-specific rather than generic idempotency infrastructure;
 - full Cloudflare Worker validation and Wrangler dry-run chain.
 
-The backend merged at `31675ba4444282691c6e4d55d098f187ab3c4bad`. The protected admin-only deployment run `34753041082` completed successfully and deployed Worker version `ff037b48-b717-49a4-82ad-395aa06b6f6f`. The post-deploy Access verification passed; Public Worker deployment was skipped intentionally.
+The backend candidate `3cf55f7338b9b139586b7a62c6eebfb6100f370f` passed PR workflows `Validate Cloudflare Workers`, `Validate Launchpad` and `Validate Horizontal Overflow`. It merged at `5472d43eaf5d7fcbe3413ef9f6e1d088a2f80b80`. The protected admin-only production deployment run `34762956165` (#44) completed successfully. Public Worker deployment was intentionally skipped.
 
 ### Studio
 
-Studio PR #216 validated exact operation-identity behavior on head `b27a2891d2041d79aad4ab2910a150516af74ad4` in `Validate SHINOBIWAN Studio` run `34752807960` (#639), result SUCCESS.
+Studio PR #218 validated exact Track-create operation identity behavior on candidate `5114875db99af8cfc9bc7f5747674321faf1fe7b` in `Validate SHINOBIWAN Studio` run `34762678307` (#660), result SUCCESS.
 
 The guard locks:
 
-- one browser UUID per explicit rebuild;
-- existing `catalog-rebuild-v1` intent and explicit `REBUILD` confirmation;
-- exact echoed operation/generation identity on normal success;
-- private canonical reread proof;
-- response-loss recovery only when exact `generationId` matches;
-- mismatch/superseded/unavailable proof remaining non-retryable;
-- `maxAutomaticWriteRetries: 0`;
-- no widening of Track Create or other Phase4 write semantics.
+- one secure browser UUID per explicit Track create;
+- one-shot create POST with `maxAutomaticTrackCreateRetries: 0`;
+- Build97 exact canonical manifest verification on normal success;
+- timeout/transport/body-loss private canonical reread only;
+- exact `creationOperationId` match as the only lost-response success recovery proof;
+- mismatched/missing/legacy/unreadable evidence remaining ambiguous/unverified and non-retryable;
+- no widening into a generic retry or idempotency helper.
 
-The implementation merged at `e380a6ab098bddad8b744812515df36fe3ef5906`. Pages run `34753099885` (#227) completed build + deploy successfully.
+The implementation merged at `4a2014ba8828063d566c4f5df77c4f1095c0355f`. Pages run `34762759192` (#229) completed build + deploy successfully.
 
-## Build108 real-user smoke — PASS
+## Build109 real-user smoke — PASS
 
-The user performed the explicit catalog rebuild against the deployed backend and Studio candidate on 2026-09-13.
+The user performed a non-destructive Track-create smoke against the deployed backend and deployed Studio on 2026-09-13.
 
-Visible result:
+Canonical evidence:
 
 ```text
-CATALOG REBUILT
-45 tracks
-generated               2026-09-13T10:57:36.269Z
-generation              c4072021-707b-4d03-be8e-d21324a348b4
-canonical reread        verified
+Title                   Build109 Smoke
+slug                    build109-smoke-20260913
+Album                   Singles
+status                  draft
+creationOperationId     77ce7e21-90b9-46a3-b166-6148003d50a8
+private canonical read  verified
+cleanup                 disposable Track deleted
 ```
 
-This is the exact causal proof Build108 was designed to create: the browser operation UUID was persisted into the canonical projection and then observed again through the private canonical reread.
+This proves the deployed Studio generated the operation UUID and the deployed Track Manager persisted and exposed the exact private canonical creation identity.
 
 Result: **PASS**.
 
-The smoke mutated only `catalog/index.json` by rebuilding it from current canonical manifests. It did not modify Track or Album manifests, media, Lyrics or SonicTrace analysis objects.
+Production was not intentionally interrupted to manufacture a transport failure. Timeout/transport/body-loss/mismatch/legacy/unreadable paths remain covered deterministically by automated Build109 tests.
 
-## Build108 contract boundary
+## Build109 contract boundary
 
-Accepted only for explicit Studio catalog rebuild:
+Accepted only for explicit Studio Track create:
 
 ```text
 browser operationId UUID
         ↓
-POST /api/studio/catalog/rebuild
+POST Track create (one shot)
         ↓
-Track Manager canonical generationId
+Track Manager private canonical creationOperationId
         ↓
-private canonical reread
+private canonical reread after lost response
         ↓
-exact UUID match = verified commit
+exact UUID match = committed / recovered
 ```
 
 Not generalized to:
 
 ```text
-Track create
 Album create
 binary asset upload
 metadata / Lyrics / SonicTrace writes
@@ -108,6 +110,18 @@ Deep Audio compute
 ```
 
 No generic write-retry or generic idempotency service was introduced.
+
+## Release metadata guard
+
+Build109 release closeout adds `check:release` to the Studio build chain. It verifies:
+
+- `package.json` version equals `src/release.ts` version;
+- `studioRelease.build` equals the highest `check:buildNNN` gate;
+- the active 0.19 release-line build/version mapping remains incremented;
+- Build107+ stays under the active Phase10 program metadata;
+- sidebar phase and summary are rendered from canonical `studioRelease` metadata instead of historical hard-coded copy.
+
+This prevents the exact Build109 closeout error where functional code advanced while the visible release badge remained on Build108.
 
 ## Accepted regression baseline
 
@@ -121,16 +135,17 @@ Build105     Deep Audio pre-submit transport corrective             PASS
 Build106     public catalog fallback transient GET retry            PASS
 Build107     Phase10 shared catalog projection kernel               PASS
 Build108     catalog rebuild generation identity                    PASS
+Build109     Track-create operation identity                        PASS
 ```
 
-Build108 does not reopen Phase9 or alter Build107's numerical extraction contract.
+Build109 does not reopen Phase9 or alter Build107's numerical extraction contract.
 
 ## Cross-stack accepted baseline
 
 ```text
 Track Manager           v5.24 · protected canonical write authority
 Studio bridge           v1.14
-Admin Worker            ff037b48-b717-49a4-82ad-395aa06b6f6f
+Admin Worker            Build109 admin deploy #44 · 34762956165 · SUCCESS
 Public Worker           v2.8 · REAL USER PASS · unchanged
 LaunchPAD public        2026.08.12.102 · REAL USER PASS
 SonicTrace              V2-E Build08 · REAL USER PASS
@@ -141,16 +156,16 @@ LRC Maker               6.3.8
 
 ## Remaining unproven areas — backend-contract candidates
 
-- Track create lost-response causality / durable operation identity;
 - Album create lost-response causality / durable operation identity;
 - exact-byte/digest proof for binary upload families;
 - Deep Audio request status/idempotency if the coordinator gains an operation identity contract;
 - degraded/offline behavior only where a future audit proves material daily-workflow impact.
 
-Catalog rebuild operation identity/generation evidence is no longer unproven for the explicit Studio rebuild path.
+Track-create operation identity is no longer unproven for the explicit Studio create path.
+Catalog rebuild operation identity/generation evidence remains accepted from Build108.
 
 Studio must not fabricate causal certainty when a different backend operation does not expose authoritative evidence.
 
 ## Next QA gate
 
-Before any Build109 implementation, perform a fresh bounded Track-create operation-identity audit. The audit must prove durable identity semantics, duplicate-create safety, canonical reread classification, compatibility/rollout order and a non-destructive real-user acceptance boundary.
+**No Build110 is allocated.** Any next build requires a fresh bounded audit/scope with exact automated and real-user acceptance boundaries before implementation.

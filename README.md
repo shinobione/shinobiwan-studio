@@ -17,18 +17,19 @@ Then verify real GitHub state before mutation.
 ## Current accepted state
 
 ```text
-Studio accepted        v0.19.30 · Build108 · REAL USER PASS
-Runtime scope          explicit catalog rebuild generation identity
-Studio PR              #216
-Studio head            b27a2891d2041d79aad4ab2910a150516af74ad4
-Studio CI              #639 · 34752807960 · SUCCESS
-Studio merge           e380a6ab098bddad8b744812515df36fe3ef5906
-Studio Pages           #227 · 34753099885 · SUCCESS build + deploy
-Backend PR             LaunchPAD-APP #275
-Backend merge          31675ba4444282691c6e4d55d098f187ab3c4bad
-Admin deploy           34753041082 · SUCCESS · admin only
-Admin Worker           ff037b48-b717-49a4-82ad-395aa06b6f6f
-Real-user smoke        PASS · 45 tracks · exact generation UUID · canonical reread verified
+Studio accepted        v0.19.31 · Build109 · REAL USER PASS
+Runtime scope          explicit Track-create operation identity
+Studio PR              #218
+Studio candidate       5114875db99af8cfc9bc7f5747674321faf1fe7b
+Studio CI              #660 · 34762678307 · SUCCESS
+Studio merge           4a2014ba8828063d566c4f5df77c4f1095c0355f
+Studio Pages           #229 · 34762759192 · SUCCESS build + deploy
+Backend PR             LaunchPAD-APP #276
+Backend candidate      3cf55f7338b9b139586b7a62c6eebfb6100f370f
+Backend merge          5472d43eaf5d7fcbe3413ef9f6e1d088a2f80b80
+Admin deploy           #44 · 34762956165 · SUCCESS · admin only
+Real-user smoke        PASS · disposable Track · exact creationOperationId reread
+Build108               ACCEPTED predecessor · catalog rebuild generation identity
 Build107               ACCEPTED predecessor · Phase10 Slice1
 Track Manager          v5.24 · protected canonical write authority
 Studio bridge          v1.14
@@ -37,23 +38,24 @@ LaunchPAD public       2026.08.12.102 · REAL USER PASS
 LRC Maker              6.3.8
 ```
 
-**Studio v0.19.30 · Build108 is the current accepted Studio runtime identity.**
+**Studio v0.19.31 · Build109 is the current accepted Studio runtime identity.**
 
-Build108 gives the explicit Studio catalog rebuild a durable causal proof boundary. Each explicit rebuild creates one browser UUID, Track Manager persists it as the canonical catalog `generationId`, and Studio rereads the private canonical projection before declaring success. If the HTTP response is lost, Studio never retries the write automatically; it recovers success only when the exact UUID is observed in canonical state.
+Build109 gives explicit Studio Track creation a durable private causal proof boundary. Each explicit create generates one browser UUID, Track Manager persists it privately as canonical `creationOperationId`, and Studio keeps the create POST one-shot. If the HTTP response is lost, Studio rereads the private canonical Track and recovers success only when the exact UUID is observed. Missing, mismatched, legacy or unreadable identity remains ambiguous/unverified and non-retryable.
 
 Real-user acceptance on 2026-09-13 proved:
 
 ```text
-CATALOG REBUILT
-45 tracks
-generated               2026-09-13T10:57:36.269Z
-generation              c4072021-707b-4d03-be8e-d21324a348b4
+Track                   build109-smoke-20260913
+status                  draft
+Album                   Singles
+creationOperationId     77ce7e21-90b9-46a3-b166-6148003d50a8
 canonical reread        verified
+cleanup                 disposable Track deleted
 ```
 
-Latest acceptance receipt: [`docs/acceptance/BUILD108-REAL-USER-PASS.md`](docs/acceptance/BUILD108-REAL-USER-PASS.md).
+Latest acceptance receipt: [`docs/acceptance/BUILD109-REAL-USER-PASS.md`](docs/acceptance/BUILD109-REAL-USER-PASS.md).
 
-Detailed changelog: [`changelogs/CHANGELOG-BUILD108.md`](changelogs/CHANGELOG-BUILD108.md).
+Detailed changelog: [`changelogs/CHANGELOG-BUILD109.md`](changelogs/CHANGELOG-BUILD109.md).
 
 ## Product model
 
@@ -107,13 +109,15 @@ Phase 7-C           COMPLETE · program closeout
 Phase 8             COMPLETE · Build81 closeout
 Phase 9             COMPLETE · program closeout on accepted Build106
 Phase 10 Slice1     Build107 · REAL USER PASS
-Phase 10 Slice2     UNALLOCATED · fresh audit found no justified extraction
+Phase 10 Slice2     UNALLOCATED
 Phase 10            ACTIVE · progressive extraction by bounded audited slices
-Build108            COMPLETE · reliability/backend-contract slice · REAL USER PASS
+Build108            COMPLETE · catalog rebuild identity · REAL USER PASS
+Build109            COMPLETE · Track-create identity · REAL USER PASS
+Build110            UNALLOCATED
 Official Phase 11   NONE
 ```
 
-Build108 is deliberately not Phase10 Slice2. The next proposed work is a fresh bounded audit of **Track Create operation identity**; Build109 remains unallocated until that audit proves a safe contract.
+Build108 and Build109 are deliberately bounded reliability/backend-contract work outside Phase10 Slice2. No Build110 is allocated until a fresh audit proves a concrete scope.
 
 ## Frozen authority model
 
@@ -141,11 +145,17 @@ response lost / timeout
 → classify committed / not committed / ambiguous / unverified
 ```
 
-Build108 adds stronger evidence only for explicit catalog rebuild: the exact browser operation UUID must match canonical `generationId`. This does not authorize generic operation IDs or retries for Track create, Album create, asset upload or Deep Audio.
+Build108 adds stronger evidence only for explicit catalog rebuild through canonical `generationId`.
+Build109 adds stronger evidence only for explicit Track create through private immutable `creationOperationId`.
+Neither authorizes generic operation IDs or retries for unrelated write families.
+
+## Release identity rule
+
+`src/release.ts` and `package.json` carry canonical Studio runtime identity. The build runs `check:release`, which rejects stale build/version metadata relative to the latest `check:buildNNN` gate and keeps the visible sidebar phase/version/build/summary tied to `studioRelease` instead of hard-coded historical copy.
 
 ## Roadmap continuity
 
-Preserved backlog includes Track/Album create operation identity, exact-byte/digest proof for binary upload families, optional future Deep Audio operation identity/status, degraded/offline workflow work only when a bounded product slice is proven, premium interaction polish, and further Phase10 extraction only when singular authority and independent rollback remain explicit.
+Preserved backlog includes Album-create operation identity, exact-byte/digest proof for binary upload families, optional future Deep Audio operation identity/status, degraded/offline workflow work only when a bounded product slice is proven, premium interaction polish, and further Phase10 extraction only when singular authority and independent rollback remain explicit.
 
 See [`ROADMAP.md`](ROADMAP.md) for current Done / Active / Next / Backlog state and [`QA.md`](QA.md) for accepted test boundaries.
 
