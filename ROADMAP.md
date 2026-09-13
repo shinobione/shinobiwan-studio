@@ -1,8 +1,8 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-09-13 after **Build111 REAL USER PASS**.
+Updated: 2026-09-13 after **Build114 REAL USER PASS**.
 
-This file tracks durable Done / Active / Next / Backlog state. Historical detail belongs in changelogs, milestone docs and acceptance receipts.
+This file tracks durable Done / Active / Next / Backlog state. Historical implementation detail belongs in changelogs, milestone docs and acceptance receipts.
 
 ## Done
 
@@ -24,92 +24,58 @@ Identity → Core media → Lyrics → Intelligence → Release
 
 ### Build108 — catalog rebuild operation identity
 
-Accepted / REAL USER PASS.
-
-- one browser UUID per explicit rebuild;
-- canonical `generationId` proof;
-- no blind write retry after response loss.
+Accepted / REAL USER PASS. One explicit rebuild action gets one UUID and canonical `generationId` proof; no blind write retry after response loss.
 
 ### Build109 — Track-create operation identity
 
-Accepted / REAL USER PASS.
-
-- one browser UUID per explicit Track create;
-- private immutable `creationOperationId` proof;
-- no blind second create POST;
-- legacy callers remain compatible.
+Accepted / REAL USER PASS. One explicit Track create gets one private immutable `creationOperationId`; no blind second create POST; legacy callers stay compatible.
 
 ### Build110 — human-first Studio simplification + premium feel
 
-Accepted by real-user visual smoke.
+Accepted by real-user visual smoke. Home / Tracks / Albums are the clear daily path; specialist tooling and technical noise are demoted; interaction feedback is restrained and coherent.
 
-Delivered:
-
-- Home / Tracks / Albums as the clear daily navigation;
-- specialist/maintenance tooling demoted from the normal path;
-- duplicated facts/actions and technical noise reduced;
-- more coherent hover / press / focus / selected / loading feedback;
-- restrained premium interaction feel;
-- canonical Track / Album / Lyrics / SonicTrace authority unchanged.
-
-Build110 established a permanent product rule:
+Permanent product rule:
 
 > Human-visible complexity must decrease unless new visible information directly helps a decision or action.
 
-Machine-oriented IDs, revisions, ETags, transport/debug states and historical phase vocabulary belong outside the normal path unless actionable.
-
 ### Build111 — Release → Flow handoff simplification
 
-Accepted / REAL USER PASS.
+Accepted / REAL USER PASS. Release now hands off MASTER 16:9, anchored 1:1 / 9:16 adaptations and optional ≤8 s Canvas prompt to Google Flow. Official SHINOBIWAN logo identity is preserved and always visually subordinate to the title.
 
-Release is no longer a second campaign manager. It now acts as a compact creative handoff:
+### Build112 — MUSIC Pack JSON V1 import
 
-```text
-MASTER 16:9 prompt
-→ 1:1 anchored adaptation prompt
-→ 9:16 anchored adaptation prompt
-→ optional Canvas / 8s loop prompt
-→ Google Flow
-```
+Complete bounded foundation:
 
-Permanent SHINOBIWAN branding requirement in every visual prompt:
+- frozen versioned schema;
+- import into selected Track only;
+- visible identity mismatch confirmation;
+- browser-local persistence per Track;
+- MUSIC content stays non-canonical;
+- no Track Manager / Worker / R2 writes from Pack import.
 
-- attach the official logo reference in Flow;
-- preserve logo identity exactly;
-- integrate it coherently with the composition/materials/light;
-- keep it visually secondary to the track title;
-- logo must always be smaller than the title.
+### Build113 — SoundCloud Pack priority
 
-Removed from Studio Release:
+Accepted / REAL USER PASS. Imported SoundCloud title / description / tags / highlight are first-class and immediately visible; no duplicate manual authoring or audio re-selection; secondary Pack content remains collapsible.
 
-- redundant Studio-side logo upload;
-- returned 16:9 / 1:1 / 9:16 image uploads;
-- Campaign Review / ratio review;
-- ZIP export / JSZip;
-- duplicate SoundCloud/social/tag generator;
-- browser-local campaign image packaging.
+### Build114 — Album-create operation identity
 
-Evidence:
+Accepted / REAL USER PASS after real-user corrective.
 
-```text
-Studio PR              #222
-Candidate head         2345dd52c31e28f12a8c0d6437563c9291c3c141
-Validation CI          #710 · SUCCESS
-Merge                  06e238ffd9e37f834bb1693ced37a247c07dbab8
-Pages deploy           #238 · 34770445239 · SUCCESS
-Real-user smoke        PASS
-Backend / Worker / R2  unchanged
-```
+- one UUID per explicit Album create action;
+- private immutable Album `creationOperationId`;
+- lost response resolved by bounded private canonical reread;
+- exact identity required before causal claim;
+- no blind second POST;
+- public projection excludes private creation evidence;
+- blank / omitted Album year remains canonical `null`, never `0`.
 
-Acceptance receipt: [`docs/acceptance/BUILD111-REAL-USER-PASS.md`](docs/acceptance/BUILD111-REAL-USER-PASS.md).
+Evidence is recorded in [`docs/acceptance/BUILD114-REAL-USER-PASS.md`](docs/acceptance/BUILD114-REAL-USER-PASS.md).
 
 ## Active
 
 ### Phase 10 — progressive extraction
 
-Phase10 remains active as a program, not as permission for continuous refactoring.
-
-**Phase10 Slice2 remains unallocated.** Build108/109 are reliability slices outside it; Build110/111 are human-facing Studio simplification work outside it.
+Phase10 remains active as a program, not permission for continuous refactoring. **Phase10 Slice2 remains unallocated.** Builds108/109/114 are bounded reliability work outside it; Builds110–113 are human-facing/product workflow improvements outside it.
 
 ### Release discipline
 
@@ -120,144 +86,51 @@ Phase10 remains active as a program, not as permission for continuous refactorin
 
 ### Operational execution guardrails — MANDATORY
 
-These rules capture the recent failure modes and are not optional housekeeping.
-
-#### 1. Assistant orchestrates; Codex/Astra run bounded missions only
-
-- no open-ended `inspect all repos` by default;
-- no subagent fan-out unless genuinely required;
-- one objective, bounded repo set, explicit stop condition;
-- mechanical GitHub/CI/PR/deploy work is handled directly when possible.
-
-#### 2. Codex / Work / Astra quota is scarce
-
-Before substantial agent work:
-
-- check remaining quota + reset time;
-- do not burn a reset rebuilding context already known or present in GitHub;
-- do not spend large quota on discovery answerable by diff/log inspection;
-- if Codex is quota-blocked, treat it as idle, not as background work.
-
-Default rule: **value per quota**, not maximum model strength.
-
-#### 3. Local ↔ GitHub preflight before audit or implementation
-
-GitHub accepted `main` is canonical. For every participating local repo, verify:
-
-```powershell
-git -C $repo remote -v
-git -C $repo fetch origin --prune
-git -C $repo status --short --branch
-git -C $repo rev-parse HEAD
-git -C $repo rev-parse origin/main
-git -C $repo rev-list --left-right --count HEAD...origin/main
-git -C $repo diff --name-status
-git -C $repo diff --name-status origin/main...HEAD
-```
-
-Interpretation:
-
-```text
-HEAD == origin/main              → clean canonical base
-local ahead                      → inspect exact intentional delta
-local behind                     → update/rebase first
-working tree dirty               → classify every change first
-unexpected remote/path/branch    → STOP
-```
-
-For cross-repo work, do this for every repo.
-
-#### 4. Diff first, model second
-
-Before model quota is spent, establish the exact accepted base, candidate head and changed-file allowlist.
-
-If local and GitHub disagree, resolve that first.
-
-#### 5. No EOL / formatting explosions
-
-- never normalize a repo unless explicitly required;
-- large unexpected `M` sets are suspicious;
-- separate semantic changes from line-ending/format churn;
-- remove EOL-only churn before commit.
-
-#### 6. CI failures are fixed by family, not one stale guard at a time
-
-When CI fails:
-
-1. read the failure log;
-2. identify the complete family of the same stale assumption;
-3. patch that family together;
-4. run one new CI cycle.
-
-No guard-by-guard hamster wheel.
-
-#### 7. Validation is not deployment
-
-A green CI/dry-run is not production evidence. Confirm the real deployment workflow/run/version separately.
-
-#### 8. Closeout checklist is fixed and short
-
-```text
-bounded diff reviewed
-CI green
-merge SHA known
-required backend deploy confirmed
-Studio deploy confirmed
-real-user smoke performed when required
-smoke data cleaned if applicable
-release metadata correct
-canonical docs/current state updated
-local checkout compared/synchronized with GitHub main before next local work
-```
-
-Do not launch extra audits after this without new concrete evidence.
+1. Assistant orchestrates; Codex/Astra get bounded missions only.
+2. Quota first; do not spend strong-model quota on mechanical GitHub inspection.
+3. GitHub accepted `main` is canonical; local work requires remote/fetch/HEAD/ahead-behind/working-tree/diff preflight.
+4. Diff first, model second.
+5. No EOL / formatting explosions.
+6. CI failures are fixed by stale-assumption family, not one guard at a time.
+7. Green CI is not production deployment evidence.
+8. Closeout: bounded diff → CI green → merge → required backend deploy → Studio deploy → real-user smoke → docs/current state.
+9. No deliberate production damage to manufacture ambiguity/retry tests.
 
 ## Next
 
-### PACK COMPLET JSON → Studio import — tracked in #221
+### Build115 — Safe Album Delete
 
-This is the preferred next **product** improvement, but **Build112 is not allocated yet**.
+Allocated after Build114 smoke exposed that Studio currently has no whole-Album deletion path.
 
-Problem to solve:
+Contract:
 
-The MUSIC ChatGPT project already produces the useful final release information. Scrolling through a long MUSIC conversation to recover SoundCloud copy, tags, highlights, cover prompts, Canvas instructions, etc. is wasteful. Studio should not regenerate weaker competing versions.
+- whole-Album delete is explicit and destructive, never a casual secondary button;
+- strong confirmation must name the canonical Album ID;
+- Track Manager remains the sole R2 delete authority;
+- request carries the expected canonical revision;
+- no blind automatic retry after timeout / transport loss;
+- backend removes Album manifest + Album-scoped assets as one guarded operation;
+- any Track-side cached Album display metadata is returned to Singles / unassigned semantics where needed;
+- catalog is rebuilt before success is reported;
+- Studio verifies canonical Album absence after success;
+- if response is lost, Studio rereads canonical Album/list state and only reports committed when absence is proven;
+- rollback / ambiguity must stay visible and actionable;
+- public Worker behavior must not change.
 
-Target flow:
+### Build116 — candidate after Build115
 
-```text
-ChatGPT project MUSIC
-→ generates normal PACK COMPLET
-→ also outputs one versioned SHINOBIWAN track-pack JSON
-→ Studio imports JSON
-→ Studio becomes the retrieval/dashboard surface for the approved pack
-```
+Build116 is authorized by the user but its exact implementation slice must be chosen only after Build115 CI/diff evidence. Preferred fresh-audit candidates, in order:
 
-Schema candidates:
+1. the next destructive-lifecycle gap directly adjacent to Safe Album Delete, if one is concretely proven;
+2. otherwise exact-byte/digest proof for binary uploads, if backend evidence can support it without broadening write authority;
+3. otherwise a bounded human-facing cleanup directly exposed by the Build115 smoke.
 
-- schema version;
-- track identity/title/version;
-- creative positioning / summary;
-- SoundCloud copy + tags + highlight time window;
-- social copy;
-- cover prompt MASTER 16:9;
-- cover adaptation prompts 1:1 and 9:16;
-- Canvas / loop prompt;
-- any other final PACK COMPLET fields that are genuinely reused.
-
-Rules before implementation:
-
-- define the MUSIC-side JSON schema first;
-- schema must be versioned and import-safe;
-- Studio imports/presents approved content rather than silently regenerating it;
-- missing optional fields must degrade cleanly;
-- no backend/R2 write authority is implied merely by importing a pack;
-- no Build112 allocation until the schema + exact UI destination are bounded.
+Do **not** allocate Build116 as an opportunistic-refactor bucket.
 
 ## Backlog
 
 ### Reliability candidates requiring stronger backend evidence
 
-- Album create lost-response operation identity;
 - exact-byte/digest proof for binary uploads;
 - Deep Audio request status/idempotency only if coordinator/backend gains safe identity/status evidence;
 - degraded/offline behavior only when it materially affects daily private Studio use.
@@ -279,18 +152,14 @@ There is currently **no official Phase11**.
 - no reopening completed phases merely because historical docs are verbose;
 - no opportunistic-refactor bucket build;
 - no deployed candidate is accepted without required real-user validation;
-- no deliberate production damage to manufacture ambiguity/retry tests;
 - no GET/validation retry generalized into write retry;
-- no Build108/109 operation identity generalized into unrelated writes without fresh contract work;
+- no operation identity generalized into unrelated writes without fresh contract work;
 - no causal proof when backend evidence does not support it;
 - Build101 and Build104 remain rejected historical evidence;
 - Build107 remains accepted Phase10 Slice1;
-- Build108/109 remain accepted reliability work outside Phase10 Slice2;
-- Build110/111 remain accepted human-facing simplification work outside Phase10 Slice2;
-- every substantial Codex/Astra task must pass quota + local/GitHub preflight;
 - every future UI addition must justify its visible space to the human operator;
 - prefer removing redundant information/actions over adding another panel/status/card.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for current runtime/cross-stack truth and [`docs/acceptance/BUILD111-REAL-USER-PASS.md`](docs/acceptance/BUILD111-REAL-USER-PASS.md) for the latest accepted Studio receipt.
+See `PROJECT_STATE.md` for current runtime/cross-stack truth and [`docs/acceptance/BUILD114-REAL-USER-PASS.md`](docs/acceptance/BUILD114-REAL-USER-PASS.md) for the latest accepted Studio receipt.
