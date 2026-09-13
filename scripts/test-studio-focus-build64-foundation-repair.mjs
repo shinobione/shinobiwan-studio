@@ -5,19 +5,20 @@ const read = path => fs.readFileSync(path, 'utf8');
 
 const pkg = JSON.parse(read('package.json'));
 const release = read('src/release.ts');
-if (['0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30'].includes(pkg.version)) assert.ok(release.includes('build99AncestryMarker'), 'Build100+ must preserve accepted Build99 Phase9 ancestry.');
-if (['0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30'].includes(pkg.version)) assert.ok(release.includes('build98AncestryMarker'), 'Build99+ must preserve accepted Build98 Phase9 ancestry.');
-if (['0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30'].includes(pkg.version)) assert.ok(release.includes('build100AncestryMarker'), 'Build101+ must preserve Build100 Phase9 ancestry.');
-if (['0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30'].includes(pkg.version)) assert.ok(release.includes('build101AncestryMarker'), 'Build102+ must preserve Build101 candidate ancestry.');
-if (['0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30'].includes(pkg.version)) assert.ok(release.includes('build102AncestryMarker'), 'Build103+ must preserve accepted Build102 ancestry.');
-if (['0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30'].includes(pkg.version)) assert.ok(release.includes('build103AncestryMarker'), 'Build104+ must preserve accepted Build103 ancestry.');
-if (['0.19.27', '0.19.28', '0.19.29', '0.19.30'].includes(pkg.version)) assert.ok(release.includes('build104AncestryMarker'), 'Build105+ must preserve rejected Build104 candidate ancestry.');
-if (['0.19.28', '0.19.29', '0.19.30'].includes(pkg.version)) assert.ok(release.includes('build105AncestryMarker'), 'Build106+ must preserve accepted Build105 ancestry.');
-if (['0.19.29', '0.19.30'].includes(pkg.version)) assert.ok(release.includes('build106AncestryMarker'), 'Build107+ must preserve accepted Build106 ancestry.');
-if (pkg.version === '0.19.30') assert.ok(release.includes('build107AncestryMarker'), 'Build108 must preserve accepted Build107 ancestry.');
-assert.ok(['0.19.3', '0.19.4', '0.19.5', '0.19.6', '0.19.7', '0.19.8', '0.19.9', '0.19.10', '0.19.11', '0.19.12', '0.19.13', '0.19.14', '0.19.15', '0.19.16', '0.19.17', '0.19.18', '0.19.19', '0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30'].includes(pkg.version), 'Build64 guard only accepts the validated Studio successor line through Build108.');
+if (['0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) assert.ok(release.includes('build99AncestryMarker'), 'Build100+ must preserve accepted Build99 Phase9 ancestry.');
+if (['0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) assert.ok(release.includes('build98AncestryMarker'), 'Build99+ must preserve accepted Build98 Phase9 ancestry.');
+if (['0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) assert.ok(release.includes('build100AncestryMarker'), 'Build101+ must preserve Build100 Phase9 ancestry.');
+if (['0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) assert.ok(release.includes('build101AncestryMarker'), 'Build102+ must preserve Build101 candidate ancestry.');
+if (['0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) assert.ok(release.includes('build102AncestryMarker'), 'Build103+ must preserve accepted Build102 ancestry.');
+if (['0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) assert.ok(release.includes('build103AncestryMarker'), 'Build104+ must preserve accepted Build103 ancestry.');
+if (['0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) assert.ok(release.includes('build104AncestryMarker'), 'Build105+ must preserve rejected Build104 candidate ancestry.');
+if (['0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) assert.ok(release.includes('build105AncestryMarker'), 'Build106+ must preserve accepted Build105 ancestry.');
+if (['0.19.29', '0.19.30', '0.19.31'].includes(pkg.version)) assert.ok(release.includes('build106AncestryMarker'), 'Build107+ must preserve accepted Build106 ancestry.');
+if (['0.19.30', '0.19.31'].includes(pkg.version)) assert.ok(release.includes('build107AncestryMarker'), 'Build108+ must preserve accepted Build107 ancestry.');
+if (pkg.version === '0.19.31') assert.ok(release.includes('build108AncestryMarker'), 'Build109 must preserve accepted Build108 ancestry.');
+assert.ok(['0.19.3', '0.19.4', '0.19.5', '0.19.6', '0.19.7', '0.19.8', '0.19.9', '0.19.10', '0.19.11', '0.19.12', '0.19.13', '0.19.14', '0.19.15', '0.19.16', '0.19.17', '0.19.18', '0.19.19', '0.19.20', '0.19.21', '0.19.22', '0.19.23', '0.19.24', '0.19.25', '0.19.26', '0.19.27', '0.19.28', '0.19.29', '0.19.30', '0.19.31'].includes(pkg.version), 'Build64 guard only accepts the validated Studio successor line through Build109.');
 
-assert.match(release, /version:\s*'0\.19\.(?:3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30)'/);
+assert.match(release, /version:\s*'0\.19\.(?:3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31)'/);
 for (const required of [
   'build: 64',
   "codename: 'foundation-regression-repair'",
@@ -95,4 +96,4 @@ for (const required of [
   "summary.textContent = 'Add lyrics.txt / plain-text editor'",
 ]) assert.ok(presentation.includes(required), `Build 64 visible Lyrics source control is missing ${required}.`);
 
-console.log(`Studio ${pkg.version} Build64 foundation regression repair contract remains protected through Build108.`);
+console.log(`Studio ${pkg.version} Build64 foundation regression repair contract remains protected through Build109.`);
