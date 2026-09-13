@@ -68,6 +68,8 @@ generation               c4072021-707b-4d03-be8e-d21324a348b4
 canonical reread         verified
 ```
 
+Acceptance proof: **canonical reread verified** for the exact generation UUID above.
+
 The visible `generation` UUID is the exact browser operation identity persisted into the canonical catalog projection and then observed again through the private canonical reread.
 
 Result: **PASS**.
