@@ -94,6 +94,7 @@ export interface AdminQuality {
 }
 
 export interface AdminManifest {
+  creationOperationId?: string;
   slug?: string;
   title?: string;
   status?: string;
