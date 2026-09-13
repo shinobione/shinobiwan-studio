@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Phase4AdminError, rebuildAdminCatalog, type CatalogRebuildResponse } from '../services/phase4-admin-api';
+import { Phase4AdminError } from '../services/phase4-admin-api';
+import { rebuildAdminCatalog, type CatalogRebuildIdentityResponse } from '../services/catalog-rebuild-identity';
 
 function errorText(reason: unknown): string {
   if (reason instanceof Phase4AdminError) return [reason.message, reason.code].filter(Boolean).join(' · ');
@@ -9,7 +10,7 @@ function errorText(reason: unknown): string {
 export function CatalogRebuildPanel({ privateRead }: { privateRead: boolean }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<CatalogRebuildResponse | null>(null);
+  const [result, setResult] = useState<CatalogRebuildIdentityResponse | null>(null);
 
   async function rebuild() {
     if (!privateRead || busy) return;
@@ -31,14 +32,14 @@ export function CatalogRebuildPanel({ privateRead }: { privateRead: boolean }) {
     <article className="panel phase4-rebuild-panel">
       <div className="phase4-panel-head">
         <div><span className="eyebrow">TRACK MANAGER / CATALOG</span><h3>Explicit catalog rebuild</h3></div>
-        <b>{privateRead ? 'BRIDGE v1.5' : 'LOCKED'}</b>
+        <b>{privateRead ? 'GENERATION ID' : 'LOCKED'}</b>
       </div>
-      <p className="workspace-muted">Rebuilds only <strong>catalog/index.json</strong> from current canonical manifests. It does not mutate track metadata or media.</p>
+      <p className="workspace-muted">Rebuilds only <strong>catalog/index.json</strong> from current canonical manifests. Each explicit rebuild carries one operation UUID so Studio can verify the exact canonical generation after a lost HTTP response. It does not mutate track metadata or media.</p>
       <button className="primary-btn" type="button" disabled={!privateRead || busy} onClick={() => void rebuild()}>{busy ? 'Rebuilding…' : 'Rebuild canonical catalog'}</button>
       {result && (
         <div className={`phase4-operation-result ${result.clientVerified ? 'ok' : 'warning'}`}>
-          <strong>CATALOG REBUILT</strong>
-          <span>{result.catalogCount ?? '—'} tracks · generated {result.catalogGeneratedAt || '—'} · canonical reread {result.clientVerified ? 'verified' : 'check required'}</span>
+          <strong>{result.recoveredAfterTransportFailure ? 'CATALOG REBUILD RECOVERED' : 'CATALOG REBUILT'}</strong>
+          <span>{result.catalogCount ?? '—'} tracks · generated {result.catalogGeneratedAt || '—'} · generation {result.catalogGenerationId || '—'} · canonical reread {result.clientVerified ? 'verified' : 'check required'}</span>
         </div>
       )}
       {error && <div className="phase4-operation-error"><strong>REBUILD ERROR</strong><span>{error}</span></div>}
