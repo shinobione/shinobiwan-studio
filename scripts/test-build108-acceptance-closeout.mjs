@@ -7,16 +7,22 @@ const release = read('src/release.ts');
 const receipt = read('docs/acceptance/BUILD108-REAL-USER-PASS.md');
 const state = read('PROJECT_STATE.md');
 
-assert.ok(['0.19.30', '0.19.31'].includes(pkg.version), 'Build108 acceptance closeout must remain valid under the accepted Build109 successor.');
+assert.ok(['0.19.30', '0.19.31', '0.19.32'].includes(pkg.version), 'Build108 acceptance closeout must remain valid under accepted Build109 and Build110 successors.');
 if (pkg.version === '0.19.30') {
   assert.match(release, /version: '0\.19\.30'/);
   assert.match(release, /build: 108/);
   assert.match(release, /studio-focus-slice4-catalog-rebuild-generation-identity/);
-} else {
+} else if (pkg.version === '0.19.31') {
   assert.match(release, /version: '0\.19\.31'/);
   assert.match(release, /build: 109/);
   assert.match(release, /studio-focus-slice4-track-create-operation-identity/);
   assert.match(release, /build108AncestryMarker/);
+} else {
+  assert.match(release, /version: '0\.19\.32'/);
+  assert.match(release, /build: 110/);
+  assert.match(release, /studio-focus-build110-human-first-premium-ux/);
+  assert.match(release, /build108AncestryMarker/);
+  assert.match(release, /build109AncestryMarker/);
 }
 assert.match(release, /build107AncestryMarker/);
 
@@ -37,4 +43,4 @@ assert.match(state, /Build108\s+COMPLETE|Build108 remains the accepted predecess
 assert.match(state, /Build109/);
 assert.match(state, /Acceptance\s+REAL USER PASS/);
 
-console.log('Build108 acceptance closeout PASS as immutable accepted ancestry under the current Build109 runtime.');
+console.log('Build108 acceptance closeout PASS as immutable accepted ancestry under the current Studio successor runtime.');
