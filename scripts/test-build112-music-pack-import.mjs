@@ -10,15 +10,21 @@ const panel = read('src/components/TrackToMarketPanel.tsx');
 const service = read('src/services/music-pack.ts');
 const css = read('src/release-campaign.css');
 const schema = JSON.parse(read('src/schemas/SHINOBIWAN-track-pack.schema.v1.json'));
+const version = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+const build = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
 
-assert.equal(pkg.version, '0.19.34', 'Build112 must publish Studio v0.19.34.');
-assert.match(release, /version:\s*'0\.19\.34'/);
-assert.match(release, /build:\s*112/);
+assert.ok(build >= 112, `Build112 MUSIC Pack ancestry requires Build112 or later, got Build${build}.`);
+assert.equal(pkg.version, version);
 assert.match(release, /phase:\s*10/);
-assert.match(release, /studio-focus-build112-music-pack-import/);
+if (build === 112) {
+  assert.equal(version, '0.19.34');
+  assert.match(release, /studio-focus-build112-music-pack-import/);
+} else {
+  assert.match(release, /build112AncestryMarker/);
+}
 assert.match(release, /build111AncestryMarker/);
 assert.match(pkg.scripts['check:build112'], /test-build112-music-pack-import\.mjs/);
-assert.match(pkg.scripts.build, /check:build111 && npm run check:build112 && npm run check:focus/);
+assert.match(pkg.scripts.build, /check:build112/);
 assert.equal(pkg.dependencies?.ajv, '8.17.1');
 assert.equal(pkg.dependencies?.['ajv-formats'], '3.0.1');
 
@@ -75,14 +81,13 @@ for (const required of [
   'Nothing has been attached yet',
   'Attach pack to this Track anyway',
   'Remove local pack',
-  'PACK COMPLET · copy-ready release info',
   'The prompts below come directly from the imported MUSIC Pack. Studio does not regenerate or rewrite them.',
   'importedPack?.visuals.master16x9.prompt ?? masterPrompt',
   "importedPack?.visuals.square1x1.prompt ?? squarePrompt",
   "importedPack?.visuals.vertical9x16.prompt ?? verticalPrompt",
   'importedPack?.visuals.canvas.prompt ?? generatedMotionPrompt',
   'readOnly={Boolean(importedPack)}',
-]) assert.ok(panel.includes(required), `Build112 UI missing ${required}.`);
+]) assert.ok(panel.includes(required), `Build112 UI ancestry missing ${required}.`);
 
 for (const forbidden of ['saveAdmin', 'uploadAdmin', 'deleteAdmin', 'phase4-admin-api', 'admin-api']) {
   assert.ok(!panel.includes(forbidden), `Build112 import UI must not reach canonical writes: ${forbidden}`);
@@ -93,4 +98,4 @@ for (const required of ['.rc-music-pack-import', '.rc-pack-mismatch', '.rc-music
 }
 assert.ok(css.includes('@media(prefers-reduced-motion:reduce)'), 'Build112 must keep reduced-motion support.');
 
-console.log('Build112 MUSIC Pack import PASS: Draft 2020-12 schema validation, exact Track identity warning, explicit mismatch attach, browser-local per-Track persistence, copy-ready PACK COMPLET data, imported Flow prompts, zero canonical writes.');
+console.log(`Build112 MUSIC Pack import ancestry PASS under Studio ${version} Build${build}: schema validation, Track mismatch confirmation, browser-local persistence, imported Flow prompts and zero canonical writes remain protected.`);

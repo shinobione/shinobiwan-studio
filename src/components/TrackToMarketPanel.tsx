@@ -84,39 +84,55 @@ function MusicPackDetails({
     ? `${excerpt.start || '—'} → ${excerpt.end || '—'}${excerpt.durationSeconds == null ? '' : ` · ${excerpt.durationSeconds}s`}${excerpt.reason ? ` · ${excerpt.reason}` : ''}`
     : '';
 
-  return <details className="panel rc-music-pack-details">
-    <summary>PACK COMPLET · copy-ready release info</summary>
-    <div className="rc-pack-detail-grid">
-      <section>
-        <span className="eyebrow">SOUNDCLOUD</span>
-        <MusicPackCopyField label="Title" value={pack.soundcloud.title} copyKey="sc-title" copied={copied} onCopy={onCopy} />
-        <MusicPackCopyField label="Description" value={pack.soundcloud.description} copyKey="sc-description" copied={copied} onCopy={onCopy} multiline />
-        <MusicPackCopyField label="Tags" value={pack.soundcloud.tags} copyKey="sc-tags" copied={copied} onCopy={onCopy} />
-        <MusicPackCopyField label="Highlight" value={highlightText} copyKey="sc-highlight" copied={copied} onCopy={onCopy} />
-      </section>
-      <section>
-        <span className="eyebrow">SOCIAL</span>
-        <MusicPackCopyField label="Short caption" value={pack.social.shortCaption} copyKey="social-short" copied={copied} onCopy={onCopy} multiline />
-        <MusicPackCopyField label="Long caption" value={pack.social.longCaption} copyKey="social-long" copied={copied} onCopy={onCopy} multiline />
-        <MusicPackCopyField label="Hashtags" value={pack.social.hashtags} copyKey="social-tags" copied={copied} onCopy={onCopy} />
-      </section>
-      <section>
-        <span className="eyebrow">RELEASE</span>
-        <MusicPackCopyField label="Hook" value={pack.release.hook} copyKey="release-hook" copied={copied} onCopy={onCopy} />
-        <MusicPackCopyField label="One-liner" value={pack.release.oneLiner} copyKey="release-line" copied={copied} onCopy={onCopy} multiline />
-        <MusicPackCopyField label="Recommended excerpt" value={excerptText} copyKey="release-excerpt" copied={copied} onCopy={onCopy} />
-        <MusicPackCopyField label="Notes" value={pack.release.notes} copyKey="release-notes" copied={copied} onCopy={onCopy} multiline />
-      </section>
-      {pack.production ? <section>
-        <span className="eyebrow">PRODUCTION</span>
-        <MusicPackCopyField label="Style prompt" value={pack.production.stylePrompt} copyKey="prod-style" copied={copied} onCopy={onCopy} multiline />
-        <MusicPackCopyField label="Hook" value={pack.production.hook} copyKey="prod-hook" copied={copied} onCopy={onCopy} multiline />
-        <MusicPackCopyField label="Structure" value={pack.production.structure} copyKey="prod-structure" copied={copied} onCopy={onCopy} multiline />
-        <MusicPackCopyField label="Lyrics" value={pack.production.lyrics} copyKey="prod-lyrics" copied={copied} onCopy={onCopy} multiline />
-        <MusicPackCopyField label="Notes" value={pack.production.notes} copyKey="prod-notes" copied={copied} onCopy={onCopy} multiline />
-      </section> : null}
-    </div>
-  </details>;
+  return <>
+    <article className="panel rc-soundcloud-priority">
+      <div className="rc-soundcloud-head">
+        <div>
+          <span className="eyebrow">SOUNDCLOUD · FROM MUSIC PACK</span>
+          <h3>Ready to publish</h3>
+          <p>Description, tags and the selected highlight come directly from the approved MUSIC Pack. Studio does not regenerate them.</p>
+        </div>
+        <span className="rc-pack-revision">r{pack.pack.revision}</span>
+      </div>
+      <div className="rc-soundcloud-grid">
+        <section>
+          <MusicPackCopyField label="Title" value={pack.soundcloud.title} copyKey="sc-title" copied={copied} onCopy={onCopy} />
+          <MusicPackCopyField label="Description" value={pack.soundcloud.description} copyKey="sc-description" copied={copied} onCopy={onCopy} multiline />
+        </section>
+        <section>
+          <MusicPackCopyField label="Tags" value={pack.soundcloud.tags} copyKey="sc-tags" copied={copied} onCopy={onCopy} />
+          <MusicPackCopyField label="Highlight · 20s target" value={highlightText} copyKey="sc-highlight" copied={copied} onCopy={onCopy} />
+        </section>
+      </div>
+    </article>
+
+    <details className="panel rc-music-pack-details">
+      <summary>More from PACK COMPLET · Social / Release / Production</summary>
+      <div className="rc-pack-detail-grid">
+        <section>
+          <span className="eyebrow">SOCIAL</span>
+          <MusicPackCopyField label="Short caption" value={pack.social.shortCaption} copyKey="social-short" copied={copied} onCopy={onCopy} multiline />
+          <MusicPackCopyField label="Long caption" value={pack.social.longCaption} copyKey="social-long" copied={copied} onCopy={onCopy} multiline />
+          <MusicPackCopyField label="Hashtags" value={pack.social.hashtags} copyKey="social-tags" copied={copied} onCopy={onCopy} />
+        </section>
+        <section>
+          <span className="eyebrow">RELEASE</span>
+          <MusicPackCopyField label="Hook" value={pack.release.hook} copyKey="release-hook" copied={copied} onCopy={onCopy} />
+          <MusicPackCopyField label="One-liner" value={pack.release.oneLiner} copyKey="release-line" copied={copied} onCopy={onCopy} multiline />
+          <MusicPackCopyField label="Recommended excerpt" value={excerptText} copyKey="release-excerpt" copied={copied} onCopy={onCopy} />
+          <MusicPackCopyField label="Notes" value={pack.release.notes} copyKey="release-notes" copied={copied} onCopy={onCopy} multiline />
+        </section>
+        {pack.production ? <section>
+          <span className="eyebrow">PRODUCTION</span>
+          <MusicPackCopyField label="Style prompt" value={pack.production.stylePrompt} copyKey="prod-style" copied={copied} onCopy={onCopy} multiline />
+          <MusicPackCopyField label="Hook" value={pack.production.hook} copyKey="prod-hook" copied={copied} onCopy={onCopy} multiline />
+          <MusicPackCopyField label="Structure" value={pack.production.structure} copyKey="prod-structure" copied={copied} onCopy={onCopy} multiline />
+          <MusicPackCopyField label="Lyrics" value={pack.production.lyrics} copyKey="prod-lyrics" copied={copied} onCopy={onCopy} multiline />
+          <MusicPackCopyField label="Notes" value={pack.production.notes} copyKey="prod-notes" copied={copied} onCopy={onCopy} multiline />
+        </section> : null}
+      </div>
+    </details>
+  </>;
 }
 
 export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
@@ -208,7 +224,7 @@ export function TrackToMarketPanel({ track }: { track: StudioTrackDetail }) {
     setImportNotice('Local MUSIC Pack removed. Studio fallback prompts are active again.');
   };
 
-  return <section className="release-campaign-workspace release-handoff-build111 music-pack-build112">
+  return <section className="release-campaign-workspace release-handoff-build111 music-pack-build112 soundcloud-priority-build113">
     <article className="panel rc-music-pack-import">
       <div className="rc-pack-import-main">
         <span className="eyebrow">MUSIC PACK</span>
