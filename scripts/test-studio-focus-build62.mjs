@@ -17,7 +17,7 @@ const codename = release.match(/codename:\s*'([^']+)'/)?.[1] || '';
 
 assert.match(version, /^0\.19\.\d+$/, 'Build 62 successors must remain on the accepted Studio Focus 0.19.x release line.');
 assert.ok(build >= 62, `Build 62 closeout corrective must remain inherited by Build 62 or later, got Build ${build}.`);
-assert.ok(codename.startsWith('studio-focus-slice4-'), `Build 62 successor codename must preserve Studio Focus Slice 4 lineage, got ${codename}.`);
+assert.ok(codename.startsWith('studio-focus-'), `Build 62 successor codename must preserve Studio Focus lineage, got ${codename}.`);
 assert.equal(pkg.version, version);
 assert.ok(pkg.scripts['check:focus']?.includes('test-studio-focus-build62.mjs'), 'Build 62 corrective guard must run in the inherited Studio Focus chain.');
 
@@ -39,12 +39,12 @@ assert.ok(assets.includes("title: 'Palette extraction failed'"), 'Palette fetch 
 assert.ok(assets.includes('uploadAdminTrackAsset'), 'Existing guarded asset upload remains intact.');
 assert.ok(assets.includes('deleteAdminTrackAsset'), 'Existing guarded asset deletion remains intact.');
 
-assert.ok(correctiveCss.includes('.rc-provider-field{display:none!important}'), 'Misleading premium-provider selector must be removed from the artist-facing UI.');
-assert.ok(correctiveCss.includes("content:'Sonic'"), 'Track Workshop legacy Sound stage must render as Sonic in the Build 62 corrective layer.');
-assert.ok(correctiveCss.includes("content:'TRACK / SONIC'"), 'Full SonicTrace subpage must render TRACK / SONIC in the Build 62 corrective layer.');
+assert.ok(correctiveCss.includes('.rc-provider-field{display:none!important}'), 'Misleading premium-provider selector must stay removed from the artist-facing UI.');
+assert.ok(correctiveCss.includes("content:'Sonic'"), 'Track Workshop legacy Sound stage must still render as Sonic.');
+assert.ok(correctiveCss.includes("content:'TRACK / SONIC'"), 'Full SonicTrace subpage must still render TRACK / SONIC.');
 assert.ok(main.indexOf("import './studio-focus-build62-closeout-corrective.css';") > main.indexOf("import './studio-focus-build61-polish.css';"), 'Build 62 corrective styles must layer after Build 61.');
 assert.ok(campaign.includes("const GOOGLE_FLOW_URL = 'https://labs.google/fx/fr/tools/flow/'"), 'Google Flow direct handoff must remain available.');
-assert.ok(campaign.includes('Open Google Flow ↗'), 'Google Flow shortcut must remain visible after provider-selector cleanup.');
+assert.ok(campaign.includes('Open Google Flow ↗'), 'Google Flow shortcut must remain available after provider-selector cleanup.');
 assert.ok(campaign.includes('buildMasterPrompt(track, false)'), 'MASTER prompt generation remains provider-independent.');
 assert.ok(campaign.includes("buildVariantPrompt(track, '1:1')"));
 assert.ok(campaign.includes("buildVariantPrompt(track, '9:16')"));
@@ -55,4 +55,4 @@ for (const forbidden of ['/api/studio/write', 'generic-r2-write', 'canonicalWrit
   assert.ok(!correctiveCss.includes(forbidden));
 }
 
-console.log(`Studio Focus Build 62 ancestry passed under ${version} Build ${build}: Sonic wording, public/private palette fetch credentials and provider-choice cleanup remain inherited while successor repairs preserve existing authority boundaries.`);
+console.log(`Studio Focus Build62 ancestry passed under ${version} Build ${build}: Sonic wording, palette credentials and provider-choice cleanup remain inherited through the human-first successor.`);
