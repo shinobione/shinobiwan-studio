@@ -53,6 +53,9 @@ export class Phase4AdminError extends Error {
 }
 
 export interface TrackCreateResponse {
+  operationId?: string;
+  recoveredAfterTransportFailure?: boolean;
+  retrySafe?: boolean;
   ok?: boolean;
   created?: boolean;
   trackId?: string;
@@ -174,7 +177,13 @@ async function postSimple<T>(
     if (!isJsonResponse(response)) throw new Phase4AdminError('Cloudflare Access session is not available to this Studio operation.', response.status || null);
     let payload: any;
     try { payload = await response.json(); }
-    catch { throw new Phase4AdminError('Track Manager returned invalid operation JSON.', response.status || null); }
+    catch (error) {
+      // A create response body can be interrupted after HTTP headers arrived.
+      if (path === '/api/studio/tracks/create' && transportFailure && (error instanceof TypeError || (error instanceof DOMException && error.name === 'AbortError'))) {
+        throw new Phase4AdminError(transportFailure.transportMessage, null, transportFailure.transportCode);
+      }
+      throw new Phase4AdminError('Track Manager returned invalid operation JSON.', response.status || null);
+    }
     if (!response.ok || payload?.ok === false) {
       throw new Phase4AdminError(
         payload?.error || `Track Manager operation returned HTTP ${response.status}.`,
@@ -298,12 +307,38 @@ function stableCreateManifestJson(value: unknown): string {
 
 export async function createAdminTrack(slug: string, metadata: AdminMetadataPatch): Promise<TrackCreateResponse> {
   if (!validTrackId(slug)) throw new Phase4AdminError('Track ID must be lower-case kebab-case.');
+  const operationId = globalThis.crypto?.randomUUID?.();
+  if (!operationId) throw new Phase4AdminError('Secure Track creation identity is unavailable. No create was sent.', null, 'TRACK_CREATE_IDENTITY_UNAVAILABLE');
   await requireManage('track-create');
-  const payload = await postSimple<TrackCreateResponse>('/api/studio/tracks/create', {
-    intent: TRACK_CREATE_INTENT,
-    slug,
-    metadata,
-  });
+  let payload: TrackCreateResponse;
+  try {
+    payload = await postSimple<TrackCreateResponse>('/api/studio/tracks/create', {
+      intent: TRACK_CREATE_INTENT,
+      operationId,
+      slug,
+      metadata,
+    }, 15000, {
+      timeoutCode: 'TRACK_CREATE_TIMEOUT',
+      transportCode: 'TRACK_CREATE_TRANSPORT',
+      timeoutMessage: 'Track create timed out. Checking private canonical creation evidence.',
+      transportMessage: 'Track create response was lost. Checking private canonical creation evidence.',
+    });
+  } catch (reason) {
+    if (!(reason instanceof Phase4AdminError) || !['TRACK_CREATE_TIMEOUT', 'TRACK_CREATE_TRANSPORT'].includes(reason.code || '')) throw reason;
+    let canonicalManifest: AdminManifest | undefined;
+    try {
+      canonicalManifest = (await getAdminTrack(slug)).track?.manifest;
+    } catch {
+      throw new Phase4AdminError('The create response and private canonical reread are unavailable. Do not retry; reload Track Manager to inspect this Track.', null, 'TRACK_CREATE_UNVERIFIED');
+    }
+    if (!canonicalManifest?.updatedAt || canonicalManifest.slug !== slug) {
+      throw new Phase4AdminError('Track creation cannot be proven by the private canonical reread. Do not retry; inspect Track Manager.', null, 'TRACK_CREATE_UNVERIFIED');
+    }
+    if (canonicalManifest.creationOperationId !== operationId) {
+      throw new Phase4AdminError('This Track has different or missing creation evidence. Recovery is ambiguous. Do not retry; inspect the existing Track.', null, 'TRACK_CREATE_AMBIGUOUS', canonicalManifest.updatedAt);
+    }
+    return { ok: true, created: true, trackId: slug, operationId, track: canonicalManifest, clientVerified: true, recoveredAfterTransportFailure: true, retrySafe: false };
+  }
   const responseManifest = payload.track;
   if (!payload.created || payload.trackId !== slug || !responseManifest?.updatedAt || responseManifest.slug !== slug || responseManifest.status !== 'draft') {
     throw new Phase4AdminError('Track Manager returned an invalid create response.');
@@ -312,9 +347,11 @@ export async function createAdminTrack(slug: string, metadata: AdminMetadataPatc
   const canonicalManifest = reread.track?.manifest;
   const clientVerified = Boolean(
     canonicalManifest?.updatedAt === responseManifest.updatedAt
+    && payload.operationId === operationId
+    && responseManifest.creationOperationId === operationId
     && stableCreateManifestJson(canonicalManifest) === stableCreateManifestJson(responseManifest),
   );
-  return { ...payload, track: canonicalManifest || responseManifest, clientVerified };
+  return { ...payload, track: canonicalManifest || responseManifest, clientVerified, recoveredAfterTransportFailure: false, retrySafe: false };
 }
 
 export async function uploadAdminTrackAsset(
@@ -614,7 +651,7 @@ export const phase4AdminService = Object.freeze({
   jsonTransport: 'text/plain-simple-request',
   wholeTrackDeleteEnabled: false,
   trackCreateSuccessVerificationPolicy: 'server-normalized-manifest-plus-private-reread-exact-match',
-  trackCreateLostResponsePolicy: 'not-covered-no-operation-id-no-blind-retry',
+  trackCreateLostResponsePolicy: 'private-creation-operation-id-exact-match-no-blind-retry',
   maxAutomaticTrackCreateRetries: 0,
   phase5Enabled: false,
 });
