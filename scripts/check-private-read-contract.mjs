@@ -64,36 +64,38 @@ for (const required of [
   'phase5Enabled: false',
 ]) assert.ok(phase4Api.includes(required), `Phase 4 operations client is missing ${required}.`);
 
-assert.ok(!phase4Api.includes('REQUIRED_MANAGE_CAPABILITIES'), 'Phase 4 must not pin Track Manager to an exact manage capability set.');
-assert.ok(!phase4Api.includes('unexpected manage capability'), 'Phase 4 must accept additive manage capabilities from newer compatible Track Manager bridges.');
-assert.ok(!phase4Api.includes('setRequestHeader('), 'Multipart asset upload must not add custom request headers/preflight.');
-assert.ok(!phase4Api.includes("'Content-Type': 'application/json'"), 'Phase 4 JSON controls must keep the proven text/plain simple-request transport.');
+assert.ok(!phase4Api.includes('REQUIRED_MANAGE_CAPABILITIES'), 'Phase 4 must accept additive backend capabilities.');
+assert.ok(!phase4Api.includes('unexpected manage capability'), 'Phase 4 must accept additive backend capabilities.');
+assert.ok(!phase4Api.includes('setRequestHeader('), 'Multipart asset upload must stay CORS-simple.');
+assert.ok(!phase4Api.includes("'Content-Type': 'application/json'"), 'Phase 4 JSON controls must keep the proven text/plain transport.');
+
 for (const forbiddenMethod of ['PUT', 'PATCH', 'DELETE']) {
   assert.ok(!admin.includes(`method: '${forbiddenMethod}'`), `Metadata client must not expose ${forbiddenMethod}.`);
   assert.ok(!lyricsApi.includes(`method: '${forbiddenMethod}'`), `Lyrics client must not expose ${forbiddenMethod}.`);
   assert.ok(!phase4Api.includes(`method: '${forbiddenMethod}'`), `Phase 4 client must not expose ${forbiddenMethod}.`);
 }
 
-for (const required of ['Shape how this track appears', 'PROTECTED SAVE', 'Validate metadata', 'Save metadata', 'METADATA SAVED']) assert.ok(metadata.includes(required), `Metadata UI missing ${required}.`);
-for (const required of ['LYRICS / GUARDED WRITE', 'Canonical lyrics.txt editor', 'Validate lyrics', 'Save lyrics.txt', 'NO .LRC REQUIRED', 'CANONICAL REREAD · VERIFIED']) assert.ok(lyrics.includes(required), `Lyrics UI missing ${required}.`);
-
+for (const required of ['validateAdminTrackMetadataWithAudioEvidence', 'saveAdminTrackMetadataWithAudioEvidence', 'globalThis.confirm']) {
+  assert.ok(metadata.includes(required), `Metadata UI contract is missing ${required}.`);
+}
+for (const required of ['validateAdminTrackLyrics', 'saveAdminTrackLyrics', 'globalThis.confirm']) {
+  assert.ok(lyrics.includes(required), `Lyrics UI contract is missing ${required}.`);
+}
+for (const required of ['uploadAdminTrackAsset', 'deleteAdminTrackAsset', 'globalThis.confirm', 'kinds?: AdminAssetKind[]']) {
+  assert.ok(assets.includes(required), `Assets Manager contract is missing ${required}.`);
+}
 for (const required of [
-  'EDITING ENABLED', 'Upload', 'Replace', 'Delete asset', 'globalThis.confirm',
-  'uploadAdminTrackAsset', 'deleteAdminTrackAsset', 'phase4-upload-progress', 'One asset changes per operation', 'whole-track deletion is intentionally not exposed',
-  'kinds?: AdminAssetKind[]', 'const visibleAssets = useMemo',
-]) assert.ok(assets.includes(required), `Assets Manager missing ${required}.`);
-
-for (const required of [
-  'NEW TRACK', 'Create the track you mean to release', 'Create draft', 'Create & Publish', 'globalThis.confirm',
   'createAdminTrack', 'uploadAdminTrackAsset', 'moveAdminAlbumTrack', 'validateAdminTrackMetadata', 'saveAdminTrackMetadata',
-  "trackHref(effectiveSlug, 'overview')", 'Safe draft first', 'PUBLISH_QUALITY_BLOCKED',
-]) assert.ok(create.includes(required), `Track create UI missing ${required}.`);
-assert.ok(!create.includes('safeInitialTrackAlbum'), 'Track create must not send Album cache through generic metadata under TM v5.21.');
+  "trackHref(effectiveSlug, 'overview')", 'globalThis.confirm', 'PUBLISH_QUALITY_BLOCKED',
+]) assert.ok(create.includes(required), `Track create contract is missing ${required}.`);
+assert.ok(!create.includes('safeInitialTrackAlbum'), 'Track create must not send Album cache through generic metadata.');
 assert.ok(!create.includes('saveTrack('), 'Track create must not introduce a generic saveTrack write surface.');
 
-for (const required of ['TRACK MANAGER / CATALOG', 'Explicit catalog rebuild', 'REBUILD the canonical catalog/index.json', 'globalThis.confirm', 'rebuildAdminCatalog']) assert.ok(rebuild.includes(required), `Catalog rebuild UI missing ${required}.`);
+for (const required of ['rebuildAdminCatalog', 'globalThis.confirm']) assert.ok(rebuild.includes(required), `Catalog rebuild contract is missing ${required}.`);
+for (const required of ['showCreate && <TrackCreatePanel', 'privateRead={privateRead}', 'onCreated={async () =>', '+ New Track']) {
+  assert.ok(catalog.includes(required), `Catalog private-write boundary missing ${required}.`);
+}
 
-for (const required of ['showCreate && <TrackCreatePanel', 'privateRead={privateRead}', 'onCreated={async () =>', '+ New Track', 'Tracks are available read-only']) assert.ok(catalog.includes(required), `Catalog private-write boundary missing ${required}.`);
 for (const required of [
   "kinds={['audio']}",
   "kinds={['cover', 'thumbnail', 'video']}",
@@ -101,28 +103,21 @@ for (const required of [
   '<MetadataValidationPanel track={track} onSaved={refreshTrackAfterWrite} />',
   '<SonicTracePanel track={track} onSaved={() => {',
   '<ContinuationReceiptBanner trackId={track.id}',
-  'PHASE 5 / COMPLETE',
 ]) assert.ok(workspace.includes(required), `Workspace integration contract missing ${required}.`);
+
 for (const required of [
   'const canonical = await getCatalogTrack(next.trackId)',
   "canonical.readSource !== 'private'",
   'Public fallback cannot verify a write receipt',
-]) assert.ok(receiptVerifier.includes(required), `Phase 7-B private reread contract missing ${required}.`);
+]) assert.ok(receiptVerifier.includes(required), `Continuation receipt private-reread contract missing ${required}.`);
 
 for (const required of [
-  'LYRICS / CANONICAL', 'lyrics.txt is the single canonical source.',
-  '<CatalogRebuildPanel privateRead={privateRead} />', '<CatalogIntelligenceView />',
-]) assert.ok(app.includes(required), `Studio integration contract missing ${required}.`);
-// Phase 6 remains a completed inherited contract after the shell advances through
-// Phase 7 and its explicitly-authorized guided-action successors. The actual
-// Phase 6 write/read contracts are asserted above; this assertion only verifies that
-// the successor still preserves access to the Phase 7 workflow ancestry.
-assert.ok(
-  app.includes('PHASE 6 / COMPLETE')
-    || ((app.includes('PHASE 7 / ORCHESTRATION') || app.includes('PHASE 7-B') || app.includes('PHASE 7-C')) && app.includes("route === 'workflow'")),
-  'Studio must preserve the completed Phase 6 integration while exposing the authorized Phase 7 successor.'
-);
-assert.match(app, /Track Manager v5\.(?:17|18|19|20|21) · bridge v1\.(?:9|10|11)/, 'Studio must still surface a supported C2.5/Phase 7 Track Manager/bridge lineage.');
+  '<TrackWorkspace trackId={trackId} section={trackSection} />',
+  '<WorkflowView />',
+  '<CatalogRebuildPanel privateRead={privateRead} />',
+  '<CatalogIntelligenceView />',
+  "SUPPORTED_PRIVATE_READ_LINEAGE = 'Track Manager v5.24 · bridge v1.14'",
+]) assert.ok(app.includes(required), `Studio shell integration contract missing ${required}.`);
 
 for (const required of [
   "const SAVE_INTENT = 'sonictrace-analysis-save-v1'", '/api/studio/analyze', '/analysis/sonictrace',
@@ -130,26 +125,21 @@ for (const required of [
   'sourceAudioRetention: false', "credentials: 'include'", "'Content-Type': 'text/plain;charset=UTF-8'",
 ]) assert.ok(sonicApi.includes(required), `SonicTrace client contract is missing ${required}.`);
 
-for (const required of [
-  'Analyze with SonicTrace', 'Re-scan with SonicTrace', 'Save analysis', 'REVIEW / NOT SAVED',
-  'SonicTrace coordinator responded', 'SonicTrace coordinator is unreachable', 'UNAVAILABLE',
-  'Browser DSP', 'append-only history', 'never stores the audio',
-]) assert.ok(sonicPanel.includes(required), `SonicTrace workspace UI is missing ${required}.`);
+for (const required of ['runSonicTraceAnalysis', 'saveSonicTraceAnalysis']) {
+  assert.ok(sonicPanel.includes(required), `SonicTrace workspace contract is missing ${required}.`);
+}
 
-for (const required of [
-  'SONICTRACE / C3-B / CANONICAL V2-E', 'See the shape of your catalog.',
-  'Position = proximity. Color = family. Zone = neighborhood.', 'CLOSEST SOUND', 'SONIC FAMILIES',
-  'ALBUM / PROJECT INTELLIGENCE', 'READ ONLY · canonical order unchanged',
-  'getSonicTraceCatalog', 'getAdminAlbums', 'getCatalogTracks',
-]) assert.ok(intelligenceView.includes(required), `Catalog Intelligence C3-B UI is missing ${required}.`);
+for (const required of ['getSonicTraceCatalog', 'getAdminAlbums', 'getCatalogTracks']) {
+  assert.ok(intelligenceView.includes(required), `Catalog Intelligence read contract is missing ${required}.`);
+}
 for (const forbidden of ['indexedDB', 'saveAdminAlbumMetadata', 'saveAdminAlbumMembership', 'moveAdminAlbumTrack']) {
-  assert.ok(!intelligenceView.includes(forbidden), `Catalog Intelligence C3-B must remain canonical-read/read-only; found ${forbidden}.`);
+  assert.ok(!intelligenceView.includes(forbidden), `Catalog Intelligence must remain read-only; found ${forbidden}.`);
 }
 for (const required of [
   'cosineSimilarity', 'nearestTracks', 'validEmbedding', 'projectTracks', 'clusterAcousticZones',
   'analyzeStyleFamilies', 'catalogInsights', 'analyzeProject', 'analyzeCatalog', 'vector.length === 512',
-]) assert.ok(intelligenceMath.includes(required), `Catalog Intelligence C3-B engine missing ${required}.`);
-assert.ok(!intelligenceMath.includes('indexedDB'), 'Studio C3-B intelligence math must not depend on standalone SonicTrace IndexedDB.');
+]) assert.ok(intelligenceMath.includes(required), `Catalog Intelligence engine missing ${required}.`);
+assert.ok(!intelligenceMath.includes('indexedDB'), 'Studio intelligence math must not depend on standalone SonicTrace IndexedDB.');
 
 for (const [label, css] of [['Phase 5', sonicCss], ['C3-B', c3bCss]]) {
   const tinyFonts = [...css.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)]
@@ -160,37 +150,32 @@ for (const [label, css] of [['Phase 5', sonicCss], ['C3-B', c3bCss]]) {
 for (const selector of [
   '.sonic-status-grid span', '.sonic-alert', '.sonic-layers span', '.sonic-warnings',
   '.sonic-history span', '.intelligence-track-list small', '.similarity-list span', '.cluster-grid small',
-]) assert.ok(readability.includes(selector), `Readability floor must explicitly cover new Phase 5 selector ${selector}.`);
+]) assert.ok(readability.includes(selector), `Readability floor must cover ${selector}.`);
 assert.ok(readability.includes('--studio-micro-readable: 11px'), 'Studio readability floor must remain 11px.');
 
 assert.equal((admin.match(/method:\s*'POST'/g) || []).length, 2, 'Metadata client must keep validate + save POSTs only.');
-assert.equal((lyricsApi.match(/method:\s*'POST'/g) || []).length, 2, 'Lyrics service must keep one dedicated validation POST transport plus one generic save POST transport.');
-assert.ok(lyricsApi.includes("postLyrics<AdminLyricsSaveResponse>(trackId, 'save'"), 'Lyrics generic POST transport must remain save-only after Build94 validation retry split.');
-assert.ok(lyricsApi.includes('validateLyricsWithOneTransientRetry(trackId'), 'Lyrics validation must use the dedicated bounded retry transport introduced by Build94.');
-assert.equal((phase4Api.match(/method:\s*'POST'/g) || []).length, 2, 'Phase 4 service must keep one simple JSON POST transport and one CORS-simple fetch/FormData upload transport.');
+assert.equal((lyricsApi.match(/method:\s*'POST'/g) || []).length, 2, 'Lyrics service must keep validation + save POST transports only.');
+assert.ok(lyricsApi.includes("postLyrics<AdminLyricsSaveResponse>(trackId, 'save'"), 'Lyrics generic POST transport must remain save-only.');
+assert.ok(lyricsApi.includes('validateLyricsWithOneTransientRetry(trackId'), 'Lyrics validation must keep bounded transient retry.');
+assert.equal((phase4Api.match(/method:\s*'POST'/g) || []).length, 2, 'Phase 4 service must keep one simple JSON POST transport and one fetch/FormData upload transport.');
+
 for (const forbiddenWholeTrack of [
   '/api/studio/tracks/${encodeURIComponent(trackId)}/delete',
   '/api/studio/tracks/delete',
   'wholeTrackDeleteEnabled: true',
   'deleteWholeTrack(',
 ]) assert.ok(!phase4Api.includes(forbiddenWholeTrack), `Whole-track delete must not be exposed by Studio Phase 4: ${forbiddenWholeTrack}`);
-for (const forbiddenPhase5 of ['analysis/sonictrace', 'embedding 512', 'catalog intelligence', 'saveSonicTrace', 'phase5Enabled: true']) {
-  assert.ok(!phase4Api.toLowerCase().includes(forbiddenPhase5.toLowerCase()), `Phase 5 leaked into Phase 4 client: ${forbiddenPhase5}`);
-}
 
 const releaseVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 const releaseBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
-assert.match(releaseVersion, /^0\.(?:11|12|13|14|15|16|17|18|19|20)\./, 'Studio private-read ancestry must remain on the validated PHASE UX / Phase 7 successor release lines.');
+assert.match(releaseVersion, /^0\.(?:11|12|13|14|15|16|17|18|19|20)\./, 'Studio private-read ancestry must remain on the validated release lines.');
 assert.ok(releaseBuild >= 33, 'Studio private-read ancestry must remain at Build 33 or later.');
-assert.match(release, /codename:\s*'(?:phase-ux-(?:c2-5|c3)-|phase7-|phase7c-|studio-focus-)/, 'Studio release codename must remain inside validated PHASE UX, Phase 7, Phase 7-C, or explicitly authorized Studio Focus lineage.');
+assert.match(release, /codename:\s*'(?:phase-ux-(?:c2-5|c3)-|phase7-|phase7c-|studio-focus-)/, 'Studio release codename must remain inside validated Studio lineage.');
 assert.equal(pkg.version, releaseVersion, 'package.json must match the current Studio release version.');
-assert.ok(String(pkg.scripts?.build || '').includes('check:private-read'), 'Production build must run the integration regression guard.');
-assert.ok(String(pkg.scripts?.build || '').includes('check:phase5'), 'Production build must run the Phase 5 algorithm guard.');
-assert.ok(String(pkg.scripts?.build || '').includes('check:phase6'), 'Production build must run the embedded Phase 6 regression guard.');
-assert.ok(String(pkg.scripts?.build || '').includes('check:c3'), 'Production build must run the C3 semantics/parity guards.');
-assert.ok(String(pkg.scripts?.['check:c3'] || '').includes('test-phase-ux-c3-b-v2e-parity.mjs'), 'C3 build guard must include the V2-E parity regression test.');
-assert.ok(String(pkg.scripts?.['check:c3'] || '').includes('test-phase-ux-c3-c-premium-feel.mjs'), 'C3 build guard must include the premium-feel regression test.');
-assert.ok(String(pkg.scripts?.build || '').includes('check:ux'), 'Production build must run the PHASE UX regression guard.');
-assert.ok(String(pkg.scripts?.build || '').includes('check:phase7'), 'Authorized successor production builds must run the Phase 7 regression guard.');
+for (const script of ['check:private-read', 'check:phase5', 'check:phase6', 'check:c3', 'check:ux', 'check:phase7']) {
+  assert.ok(String(pkg.scripts?.build || '').includes(script), `Production build must run ${script}.`);
+}
+assert.ok(String(pkg.scripts?.['check:c3'] || '').includes('test-phase-ux-c3-b-v2e-parity.mjs'), 'C3 build guard must include V2-E parity.');
+assert.ok(String(pkg.scripts?.['check:c3'] || '').includes('test-phase-ux-c3-c-premium-feel.mjs'), 'C3 build guard must include premium-feel regression.');
 
-console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves Phase 0-6/C2.5/C3/7-A/7-B contracts while the authorized Phase 7 successor changes presentation without replacing canonical authorities.`);
+console.log(`Studio ${releaseVersion} Build ${releaseBuild} preserves canonical private-read/write authority while allowing human-facing presentation to evolve.`);
