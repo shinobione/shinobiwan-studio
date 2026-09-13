@@ -7,16 +7,23 @@ const api = read('src/services/sonictrace-api.ts');
 const panel = read('src/components/SonicTracePanel.tsx');
 const pkg = JSON.parse(read('package.json'));
 
-assert.ok(['0.19.27', '0.19.28'].includes(pkg.version), 'Build105 guard accepts Build105 and bounded Build106 successor.');
+assert.ok(['0.19.27', '0.19.28', '0.19.29'].includes(pkg.version), 'Build105 guard accepts Build105 and bounded Build106/Build107 successors.');
 if (pkg.version === '0.19.27') {
   assert.match(release, /version: '0\.19\.27'/);
   assert.match(release, /build: 105/);
   assert.match(release, /studio-focus-slice4-phase9-deep-audio-presubmit-transport-corrective/);
-} else {
+} else if (pkg.version === '0.19.28') {
   assert.match(release, /version: '0\.19\.28'/);
   assert.match(release, /build: 106/);
   assert.match(release, /studio-focus-slice4-phase9-public-catalog-fallback-transient-retry-truth/);
   assert.match(release, /build105AncestryMarker/);
+  assert.match(release, /version: 0\.19\.27 · build: 105 · codename: 'studio-focus-slice4-phase9-deep-audio-presubmit-transport-corrective'/);
+} else {
+  assert.match(release, /version: '0\.19\.29'/);
+  assert.match(release, /build: 107/);
+  assert.match(release, /studio-focus-slice4-phase10-shared-catalog-projection-kernel/);
+  assert.match(release, /build105AncestryMarker/);
+  assert.match(release, /build106AncestryMarker/);
   assert.match(release, /version: 0\.19\.27 · build: 105 · codename: 'studio-focus-slice4-phase9-deep-audio-presubmit-transport-corrective'/);
 }
 assert.match(release, /build103AncestryMarker/);
