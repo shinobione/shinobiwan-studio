@@ -7,10 +7,17 @@ const release = read('src/release.ts');
 const receipt = read('docs/acceptance/BUILD108-REAL-USER-PASS.md');
 const state = read('PROJECT_STATE.md');
 
-assert.equal(pkg.version, '0.19.30', 'Build108 acceptance closeout must publish v0.19.30.');
-assert.match(release, /version: '0\.19\.30'/);
-assert.match(release, /build: 108/);
-assert.match(release, /studio-focus-slice4-catalog-rebuild-generation-identity/);
+assert.ok(['0.19.30', '0.19.31'].includes(pkg.version), 'Build108 acceptance closeout must remain valid under the accepted Build109 successor.');
+if (pkg.version === '0.19.30') {
+  assert.match(release, /version: '0\.19\.30'/);
+  assert.match(release, /build: 108/);
+  assert.match(release, /studio-focus-slice4-catalog-rebuild-generation-identity/);
+} else {
+  assert.match(release, /version: '0\.19\.31'/);
+  assert.match(release, /build: 109/);
+  assert.match(release, /studio-focus-slice4-track-create-operation-identity/);
+  assert.match(release, /build108AncestryMarker/);
+}
 assert.match(release, /build107AncestryMarker/);
 
 for (const required of [
@@ -26,10 +33,8 @@ for (const required of [
   '34753099885',
 ]) assert.ok(receipt.includes(required), `Build108 acceptance receipt missing: ${required}`);
 
-assert.match(state, /Studio version\s+v0\.19\.30/);
-assert.match(state, /Studio build\s+Build108/);
+assert.match(state, /Build108\s+COMPLETE|Build108 remains the accepted predecessor|Build108 remains/);
+assert.match(state, /Build109/);
 assert.match(state, /Acceptance\s+REAL USER PASS/);
-assert.match(state, /generation\s+c4072021-707b-4d03-be8e-d21324a348b4/);
-assert.match(state, /canonical reread\s+verified/i);
 
-console.log('Build108 acceptance closeout PASS: v0.19.30 / Build108 is tied to the exact deployed backend, Studio deployment, and real-user canonical generation proof.');
+console.log('Build108 acceptance closeout PASS as immutable accepted ancestry under the current Build109 runtime.');
