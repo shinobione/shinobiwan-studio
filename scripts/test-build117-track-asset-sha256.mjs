@@ -14,8 +14,9 @@ assert.equal(pkg.version, '0.19.39');
 assert.equal(pkg.scripts['check:build117'], 'node scripts/test-build117-track-asset-sha256.mjs');
 assert.match(pkg.scripts.build, /npm run check:build116 && npm run check:build117 && npm run check:focus/);
 
+const legacyPhase4Import = assetsManager.match(/import \{([\s\S]*?)\} from '\.\.\/services\/phase4-admin-api';/)?.[1] || '';
+assert.doesNotMatch(legacyPhase4Import, /uploadAdminTrackAsset/, 'Build117 must not import Track upload from the legacy Phase4 client.');
 assert.match(assetsManager, /import \{ uploadAdminTrackAsset \} from '\.\.\/services\/phase4-track-asset-sha256-api';/);
-assert.doesNotMatch(assetsManager, /phase4-admin-api'[\s\S]{0,220}uploadAdminTrackAsset/);
 assert.match(assetsManager, /uploadAdminTrackAsset\(track\.id, def\.kind, revision, file/);
 
 assert.match(digestClient, /export async function sha256File\(file: File\)/);
