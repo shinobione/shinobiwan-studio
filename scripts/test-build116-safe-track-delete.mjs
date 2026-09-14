@@ -5,6 +5,7 @@ import ts from 'typescript';
 
 const service = fs.readFileSync('src/services/track-delete-admin-api.ts', 'utf8');
 const ui = fs.readFileSync('src/components/CatalogView.tsx', 'utf8');
+const contextualUi = fs.readFileSync('src/components/ContinuationReceiptBanner.tsx', 'utf8');
 const release = fs.readFileSync('src/release.ts', 'utf8');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 
@@ -46,7 +47,20 @@ for (const marker of [
   'If a canonical Album still owns this Track, Track Manager will block the deletion',
   'await deleteAdminTrackResilient(target.id, target.updatedAt)',
   "reason.code === 'TRACK_DELETE_ALBUM_OWNED'",
-]) assert.ok(ui.includes(marker), `Build116 Track UI missing ${marker}`);
+]) assert.ok(ui.includes(marker), `Build116 Track library UI missing ${marker}`);
+
+for (const marker of [
+  "import { deleteAdminTrackResilient, TrackDeleteError } from '../services/track-delete-admin-api';",
+  'TRACK ACTIONS',
+  'Current Track',
+  'Permanent deletion is available here on the Track itself.',
+  'Delete Track…',
+  'Type the exact canonical Track ID to continue',
+  'canonical.readSource !== \'private\' || !canonical.updatedAt',
+  'await deleteAdminTrackResilient(canonical.id, canonical.updatedAt)',
+  "reason.code === 'TRACK_DELETE_ALBUM_OWNED'",
+  "globalThis.location.assign(routeHref('catalog'))",
+]) assert.ok(contextualUi.includes(marker), `Build116 contextual Track delete corrective missing ${marker}`);
 
 const compiled = ts.transpileModule(service, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
 const original = { slug: 'delete-me', title: 'Delete Me', status: 'draft', updatedAt: '2026-09-14T17:00:00.000Z' };
@@ -126,4 +140,4 @@ assert.equal(run.error.albumId, 'owner-album');
 assert.equal(run.error.albumTitle, 'Owner Album');
 assert.equal(run.reads, 1, 'Explicit backend ownership block is not treated as lost-response recovery.');
 
-console.log('Build116 Studio PASS: exact-ID Track delete selection, private revision preflight, canonical Album ownership block surfacing, one delete POST, canonical absence verification, lost-response recovery without blind retry, and fail-closed ambiguous state.');
+console.log('Build116 Studio PASS: exact-ID Track delete works from both the library and the current Track context, with private revision preflight, canonical Album ownership block surfacing, one delete POST, canonical absence verification, lost-response recovery without blind retry, and fail-closed ambiguous state.');
