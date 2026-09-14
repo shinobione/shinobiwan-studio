@@ -3,6 +3,7 @@ import { buildCatalogWorkflow, type TrackWorkflowState } from '../phase7-workflo
 import { trackHref } from '../router';
 import { getCatalogTracks } from '../services/catalog-api';
 import { studioConfig } from '../services/config';
+import { deleteAdminTrackResilient, TrackDeleteError } from '../services/track-delete-admin-api';
 import type { StudioTrack } from '../types/studio';
 import { TrackCreatePanel } from './TrackCreatePanel';
 
@@ -79,6 +80,9 @@ export function CatalogView() {
   const [loading, setLoading] = useState(() => !catalogCache);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [actionNotice, setActionNotice] = useState<string | null>(null);
+  const [deletingTrackId, setDeletingTrackId] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [album, setAlbum] = useState('all');
   const [productionFilter, setProductionFilter] = useState<ProductionFilter>('to-finish');
@@ -116,6 +120,47 @@ export function CatalogView() {
   const workflows = useMemo(() => buildCatalogWorkflow(tracks), [tracks]);
   const workflowById = useMemo(() => new Map(workflows.map(item => [item.track.id, item])), [workflows]);
   const privateRead = tracks.some(track => track.readSource === 'private');
+
+  async function deleteTrack() {
+    if (!privateRead || deletingTrackId) return;
+    const confirmation = globalThis.prompt('Delete a canonical Track\n\nType the exact canonical Track ID. Studio will never infer or regenerate it.');
+    if (confirmation === null) return;
+    const trackId = confirmation.trim();
+    const target = tracks.find(track => track.id === trackId);
+    setActionError(null);
+    setActionNotice(null);
+    if (!target) {
+      setActionError(`No canonical Track with ID “${trackId || 'empty'}” is loaded. Nothing was sent.`);
+      return;
+    }
+    if (target.readSource !== 'private' || !target.updatedAt) {
+      setActionError('Safe Track Delete requires the private canonical Track revision. Restore Track Manager private read first.');
+      return;
+    }
+    if (!globalThis.confirm(`Permanently delete “${target.title}” (${target.id})?\n\nThis removes the Track manifest and every Track-scoped asset. If a canonical Album still owns this Track, Track Manager will block the deletion instead of editing Album membership implicitly.`)) return;
+
+    setDeletingTrackId(target.id);
+    try {
+      const result = await deleteAdminTrackResilient(target.id, target.updatedAt);
+      if (!result.clientVerified) throw new TrackDeleteError(result.verificationWarning || 'Track absence could not be canonically verified.');
+      await loadCatalog(true);
+      setActionNotice(result.recoveredAfterTransportFailure
+        ? `“${target.title}” deleted. Canonical absence was recovered and verified after a lost response; Studio did not retry the delete.`
+        : `“${target.title}” deleted and canonical absence verified.`);
+    } catch (reason) {
+      if (reason instanceof TrackDeleteError) {
+        const owner = reason.code === 'TRACK_DELETE_ALBUM_OWNED' && reason.albumId
+          ? ` Remove it from canonical Album “${reason.albumTitle || reason.albumId}” (${reason.albumId}) first.`
+          : '';
+        const retry = reason.retrySafe ? ' An explicit retry is safe after connectivity or Access is restored.' : '';
+        setActionError(`${reason.message}${owner}${retry}${reason.code ? ` [${reason.code}]` : ''}`);
+      } else {
+        setActionError(reason instanceof Error ? reason.message : String(reason));
+      }
+    } finally {
+      setDeletingTrackId(null);
+    }
+  }
 
   const counts = useMemo(() => {
     let toFinish = 0;
@@ -161,8 +206,14 @@ export function CatalogView() {
             ? 'Production attention and publication are separate: a released track can still have useful work left.'
             : 'Tracks are available read-only. Sign in through Track Manager when you need to create or edit.'}</p>
         </div>
-        <button className="primary-btn catalog-new-track" type="button" disabled={loading} onClick={() => setShowCreate(true)}>+ New Track</button>
+        <div className="catalog-heading-actions">
+          <button className="ghost-btn compact" type="button" disabled={loading || !privateRead || Boolean(deletingTrackId)} onClick={() => void deleteTrack()}>{deletingTrackId ? 'Deleting…' : 'Delete Track…'}</button>
+          <button className="primary-btn catalog-new-track" type="button" disabled={loading} onClick={() => setShowCreate(true)}>+ New Track</button>
+        </div>
       </div>
+
+      {actionNotice && <div className="album-notice" role="status">{actionNotice}</div>}
+      {actionError && <div className="album-error" role="alert">{actionError}</div>}
 
       {showCreate && <TrackCreatePanel privateRead={privateRead} onCancel={() => setShowCreate(false)} onCreated={async () => { await loadCatalog(true); setShowCreate(false); }} />}
 
