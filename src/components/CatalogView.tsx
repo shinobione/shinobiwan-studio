@@ -134,7 +134,7 @@ export function CatalogView() {
       return;
     }
     if (target.readSource !== 'private' || !target.updatedAt) {
-      setActionError('Safe Track Delete requires the private canonical Track revision. Restore Track Manager private read first.');
+      setActionError('Safe Track Delete requires the current protected Track revision. Restore Track Manager access first.');
       return;
     }
     if (!globalThis.confirm(`Permanently delete “${target.title}” (${target.id})?\n\nThis removes the Track manifest and every Track-scoped asset. If a canonical Album still owns this Track, Track Manager will block the deletion instead of editing Album membership implicitly.`)) return;
