@@ -7,8 +7,10 @@ import {
   type ContinuationReceipt,
   type ContinuationReceiptView,
 } from '../phase7-receipts';
+import { routeHref } from '../router';
 import { getCatalogTrack } from '../services/catalog-api';
 import { studioConfig } from '../services/config';
+import { deleteAdminTrackResilient, TrackDeleteError } from '../services/track-delete-admin-api';
 import type { StudioTrackDetail } from '../types/studio';
 
 function receiptTitle(receipt: ContinuationReceiptView): string {
@@ -29,6 +31,8 @@ function verifyOperationEvidence(receipt: ContinuationReceipt, canonical: Studio
 
 export function ContinuationReceiptBanner({ trackId, onCanonicalVerified }: { trackId: string; onCanonicalVerified: (track: StudioTrackDetail) => void }) {
   const [receipt, setReceipt] = useState<ContinuationReceiptView | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const verificationEpoch = useRef(0);
 
   const handleReceipt = useCallback(async (next: ContinuationReceipt) => {
@@ -80,6 +84,8 @@ export function ContinuationReceiptBanner({ trackId, onCanonicalVerified }: { tr
   useEffect(() => {
     verificationEpoch.current += 1;
     setReceipt(null);
+    setDeleteError(null);
+    setDeleting(false);
   }, [trackId]);
 
   useEffect(() => {
@@ -109,17 +115,72 @@ export function ContinuationReceiptBanner({ trackId, onCanonicalVerified }: { tr
     };
   }, [handleReceipt]);
 
-  if (!receipt) return null;
+  async function deleteCurrentTrack() {
+    if (deleting) return;
+    setDeleteError(null);
+    setDeleting(true);
+    try {
+      const canonical = await getCatalogTrack(trackId);
+      if (canonical.id !== trackId || canonical.readSource !== 'private' || !canonical.updatedAt) {
+        throw new TrackDeleteError('Safe Track Delete requires the exact current Track from the private canonical read layer.', null, 'TRACK_DELETE_PRIVATE_READ_REQUIRED');
+      }
+
+      const typed = globalThis.prompt(
+        `Delete canonical Track “${canonical.title}”\n\nType the exact canonical Track ID to continue:\n${canonical.id}`,
+      );
+      if (typed === null) return;
+      if (typed.trim() !== canonical.id) {
+        throw new TrackDeleteError(`Track ID confirmation does not match “${canonical.id}”. Nothing was sent.`, null, 'TRACK_DELETE_CONFIRMATION_MISMATCH');
+      }
+
+      const confirmed = globalThis.confirm(
+        `Permanently delete “${canonical.title}” (${canonical.id})?\n\nThis removes the Track manifest and every Track-scoped asset. If a canonical Album still owns this Track, Track Manager will BLOCK the deletion instead of changing Album membership implicitly.`,
+      );
+      if (!confirmed) return;
+
+      const result = await deleteAdminTrackResilient(canonical.id, canonical.updatedAt);
+      if (!result.clientVerified) {
+        throw new TrackDeleteError(result.verificationWarning || 'Track deletion could not be canonically verified.', null, 'TRACK_DELETE_UNVERIFIED');
+      }
+      globalThis.location.assign(routeHref('catalog'));
+    } catch (reason) {
+      if (reason instanceof TrackDeleteError) {
+        const owner = reason.code === 'TRACK_DELETE_ALBUM_OWNED' && reason.albumId
+          ? ` Remove it from canonical Album “${reason.albumTitle || reason.albumId}” (${reason.albumId}) first.`
+          : '';
+        const retry = reason.retrySafe ? ' An explicit retry is safe after connectivity or Access is restored.' : '';
+        setDeleteError(`${reason.message}${owner}${retry}${reason.code ? ` [${reason.code}]` : ''}`);
+      } else {
+        setDeleteError(reason instanceof Error ? reason.message : String(reason));
+      }
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   return (
-    <aside className={`continuation-receipt ${receipt.status}`} role="status" aria-live="polite">
-      <i className="continuation-receipt-dot" aria-hidden="true" />
-      <div className="continuation-receipt-copy">
-        <span>{receiptSourceLabel(receipt.source)} / {receipt.operation.replaceAll('-', ' ')}</span>
-        <strong>{receiptTitle(receipt)}</strong>
-        <small>{receipt.summary} {receipt.verificationDetail}</small>
-      </div>
-      <button className="continuation-receipt-dismiss" type="button" aria-label="Dismiss continuation receipt" onClick={() => setReceipt(null)}>×</button>
-    </aside>
+    <>
+      {receipt && (
+        <aside className={`continuation-receipt ${receipt.status}`} role="status" aria-live="polite">
+          <i className="continuation-receipt-dot" aria-hidden="true" />
+          <div className="continuation-receipt-copy">
+            <span>{receiptSourceLabel(receipt.source)} / {receipt.operation.replaceAll('-', ' ')}</span>
+            <strong>{receiptTitle(receipt)}</strong>
+            <small>{receipt.summary} {receipt.verificationDetail}</small>
+          </div>
+          <button className="continuation-receipt-dismiss" type="button" aria-label="Dismiss continuation receipt" onClick={() => setReceipt(null)}>×</button>
+        </aside>
+      )}
+
+      <section className="panel workspace-focus-handoff" aria-label="Current Track actions">
+        <div>
+          <span className="eyebrow">TRACK ACTIONS</span>
+          <h3>Current Track</h3>
+          <p>Permanent deletion is available here on the Track itself. Exact ID confirmation and canonical verification are required.</p>
+        </div>
+        <button className="ghost-btn" type="button" disabled={deleting} onClick={() => void deleteCurrentTrack()}>{deleting ? 'Checking…' : 'Delete Track…'}</button>
+      </section>
+      {deleteError && <div className="album-error" role="alert">{deleteError}</div>}
+    </>
   );
 }
