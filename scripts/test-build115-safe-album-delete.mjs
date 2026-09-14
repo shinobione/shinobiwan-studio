@@ -7,15 +7,23 @@ const service = fs.readFileSync('src/services/album-delete-admin-api.ts', 'utf8'
 const ui = fs.readFileSync('src/components/AlbumsWorkspace.tsx', 'utf8');
 const release = fs.readFileSync('src/release.ts', 'utf8');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+const releaseMatch = release.match(/version:\s*'([^']+)'[\s\S]*?build:\s*(\d+)/);
+assert.ok(releaseMatch, 'Studio release identity must remain parseable.');
+const releaseVersion = releaseMatch[1];
+const releaseBuild = Number(releaseMatch[2]);
 
-assert.equal(pkg.version, '0.19.37');
-assert.match(release, /version:\s*'0\.19\.37'/);
-assert.match(release, /build:\s*115/);
+if (releaseBuild === 115) {
+  assert.equal(pkg.version, '0.19.37');
+  assert.equal(releaseVersion, '0.19.37');
+  assert.match(release, /studio-focus-build115-safe-album-delete/);
+} else {
+  assert.ok(releaseBuild > 115, 'Build115 guard may run only on Build115 or a successor.');
+  assert.match(release, /build115AncestryMarker\s*=\s*"version: '0\.19\.37' · build: 115 · codename: 'studio-focus-build115-safe-album-delete'"/);
+}
 assert.match(release, /phase:\s*10/);
-assert.match(release, /studio-focus-build115-safe-album-delete/);
 assert.match(release, /build114AncestryMarker/);
 assert.match(pkg.scripts?.['check:build115'] || '', /test-build115-safe-album-delete\.mjs/);
-assert.match(pkg.scripts?.build || '', /check:build114 && npm run check:build115 && npm run check:focus/);
+assert.match(pkg.scripts?.build || '', /check:build114 && npm run check:build115/);
 
 for (const marker of [
   "const DELETE_INTENT = 'album-delete-v1'",

@@ -1,10 +1,10 @@
 export const studioRelease = {
-  version: '0.19.37',
-  build: 115,
+  version: '0.19.38',
+  build: 116,
   phase: 10,
-  codename: 'studio-focus-build115-safe-album-delete',
-  summary: 'Safe canonical Album deletion',
-  releasedAt: '2026-09-13',
+  codename: 'studio-focus-build116-safe-track-delete',
+  summary: 'Safe canonical Track deletion',
+  releasedAt: '2026-09-14',
 } as const;
 
 // Historical candidate markers retained only so exact earlier guards remain immutable.
@@ -59,3 +59,4 @@ export const build111AncestryMarker = "version: '0.19.33' · build: 111 · coden
 export const build112AncestryMarker = "version: '0.19.34' · build: 112 · codename: 'studio-focus-build112-music-pack-import'";
 export const build113AncestryMarker = "version: '0.19.35' · build: 113 · codename: 'studio-focus-build113-soundcloud-pack-priority'";
 export const build114AncestryMarker = "version: '0.19.36' · build: 114 · codename: 'studio-focus-build114-album-create-operation-identity'";
+export const build115AncestryMarker = "version: '0.19.37' · build: 115 · codename: 'studio-focus-build115-safe-album-delete'";
