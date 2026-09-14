@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-09-13 after **Build114 REAL USER PASS**.
+Updated: 2026-09-14 after **Build116 REAL USER PASS**.
 
 This file tracks durable Done / Active / Next / Backlog state. Historical implementation detail belongs in changelogs, milestone docs and acceptance receipts.
 
@@ -22,60 +22,61 @@ Accepted workflow authority remains:
 Identity → Core media → Lyrics → Intelligence → Release
 ```
 
-### Build108 — catalog rebuild operation identity
+### Builds108–109 — operation identity foundation
 
-Accepted / REAL USER PASS. One explicit rebuild action gets one UUID and canonical `generationId` proof; no blind write retry after response loss.
+- Build108 catalog rebuild identity — accepted / REAL USER PASS.
+- Build109 Track-create identity — accepted / REAL USER PASS.
 
-### Build109 — Track-create operation identity
+### Builds110–113 — human-first production workflow
 
-Accepted / REAL USER PASS. One explicit Track create gets one private immutable `creationOperationId`; no blind second create POST; legacy callers stay compatible.
-
-### Build110 — human-first Studio simplification + premium feel
-
-Accepted by real-user visual smoke. Home / Tracks / Albums are the clear daily path; specialist tooling and technical noise are demoted; interaction feedback is restrained and coherent.
+- Build110 human-first Studio simplification + premium feel — accepted by real-user visual smoke.
+- Build111 Release → Flow handoff — REAL USER PASS.
+- Build112 MUSIC Pack JSON V1 import — complete bounded foundation.
+- Build113 SoundCloud Pack priority — REAL USER PASS.
 
 Permanent product rule:
 
 > Human-visible complexity must decrease unless new visible information directly helps a decision or action.
 
-### Build111 — Release → Flow handoff simplification
-
-Accepted / REAL USER PASS. Release now hands off MASTER 16:9, anchored 1:1 / 9:16 adaptations and optional ≤8 s Canvas prompt to Google Flow. Official SHINOBIWAN logo identity is preserved and always visually subordinate to the title.
-
-### Build112 — MUSIC Pack JSON V1 import
-
-Complete bounded foundation:
-
-- frozen versioned schema;
-- import into selected Track only;
-- visible identity mismatch confirmation;
-- browser-local persistence per Track;
-- MUSIC content stays non-canonical;
-- no Track Manager / Worker / R2 writes from Pack import.
-
-### Build113 — SoundCloud Pack priority
-
-Accepted / REAL USER PASS. Imported SoundCloud title / description / tags / highlight are first-class and immediately visible; no duplicate manual authoring or audio re-selection; secondary Pack content remains collapsible.
-
 ### Build114 — Album-create operation identity
 
-Accepted / REAL USER PASS after real-user corrective.
+Accepted / REAL USER PASS after real-user corrective. One browser UUID per explicit Album create; private immutable `creationOperationId`; no blind second POST; public projection excludes private evidence; blank Album year remains canonical `null`.
 
-- one UUID per explicit Album create action;
-- private immutable Album `creationOperationId`;
-- lost response resolved by bounded private canonical reread;
-- exact identity required before causal claim;
-- no blind second POST;
-- public projection excludes private creation evidence;
-- blank / omitted Album year remains canonical `null`, never `0`.
+Evidence: [`docs/acceptance/BUILD114-REAL-USER-PASS.md`](docs/acceptance/BUILD114-REAL-USER-PASS.md).
 
-Evidence is recorded in [`docs/acceptance/BUILD114-REAL-USER-PASS.md`](docs/acceptance/BUILD114-REAL-USER-PASS.md).
+### Build115 — Safe Album Delete
+
+Accepted / REAL USER PASS.
+
+- exact canonical Album ID confirmation;
+- expected canonical revision required;
+- Track Manager-only destructive authority;
+- guarded Album manifest + Album asset deletion;
+- affected Track compatibility metadata returns to Singles / unassigned semantics;
+- catalog rebuilt and Album absence canonically verified;
+- lost response resolved by reread, never blind destructive retry.
+
+Evidence: [`docs/acceptance/BUILD115-REAL-USER-PASS.md`](docs/acceptance/BUILD115-REAL-USER-PASS.md).
+
+### Build116 — Safe Track Delete
+
+Accepted / REAL USER PASS after contextual-UX corrective.
+
+- exact canonical Track ID + second destructive confirmation;
+- expected revision required;
+- hard block while any canonical Album owns the Track through `album.trackIds`;
+- no silent Album membership mutation;
+- Track-scoped R2 backup/delete/rollback + catalog rebuild + canonical absence proof;
+- lost response resolved by reread, never blind destructive retry;
+- contextual `Delete Track…` action lives on the current Track workspace.
+
+Evidence: [`docs/acceptance/BUILD116-REAL-USER-PASS.md`](docs/acceptance/BUILD116-REAL-USER-PASS.md).
 
 ## Active
 
 ### Phase 10 — progressive extraction
 
-Phase10 remains active as a program, not permission for continuous refactoring. **Phase10 Slice2 remains unallocated.** Builds108/109/114 are bounded reliability work outside it; Builds110–113 are human-facing/product workflow improvements outside it.
+Phase10 remains active as a program, not permission for continuous refactoring. **Phase10 Slice2 remains unallocated.** Builds108/109/114–117 are bounded reliability/lifecycle work outside it; Builds110–113 are human-facing/product workflow improvements outside it.
 
 ### Release discipline
 
@@ -98,40 +99,37 @@ Phase10 remains active as a program, not permission for continuous refactoring. 
 
 ## Next
 
-### Build115 — Safe Album Delete
+### Build117 — exact-byte SHA-256 proof for Track asset uploads
 
-Allocated after Build114 smoke exposed that Studio currently has no whole-Album deletion path.
+Allocated via issue #232 after a fresh bounded audit.
 
-Contract:
+Current Track asset upload proof is strong but not exact-byte causal proof:
 
-- whole-Album delete is explicit and destructive, never a casual secondary button;
-- strong confirmation must name the canonical Album ID;
-- Track Manager remains the sole R2 delete authority;
-- request carries the expected canonical revision;
-- no blind automatic retry after timeout / transport loss;
-- backend removes Album manifest + Album-scoped assets as one guarded operation;
-- any Track-side cached Album display metadata is returned to Singles / unassigned semantics where needed;
-- catalog is rebuilt before success is reported;
-- Studio verifies canonical Album absence after success;
-- if response is lost, Studio rereads canonical Album/list state and only reports committed when absence is proven;
-- rollback / ambiguity must stay visible and actionable;
-- public Worker behavior must not change.
+- normal success checks canonical revision, filename, presence, size, content type, server ETag and duration where applicable;
+- lost-response recovery checks new revision + selected-file size/content type + changed server fingerprint;
+- therefore a compatible newly stored object can be proven, but exact equality with the browser-selected bytes cannot.
 
-### Build116 — candidate after Build115
+Build117 contract:
 
-Build116 is authorized by the user but its exact implementation slice must be chosen only after Build115 CI/diff evidence. Preferred fresh-audit candidates, in order:
+- compute SHA-256 of the selected Track asset in Studio before upload;
+- send the digest inside existing multipart `asset-upload-v1`;
+- Track Manager validates and stores the digest as private R2 custom metadata;
+- backend reread requires exact digest persistence before success;
+- private Track read exposes the stored digest to Studio;
+- normal success requires selected digest == response digest == canonical private reread digest;
+- lost-response recovery reports committed only on exact digest match at a new revision;
+- same revision remains NOT COMMITTED / explicit retry safe;
+- changed state with missing/different digest remains AMBIGUOUS / do not retry;
+- zero blind upload retries;
+- no public projection dependency and no generic idempotency framework.
 
-1. the next destructive-lifecycle gap directly adjacent to Safe Album Delete, if one is concretely proven;
-2. otherwise exact-byte/digest proof for binary uploads, if backend evidence can support it without broadening write authority;
-3. otherwise a bounded human-facing cleanup directly exposed by the Build115 smoke.
-
-Do **not** allocate Build116 as an opportunistic-refactor bucket.
+Deliberate boundary: **Track asset uploads only**. Album asset digest proof remains a separate fresh-audit candidate.
 
 ## Backlog
 
 ### Reliability candidates requiring stronger backend evidence
 
-- exact-byte/digest proof for binary uploads;
+- Album asset exact-byte/digest proof after Build117 evidence;
 - Deep Audio request status/idempotency only if coordinator/backend gains safe identity/status evidence;
 - degraded/offline behavior only when it materially affects daily private Studio use.
 
@@ -162,4 +160,4 @@ There is currently **no official Phase11**.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for current runtime/cross-stack truth and [`docs/acceptance/BUILD114-REAL-USER-PASS.md`](docs/acceptance/BUILD114-REAL-USER-PASS.md) for the latest accepted Studio receipt.
+See `PROJECT_STATE.md` for current runtime/cross-stack truth and [`docs/acceptance/BUILD116-REAL-USER-PASS.md`](docs/acceptance/BUILD116-REAL-USER-PASS.md) for the latest accepted Studio receipt.
