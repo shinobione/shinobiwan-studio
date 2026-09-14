@@ -141,12 +141,21 @@ assert.ok(!source.includes('retryAdminAlbumCreate'));
 
 const release = fs.readFileSync('src/release.ts', 'utf8');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-assert.equal(pkg.version, '0.19.36');
-assert.match(release, /version:\s*'0\.19\.36'/);
-assert.match(release, /build:\s*114/);
-assert.match(release, /studio-focus-build114-album-create-operation-identity/);
-assert.match(release, /build113AncestryMarker/);
+const currentBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+const currentVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
+assert.ok(currentBuild >= 114, `Build114 guard requires Build114 or a successor, got Build${currentBuild}.`);
+assert.equal(pkg.version, currentVersion, 'package.json must match the active Studio release version.');
+if (currentBuild === 114) {
+  assert.equal(pkg.version, '0.19.36');
+  assert.match(release, /version:\s*'0\.19\.36'/);
+  assert.match(release, /build:\s*114/);
+  assert.match(release, /studio-focus-build114-album-create-operation-identity/);
+  assert.match(release, /build113AncestryMarker/);
+} else {
+  assert.match(release, /build114AncestryMarker/, `Build${currentBuild} must preserve accepted Build114 ancestry.`);
+  assert.match(release, /phase:\s*10/, `Build${currentBuild} must stay on the active Phase10 program while inheriting Build114.`);
+}
 assert.match(pkg.scripts?.['check:build114'] || '', /test-build114-album-create-identity\.mjs/);
-assert.match(pkg.scripts?.build || '', /check:build113 && npm run check:build114 && npm run check:focus/);
+assert.match(pkg.scripts?.build || '', /npm run check:build114/, 'Successor production builds must keep the Build114 guard in the full gate.');
 
-console.log('Build114 Studio PASS: one UUID/POST, normal revision+metadata+identity proof, timeout/transport/body-loss recovery by exact private Album creation evidence, fail-closed old backend, and zero automatic create retry.');
+console.log(`Build114 Album-create identity ancestry PASS under Studio ${currentVersion} Build${currentBuild}: one UUID/POST, normal revision+metadata+identity proof, timeout/transport/body-loss recovery by exact private Album creation evidence, fail-closed old backend, and zero automatic create retry.`);

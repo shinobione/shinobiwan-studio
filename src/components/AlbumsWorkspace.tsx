@@ -15,6 +15,7 @@ import {
   type AdminAlbumSummary,
   type AdminAlbumType,
 } from '../services/album-admin-api';
+import { deleteAdminAlbumResilient } from '../services/album-delete-admin-api';
 import { saveAdminAlbumMembershipResilient } from '../services/album-membership-admin-api';
 import { saveAdminAlbumMetadataResilient } from '../services/album-metadata-admin-api';
 import { moveAdminAlbumTrackResilient } from '../services/album-move-admin-api';
@@ -139,12 +140,13 @@ function AlbumCover({ album, visual, large = false }: { album: Pick<AdminAlbumMa
   </div>;
 }
 
-function AlbumEditor({ albumId, albums, tracks, visual, onChanged, onClose }: {
+function AlbumEditor({ albumId, albums, tracks, visual, onChanged, onDeleted, onClose }: {
   albumId: string;
   albums: AdminAlbumSummary[];
   tracks: StudioTrack[];
   visual?: PublicAlbumVisual | null;
   onChanged: () => Promise<void>;
+  onDeleted: () => Promise<void> | void;
   onClose: () => void;
 }) {
   const [album, setAlbum] = useState<AdminAlbumManifest | null>(null);
@@ -301,12 +303,39 @@ function AlbumEditor({ albumId, albums, tracks, visual, onChanged, onClose }: {
 
   async function removeAsset(kind: 'cover' | 'thumbnail') {
     if (!album?.updatedAt || !assets[kind]?.present) return;
-    if (!globalThis.confirm(`Delete canonical Album ${kind}?\n\nThis write is guarded with backup + rollback. Whole-Album deletion remains unavailable.`)) return;
+    if (!globalThis.confirm(`Delete canonical Album ${kind}?\n\nThis write is guarded with backup + rollback.`)) return;
     await mutate(async () => {
       const result = await deleteAdminAlbumAsset(album.id, kind, album.updatedAt!);
       if (!result.clientVerified) throw new AlbumAdminError(result.verificationWarning || `${kind} reread failed.`);
       setNotice(`Album ${kind} deleted and canonically reread.`);
     });
+  }
+
+  async function deleteAlbum() {
+    if (!album?.updatedAt || busy) return;
+    const confirmation = globalThis.prompt(`Permanently delete canonical Album “${album.title}”?\n\nThis removes the Album manifest and Album artwork. Member Tracks return to Singles.\n\nType the exact canonical ID to confirm:\n${album.id}`);
+    if (confirmation === null) return;
+    if (confirmation.trim() !== album.id) {
+      setNotice(null);
+      setError(`Album deletion cancelled. Confirmation must exactly match “${album.id}”.`);
+      return;
+    }
+
+    setBusy(true);
+    setError(null);
+    setNotice(null);
+    try {
+      const result = await deleteAdminAlbumResilient(album.id, album.updatedAt);
+      if (!result.clientVerified) throw new AlbumAdminError(result.verificationWarning || 'Album absence could not be canonically verified.');
+      await onChanged();
+      await onDeleted();
+    } catch (reason) {
+      const message = errorMessage(reason);
+      await load().catch(() => {});
+      setError(message);
+    } finally {
+      setBusy(false);
+    }
   }
 
   if (loading) return <section className="panel album-loading">Loading canonical Album…</section>;
@@ -346,6 +375,11 @@ function AlbumEditor({ albumId, albums, tracks, visual, onChanged, onClose }: {
         </div>
       </div>
       <div className="album-actions"><span>Revision: <code>{album.updatedAt || 'missing'}</code></span><button className="primary-btn" disabled={busy || !form.title.trim()} onClick={() => void saveMetadata()}>Save metadata</button></div>
+      <div className="album-boundary-note">
+        <strong>Delete this Album</strong>
+        <span>Permanently removes the canonical Album and its Album artwork. Member Tracks are kept and return to Singles. Studio requires the exact canonical ID before it sends the destructive write.</span>
+        <button className="ghost-btn" disabled={busy || !album.updatedAt} onClick={() => void deleteAlbum()}>{busy ? 'Working…' : 'Delete canonical Album'}</button>
+      </div>
     </article>}
 
     {tab === 'tracklist' && <article className="panel album-tracklist-panel c3-album-tab-panel">
@@ -407,7 +441,7 @@ export function AlbumsWorkspace() {
     trackRefs: albums.reduce((total, album) => total + album.trackIds.length, 0),
   }), [albums]);
 
-  if (selected) return <section className="album-manager"><AlbumEditor albumId={selected} albums={albums} tracks={tracks} visual={visuals.get(selected)} onChanged={load} onClose={() => setSelected(null)} /></section>;
+  if (selected) return <section className="album-manager"><AlbumEditor albumId={selected} albums={albums} tracks={tracks} visual={visuals.get(selected)} onChanged={load} onDeleted={() => setSelected(null)} onClose={() => setSelected(null)} /></section>;
 
   return <section className="album-manager c3-albums-workspace">
     <div className="catalog-heading album-manager-heading"><div><span className="eyebrow">CATALOG / ALBUMS & PROJECTS</span><h2>Your canonical releases.</h2><p>Album manifests and track order are authoritative in R2. Covers below are read from the same canonical public projection used by LaunchPAD.</p></div><div className="catalog-heading-actions"><div className="catalog-kpis"><div><strong>{totals.total}</strong><span>canonical</span></div><div><strong>{totals.drafts}</strong><span>drafts</span></div><div><strong>{totals.trackRefs}</strong><span>track refs</span></div></div><button className="primary-btn" disabled={loading || Boolean(error)} onClick={() => setShowCreate(true)}>+ New Album / EP</button></div></div>
