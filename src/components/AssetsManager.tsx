@@ -12,10 +12,10 @@ import { studioConfig } from '../services/config';
 import {
   deleteAdminTrackAsset,
   phase4ErrorPresentation,
-  uploadAdminTrackAsset,
   type AssetMutationResponse,
   type Phase4ErrorPresentation,
 } from '../services/phase4-admin-api';
+import { uploadAdminTrackAsset } from '../services/phase4-track-asset-sha256-api';
 import { CoverImagePreview } from './CoverImagePreview';
 import { CoverPalettePreview } from './CoverPalettePreview';
 
