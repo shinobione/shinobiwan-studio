@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-09-14 after **Build116 REAL USER PASS**.
+Updated: 2026-09-19 after **Build117 REAL USER PASS**.
 
 This file tracks durable Done / Active / Next / Backlog state. Historical implementation detail belongs in changelogs, milestone docs and acceptance receipts.
 
@@ -51,9 +51,8 @@ Accepted / REAL USER PASS.
 - exact canonical Album ID confirmation;
 - expected canonical revision required;
 - Track Manager-only destructive authority;
-- guarded Album manifest + Album asset deletion;
-- affected Track compatibility metadata returns to Singles / unassigned semantics;
-- catalog rebuilt and Album absence canonically verified;
+- guarded Album deletion with canonical absence proof;
+- affected Tracks return to Singles / unassigned compatibility semantics;
 - lost response resolved by reread, never blind destructive retry.
 
 Evidence: [`docs/acceptance/BUILD115-REAL-USER-PASS.md`](docs/acceptance/BUILD115-REAL-USER-PASS.md).
@@ -62,7 +61,7 @@ Evidence: [`docs/acceptance/BUILD115-REAL-USER-PASS.md`](docs/acceptance/BUILD11
 
 Accepted / REAL USER PASS after contextual-UX corrective.
 
-- exact canonical Track ID + second destructive confirmation;
+- exact canonical Track ID + destructive confirmation;
 - expected revision required;
 - hard block while any canonical Album owns the Track through `album.trackIds`;
 - no silent Album membership mutation;
@@ -71,6 +70,25 @@ Accepted / REAL USER PASS after contextual-UX corrective.
 - contextual `Delete Track…` action lives on the current Track workspace.
 
 Evidence: [`docs/acceptance/BUILD116-REAL-USER-PASS.md`](docs/acceptance/BUILD116-REAL-USER-PASS.md).
+
+### Build117 — exact-byte SHA-256 proof for Track asset uploads
+
+Accepted / REAL USER PASS.
+
+- browser computes SHA-256 of the exact selected Track asset before upload;
+- digest is carried by existing multipart `asset-upload-v1`;
+- Track Manager validates and stores digest as private R2 custom metadata;
+- backend reread verifies exact digest persistence;
+- private Track read exposes digest to Studio without changing public projection;
+- normal success requires selected digest == response digest == private canonical digest;
+- lost-response recovery commits only on new canonical revision + exact digest;
+- unchanged revision remains NOT COMMITTED / explicit retry safe;
+- changed state with missing/different digest remains AMBIGUOUS / do not retry;
+- zero blind upload retries.
+
+Pre-merge corrective: bounded duration-evidence compatibility now explicitly includes v5.26/v1.16, v5.27/v1.17 and v5.28/v1.18 in both validation and resilient metadata save seams; the guard still rejects unbounded numeric successor assumptions.
+
+Evidence: [`docs/acceptance/BUILD117-REAL-USER-PASS.md`](docs/acceptance/BUILD117-REAL-USER-PASS.md).
 
 ## Active
 
@@ -99,37 +117,19 @@ Phase10 remains active as a program, not permission for continuous refactoring. 
 
 ## Next
 
-### Build117 — exact-byte SHA-256 proof for Track asset uploads
+### Fresh bounded audit before Build118
 
-Allocated via issue #232 after a fresh bounded audit.
+No Build118 is allocated yet.
 
-Current Track asset upload proof is strong but not exact-byte causal proof:
+Known candidate: **Album asset exact-byte/digest proof**, because Build117 deliberately covered Track asset uploads only. Before allocating it, re-audit the current Album asset upload path and prove that exact-byte causality is still missing and useful.
 
-- normal success checks canonical revision, filename, presence, size, content type, server ETag and duration where applicable;
-- lost-response recovery checks new revision + selected-file size/content type + changed server fingerprint;
-- therefore a compatible newly stored object can be proven, but exact equality with the browser-selected bytes cannot.
-
-Build117 contract:
-
-- compute SHA-256 of the selected Track asset in Studio before upload;
-- send the digest inside existing multipart `asset-upload-v1`;
-- Track Manager validates and stores the digest as private R2 custom metadata;
-- backend reread requires exact digest persistence before success;
-- private Track read exposes the stored digest to Studio;
-- normal success requires selected digest == response digest == canonical private reread digest;
-- lost-response recovery reports committed only on exact digest match at a new revision;
-- same revision remains NOT COMMITTED / explicit retry safe;
-- changed state with missing/different digest remains AMBIGUOUS / do not retry;
-- zero blind upload retries;
-- no public projection dependency and no generic idempotency framework.
-
-Deliberate boundary: **Track asset uploads only**. Album asset digest proof remains a separate fresh-audit candidate.
+Do not allocate another build merely to continue numbering; choose the next slice from current production evidence.
 
 ## Backlog
 
 ### Reliability candidates requiring stronger backend evidence
 
-- Album asset exact-byte/digest proof after Build117 evidence;
+- Album asset exact-byte/digest proof, subject to fresh audit;
 - Deep Audio request status/idempotency only if coordinator/backend gains safe identity/status evidence;
 - degraded/offline behavior only when it materially affects daily private Studio use.
 
@@ -160,4 +160,4 @@ There is currently **no official Phase11**.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for current runtime/cross-stack truth and [`docs/acceptance/BUILD116-REAL-USER-PASS.md`](docs/acceptance/BUILD116-REAL-USER-PASS.md) for the latest accepted Studio receipt.
+See `PROJECT_STATE.md` for current runtime/cross-stack truth and [`docs/acceptance/BUILD117-REAL-USER-PASS.md`](docs/acceptance/BUILD117-REAL-USER-PASS.md) for the latest accepted Studio receipt.
