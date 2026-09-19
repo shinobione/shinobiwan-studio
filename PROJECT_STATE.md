@@ -1,38 +1,46 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-09-14 after **Build116 REAL USER PASS**.
+Updated: 2026-09-19 after **Build117 REAL USER PASS**.
 
 This is the short current checkpoint. Historical implementation detail remains in `changelogs/`, milestone docs and acceptance receipts.
 
 ## Current accepted Studio runtime
 
 ```text
-Studio version          v0.19.38
-Studio build            Build116
-Codename                studio-focus-build116-safe-track-delete
+Studio version          v0.19.39
+Studio build            Build117
+Codename                studio-focus-build117-track-asset-sha256
 Acceptance              REAL USER PASS
-Studio PR               #230 + corrective #231
-Validation CI           #726 · SUCCESS; corrective #727 · SUCCESS
-Studio merge            71dfa6cf34e8115c043daaad3ec6a5e54fd1d1fe
-Corrective merge        aa3e3acfa5d9f1cfffe7b41a6c95d3d1fca28234
-Studio Pages            #251 · SUCCESS
-Track Manager           v5.27
-Studio bridge           v1.17
-Backend PR              LaunchPAD #281
-Backend merge           2d43bbcb11359b4e89e3766d59a99a1d658de490
-Admin Worker deploy     #48 · 34874308855 · SUCCESS
+Studio PR               #234
+Final validation CI     #737 · SUCCESS
+Studio merge            a1f7641a3e2d39fe24ee6b6a51438fb8a1c88ae4
+Studio Pages            #253 · SUCCESS
+Track Manager           v5.28
+Studio bridge           v1.18
+Backend PR              LaunchPAD #282
+Backend merge           4867a2fef673028b0474f949183944dd642af165
+Admin Worker deploy     #49 · 35435618374 · SUCCESS
 Public Worker           unchanged / intentionally skipped
-Real-user smoke         PASS · deleted disposable Track `smoke-test`
+Real-user smoke         PASS · production metadata validation after corrective
 ```
 
-**Build116 is the current accepted runtime identity.**
+**Build117 is the current accepted runtime identity.**
 
-Detailed receipts:
+Latest receipt:
 
-- [`docs/acceptance/BUILD115-REAL-USER-PASS.md`](docs/acceptance/BUILD115-REAL-USER-PASS.md)
-- [`docs/acceptance/BUILD116-REAL-USER-PASS.md`](docs/acceptance/BUILD116-REAL-USER-PASS.md)
+- [`docs/acceptance/BUILD117-REAL-USER-PASS.md`](docs/acceptance/BUILD117-REAL-USER-PASS.md)
 
 ## Accepted progression since Build114
+
+### Build114 — Album-create operation identity
+
+Accepted / REAL USER PASS after the `year:null → 0` corrective.
+
+- one browser UUID per explicit Album create;
+- immutable private `creationOperationId`;
+- lost response resolved by exact private canonical identity;
+- zero blind second create POST;
+- blank Album year remains canonical `null`.
 
 ### Build115 — Safe Album Delete
 
@@ -40,33 +48,44 @@ Accepted / REAL USER PASS.
 
 - exact canonical Album ID confirmation;
 - expected revision required;
-- Track Manager-only R2 delete authority;
-- Album manifest + Album assets removed through guarded backend operation;
+- Track Manager-only destructive authority;
+- guarded Album removal with backup / rollback and canonical absence verification;
 - affected Tracks return to Singles / unassigned compatibility semantics;
-- catalog rebuilt and canonical Album absence verified;
-- timeout / transport loss resolved by canonical reread with zero blind destructive retries.
-
-Backend: Track Manager v5.26 / bridge v1.16 · LaunchPAD PR #280 · merge `d365152258373d8c7f3de0f9ef2b861600fe5f6f` · admin deploy #47 SUCCESS.
+- zero blind destructive retry.
 
 ### Build116 — Safe Track Delete
 
-Accepted / REAL USER PASS after a bounded UX corrective.
+Accepted / REAL USER PASS after contextual-UX corrective.
 
-- exact canonical Track ID + second destructive confirmation;
-- expected revision required;
+- exact canonical Track ID confirmation;
 - hard block while canonical `album.trackIds` owns the Track;
 - no implicit Album membership mutation;
 - protected Track-scoped backup / delete / rollback / catalog rebuild;
-- private canonical absence proof required;
-- timeout / transport loss resolved by canonical reread with zero blind destructive retries;
-- contextual `Delete Track…` action added to the current Track workspace after the first smoke exposed poor discoverability.
+- canonical absence proof and zero blind destructive retry;
+- contextual `Delete Track…` action available from the current Track workspace.
+
+### Build117 — exact-byte Track asset SHA-256 proof
+
+Accepted / REAL USER PASS after a bounded pre-merge compatibility corrective.
+
+- Studio hashes the exact browser-selected Track asset before upload;
+- digest travels inside existing `asset-upload-v1`;
+- Track Manager stores SHA-256 as private R2 custom metadata and verifies it on reread;
+- normal success requires selected digest == response digest == private canonical digest;
+- lost-response recovery requires a new revision plus the exact selected digest;
+- same revision = NOT COMMITTED / explicit retry safe;
+- changed state with missing/different digest = AMBIGUOUS / DO NOT RETRY;
+- zero blind upload retries;
+- public projection remains independent of private digest evidence.
+
+During final production preparation, real Studio use exposed a stale duration-evidence bridge allowlist. Build117 corrected both validation and resilient save seams to explicitly include bounded inherited successors v5.26/v1.16, v5.27/v1.17 and v5.28/v1.18 while still rejecting an unbounded numeric version gate.
 
 ## Current ecosystem baseline
 
 ```text
-Track Manager           v5.27 · protected canonical Track/Album write authority
-Studio bridge           v1.17
-Public Worker           v2.8 · unchanged by Builds115–116
+Track Manager           v5.28 · protected canonical Track/Album write authority
+Studio bridge           v1.18
+Public Worker           v2.8 · unchanged by Builds115–117
 LaunchPAD public        existing canonical public projection
 SonicTrace              V2-E Build08
 Deep Audio              2.0.3-alpha
@@ -93,7 +112,8 @@ Build113                COMPLETE · SoundCloud Pack priority · REAL USER PASS
 Build114                COMPLETE · Album create operation identity · REAL USER PASS
 Build115                COMPLETE · Safe Album Delete · REAL USER PASS
 Build116                COMPLETE · Safe Track Delete · REAL USER PASS
-Build117                ALLOCATED · exact-byte SHA-256 proof for Track asset uploads
+Build117                COMPLETE · exact-byte Track asset SHA-256 proof · REAL USER PASS
+Build118                UNALLOCATED
 Official Phase 11       NONE
 ```
 
@@ -109,6 +129,7 @@ Build108/109/114–117 are bounded reliability/lifecycle work outside Phase10 Sl
 - operation identity remains operation-specific proof, not generic idempotency infrastructure.
 - no Studio-only code may claim write causality the backend cannot prove.
 - imported MUSIC Pack data is non-canonical and cannot silently mutate Track identity or canonical media.
+- exact-byte Track asset evidence is private canonical proof; it does not widen public projection authority.
 - Build101 and Build104 remain rejected historical candidates.
 
 ## Operational guardrails — mandatory
@@ -125,33 +146,9 @@ Build108/109/114–117 are bounded reliability/lifecycle work outside Phase10 Sl
 
 ## Immediate next action
 
-**Build117 is allocated** via issue #232 for exact-byte SHA-256 proof on **Track asset uploads only**.
+**No Build118 is allocated yet.**
 
-Fresh audit established the current gap:
-
-```text
-selected browser File
-→ upload
-→ backend R2 write
-→ server response/reread verifies revision + filename + size + content type + ETag
-→ lost-response recovery currently relies on size/content type + changed server fingerprint
-```
-
-That is good server-object evidence but not exact proof that the canonical bytes equal the user's selected bytes.
-
-Build117 contract:
-
-```text
-browser SHA-256(selected File)
-→ send digest inside existing asset-upload-v1 multipart request
-→ Track Manager validates and stores digest in private R2 custom metadata
-→ backend reread verifies the stored digest
-→ private Studio reread exposes digest
-→ success / lost-response recovery requires exact selected digest match
-→ missing/different digest on changed state = AMBIGUOUS / DO NOT RETRY
-```
-
-Album asset digest proof is deliberately deferred to a separate fresh-audit slice.
+Before the next build, run a fresh bounded audit against accepted Build117. The strongest known candidate is Album asset exact-byte/digest proof, but it remains a hypothesis until the current Album upload path is rechecked against production code and accepted authority boundaries.
 
 ## Release mechanics
 
