@@ -8,15 +8,16 @@ const ui = fs.readFileSync('src/components/CatalogView.tsx', 'utf8');
 const contextualUi = fs.readFileSync('src/components/ContinuationReceiptBanner.tsx', 'utf8');
 const release = fs.readFileSync('src/release.ts', 'utf8');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+const currentBuild = Number(release.match(/build:\s*(\d+)/)?.[1] || 0);
+const currentVersion = release.match(/version:\s*'([^']+)'/)?.[1] || '';
 
-assert.equal(pkg.version, '0.19.38');
-assert.match(release, /version:\s*'0\.19\.38'/);
-assert.match(release, /build:\s*116/);
+assert.ok(currentBuild >= 116, `Build116 guard requires Build116 or a successor, got Build${currentBuild}.`);
+assert.equal(pkg.version, currentVersion);
 assert.match(release, /phase:\s*10/);
-assert.match(release, /studio-focus-build116-safe-track-delete/);
+assert.match(release, /build116AncestryMarker\s*=\s*"version: '0\.19\.38' · build: 116 · codename: 'studio-focus-build116-safe-track-delete'"/);
 assert.match(release, /build115AncestryMarker\s*=\s*"version: '0\.19\.37' · build: 115 · codename: 'studio-focus-build115-safe-album-delete'"/);
 assert.match(pkg.scripts?.['check:build116'] || '', /test-build116-safe-track-delete\.mjs/);
-assert.match(pkg.scripts?.build || '', /check:build115 && npm run check:build116 && npm run check:focus/);
+assert.match(pkg.scripts?.build || '', /npm run check:build116/);
 
 for (const marker of [
   "const DELETE_INTENT = 'track-delete-v1'",
@@ -140,4 +141,4 @@ assert.equal(run.error.albumId, 'owner-album');
 assert.equal(run.error.albumTitle, 'Owner Album');
 assert.equal(run.reads, 1, 'Explicit backend ownership block is not treated as lost-response recovery.');
 
-console.log('Build116 Studio PASS: exact-ID Track delete works from both the library and the current Track context, with private revision preflight, canonical Album ownership block surfacing, one delete POST, canonical absence verification, lost-response recovery without blind retry, and fail-closed ambiguous state.');
+console.log(`Build116 Studio ancestry PASS under Build${currentBuild}: exact-ID Track delete works from both the library and current Track context, with canonical Album ownership block, one delete POST, canonical absence verification, lost-response recovery without blind retry, and fail-closed ambiguous state.`);

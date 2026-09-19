@@ -17,6 +17,9 @@ const DURATION_EVIDENCE_BRIDGES = new Set([
   '5.23/1.13',
   '5.24/1.14',
   '5.25/1.15',
+  '5.26/1.16',
+  '5.27/1.17',
+  '5.28/1.18',
 ]);
 const TRANSIENT_METADATA_VALIDATION_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
 const PLAIN_VALIDATION_TIMEOUT_MESSAGE = 'Track Manager metadata validation timed out.';
@@ -39,7 +42,7 @@ function durationEvidenceBridgeCompatible(trackManagerVersion?: string | null, b
 }
 
 function durationEvidenceBridgeError(trackManagerVersion?: string | null, bridgeVersion?: string | null): string {
-  return `Canonical audio-duration repair requires a verified duration-evidence bridge (Track Manager v5.22 / Studio bridge v1.12, v5.23 / v1.13, v5.24 / v1.14, or v5.25 / v1.15); active bridge is ${trackManagerVersion || 'unknown'} / ${bridgeVersion || 'unknown'}.`;
+  return `Canonical audio-duration repair requires a verified duration-evidence bridge (Track Manager v5.22 / Studio bridge v1.12, v5.23 / v1.13, v5.24 / v1.14, v5.25 / v1.15, v5.26 / v1.16, v5.27 / v1.17, or v5.28 / v1.18); active bridge is ${trackManagerVersion || 'unknown'} / ${bridgeVersion || 'unknown'}.`;
 }
 
 async function requireDurationEvidenceBridge(): Promise<void> {

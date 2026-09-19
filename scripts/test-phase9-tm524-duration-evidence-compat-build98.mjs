@@ -27,6 +27,9 @@ for (let build = 99; build <= Math.min(currentBuild - 1, 113); build += 1) {
 
 const requiredPairs = ["'5.22/1.12'", "'5.23/1.13'", "'5.24/1.14'"];
 if (currentBuild >= 114) requiredPairs.push("'5.25/1.15'");
+if (currentBuild >= 115) requiredPairs.push("'5.26/1.16'");
+if (currentBuild >= 116) requiredPairs.push("'5.27/1.17'");
+if (currentBuild >= 117) requiredPairs.push("'5.28/1.18'");
 for (const pair of requiredPairs) {
   assert.ok(duration.includes(pair), `Duration validation must support bounded pair ${pair}.`);
   assert.ok(save.includes(pair), `Duration-aware resilient save must support bounded pair ${pair}.`);
@@ -34,6 +37,18 @@ for (const pair of requiredPairs) {
 if (currentBuild >= 114) {
   assert.ok(duration.includes('v5.25 / v1.15'), 'Build114 duration validation compatibility copy must mention TM5.25/bridge1.15.');
   assert.ok(save.includes('v5.25 / v1.15'), 'Build114 save compatibility copy must mention TM5.25/bridge1.15.');
+  if (currentBuild >= 115) {
+    assert.ok(duration.includes('v5.26 / v1.16'), 'Build115 duration validation compatibility copy must mention TM5.26/bridge1.16.');
+    assert.ok(save.includes('v5.26 / v1.16'), 'Build115 save compatibility copy must mention TM5.26/bridge1.16.');
+  }
+  if (currentBuild >= 116) {
+    assert.ok(duration.includes('v5.27 / v1.17'), 'Build116 duration validation compatibility copy must mention TM5.27/bridge1.17.');
+    assert.ok(save.includes('v5.27 / v1.17'), 'Build116 save compatibility copy must mention TM5.27/bridge1.17.');
+  }
+  if (currentBuild >= 117) {
+    assert.ok(duration.includes('v5.28 / v1.18'), 'Build117 duration validation compatibility copy must mention TM5.28/bridge1.18.');
+    assert.ok(save.includes('v5.28 / v1.18'), 'Build117 save compatibility copy must mention TM5.28/bridge1.18.');
+  }
   assert.ok(album.includes("transport: 'Track Manager v5.23-v5.25 / bridges v1.13-v1.15'"), 'Album service contract label must include the bounded TM5.25 successor line.');
 } else {
   assert.ok(duration.includes('Track Manager v5.24 / v1.14'), 'Human-facing validation compatibility copy must mention TM5.24/bridge1.14.');
