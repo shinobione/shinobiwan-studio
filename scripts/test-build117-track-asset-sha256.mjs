@@ -5,6 +5,8 @@ const release = fs.readFileSync('src/release.ts', 'utf8');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 const assetsManager = fs.readFileSync('src/components/AssetsManager.tsx', 'utf8');
 const digestClient = fs.readFileSync('src/services/phase4-track-asset-sha256-api.ts', 'utf8');
+const durationApi = fs.readFileSync('src/services/metadata-duration-api.ts', 'utf8');
+const metadataSaveApi = fs.readFileSync('src/services/track-metadata-admin-api.ts', 'utf8');
 
 assert.match(release, /version:\s*'0\.19\.39'/);
 assert.match(release, /build:\s*117/);
@@ -36,5 +38,12 @@ assert.match(digestClient, /publicProjection: 'digest-private-only'/);
 assert.match(digestClient, /transport: 'Track Manager v5\.28 · bridge v1\.18'/);
 assert.match(digestClient, /maxAutomaticUploadRetries: 0/);
 assert.doesNotMatch(digestClient, /for \(let attempt[\s\S]*uploadWithDigest/);
+
+for (const pair of ["'5.26/1.16'", "'5.27/1.17'", "'5.28/1.18'"]) {
+  assert.ok(durationApi.includes(pair), `Build117 duration validation must retain bounded successor bridge ${pair}.`);
+  assert.ok(metadataSaveApi.includes(pair), `Build117 duration-aware save must retain bounded successor bridge ${pair}.`);
+}
+assert.match(durationApi, /v5\.28 \/ v1\.18/);
+assert.match(metadataSaveApi, /v5\.28 \/ v1\.18/);
 
 console.log('Build117 PASS: Studio v0.19.39 hashes the selected Track asset client-side, sends SHA-256 through asset-upload-v1, requires exact response/private-canonical digest proof, and never blindly retries an upload.');
