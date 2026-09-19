@@ -15,3 +15,10 @@ Contract:
 - zero blind automatic upload retries;
 - digest evidence remains private and does not alter public projection;
 - scope is Track asset uploads only.
+
+Corrective before merge:
+
+- real Studio use on Build116 exposed a stale bounded duration-evidence allowlist: Track Manager v5.27 / bridge v1.17 was rejected even though v5.26+ successors inherit the same duration-evidence metadata contract;
+- Build117 explicitly authorizes the inherited bounded successor pairs v5.26/v1.16, v5.27/v1.17 and v5.28/v1.18 in both validation and resilient save seams;
+- regression guards now require those exact pairs and still reject an unbounded numeric version gate;
+- LaunchPAD admin deployment #49 (run 35435618374) deployed main SHA 4867a2fef673028b0474f949183944dd642af165 with private Worker verification green; public Worker deployment stayed skipped.
