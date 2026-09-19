@@ -16,6 +16,9 @@ assert.ok(release.includes('build79AncestryMarker'), 'Build80 must preserve Buil
 assert.ok(durationApi.includes('const DURATION_EVIDENCE_BRIDGES = new Set(['), 'duration validation bridge allowlist must remain explicit');
 const boundedPairs = ["'5.22/1.12'", "'5.23/1.13'", "'5.24/1.14'"];
 if (currentBuild >= 114) boundedPairs.push("'5.25/1.15'");
+if (currentBuild >= 115) boundedPairs.push("'5.26/1.16'");
+if (currentBuild >= 116) boundedPairs.push("'5.27/1.17'");
+if (currentBuild >= 117) boundedPairs.push("'5.28/1.18'");
 for (const pair of boundedPairs) {
   assert.ok(durationApi.includes(pair), `duration validation must retain explicitly authorized pair ${pair}`);
   assert.ok(trackMetadataApi.includes(pair), `resilient metadata save must retain explicitly authorized pair ${pair}`);
