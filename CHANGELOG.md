@@ -1,78 +1,51 @@
 # SHINOBIWAN Studio — Changelog
 
-This is the **current concise changelog**. Detailed per-build records live under [`changelogs/`](changelogs/).
+This is the **current concise changelog**. Detailed per-build records live under `changelogs/` and accepted production receipts under `docs/acceptance/`.
 
 ## Current accepted release
 
-### v0.19.31 · Build109 — 2026-09-13
+### v0.19.39 · Build117 — 2026-09-19
 
-Codename: `studio-focus-slice4-track-create-operation-identity`  
+Codename: `studio-focus-build117-track-asset-sha256`  
 Status: **REAL USER PASS — ACCEPTED**
 
-Build109 closes one specific reliability gap: causal proof for explicit Track creation after a lost HTTP response.
+Build117 adds exact-byte proof to Track asset uploads without widening write authority. Studio hashes the exact browser-selected file with SHA-256, Track Manager stores and rereads the digest as private R2 metadata, and Studio accepts normal success only when selected, response and private canonical digests match. Lost-response recovery requires a new canonical revision plus the same exact digest; unchanged revision is retry-safe not-committed, while changed state without exact proof is ambiguous and non-retryable.
 
-Studio now generates one browser UUID per explicit Track create. Track Manager persists it privately as immutable canonical `creationOperationId` evidence. Studio never retries the create POST automatically. Normal success keeps exact canonical verification; if the response is lost, Studio performs a private canonical reread and recovers success only when the exact creation UUID matches. Missing, mismatched, legacy or unreadable identity remains ambiguous/unverified and non-retryable.
+A pre-merge production-use corrective also repaired a stale duration-evidence compatibility allowlist. Bounded inherited successors v5.26/v1.16, v5.27/v1.17 and v5.28/v1.18 are now explicitly authorized in both validation and resilient metadata save seams. No unbounded numeric successor gate was introduced.
 
 ```text
-Backend PR               LaunchPAD-APP #276
-Backend candidate        3cf55f7338b9b139586b7a62c6eebfb6100f370f
-Backend merge            5472d43eaf5d7fcbe3413ef9f6e1d088a2f80b80
-Admin deploy             #44 · 34762956165 · SUCCESS · admin only
-Studio PR                #218
-Studio candidate         5114875db99af8cfc9bc7f5747674321faf1fe7b
-Studio CI                #660 · 34762678307 · SUCCESS
-Studio merge             4a2014ba8828063d566c4f5df77c4f1095c0355f
-Studio Pages             #229 · 34762759192 · SUCCESS build + deploy
-Real-user smoke          build109-smoke-20260913 · canonical private reread verified
-creationOperationId      77ce7e21-90b9-46a3-b166-6148003d50a8
-Smoke cleanup            disposable Track deleted after verification
+Backend PR               LaunchPAD-APP #282
+Backend merge            4867a2fef673028b0474f949183944dd642af165
+Track Manager            v5.28
+Studio bridge            v1.18
+Admin deploy             #49 · 35435618374 · SUCCESS · admin only
+Studio PR                #234
+Final candidate          b843acf030195b726725af2d0f7e148607b8b9bb
+Studio CI                #737 · SUCCESS
+Studio merge             a1f7641a3e2d39fe24ee6b6a51438fb8a1c88ae4
+Studio Pages             #253 · SUCCESS build + deploy
+Real-user smoke          SMOKED · production corrective path clean
 Public Worker            unchanged
-R2 schema migration      NONE
 ```
 
-Detailed accepted record: [`changelogs/CHANGELOG-BUILD109.md`](changelogs/CHANGELOG-BUILD109.md).  
-Real-user receipt: [`docs/acceptance/BUILD109-REAL-USER-PASS.md`](docs/acceptance/BUILD109-REAL-USER-PASS.md).
+Real-user receipt: [`docs/acceptance/BUILD117-REAL-USER-PASS.md`](docs/acceptance/BUILD117-REAL-USER-PASS.md).
 
-## Accepted predecessor
+## Recent accepted predecessors
 
-### v0.19.30 · Build108 — 2026-09-13
-
-Codename: `studio-focus-slice4-catalog-rebuild-generation-identity`  
-Status: **REAL USER PASS — ACCEPTED**
-
-Build108 closes one specific reliability gap: causal proof for the explicit Studio catalog rebuild.
-
-Studio generates one browser UUID per explicit rebuild. Track Manager persists it as the canonical catalog `generationId`, verifies it before success response, and exposes it through the private catalog read model. Studio then rereads canonical state and requires the exact UUID match before declaring the rebuild verified. Lost-response handling remains zero-blind-retry.
-
-Detailed accepted record: [`changelogs/CHANGELOG-BUILD108.md`](changelogs/CHANGELOG-BUILD108.md).  
-Real-user receipt: [`docs/acceptance/BUILD108-REAL-USER-PASS.md`](docs/acceptance/BUILD108-REAL-USER-PASS.md).
-
-### v0.19.29 · Build107 — 2026-09-13
-
-Codename: `studio-focus-slice4-phase10-shared-catalog-projection-kernel`  
-Status: **REAL USER PASS — ACCEPTED**
-
-Build107 is the first accepted Phase10 extraction slice. SonicTrace owns the singular editable numerical projection kernel and Studio consumes a generated digest-pinned copy. Build108/109 do not alter that architecture.
-
-Detailed accepted record: [`changelogs/CHANGELOG-BUILD107.md`](changelogs/CHANGELOG-BUILD107.md).  
-Real-user receipt: [`docs/acceptance/BUILD107-REAL-USER-PASS.md`](docs/acceptance/BUILD107-REAL-USER-PASS.md).
+- **Build116 · v0.19.38** — Safe Track Delete; REAL USER PASS after contextual action corrective.
+- **Build115 · v0.19.37** — Safe Album Delete; REAL USER PASS.
+- **Build114 · v0.19.36** — Album-create operation identity; REAL USER PASS after null-year corrective.
+- **Build113 · v0.19.35** — SoundCloud MUSIC Pack priority; REAL USER PASS.
+- **Build112 · v0.19.34** — MUSIC Pack JSON V1 import foundation.
+- **Build111 · v0.19.33** — Release → Flow handoff; REAL USER PASS.
+- **Build110 · v0.19.32** — human-first / premium UX simplification.
+- **Build109 · v0.19.31** — Track-create operation identity; REAL USER PASS.
+- **Build108 · v0.19.30** — catalog rebuild generation identity; REAL USER PASS.
+- **Build107 · v0.19.29** — Phase10 Slice1 shared catalog projection kernel; REAL USER PASS.
 
 ## Rejected historical candidates
 
 - **Build101** — Track asset normal-success false negative caused by quoted/raw ETag representation mismatch; superseded by accepted Build102.
 - **Build104** — falsely classified pre-submit/node-offline Deep Audio transport as compute UNKNOWN; superseded by accepted Build105.
 
-## Accepted lineage
-
-```text
-Build82–100   Phase9 reliability / canonical-truth lineage
-Build102      ETag representation corrective
-Build103      canonical audio pre-compute transient retry
-Build105      Deep Audio pre-submit transport corrective
-Build106      public catalog fallback transient GET retry
-Build107      Phase10 shared catalog projection kernel
-Build108      explicit catalog rebuild generation identity
-Build109      explicit Track-create operation identity
-```
-
-All detailed per-build receipts remain preserved under `changelogs/` and `docs/`.
+All detailed historical records remain preserved under `changelogs/` and `docs/`.
