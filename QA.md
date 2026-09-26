@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-09-26 for Build118 candidate; accepted baseline reconciled to Build117.
+Updated: 2026-09-26 for CPU slice 2 candidate; Build117 remains the latest merged acceptance receipt, with separate Build118 shell acceptance docs pending in #237.
 
 This file records accepted runtime truth, automated proof boundaries, real-user evidence and major remaining unproven areas. Historical run-by-run detail belongs in `changelogs/` and `docs/`.
 
@@ -8,11 +8,13 @@ This file records accepted runtime truth, automated proof boundaries, real-user 
 
 **v0.19.39 / Build117 — REAL USER PASS.** See the [Build117 receipt](docs/acceptance/BUILD117-REAL-USER-PASS.md) for the precise production smoke boundary: metadata-validation corrective passed; exact-byte upload proof is automated evidence.
 
-Runtime PR #234, final head `b843acf030195b726725af2d0f7e148607b8b9bb`, validation `35435903134` SUCCESS. Current main `6a71a17bba3513472f007f641ca03a3df0739461` has Pages build/deploy `35441980808` SUCCESS. Track Manager v5.28 / bridge v1.18 remains the accepted protected authority.
+Runtime PR #234, final head `b843acf030195b726725af2d0f7e148607b8b9bb`, validation `35435903134` SUCCESS. Current main is now `b035fb226e8c9a2654306076522faa4da97fb3ea` (Build118 PR #236), with Pages build/deploy `36249977846` SUCCESS. Track Manager remains the protected write authority. The limited Build118 shell smoke reported in still-open #237 does not establish private-read reliability; #238 remains open.
 
-## Build118 / Catalogue A2.1 — candidate only
+## Build118 / CPU slice 2 — candidate only
 
-Native shell, separate routes/types and empty states only. Targeted route/component/type checks and the full inherited build chain are required, with post-build private artifact scanning. No importer, commercial source rows, writes or new dependencies. No merge/deploy or REAL USER PASS is claimed. See [candidate evidence and limitations](docs/build118-catalogue-a2-1-candidate.md).
+The corrective changes only the ordinary Album collection URL to `?view=canonical`. Focused synthetic tests execute the actual clients, Health/Management rendering, migration evidence, error classification, bounded retries, artwork discovery and private write verification. The inherited build includes Album reliability guards, TypeScript and the post-build Catalogue privacy scan. Commercial empty/read-only/no-network behavior remains guarded.
+
+No browser acceptance, CPU benchmark or incident resolution is claimed for this corrective. Its exact-head CI belongs to the Draft PR, not a production deployment. See [compatibility, test scope and proposed browser checklist](docs/CPU-SLICE2-LEAN-ALBUM-CONSUMER.md).
 
 ## Historical Build109 accepted receipt
 
@@ -177,4 +179,4 @@ Studio must not fabricate causal certainty when a different backend operation do
 
 ## Next QA gate
 
-Review the A2.1 Draft PR and exact-head CI. Build118 remains a candidate; merge/deployment require separate authorization. Local-private import and populated views are future slices, and real-user browser acceptance remains pending.
+Review CPU slice 2 Draft PR and exact-head CI. Merge/deployment require separate authorization, followed by the proposed browser acceptance checklist. Local-private import remains on hold; the overall CPU incident remains unresolved.

@@ -59,6 +59,7 @@ assert.deepEqual(plain(catalogue.readCatalogueRoute('#/catalog')), { section: 'n
 let state;
 let effect;
 const listeners = new Map();
+let networkRequests = 0;
 const jsx = await import('react/jsx-runtime');
 const ui = load('src/components/CommercialCatalogue.tsx', {
   react: {
@@ -69,6 +70,8 @@ const ui = load('src/components/CommercialCatalogue.tsx', {
   '../catalogue-router': catalogue,
   './commercial-catalogue.css': {},
 }, {
+  fetch: () => { networkRequests++; throw new Error('Catalogue A2.1 must not request network data.'); },
+  XMLHttpRequest: class { constructor() { networkRequests++; throw new Error('Catalogue A2.1 must not request network data.'); } },
   addEventListener: (name, handler) => listeners.set(name, handler),
   removeEventListener: (name, handler) => { assert.equal(listeners.get(name), handler); listeners.delete(name); },
 });
@@ -97,6 +100,7 @@ assert.equal(listeners.size, 0);
 state = undefined;
 location.hash = '#/catalogue/qa';
 assert.match(render(), /No reconciliation cases loaded/, 'Refresh initializes from the URL.');
+assert.equal(networkRequests, 0, 'Catalogue mount, navigation and refresh introduce no network request.');
 
 // Compile-time identity checks: appearances can share a recording, commercial
 // releases cannot be substituted for recordings, and ISRC may be unknown.

@@ -293,7 +293,8 @@ export function adminAlbumMediaUrl(albumId: string, kind: AdminAlbumAssetKind): 
   return `${baseUrl()}/api/studio/albums/${encodeURIComponent(albumId)}/media/${kind}`;
 }
 
-export async function getAdminAlbums(): Promise<AdminAlbumsResponse> { const payload = await readJson<AdminAlbumsResponse>('/api/studio/albums'); if (payload.ok === false || !Array.isArray(payload.albums)) throw new AdminReadError('invalid-response', 'Track Manager returned an invalid Album collection.'); return payload; }
+// Daily reads omit historical migration work; album-migration-api keeps the full endpoint.
+export async function getAdminAlbums(): Promise<AdminAlbumsResponse> { const payload = await readJson<AdminAlbumsResponse>('/api/studio/albums?view=canonical'); if (payload.ok === false || !Array.isArray(payload.albums)) throw new AdminReadError('invalid-response', 'Track Manager returned an invalid Album collection.'); return payload; }
 export async function getAdminAlbum(albumId: string): Promise<AdminAlbumResponse> { assertId(albumId); const payload = await readJson<AdminAlbumResponse>(`/api/studio/albums/${encodeURIComponent(albumId)}`); if (payload.ok === false || !payload.album?.manifest) throw new AdminReadError('invalid-response', 'Track Manager returned an invalid canonical Album response.'); return payload; }
 export async function createAdminAlbum(album: { id: string } & AdminAlbumMetadataPatch) {
   assertId(album.id);
