@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-09-26 for Catalogue A2.1 candidate scope; Build117 remains accepted.
+Updated: 2026-09-26 for CPU corrective slice 2; see PROJECT_STATE.md for reconciled deployment and acceptance boundaries.
 
 This file tracks durable Done / Active / Next / Backlog state. Historical implementation detail belongs in changelogs, milestone docs and acceptance receipts.
 
@@ -92,9 +92,11 @@ Evidence: [`docs/acceptance/BUILD117-REAL-USER-PASS.md`](docs/acceptance/BUILD11
 
 ## Active
 
-### Catalogue A2.1 — Build118 candidate
+### CPU corrective slice 2 — lean canonical Album consumer
 
-Native read-only commercial Catalogue foundation only: sidebar entry after Albums, separate `#/catalogue` routes, commercial types and empty states. Existing Tracks/Albums and tools retain their behavior. No import, private embedded data, Worker, R2, cross-repository change, merge or deployment. Stop at a Draft PR with exact-head CI; see [candidate receipt](docs/build118-catalogue-a2-1-candidate.md).
+Build118 A2.1 was merged in #236 and deployed at `b035fb226e8c9a2654306076522faa4da97fb3ea`. Its separate acceptance-docs PR #237 remains open and excluded from this branch. The commercial foundation stays empty and read-only.
+
+Issue #238 / LaunchPAD #283: consume the lean endpoint delivered by LaunchPAD #284, preserving full migration evidence, private authority, bounded retries and write verification. No frontend deduplication, Track/SonicTrace changes, backend changes or production-data work. Stop at Draft PR + exact-head CI. See [corrective receipt](docs/CPU-SLICE2-LEAN-ALBUM-CONSUMER.md).
 
 ### Phase 10 — progressive extraction
 
@@ -121,9 +123,9 @@ Phase10 remains active as a program, not permission for continuous refactoring. 
 
 ## Next
 
-### Catalogue A2.1 review gate
+### Corrective review / browser gate
 
-Review the Draft PR and exact-head validation before authorizing any merge or deployment. A2.2 local-private import/dry-run and A2.3 populated views require separate missions. A3 real-user acceptance remains later; the foundation does not mean the Catalogue has shipped.
+Review CPU slice 2 Draft PR and exact-head validation before separately authorizing merge/deployment and browser acceptance. The overall CPU incident remains open. A2.2 local-private import/dry-run stays on hold; A2.3 populated views require a separate mission. The limited A2.1 shell smoke in #237 does not prove stable private Album reads.
 
 Album asset exact-byte/digest proof remains independently auditable backlog and is not part of Build118.
 

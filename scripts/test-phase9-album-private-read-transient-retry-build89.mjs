@@ -27,7 +27,7 @@ assert.ok(album.includes("throw new AdminReadError('invalid-response', 'Track Ma
 assert.ok(!album.includes("reason.kind === 'access-or-cors'\n    ||"), 'Access/CORS must never enter the Album retry predicate.');
 assert.ok(!album.includes("reason.kind === 'invalid-response'\n    ||"), 'Invalid responses must never enter the Album retry predicate.');
 
-assert.ok(album.includes("getAdminAlbums(): Promise<AdminAlbumsResponse> { const payload = await readJson<AdminAlbumsResponse>('/api/studio/albums')"), 'Album collection must use the bounded private-read helper.');
+assert.ok(album.includes("getAdminAlbums(): Promise<AdminAlbumsResponse> { const payload = await readJson<AdminAlbumsResponse>('/api/studio/albums?view=canonical')"), 'Lean Album collection must retain the bounded private-read helper.');
 assert.ok(album.includes('getAdminAlbum(albumId: string): Promise<AdminAlbumResponse>'), 'Canonical Album detail read must remain present.');
 assert.ok(album.includes('const reread = await getAdminAlbum(albumId);'), 'Existing Album write verification must keep using canonical Album reread.');
 const readHelperStart = album.indexOf('async function readJsonOnce<T>');

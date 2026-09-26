@@ -1,6 +1,14 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-09-26 for **Catalogue A2.1 / Build118 candidate**. Accepted production remains Build117.
+Updated: 2026-09-26 for **CPU corrective slice 2 / Build118 lean Album consumer candidate**.
+
+## GitHub reconciliation / corrective stop line
+
+Verified `main`: `b035fb226e8c9a2654306076522faa4da97fb3ea` (PR #236). Build118 / v0.19.40 Catalogue A2.1 is merged and Pages run [36249977846](https://github.com/shinobione/shinobiwan-studio/actions/runs/36249977846) completed build + deploy successfully. The earlier candidate-only checkpoint below is superseded for merge/deployment status.
+
+Build117 remains the latest merged acceptance receipt. The limited Build118 seven-check shell REAL USER PASS is reported in the separate, still-open docs PR #237; that branch is **not incorporated here**. Issue #238 records intermittent private Album/Track reads and does not establish a Catalogue regression. A2.2 remains on hold.
+
+Active runtime corrective: ordinary Album collection reads opt into the deployed lean canonical backend; migration retains the full endpoint. Keep the existing Build118 identity for this bounded corrective. Stop at Draft PR + exact-head CI, with no merge, Pages/Worker deployment or live R2 access. See [scope, compatibility and acceptance checklist](docs/CPU-SLICE2-LEAN-ALBUM-CONSUMER.md). This candidate has no REAL USER PASS and does not resolve the overall CPU incident.
 
 This is the short current checkpoint. Historical implementation detail remains in `changelogs/`, milestone docs and acceptance receipts.
 
@@ -113,7 +121,7 @@ Build114                COMPLETE · Album create operation identity · REAL USER
 Build115                COMPLETE · Safe Album Delete · REAL USER PASS
 Build116                COMPLETE · Safe Track Delete · REAL USER PASS
 Build117                COMPLETE · exact-byte Track asset SHA-256 proof · REAL USER PASS
-Build118                CANDIDATE · Catalogue A2.1 native read-only foundation
+Build118                MERGED / PAGES DEPLOYED · A2.1; CPU slice 2 candidate active
 Official Phase 11       NONE
 ```
 
@@ -146,13 +154,9 @@ Build108/109/114–117 are bounded reliability/lifecycle work outside Phase10 Sl
 
 ## Immediate next action
 
-**Review the Catalogue A2.1 Draft PR and its exact-head CI. Stop before merge/deploy.**
+**Review the CPU slice 2 Draft PR and exact-head CI on `fix/build118-lean-album-consumer`; stop before merge/deploy.**
 
-Preflight reconciled GitHub `main` at `6a71a17bba3513472f007f641ca03a3df0739461`, with no open PRs and successful Pages build/deploy run `35441980808`. The clean local handoff branch was stale at `c44b1e6920435e71896dfce3ca8c9f27d98aabd1`; the candidate starts from verified remote main.
-
-Build118 / v0.19.40 is allocated only for native Catalogue navigation, sanitized subroutes, independent commercial types and honest empty states. Import is deferred to A2.2. No private source data is embedded, and no Worker/R2 or related repository change is authorized. No candidate merge, deployment or REAL USER PASS is claimed.
-
-Candidate evidence and limitations: [`docs/build118-catalogue-a2-1-candidate.md`](docs/build118-catalogue-a2-1-candidate.md). Album asset digest proof remains a separate backlog hypothesis; Phase10 Slice2 remains unallocated.
+Base is the verified clean main above. Backend dependency LaunchPAD PR #284 is merged at `4dd420bd612555cdb972897b080549aacf408fa6`; the mission supplies its deployed Worker version and authenticated browser smoke in the [corrective receipt](docs/CPU-SLICE2-LEAN-ALBUM-CONSUMER.md). Frontend deduplication, Track/SonicTrace services and commercial import are outside this slice. Album asset digest proof remains backlog; Phase10 Slice2 remains unallocated.
 
 ## Release mechanics
 

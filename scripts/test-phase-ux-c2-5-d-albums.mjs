@@ -12,7 +12,7 @@ const types = fs.readFileSync('src/types/studio.ts', 'utf8');
 const main = fs.readFileSync('src/main.tsx', 'utf8');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 
-for (const required of ["create: 'album-create-v1'","metadata: 'album-metadata-save-v1'","membership: 'album-membership-save-v1'","move: 'album-track-move-v1'","upload: 'album-asset-upload-v1'","deleteAsset: 'album-asset-delete-v1'","'/api/studio/albums'","credentials: 'include'","'Content-Type': 'text/plain;charset=UTF-8'","requireManage('album-create')","requireManage('album-metadata')","requireManage('album-membership')","requireManage('album-move')","requireManage('album-assets')",'getAdminAlbum(albumId)']) assert.ok(albumApi.includes(required), `C2.5-D Album client missing: ${required}`);
+for (const required of ["create: 'album-create-v1'","metadata: 'album-metadata-save-v1'","membership: 'album-membership-save-v1'","move: 'album-track-move-v1'","upload: 'album-asset-upload-v1'","deleteAsset: 'album-asset-delete-v1'","'/api/studio/albums?view=canonical'","credentials: 'include'","'Content-Type': 'text/plain;charset=UTF-8'","requireManage('album-create')","requireManage('album-metadata')","requireManage('album-membership')","requireManage('album-move')","requireManage('album-assets')",'getAdminAlbum(albumId)']) assert.ok(albumApi.includes(required), `C2.5-D Album client missing: ${required}`);
 const releaseParts = String(pkg.version).split('.').map(Number);
 const modernSuccessor = releaseParts[0] === 0 && releaseParts[1] === 19 && Number.isInteger(releaseParts[2]) && releaseParts[2] >= 21;
 if (modernSuccessor) {
