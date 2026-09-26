@@ -1,20 +1,20 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-09-26 for CPU slice 2 candidate; Build117 remains the latest merged acceptance receipt, with separate Build118 shell acceptance docs pending in #237.
+Updated: 2026-09-26 for CPU slice 4 candidate; Build117 remains the latest merged standalone acceptance receipt. Build118 corrective functional acceptance is recorded in issue #238; shell acceptance docs remain pending in #237.
 
 This file records accepted runtime truth, automated proof boundaries, real-user evidence and major remaining unproven areas. Historical run-by-run detail belongs in `changelogs/` and `docs/`.
 
 ## Current accepted Studio runtime
 
-**v0.19.39 / Build117 — REAL USER PASS.** See the [Build117 receipt](docs/acceptance/BUILD117-REAL-USER-PASS.md) for the precise production smoke boundary: metadata-validation corrective passed; exact-byte upload proof is automated evidence.
+**Deployed v0.19.40 / Build118 CPU slice 2 + backend slice 3 — bounded Albums/Tracks functional REAL USER PASS.** [Owner evidence](https://github.com/shinobione/shinobiwan-studio/issues/238#issuecomment-5849807422): 7 Albums, 4 Healthy / 3 Attention / 0 Unverified, artwork and Track work rows restored; all captured GET invocations `Ok` in two sampled loads. No sustained CPU/load proof. The [Build117 receipt](docs/acceptance/BUILD117-REAL-USER-PASS.md) remains the prior accepted reliability baseline, with exact-byte upload proof automated rather than physical smoke evidence.
 
-Runtime PR #234, final head `b843acf030195b726725af2d0f7e148607b8b9bb`, validation `35435903134` SUCCESS. Current main is now `b035fb226e8c9a2654306076522faa4da97fb3ea` (Build118 PR #236), with Pages build/deploy `36249977846` SUCCESS. Track Manager remains the protected write authority. The limited Build118 shell smoke reported in still-open #237 does not establish private-read reliability; #238 remains open.
+Current main is `9306ab4b6dafcce87c1bc68411719d01102612c0` (PR #239), with Pages `36258902897` SUCCESS. Candidate `a910b70856e344bc6c6896cc59a9f9107f9539a1` passed validation `36258542918`. Backend deployed source/version and separate acceptance boundaries are in PROJECT_STATE.md. Track Manager remains the protected write authority; #238 remains open and #237 needs reconciliation.
 
-## Build118 / CPU slice 2 — candidate only
+## Build118 / CPU slice 4 — candidate only
 
-The corrective changes only the ordinary Album collection URL to `?view=canonical`. Focused synthetic tests execute the actual clients, Health/Management rendering, migration evidence, error classification, bounded retries, artwork discovery and private write verification. The inherited build includes Album reliability guards, TypeScript and the post-build Catalogue privacy scan. Commercial empty/read-only/no-network behavior remains guarded.
+The corrective shares pending browsing operations across Health/Management/Tracks, removes Tracks import-time prefetch and settled caching, and reuses Album payloads for artwork. Synthetic tests execute actual clients and component effects to count requests, verify retry ceilings, forced-read replacement, fresh navigation, unmount safety, provenance and independent canonical/migration reads. Existing slice-2 tests retain private delete recovery/detail-write verification and Health/Management rendering. The full build includes reliability guards, TypeScript and the Catalogue artifact/privacy scan.
 
-No browser acceptance, CPU benchmark or incident resolution is claimed for this corrective. Its exact-head CI belongs to the Draft PR, not a production deployment. See [compatibility, test scope and proposed browser checklist](docs/CPU-SLICE2-LEAN-ALBUM-CONSUMER.md).
+No slice-4 browser acceptance, CPU benchmark or incident resolution is claimed. Exact-head CI belongs to the Draft PR, not a deployment. See [scope, validation and proposed browser checklist](docs/CPU-SLICE4-SHARED-PRIVATE-READS.md). Navigation now performs a fresh read after prior work settles; the existing loading skeleton remains visible during that read.
 
 ## Historical Build109 accepted receipt
 
@@ -179,4 +179,4 @@ Studio must not fabricate causal certainty when a different backend operation do
 
 ## Next QA gate
 
-Review CPU slice 2 Draft PR and exact-head CI. Merge/deployment require separate authorization, followed by the proposed browser acceptance checklist. Local-private import remains on hold; the overall CPU incident remains unresolved.
+Review CPU slice 4 Draft PR and exact-head CI. Merge/deployment require separate authorization, followed by the proposed browser acceptance checklist. Local-private import remains on hold; bounded prior recovery does not close the CPU incident.
