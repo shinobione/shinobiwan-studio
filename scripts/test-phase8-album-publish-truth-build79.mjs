@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-const read = path => fs.readFileSync(path, 'utf8');
+const read = path => fs.readFileSync(path, 'utf8').replace(/\r\n/g, '\n');
 const release = read('src/release.ts');
 const api = read('src/services/album-admin-api.ts');
 const workspace = read('src/components/AlbumsWorkspace.tsx');

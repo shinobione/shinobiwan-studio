@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-09-19 after **Build117 REAL USER PASS**.
+Updated: 2026-09-26 for Catalogue A2.1 candidate scope; Build117 remains accepted.
 
 This file tracks durable Done / Active / Next / Backlog state. Historical implementation detail belongs in changelogs, milestone docs and acceptance receipts.
 
@@ -92,6 +92,10 @@ Evidence: [`docs/acceptance/BUILD117-REAL-USER-PASS.md`](docs/acceptance/BUILD11
 
 ## Active
 
+### Catalogue A2.1 — Build118 candidate
+
+Native read-only commercial Catalogue foundation only: sidebar entry after Albums, separate `#/catalogue` routes, commercial types and empty states. Existing Tracks/Albums and tools retain their behavior. No import, private embedded data, Worker, R2, cross-repository change, merge or deployment. Stop at a Draft PR with exact-head CI; see [candidate receipt](docs/build118-catalogue-a2-1-candidate.md).
+
 ### Phase 10 — progressive extraction
 
 Phase10 remains active as a program, not permission for continuous refactoring. **Phase10 Slice2 remains unallocated.** Builds108/109/114–117 are bounded reliability/lifecycle work outside it; Builds110–113 are human-facing/product workflow improvements outside it.
@@ -117,13 +121,11 @@ Phase10 remains active as a program, not permission for continuous refactoring. 
 
 ## Next
 
-### Fresh bounded audit before Build118
+### Catalogue A2.1 review gate
 
-No Build118 is allocated yet.
+Review the Draft PR and exact-head validation before authorizing any merge or deployment. A2.2 local-private import/dry-run and A2.3 populated views require separate missions. A3 real-user acceptance remains later; the foundation does not mean the Catalogue has shipped.
 
-Known candidate: **Album asset exact-byte/digest proof**, because Build117 deliberately covered Track asset uploads only. Before allocating it, re-audit the current Album asset upload path and prove that exact-byte causality is still missing and useful.
-
-Do not allocate another build merely to continue numbering; choose the next slice from current production evidence.
+Album asset exact-byte/digest proof remains independently auditable backlog and is not part of Build118.
 
 ## Backlog
 

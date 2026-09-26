@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-09-19 after **Build117 REAL USER PASS**.
+Updated: 2026-09-26 for **Catalogue A2.1 / Build118 candidate**. Accepted production remains Build117.
 
 This is the short current checkpoint. Historical implementation detail remains in `changelogs/`, milestone docs and acceptance receipts.
 
@@ -113,7 +113,7 @@ Build114                COMPLETE · Album create operation identity · REAL USER
 Build115                COMPLETE · Safe Album Delete · REAL USER PASS
 Build116                COMPLETE · Safe Track Delete · REAL USER PASS
 Build117                COMPLETE · exact-byte Track asset SHA-256 proof · REAL USER PASS
-Build118                UNALLOCATED
+Build118                CANDIDATE · Catalogue A2.1 native read-only foundation
 Official Phase 11       NONE
 ```
 
@@ -146,9 +146,13 @@ Build108/109/114–117 are bounded reliability/lifecycle work outside Phase10 Sl
 
 ## Immediate next action
 
-**No Build118 is allocated yet.**
+**Review the Catalogue A2.1 Draft PR and its exact-head CI. Stop before merge/deploy.**
 
-Before the next build, run a fresh bounded audit against accepted Build117. The strongest known candidate is Album asset exact-byte/digest proof, but it remains a hypothesis until the current Album upload path is rechecked against production code and accepted authority boundaries.
+Preflight reconciled GitHub `main` at `6a71a17bba3513472f007f641ca03a3df0739461`, with no open PRs and successful Pages build/deploy run `35441980808`. The clean local handoff branch was stale at `c44b1e6920435e71896dfce3ca8c9f27d98aabd1`; the candidate starts from verified remote main.
+
+Build118 / v0.19.40 is allocated only for native Catalogue navigation, sanitized subroutes, independent commercial types and honest empty states. Import is deferred to A2.2. No private source data is embedded, and no Worker/R2 or related repository change is authorized. No candidate merge, deployment or REAL USER PASS is claimed.
+
+Candidate evidence and limitations: [`docs/build118-catalogue-a2-1-candidate.md`](docs/build118-catalogue-a2-1-candidate.md). Album asset digest proof remains a separate backlog hypothesis; Phase10 Slice2 remains unallocated.
 
 ## Release mechanics
 
