@@ -1,34 +1,28 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-09-26 for **Catalogue A2.1 / Build118 candidate**. Accepted production remains Build117.
+Updated: 2026-09-26 after **Catalogue A2.1 / Build118 REAL USER PASS**.
 
 This is the short current checkpoint. Historical implementation detail remains in `changelogs/`, milestone docs and acceptance receipts.
 
 ## Current accepted Studio runtime
 
 ```text
-Studio version          v0.19.39
-Studio build            Build117
-Codename                studio-focus-build117-track-asset-sha256
-Acceptance              REAL USER PASS
-Studio PR               #234
-Final validation CI     #737 · SUCCESS
-Studio merge            a1f7641a3e2d39fe24ee6b6a51438fb8a1c88ae4
-Studio Pages            #253 · SUCCESS
-Track Manager           v5.28
-Studio bridge           v1.18
-Backend PR              LaunchPAD #282
-Backend merge           4867a2fef673028b0474f949183944dd642af165
-Admin Worker deploy     #49 · 35435618374 · SUCCESS
-Public Worker           unchanged / intentionally skipped
-Real-user smoke         PASS · production metadata validation after corrective
+Studio version          v0.19.40
+Studio build            Build118
+Codename                studio-focus-build118-catalogue-a2-1-foundation
+Acceptance              REAL USER PASS · native read-only Catalogue shell
+Studio PR               #236
+Candidate head          915eec0bfc16def09e8e4483a74aab7fe0e2fe23
+Validation CI           36249713796 · SUCCESS
+Studio merge/main       b035fb226e8c9a2654306076522faa4da97fb3ea
+Studio Pages            36249977846 · build + deploy SUCCESS
+Real-user smoke         PASS · owner reports all seven navigation/UX checks
+Track Manager           v5.28 · unchanged
+Studio bridge           v1.18 · unchanged
+Worker / R2             no A2.1 mutation
 ```
 
-**Build117 is the current accepted runtime identity.**
-
-Latest receipt:
-
-- [`docs/acceptance/BUILD117-REAL-USER-PASS.md`](docs/acceptance/BUILD117-REAL-USER-PASS.md)
+**Build118 is accepted for A2.1 only.** [Build118 real-user receipt](docs/acceptance/BUILD118-REAL-USER-PASS.md). Build117 remains an accepted predecessor; its [receipt](docs/acceptance/BUILD117-REAL-USER-PASS.md) is unchanged.
 
 ## Accepted progression since Build114
 
@@ -113,7 +107,7 @@ Build114                COMPLETE · Album create operation identity · REAL USER
 Build115                COMPLETE · Safe Album Delete · REAL USER PASS
 Build116                COMPLETE · Safe Track Delete · REAL USER PASS
 Build117                COMPLETE · exact-byte Track asset SHA-256 proof · REAL USER PASS
-Build118                CANDIDATE · Catalogue A2.1 native read-only foundation
+Build118                COMPLETE · Catalogue A2.1 · REAL USER PASS
 Official Phase 11       NONE
 ```
 
@@ -146,13 +140,11 @@ Build108/109/114–117 are bounded reliability/lifecycle work outside Phase10 Sl
 
 ## Immediate next action
 
-**Review the Catalogue A2.1 Draft PR and its exact-head CI. Stop before merge/deploy.**
+**Scope Catalogue A2.2 separately:** explicit private-local V5 import/dry-run, structural schema validation, source provenance, idempotent reconciliation and no private source rows in GitHub Pages. Build118 native shell is accepted; no A2.2 implementation or new build is allocated by this closeout.
 
-Preflight reconciled GitHub `main` at `6a71a17bba3513472f007f641ca03a3df0739461`, with no open PRs and successful Pages build/deploy run `35441980808`. The clean local handoff branch was stale at `c44b1e6920435e71896dfce3ca8c9f27d98aabd1`; the candidate starts from verified remote main.
+Exact accepted production: main `b035fb226e8c9a2654306076522faa4da97fb3ea`, [Pages run 36249977846](https://github.com/shinobione/shinobiwan-studio/actions/runs/36249977846) both build/deploy SUCCESS, and owner's seven-check real-browser PASS. [Acceptance receipt](docs/acceptance/BUILD118-REAL-USER-PASS.md). The original [Build118 candidate record](docs/build118-catalogue-a2-1-candidate.md) remains historical, not current deployment truth.
 
-Build118 / v0.19.40 is allocated only for native Catalogue navigation, sanitized subroutes, independent commercial types and honest empty states. Import is deferred to A2.2. No private source data is embedded, and no Worker/R2 or related repository change is authorized. No candidate merge, deployment or REAL USER PASS is claimed.
-
-Candidate evidence and limitations: [`docs/build118-catalogue-a2-1-candidate.md`](docs/build118-catalogue-a2-1-candidate.md). Album asset digest proof remains a separate backlog hypothesis; Phase10 Slice2 remains unallocated.
+Album asset exact-byte/digest proof remains a separate backlog hypothesis; Phase10 Slice2 remains unallocated.
 
 ## Release mechanics
 

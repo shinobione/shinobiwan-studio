@@ -1,18 +1,18 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-09-26 for Build118 candidate; accepted baseline reconciled to Build117.
+Updated: 2026-09-26 after Build118 / Catalogue A2.1 real-user acceptance.
 
 This file records accepted runtime truth, automated proof boundaries, real-user evidence and major remaining unproven areas. Historical run-by-run detail belongs in `changelogs/` and `docs/`.
 
 ## Current accepted Studio runtime
 
-**v0.19.39 / Build117 — REAL USER PASS.** See the [Build117 receipt](docs/acceptance/BUILD117-REAL-USER-PASS.md) for the precise production smoke boundary: metadata-validation corrective passed; exact-byte upload proof is automated evidence.
+**v0.19.40 / Build118 — REAL USER PASS for A2.1 only.** [Build118 receipt](docs/acceptance/BUILD118-REAL-USER-PASS.md).
 
-Runtime PR #234, final head `b843acf030195b726725af2d0f7e148607b8b9bb`, validation `35435903134` SUCCESS. Current main `6a71a17bba3513472f007f641ca03a3df0739461` has Pages build/deploy `35441980808` SUCCESS. Track Manager v5.28 / bridge v1.18 remains the accepted protected authority.
+Source PR #236, head `915eec0bfc16def09e8e4483a74aab7fe0e2fe23`, validation `36249713796` SUCCESS. Merge/main `b035fb226e8c9a2654306076522faa4da97fb3ea`; separate Pages run `36249977846` has build and deploy SUCCESS on that SHA. The owner's seven-check real-browser smoke passed for Catalogue navigation, old routes, invalid-route behavior, no loaded historical dataset and keyboard/responsive usability.
 
-## Build118 / Catalogue A2.1 — candidate only
+Build log confirms `Build118 PASS`, typecheck/full inherited build and post-build artifact signature gate (119 source/build files). Commercial data is **not** loaded in this build. User smoke is a report, not an independently captured browser test. No import/dry-run, populated data, cross-repo write, Worker/R2 deployment or new commercial authority was tested or introduced. Track Manager v5.28 / bridge v1.18 unchanged. Build117 is the accepted predecessor with its separate [receipt](docs/acceptance/BUILD117-REAL-USER-PASS.md).
 
-Native shell, separate routes/types and empty states only. Targeted route/component/type checks and the full inherited build chain are required, with post-build private artifact scanning. No importer, commercial source rows, writes or new dependencies. No merge/deploy or REAL USER PASS is claimed. See [candidate evidence and limitations](docs/build118-catalogue-a2-1-candidate.md).
+Next independent QA boundary: A2.2 private-local V5 import schema, idempotence, provenance, ambiguity handling and no source/seed in Pages.
 
 ## Historical Build109 accepted receipt
 
@@ -177,4 +177,4 @@ Studio must not fabricate causal certainty when a different backend operation do
 
 ## Next QA gate
 
-Review the A2.1 Draft PR and exact-head CI. Build118 remains a candidate; merge/deployment require separate authorization. Local-private import and populated views are future slices, and real-user browser acceptance remains pending.
+Build118 A2.1 is accepted; the next independently scoped QA gate is A2.2 local-private historical import/dry-run. Require structural source validation, idempotent repeat import, retained provenance and unresolved cases, no title-only auto-link, and no V5/derived private data in Git or Pages. Populated views and any commercial backend write remain separate future acceptance boundaries.
