@@ -2,13 +2,15 @@
 
 This is the **current concise changelog**. Detailed per-build records live under `changelogs/` and accepted production receipts under `docs/acceptance/`.
 
-## Unreleased candidate
-
-### v0.19.40 · Build118 — Catalogue A2.1
-
-Native read-only Catalogue foundation: daily navigation after Albums, independent commercial types, strict subroutes and honest empty/not-found states. Local import is deferred. No private dataset, new dependencies, Worker/R2 changes, merge or deployment. [Candidate evidence](docs/build118-catalogue-a2-1-candidate.md).
-
 ## Current accepted release
+
+### v0.19.40 · Build118 — Catalogue A2.1 · 2026-09-26
+
+**REAL USER PASS — ACCEPTED for the native read-only commercial foundation.** Catalogue navigation after Albums, independent commercial types, strict subroutes and truthful empty/not-found states. No private V5 data, importer, new dependency, Worker/R2 change or commercial persistence.
+
+Source PR #236; candidate `915eec0bfc16def09e8e4483a74aab7fe0e2fe23`; validation `36249713796` SUCCESS; merge `b035fb226e8c9a2654306076522faa4da97fb3ea`; [Pages `36249977846`](https://github.com/shinobione/shinobiwan-studio/actions/runs/36249977846) build and deploy SUCCESS on exact merge SHA; owner-reported real browser smoke 7/7 PASS. [Acceptance receipt](docs/acceptance/BUILD118-REAL-USER-PASS.md).
+
+## Prior accepted release
 
 ### v0.19.39 · Build117 — 2026-09-19
 

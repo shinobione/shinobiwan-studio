@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-09-26 for Catalogue A2.1 candidate scope; Build117 remains accepted.
+Updated: 2026-09-26 after Catalogue A2.1 / Build118 REAL USER PASS.
 
 This file tracks durable Done / Active / Next / Backlog state. Historical implementation detail belongs in changelogs, milestone docs and acceptance receipts.
 
@@ -90,11 +90,13 @@ Pre-merge corrective: bounded duration-evidence compatibility now explicitly inc
 
 Evidence: [`docs/acceptance/BUILD117-REAL-USER-PASS.md`](docs/acceptance/BUILD117-REAL-USER-PASS.md).
 
+### Build118 — Catalogue A2.1 native read-only foundation
+
+Accepted / REAL USER PASS. Commercial Catalogue navigation after Albums, independent recording/release identities, strict subroutes and truthful empty/not-found states; no historical import or new commercial write authority. PR #236, merge `b035fb226e8c9a2654306076522faa4da97fb3ea`, Pages run `36249977846` build + deploy SUCCESS, owner-reported seven-check real-user PASS.
+
+Evidence: [Build118 acceptance](docs/acceptance/BUILD118-REAL-USER-PASS.md).
+
 ## Active
-
-### Catalogue A2.1 — Build118 candidate
-
-Native read-only commercial Catalogue foundation only: sidebar entry after Albums, separate `#/catalogue` routes, commercial types and empty states. Existing Tracks/Albums and tools retain their behavior. No import, private embedded data, Worker, R2, cross-repository change, merge or deployment. Stop at a Draft PR with exact-head CI; see [candidate receipt](docs/build118-catalogue-a2-1-candidate.md).
 
 ### Phase 10 — progressive extraction
 
@@ -121,9 +123,9 @@ Phase10 remains active as a program, not permission for continuous refactoring. 
 
 ## Next
 
-### Catalogue A2.1 review gate
+### Catalogue A2.2 — local-private historical import/dry-run
 
-Review the Draft PR and exact-head validation before authorizing any merge or deployment. A2.2 local-private import/dry-run and A2.3 populated views require separate missions. A3 real-user acceptance remains later; the foundation does not mean the Catalogue has shipped.
+Scope separately: validate the V5-derived source structurally without committing private source material; preserve row-level evidence, missing ISRCs and unresolved release identities; prove repeat import is idempotent and does not title-merge or write R2. Populate views only in later bounded scope. Build number remains unallocated until the implementation scope is proven.
 
 Album asset exact-byte/digest proof remains independently auditable backlog and is not part of Build118.
 
@@ -162,4 +164,4 @@ There is currently **no official Phase11**.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for current runtime/cross-stack truth and [`docs/acceptance/BUILD117-REAL-USER-PASS.md`](docs/acceptance/BUILD117-REAL-USER-PASS.md) for the latest accepted Studio receipt.
+See `PROJECT_STATE.md` for current runtime/cross-stack truth and [`docs/acceptance/BUILD118-REAL-USER-PASS.md`](docs/acceptance/BUILD118-REAL-USER-PASS.md) for the latest accepted Studio receipt.
