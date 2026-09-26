@@ -3,3 +3,11 @@ dist/
 .env.local
 .env.*.local
 .DS_Store
+
+# Private Catalogue reference packs must remain outside this repository.
+SHINOBIWAN_CATALOGUE_*
+SHINOBIWAN_Catalogue_*
+catalogue-private*.json
+catalogue-readonly-seed*.json
+*.xlsx
+*.zip

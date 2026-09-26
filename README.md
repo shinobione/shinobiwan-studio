@@ -16,46 +16,9 @@ Then verify real GitHub state before mutation.
 
 ## Current accepted state
 
-```text
-Studio accepted        v0.19.31 · Build109 · REAL USER PASS
-Runtime scope          explicit Track-create operation identity
-Studio PR              #218
-Studio candidate       5114875db99af8cfc9bc7f5747674321faf1fe7b
-Studio CI              #660 · 34762678307 · SUCCESS
-Studio merge           4a2014ba8828063d566c4f5df77c4f1095c0355f
-Studio Pages           #229 · 34762759192 · SUCCESS build + deploy
-Backend PR             LaunchPAD-APP #276
-Backend candidate      3cf55f7338b9b139586b7a62c6eebfb6100f370f
-Backend merge          5472d43eaf5d7fcbe3413ef9f6e1d088a2f80b80
-Admin deploy           #44 · 34762956165 · SUCCESS · admin only
-Real-user smoke        PASS · disposable Track · exact creationOperationId reread
-Build108               ACCEPTED predecessor · catalog rebuild generation identity
-Build107               ACCEPTED predecessor · Phase10 Slice1
-Track Manager          v5.24 · protected canonical write authority
-Studio bridge          v1.14
-Public Worker          v2.8 · REAL USER PASS · unchanged
-LaunchPAD public       2026.08.12.102 · REAL USER PASS
-LRC Maker              6.3.8
-```
+**Studio v0.19.39 / Build117 — REAL USER PASS**, with Track Manager v5.28 / bridge v1.18. [Build117 acceptance receipt](docs/acceptance/BUILD117-REAL-USER-PASS.md) records the precise automated and real-user boundaries. [PROJECT_STATE.md](PROJECT_STATE.md) holds current GitHub and runtime truth.
 
-**Studio v0.19.31 · Build109 is the current accepted Studio runtime identity.**
-
-Build109 gives explicit Studio Track creation a durable private causal proof boundary. Each explicit create generates one browser UUID, Track Manager persists it privately as canonical `creationOperationId`, and Studio keeps the create POST one-shot. If the HTTP response is lost, Studio rereads the private canonical Track and recovers success only when the exact UUID is observed. Missing, mismatched, legacy or unreadable identity remains ambiguous/unverified and non-retryable.
-
-Real-user acceptance on 2026-09-13 proved:
-
-```text
-Track                   build109-smoke-20260913
-status                  draft
-Album                   Singles
-creationOperationId     77ce7e21-90b9-46a3-b166-6148003d50a8
-canonical reread        verified
-cleanup                 disposable Track deleted
-```
-
-Latest acceptance receipt: [`docs/acceptance/BUILD109-REAL-USER-PASS.md`](docs/acceptance/BUILD109-REAL-USER-PASS.md).
-
-Detailed changelog: [`changelogs/CHANGELOG-BUILD109.md`](changelogs/CHANGELOG-BUILD109.md).
+**Build118 / v0.19.40 — Catalogue A2.1 candidate only.** Native commercial Catalogue navigation, routes/types and empty states; local import is coming in a later slice. No embedded commercial dataset, backend change or canonical persistence. Not merged, deployed or accepted. [Candidate scope](docs/build118-catalogue-a2-1-candidate.md).
 
 ## Product model
 
@@ -113,11 +76,12 @@ Phase 10 Slice2     UNALLOCATED
 Phase 10            ACTIVE · progressive extraction by bounded audited slices
 Build108            COMPLETE · catalog rebuild identity · REAL USER PASS
 Build109            COMPLETE · Track-create identity · REAL USER PASS
-Build110            UNALLOCATED
+Build110–117        COMPLETE · see canonical checkpoint and acceptance receipts
+Build118            CANDIDATE · Catalogue A2.1 foundation
 Official Phase 11   NONE
 ```
 
-Build108 and Build109 are deliberately bounded reliability/backend-contract work outside Phase10 Slice2. No Build110 is allocated until a fresh audit proves a concrete scope.
+Build118 is bounded Catalogue product work outside Phase10 Slice2. Stop at Draft PR review; no merge or deployment is authorized.
 
 ## Frozen authority model
 
@@ -155,7 +119,7 @@ Neither authorizes generic operation IDs or retries for unrelated write families
 
 ## Roadmap continuity
 
-Preserved backlog includes Album-create operation identity, exact-byte/digest proof for binary upload families, optional future Deep Audio operation identity/status, degraded/offline workflow work only when a bounded product slice is proven, premium interaction polish, and further Phase10 extraction only when singular authority and independent rollback remain explicit.
+Preserved backlog includes Album asset exact-byte/digest proof, optional future Deep Audio operation identity/status, degraded/offline workflow work only when a bounded product slice is proven, premium interaction polish, and further Phase10 extraction only when singular authority and independent rollback remain explicit.
 
 See [`ROADMAP.md`](ROADMAP.md) for current Done / Active / Next / Backlog state and [`QA.md`](QA.md) for accepted test boundaries.
 

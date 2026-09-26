@@ -1,10 +1,10 @@
 export const studioRelease = {
-  version: '0.19.39',
-  build: 117,
+  version: '0.19.40',
+  build: 118,
   phase: 10,
-  codename: 'studio-focus-build117-track-asset-sha256',
-  summary: 'Exact-byte Track asset upload proof',
-  releasedAt: '2026-09-15',
+  codename: 'studio-focus-build118-catalogue-a2-1-foundation',
+  summary: 'Native commercial Catalogue read-only foundation',
+  releasedAt: '2026-09-26',
 } as const;
 
 // Historical candidate markers retained only so exact earlier guards remain immutable.
@@ -61,3 +61,4 @@ export const build113AncestryMarker = "version: '0.19.35' · build: 113 · coden
 export const build114AncestryMarker = "version: '0.19.36' · build: 114 · codename: 'studio-focus-build114-album-create-operation-identity'";
 export const build115AncestryMarker = "version: '0.19.37' · build: 115 · codename: 'studio-focus-build115-safe-album-delete'";
 export const build116AncestryMarker = "version: '0.19.38' · build: 116 · codename: 'studio-focus-build116-safe-track-delete'";
+export const build117AncestryMarker = "version: '0.19.39' · build: 117 · codename: 'studio-focus-build117-track-asset-sha256'";

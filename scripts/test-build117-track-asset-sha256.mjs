@@ -12,9 +12,12 @@ assert.match(release, /version:\s*'0\.19\.39'/);
 assert.match(release, /build:\s*117/);
 assert.match(release, /codename:\s*'studio-focus-build117-track-asset-sha256'/);
 assert.match(release, /build116AncestryMarker/);
-assert.equal(pkg.version, '0.19.39');
+assert.ok(Number(release.match(/build:\s*(\d+)/)?.[1]) >= 117);
+assert.equal(pkg.version, release.match(/version:\s*'([^']+)'/)?.[1]);
+assert.match(release, /build117AncestryMarker\s*=\s*"version: '0\.19\.39' · build: 117 · codename: 'studio-focus-build117-track-asset-sha256'"/);
 assert.equal(pkg.scripts['check:build117'], 'node scripts/test-build117-track-asset-sha256.mjs');
-assert.match(pkg.scripts.build, /npm run check:build116 && npm run check:build117 && npm run check:focus/);
+assert.match(pkg.scripts.build, /npm run check:build116 && npm run check:build117 &&/);
+assert.match(pkg.scripts.build, /npm run check:focus/);
 
 const legacyPhase4Import = assetsManager.match(/import \{([\s\S]*?)\} from '\.\.\/services\/phase4-admin-api';/)?.[1] || '';
 assert.doesNotMatch(legacyPhase4Import, /uploadAdminTrackAsset/, 'Build117 must not import Track upload from the legacy Phase4 client.');

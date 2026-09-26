@@ -2,6 +2,12 @@
 
 This is the **current concise changelog**. Detailed per-build records live under `changelogs/` and accepted production receipts under `docs/acceptance/`.
 
+## Unreleased candidate
+
+### v0.19.40 · Build118 — Catalogue A2.1
+
+Native read-only Catalogue foundation: daily navigation after Albums, independent commercial types, strict subroutes and honest empty/not-found states. Local import is deferred. No private dataset, new dependencies, Worker/R2 changes, merge or deployment. [Candidate evidence](docs/build118-catalogue-a2-1-candidate.md).
+
 ## Current accepted release
 
 ### v0.19.39 · Build117 — 2026-09-19

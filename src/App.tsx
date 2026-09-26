@@ -4,6 +4,7 @@ import { AlbumMigrationPanel } from './components/AlbumMigrationPanel';
 import { AlbumHealthWorkspace } from './components/AlbumHealthWorkspace';
 import { CatalogRebuildPanel } from './components/CatalogRebuildPanel';
 import { CatalogView } from './components/CatalogView';
+import { CommercialCatalogue } from './components/CommercialCatalogue';
 import { CatalogIntelligenceView } from './components/CatalogIntelligenceView';
 import { EmptyState } from './components/EmptyState';
 import { FocusHome } from './components/FocusHome';
@@ -25,6 +26,7 @@ const DAILY_NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
   { route: 'dashboard', label: 'Home', glyph: '⌂' },
   { route: 'catalog', label: 'Tracks', glyph: '♫' },
   { route: 'albums', label: 'Albums', glyph: '▣' },
+  { route: 'catalogue', label: 'Catalogue', glyph: '◫' },
 ];
 
 const TOOL_NAV: Array<{ route: StudioRoute; label: string; glyph: string }> = [
@@ -36,6 +38,7 @@ const ROUTE_TITLES: Partial<Record<StudioRoute, string>> = {
   dashboard: 'Home',
   catalog: 'Tracks',
   albums: 'Albums',
+  catalogue: 'Catalogue',
   workflow: 'Production queue',
   intelligence: 'Intelligence',
   administration: 'System',
@@ -44,7 +47,7 @@ const ROUTE_TITLES: Partial<Record<StudioRoute, string>> = {
   publishing: 'Publishing',
 };
 
-const shellCopy: Record<Exclude<StudioRoute, 'catalog' | 'albums' | 'workflow'>, { eyebrow: string; title: string; body: string }> = {
+const shellCopy: Record<Exclude<StudioRoute, 'catalog' | 'catalogue' | 'albums' | 'workflow'>, { eyebrow: string; title: string; body: string }> = {
   dashboard: {
     eyebrow: 'STUDIO',
     title: 'Make the track. Finish the release.',
@@ -154,9 +157,10 @@ export default function App() {
         {route === 'workflow' && <WorkflowView />}
         {route === 'catalog' && (trackId ? <TrackWorkspace trackId={trackId} section={trackSection} /> : <CatalogView />)}
         {route === 'albums' && <AlbumHealthWorkspace />}
+        {route === 'catalogue' && <CommercialCatalogue />}
         {route === 'intelligence' && <CatalogIntelligenceView />}
 
-        {route !== 'dashboard' && route !== 'workflow' && route !== 'catalog' && route !== 'albums' && route !== 'intelligence' && (
+        {route !== 'dashboard' && route !== 'workflow' && route !== 'catalog' && route !== 'catalogue' && route !== 'albums' && route !== 'intelligence' && (
           <>
             <EmptyState eyebrow={shellCopy[route].eyebrow} title={shellCopy[route].title} body={shellCopy[route].body} />
             {route === 'administration' && (

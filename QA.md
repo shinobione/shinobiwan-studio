@@ -1,10 +1,20 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-09-13 after **Build109 REAL USER PASS** and release closeout.
+Updated: 2026-09-26 for Build118 candidate; accepted baseline reconciled to Build117.
 
 This file records accepted runtime truth, automated proof boundaries, real-user evidence and major remaining unproven areas. Historical run-by-run detail belongs in `changelogs/` and `docs/`.
 
 ## Current accepted Studio runtime
+
+**v0.19.39 / Build117 — REAL USER PASS.** See the [Build117 receipt](docs/acceptance/BUILD117-REAL-USER-PASS.md) for the precise production smoke boundary: metadata-validation corrective passed; exact-byte upload proof is automated evidence.
+
+Runtime PR #234, final head `b843acf030195b726725af2d0f7e148607b8b9bb`, validation `35435903134` SUCCESS. Current main `6a71a17bba3513472f007f641ca03a3df0739461` has Pages build/deploy `35441980808` SUCCESS. Track Manager v5.28 / bridge v1.18 remains the accepted protected authority.
+
+## Build118 / Catalogue A2.1 — candidate only
+
+Native shell, separate routes/types and empty states only. Targeted route/component/type checks and the full inherited build chain are required, with post-build private artifact scanning. No importer, commercial source rows, writes or new dependencies. No merge/deploy or REAL USER PASS is claimed. See [candidate evidence and limitations](docs/build118-catalogue-a2-1-candidate.md).
+
+## Historical Build109 accepted receipt
 
 ```text
 Version                 v0.19.31
@@ -140,7 +150,7 @@ Build109     Track-create operation identity                        PASS
 
 Build109 does not reopen Phase9 or alter Build107's numerical extraction contract.
 
-## Cross-stack accepted baseline
+## Historical Build109 cross-stack baseline
 
 ```text
 Track Manager           v5.24 · protected canonical write authority
@@ -156,8 +166,7 @@ LRC Maker               6.3.8
 
 ## Remaining unproven areas — backend-contract candidates
 
-- Album create lost-response causality / durable operation identity;
-- exact-byte/digest proof for binary upload families;
+- Album asset exact-byte/digest proof (Track assets are covered by accepted Build117);
 - Deep Audio request status/idempotency if the coordinator gains an operation identity contract;
 - degraded/offline behavior only where a future audit proves material daily-workflow impact.
 
@@ -168,4 +177,4 @@ Studio must not fabricate causal certainty when a different backend operation do
 
 ## Next QA gate
 
-**No Build110 is allocated.** Any next build requires a fresh bounded audit/scope with exact automated and real-user acceptance boundaries before implementation.
+Review the A2.1 Draft PR and exact-head CI. Build118 remains a candidate; merge/deployment require separate authorization. Local-private import and populated views are future slices, and real-user browser acceptance remains pending.

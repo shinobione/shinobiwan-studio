@@ -5,6 +5,7 @@ const ROUTES = new Set<StudioRoute>([
   'dashboard',
   'workflow',
   'catalog',
+  'catalogue',
   'albums',
   'intelligence',
   'lyrics',

@@ -2,6 +2,7 @@ export type StudioRoute =
   | 'dashboard'
   | 'workflow'
   | 'catalog'
+  | 'catalogue'
   | 'albums'
   | 'intelligence'
   | 'lyrics'

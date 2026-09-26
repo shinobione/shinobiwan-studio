@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Decisions
 
-Updated: 2026-09-13 after **Build108 REAL USER PASS**.
+Updated: 2026-09-26 for the Catalogue A2.1 boundary and candidate identity discipline.
 
 This file records durable product, architecture and safety decisions. It is not a changelog. Add an entry only when a decision is introduced, changed or explicitly superseded.
 
@@ -167,7 +167,7 @@ Prefer source guards, typecheck/build, stale protection, canonical reread verifi
 - A candidate does not become accepted retroactively because a later candidate passes.
 - Historical failed/superseded builds retain their real status.
 - Closing a phase does not consume the next build number merely for bookkeeping.
-- A candidate may run temporarily under the previous accepted identity; the new identity is allocated only at acceptance closeout.
+- Allocate candidate version/build and its matching gate at implementation start after scope is proven (current release discipline, reaffirmed for Build118). Accepted production identity remains separate until real-user acceptance. This supersedes the older temporary-candidate-identity rule.
 
 ## D-015 — Repository memory is canonical and bounded
 
@@ -250,6 +250,12 @@ canonical reread        verified
 ```
 
 **Consequence:** catalog rebuild operation identity/generation evidence is no longer backlog for this explicit Studio path. Any other write family requires its own proof contract.
+
+## D-018 — Commercial Catalogue is independent and initially read-only
+
+Introduced for A2.1 / Build118 candidate. `#/catalogue` is commercial discography; `#/catalog` remains creative Tracks. Recordings and commercial releases have independent identities. ISRC/UPC are optional metadata; appearances allow a recording on multiple releases. A Studio Track binding requires private proof and human review, never title similarity. Creative Album membership remains `album.trackIds`.
+
+A2.1 contains no commercial data or import. Local-private import/dry-run is deferred to A2.2, in memory only unless separately reviewed. Channel publication evidence remains channel-specific. No commercial persistence or canonical write authority is introduced.
 
 ## Changing a decision
 
