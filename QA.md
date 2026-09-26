@@ -177,4 +177,4 @@ Studio must not fabricate causal certainty when a different backend operation do
 
 ## Next QA gate
 
-Review the A2.1 Draft PR and exact-head CI. Build118 remains a candidate; merge/deployment require separate authorization. Local-private import and populated views are future slices, and real-user browser acceptance remains pending.
+Build118 A2.1 is accepted; the next independently scoped QA gate is A2.2 local-private historical import/dry-run. Require structural source validation, idempotent repeat import, retained provenance and unresolved cases, no title-only auto-link, and no V5/derived private data in Git or Pages. Populated views and any commercial backend write remain separate future acceptance boundaries.
