@@ -1,4 +1,4 @@
-import { adminAlbumMediaUrl, getAdminAlbums } from './album-admin-api';
+import { adminAlbumMediaUrl, getAdminAlbums, type AdminAlbumsResponse } from './album-admin-api';
 import { studioConfig } from './config';
 
 export interface PublicAlbumVisual {
@@ -19,12 +19,12 @@ interface PublicAlbumsResponse {
   }>;
 }
 
-export async function getPublicAlbumVisuals(): Promise<Map<string, PublicAlbumVisual>> {
+export async function getPublicAlbumVisuals(canonicalAlbums?: AdminAlbumsResponse): Promise<Map<string, PublicAlbumVisual>> {
   // Studio Album Management is private. A draft Album can legitimately have
   // canonical R2 artwork that is absent from the public LaunchPAD projection.
   // Prefer the protected Track Manager media route whenever private asset state
   // proves the object exists, then use the public projection only as fallback.
-  const privatePayload = await getAdminAlbums();
+  const privatePayload = canonicalAlbums ?? await getAdminAlbums();
   const visuals = new Map<string, PublicAlbumVisual>();
   for (const album of privatePayload.albums || []) {
     const cover = album.assetState?.cover?.present ? adminAlbumMediaUrl(album.id, 'cover') : null;

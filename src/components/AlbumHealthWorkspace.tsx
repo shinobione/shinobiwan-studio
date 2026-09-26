@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { buildCatalogAlbumHealth, type AlbumHealth } from '../album-health';
 import { trackHref } from '../router';
-import { getAdminAlbums, type AdminAlbumSummary } from '../services/album-admin-api';
-import { getCatalogTracks } from '../services/catalog-api';
+import type { AdminAlbumSummary } from '../services/album-admin-api';
+import { getSharedAlbums as getAdminAlbums, getSharedCatalogTracks as getCatalogTracks } from '../services/shared-private-reads';
 import { getPublicAlbumVisuals, type PublicAlbumVisual } from '../services/public-albums-api';
 import type { StudioTrack } from '../types/studio';
 import '../phase8-album-health.css';
@@ -143,10 +143,11 @@ function AlbumHealthOverview() {
 
   useEffect(() => {
     let active = true;
+    const albumsRequest = getAdminAlbums();
     Promise.all([
-      getAdminAlbums(),
+      albumsRequest,
       getCatalogTracks(),
-      getPublicAlbumVisuals().catch(() => new Map<string, PublicAlbumVisual>()),
+      albumsRequest.then(payload => getPublicAlbumVisuals(payload)).catch(() => new Map<string, PublicAlbumVisual>()),
     ])
       .then(([albumPayload, catalogTracks, albumVisuals]) => {
         if (!active) return;

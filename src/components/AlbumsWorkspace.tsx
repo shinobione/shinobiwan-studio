@@ -1,12 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { createCoverThumbnail, extractCoverPalette, type CoverPalette } from '../cover-palette';
-import { getCatalogTracks } from '../services/catalog-api';
+import { getSharedAlbums as getAdminAlbums, getSharedCatalogTracks as getCatalogTracks } from '../services/shared-private-reads';
 import {
   AlbumAdminError,
   createAdminAlbum,
   deleteAdminAlbumAsset,
   getAdminAlbum,
-  getAdminAlbums,
   uploadAdminAlbumAsset,
   type AdminAlbumAssetState,
   type AdminAlbumManifest,
@@ -411,29 +410,39 @@ export function AlbumsWorkspace() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [visualWarning, setVisualWarning] = useState<string | null>(null);
+  const loadGeneration = useRef(0);
 
-  async function load() {
+  async function load(fresh = true) {
+    const generation = ++loadGeneration.current;
     setLoading(true);
     try {
-      const [albumPayload, catalogTracks] = await Promise.all([getAdminAlbums(), getCatalogTracks()]);
+      const [albumPayload, catalogTracks] = await Promise.all([getAdminAlbums(fresh), getCatalogTracks(fresh)]);
+      if (generation !== loadGeneration.current) return;
       setAlbums(albumPayload.albums || []);
       setTracks(catalogTracks);
       setError(null);
       try {
-        setVisuals(await getPublicAlbumVisuals());
+        const nextVisuals = await getPublicAlbumVisuals(albumPayload);
+        if (generation !== loadGeneration.current) return;
+        setVisuals(nextVisuals);
         setVisualWarning(null);
       } catch (reason) {
+        if (generation !== loadGeneration.current) return;
         setVisuals(new Map());
         setVisualWarning(`Canonical cover preview unavailable: ${errorMessage(reason)}`);
       }
     } catch (reason) {
+      if (generation !== loadGeneration.current) return;
       setError(errorMessage(reason));
     } finally {
-      setLoading(false);
+      if (generation === loadGeneration.current) setLoading(false);
     }
   }
 
-  useEffect(() => { void load(); }, []);
+  useEffect(() => {
+    void load(false);
+    return () => { loadGeneration.current += 1; };
+  }, []);
 
   const totals = useMemo(() => ({
     total: albums.length,

@@ -67,7 +67,7 @@ assert.match(catalog, /catch \(adminError\) \{\n    const publicResult = await p
 assert.match(catalog, /catch \(adminError\) \{\n    const publicResult = await publicResultPromise;\n    try \{\n      return await retryPublicCatalogFallbackAfterTransientFailure\(publicResult, getPublicTracks\)/);
 assert.match(catalog, /retryPublicCatalogFallbackAfterTransientFailure\(publicResult, \(\) => getPublicTrack\(trackId\)\)/);
 
-assert.match(publicAlbums, /const privatePayload = await getAdminAlbums\(\)/);
+assert.match(publicAlbums, /const privatePayload = canonicalAlbums \?\? await getAdminAlbums\(\)/);
 assert.match(publicAlbums, /const response = await fetch\(`\$\{base\}\/albums`/);
 assert.doesNotMatch(publicAlbums, /retryPublicCatalogFallbackAfterTransientFailure/);
 

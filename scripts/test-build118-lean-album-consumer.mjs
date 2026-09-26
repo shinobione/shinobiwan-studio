@@ -154,16 +154,18 @@ let slots = [], cursor = 0, effects = [];
 const hooks = {
   useState: initial => { const index = cursor++; if (!(index in slots)) slots[index] = initial; return [slots[index], value => { slots[index] = value; }]; },
   useMemo: calculate => calculate(), useEffect: callback => effects.push(callback),
+  useRef: initial => { const index = cursor++; if (!(index in slots)) slots[index] = { current: initial }; return slots[index]; },
 };
 const ui = load('src/components/AlbumsWorkspace.tsx', {
   react: hooks, 'react/jsx-runtime': jsx,
+  '../services/shared-private-reads': { getSharedAlbums: album.getAdminAlbums, getSharedCatalogTracks: async () => [] },
   '../cover-palette': {}, '../services/catalog-api': { getCatalogTracks: async () => [] },
   '../services/album-admin-api': album, '../services/album-delete-admin-api': deletion,
   '../services/album-membership-admin-api': {}, '../services/album-metadata-admin-api': {}, '../services/album-move-admin-api': {},
   '../services/public-albums-api': artwork, './CoverImagePreview': {}, './CoverPalettePreview': {},
 });
 const render = () => { cursor = 0; return renderToStaticMarkup(React.createElement(ui.AlbumsWorkspace)); };
-reset(collection(), collection(), () => json({ ok: true, albumAuthority: 'canonical-r2', albums: [] }));
+reset(collection(), () => json({ ok: true, albumAuthority: 'canonical-r2', albums: [] }));
 render(); effects.shift()();
 await new Promise(resolve => setImmediate(resolve));
 const markup = render();
@@ -179,6 +181,7 @@ assert.match(render(), /Album Management unavailable.*one bounded transient retr
 drained();
 
 const healthUi = load('src/components/AlbumHealthWorkspace.tsx', {
+  '../services/shared-private-reads': { getSharedAlbums: album.getAdminAlbums, getSharedCatalogTracks: async () => [] },
   react: hooks, 'react/jsx-runtime': jsx, '../album-health': health,
   '../router': { trackHref: id => `#/catalog/${id}` },
   '../services/album-admin-api': album, '../services/catalog-api': { getCatalogTracks: async () => [] },
@@ -187,7 +190,7 @@ const healthUi = load('src/components/AlbumHealthWorkspace.tsx', {
 });
 const renderHealth = () => { cursor = 0; return renderToStaticMarkup(React.createElement(healthUi.AlbumHealthWorkspace)); };
 slots = []; effects = [];
-reset(collection(), collection(), () => json({ ok: true, albumAuthority: 'canonical-r2', albums: [] }));
+reset(collection(), () => json({ ok: true, albumAuthority: 'canonical-r2', albums: [] }));
 renderHealth(); effects.shift()();
 await new Promise(resolve => setImmediate(resolve));
 const healthMarkup = renderHealth();
@@ -196,7 +199,7 @@ assert.match(healthMarkup, /Private Track truth unavailable/);
 assert.doesNotMatch(healthMarkup, /Album Health unavailable/);
 drained();
 slots = []; effects = [];
-reset(transport, transport, transport, transport);
+reset(transport, transport);
 renderHealth(); effects.shift()();
 await new Promise(resolve => setImmediate(resolve));
 assert.match(renderHealth(), /Album Health unavailable.*one bounded transient retry/);

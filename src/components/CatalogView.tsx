@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { buildCatalogWorkflow, type TrackWorkflowState } from '../phase7-workflow';
 import { trackHref } from '../router';
-import { getCatalogTracks } from '../services/catalog-api';
+import { getSharedCatalogTracks as getCatalogTracks } from '../services/shared-private-reads';
 import { studioConfig } from '../services/config';
 import { deleteAdminTrackResilient, TrackDeleteError } from '../services/track-delete-admin-api';
 import type { StudioTrack } from '../types/studio';
@@ -9,26 +9,6 @@ import { TrackCreatePanel } from './TrackCreatePanel';
 
 type ProductionFilter = 'to-finish' | 'ready' | 'released' | 'all';
 type SortMode = 'newest' | 'title' | 'album';
-
-let catalogCache: StudioTrack[] | null = null;
-let catalogRequest: Promise<StudioTrack[]> | null = null;
-
-function requestCatalog(force = false): Promise<StudioTrack[]> {
-  if (!force && catalogCache) return Promise.resolve(catalogCache);
-  if (!force && catalogRequest) return catalogRequest;
-  const request = getCatalogTracks().then(items => {
-    catalogCache = items;
-    return items;
-  });
-  catalogRequest = request.finally(() => {
-    if (catalogRequest === request || catalogRequest) catalogRequest = null;
-  });
-  return catalogRequest;
-}
-
-// Tracks is imported with the Studio shell, so begin the canonical read in the
-// background before the user opens it. Re-visits use the in-memory snapshot.
-void requestCatalog().catch(() => {});
 
 function safeDate(value: string | null): number {
   const parsed = value ? Date.parse(value) : 0;
@@ -76,8 +56,8 @@ function CatalogLoadingState() {
 }
 
 export function CatalogView() {
-  const [tracks, setTracks] = useState<StudioTrack[]>(() => catalogCache || []);
-  const [loading, setLoading] = useState(() => !catalogCache);
+  const [tracks, setTracks] = useState<StudioTrack[]>([]);
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -88,28 +68,37 @@ export function CatalogView() {
   const [productionFilter, setProductionFilter] = useState<ProductionFilter>('to-finish');
   const [sortMode, setSortMode] = useState<SortMode>('newest');
   const [showCreate, setShowCreate] = useState(false);
+  const loadGeneration = useRef(0);
 
   async function loadCatalog(force = false) {
-    const hasSnapshot = Boolean(catalogCache?.length || tracks.length);
+    const generation = ++loadGeneration.current;
+    const hasSnapshot = Boolean(tracks.length);
     const hadPrivateRead = tracks.some(track => track.readSource === 'private');
     if (hasSnapshot) setRefreshing(true);
     else setLoading(true);
     try {
-      const items = await requestCatalog(force);
+      const items = await getCatalogTracks(force);
+      if (generation !== loadGeneration.current) return;
       const nextPrivateRead = items.some(track => track.readSource === 'private');
       setTracks(items);
       if (!nextPrivateRead && (productionFilter === 'to-finish' || productionFilter === 'ready')) setProductionFilter('released');
       else if (!hadPrivateRead && nextPrivateRead) setProductionFilter('to-finish');
       setError(null);
     } catch (reason) {
+      if (generation !== loadGeneration.current) return;
       setError(reason instanceof Error ? reason.message : String(reason));
     } finally {
-      setLoading(false);
-      setRefreshing(false);
+      if (generation === loadGeneration.current) {
+        setLoading(false);
+        setRefreshing(false);
+      }
     }
   }
 
-  useEffect(() => { void loadCatalog(); }, []);
+  useEffect(() => {
+    void loadCatalog();
+    return () => { loadGeneration.current += 1; };
+  }, []);
 
   const albums = useMemo(() => {
     const unique = new Map<string, string>();
