@@ -16,13 +16,15 @@ Then verify real GitHub state before mutation.
 
 ## Current accepted state
 
-**Build118 / v0.19.40 — A2.1 REAL USER PASS; CPU slice 4 merged, Pages deployed and bounded owner recovery PASS.** [Original acceptance](docs/acceptance/BUILD118-REAL-USER-PASS.md) and [CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md) remain distinct. CPU duration/compliance is unmeasured; incident issues stay open. A2.2 local-private import is authorized as a separate candidate, with no merge/deploy permission.
+**Build119 / v0.19.41 — Catalogue A2.2 REAL USER PASS (bounded).** PR #242 merged at `20a0adf15271a0f9bff0cbd2a318c441685ec2bc`; candidate CI 36312536104 and automatic Pages deploy 36316493317 SUCCESS. The owner explicitly validated a local-private V5-derived JSON summary (444 rows, 168 Recordings, 84 commercial Releases, 109 appearances, 120 known / 48 missing ISRC, zero rejects, 355 pending findings), QA, reset/unload, refresh-empty and no private-source network upload or browser-storage persistence in DevTools. [Exact owner receipt](docs/acceptance/BUILD119-REAL-USER-PASS.md) · [A2.2 contract](docs/CATALOGUE-A2-2-CONTRACT.md).
 
-Documentation #241 is merged at main `8c6a67eb9a1476fa864d136174199402a12498a8`; its automatic Pages run 36310871264 succeeded without creating a new runtime build. [Build117](docs/acceptance/BUILD117-REAL-USER-PASS.md) remains the prior accepted reliability baseline. [PROJECT_STATE.md](PROJECT_STATE.md) holds exact current receipts.
+The preview is explicitly selected, temporary, in-memory and read-only. Findings remain pending, current platform availability remains unknown, and the derived JSON has documented workbook-evidence omissions. No commercial persistence, Track auto-link, R2/Worker write, A2.3 gallery or distributor synchronization was delivered.
 
-## Current candidate
+**Build118 / v0.19.40** retains its independent [A2.1 original seven-check acceptance](docs/acceptance/BUILD118-REAL-USER-PASS.md) and [later bounded CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md); CPU issue #238 / LaunchPAD #283 remain open without sustained CPU-duration evidence. [Build117](docs/acceptance/BUILD117-REAL-USER-PASS.md) remains the prior accepted reliability baseline.
 
-**Build119 / v0.19.41 — Catalogue A2.2, Draft #242, not merged or deployed; no REAL USER PASS.** The existing branch integrates current main and preserves the reviewed implementation. Select a local JSON explicitly, inspect summary/QA, then unload. No upload, persistence or production write. The derived JSON has documented workbook-coverage omissions. [Contract](docs/CATALOGUE-A2-2-CONTRACT.md) · [Validation and owner acceptance gate](docs/CATALOGUE-A2-2-VALIDATION.md). Stop at new exact-head CI and Draft review; owner private-source smoke follows only separately authorized deployment.
+## Next scope — Catalogue A2.3 (blueprint only)
+
+[Native A2.3 functional blueprint](docs/CATALOGUE-A2-3-BLUEPRINT.md): a populated **session-only** Overview, Releases gallery/details, Recordings explorer and evidence-linked QA. Do not invent absent commercial artwork, genre or publication facts. Persistent living commercial registry, reviewed creative bindings and STUDIO ↔ LaunchPAD bidirectional synchronization need their own future authority/architecture decision. No runtime build has been allocated for A2.3.
 
 ## Product model
 
@@ -30,6 +32,7 @@ Documentation #241 is merged at main `8c6a67eb9a1476fa864d136174199402a12498a8`;
 Home
 Tracks
 Albums
+Catalogue
 
 Advanced ▾
   Workflow
@@ -82,11 +85,11 @@ Build108            COMPLETE · catalog rebuild identity · REAL USER PASS
 Build109            COMPLETE · Track-create identity · REAL USER PASS
 Build110–117        COMPLETE · see canonical checkpoint and acceptance receipts
 Build118            ACCEPTED · A2.1 PASS; deployed CPU slice 4 bounded owner PASS
-Build119            CANDIDATE · Catalogue A2.2 Draft #242 · undeployed
+Build119            ACCEPTED · A2.2 local-private dry-run · bounded REAL USER PASS
 Official Phase 11   NONE
 ```
 
-Build118 and Build119 are bounded Catalogue product work outside Phase10 Slice2. Build118 is accepted production. Build119 stops at Draft #242 review; its merge and deployment require separate authorization.
+Build118 and Build119 are independently accepted Catalogue product slices outside Phase10 Slice2. A2.3 is a specification only; implementation, persistent storage and synchronization require separate review.
 
 ## Frozen authority model
 
