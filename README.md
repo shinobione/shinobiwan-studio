@@ -16,15 +16,15 @@ Then verify real GitHub state before mutation.
 
 ## Current accepted state
 
-**Build120 / v0.19.42 — Catalogue A2.3 Slice 1 · bounded REAL USER PASS.** Owner-authorized [PR #244](https://github.com/shinobione/shinobiwan-studio/pull/244) merged at `09681904e69b9f2c3ab7bf0d41de1cf1a7dd5d11`; [CI #36318925988](https://github.com/shinobione/shinobiwan-studio/actions/runs/36318925988) SUCCESS on the exact candidate and [Pages #36320947983](https://github.com/shinobione/shinobiwan-studio/actions/runs/36320947983) build/deploy SUCCESS on the merge SHA. Shino confirmed the live private-source Overview counts, one retained snapshot across sections, finding-group links to filtered QA/Show all, Reset/refresh clearing, and DevTools no private upload/storage or source IDs in the URL during the tested flow. [Bounded owner receipt](docs/acceptance/BUILD120-REAL-USER-PASS.md) · [original implementation handoff](docs/CATALOGUE-A2-3-SLICE1-VALIDATION.md).
+**Build121 / v0.19.43 — Catalogue A2.3 Slice 2 · bounded REAL USER PASS.** Owner-authorized [PR #246](https://github.com/shinobione/shinobiwan-studio/pull/246) merged at `6fd52f9f21ceb54d2014eaa99efb77d5ec899937`; exact final candidate `757a46d0d83804ae5cd2b7a7c03c483125c0c67e` passed [CI #36324001763](https://github.com/shinobione/shinobiwan-studio/actions/runs/36324001763) and [Pages #36325763251](https://github.com/shinobione/shinobiwan-studio/actions/runs/36325763251) build/upload/deploy SUCCESS on the merge SHA. Shino confirmed seven real private-source browser checks: 84 distinct Releases and no external artwork load, source search/filter/sort/Grid/List, exact metadata/appearance/evidence detail, truthful unbound/publication handling, keyboard modal/focus, session/reset/refresh continuity and DevTools no source upload/storage/IDs in route. [Bounded owner receipt](docs/acceptance/BUILD121-REAL-USER-PASS.md) · [historical implementation handoff](docs/CATALOGUE-A2-3-SLICE2-VALIDATION.md).
 
-The Catalogue remains temporary and read-only, with an explicit local file selected per session. Missing workbook evidence remains disclosed; 355 findings remain pending, not resolved or certified publication facts. No commercial persistence, external platform publishing, Track auto-binding, Worker/R2 change or Releases/Recordings detail gallery was introduced.
+The Catalogue still requires explicit local JSON selection, and the snapshot remains temporary, read-only and memory-only. The full ten-sheet workbook is not represented by the derived source, the earlier 355 findings remain pending, real artwork is not established and external publication is unknown. No commercial persistence, platform publishing, automatic creative Track mapping, Worker/R2 write or complete Recordings explorer is delivered.
 
-**Build119 / v0.19.41** retains its independent [A2.2 local-private import acceptance](docs/acceptance/BUILD119-REAL-USER-PASS.md). **Build118 / v0.19.40** retains the separate [original A2.1 acceptance](docs/acceptance/BUILD118-REAL-USER-PASS.md) and [bounded CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md). STUDIO CPU issue #238 / LaunchPAD #283 remain open without sustained CPU compliance evidence. [Build117](docs/acceptance/BUILD117-REAL-USER-PASS.md) remains previous reliability history.
+**Build120 / v0.19.42** retains its independent [A2.3 Slice 1 owner acceptance](docs/acceptance/BUILD120-REAL-USER-PASS.md); **Build119 / v0.19.41** its [A2.2 import receipt](docs/acceptance/BUILD119-REAL-USER-PASS.md); **Build118 / v0.19.40** its separate [A2.1 original acceptance](docs/acceptance/BUILD118-REAL-USER-PASS.md) and [bounded CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md). Studio CPU issue #238 / LaunchPAD #283 remain open without sustained CPU compliance evidence.
 
-## Active candidate — Build121 / v0.19.43
+## Next scope — A2.3 Slice 3 (planning only)
 
-A2.3 Slice 2 adds a source-derived Releases gallery with grid/list, search, factual filters and stable sorting; a transient keyboard-accessible Release detail preserves bound/unbound appearances and exact source evidence. Local full build and synthetic Chromium/privacy gates PASS. **Draft review only; not merged/deployed and no REAL USER PASS.** [Implementation and owner handoff](docs/CATALOGUE-A2-3-SLICE2-VALIDATION.md). Recording explorer, artwork mapping and commercial persistence/sync retain separate scope.
+[Catalogue A2.3 blueprint](docs/CATALOGUE-A2-3-BLUEPRINT.md): session-only native **Recordings explorer and evidence-linked contextual QA**, retaining distinct identities, missing ISRC and appearance relationships without auto-reconciliation. Reviewed artwork mapping, persistent commercial registry and STUDIO ↔ LaunchPAD synchronization need independent design and owner gates. The Build121 docs closeout does not allocate a new runtime build.
 
 ## Product model
 
@@ -87,10 +87,11 @@ Build110–117        COMPLETE · see canonical checkpoint and acceptance receip
 Build118            ACCEPTED · A2.1 PASS; deployed CPU slice 4 bounded owner PASS
 Build119            ACCEPTED · A2.2 local-private dry-run · bounded REAL USER PASS
 Build120            ACCEPTED · A2.3 Slice 1 shared session/Overview · bounded REAL USER PASS
+Build121            ACCEPTED · A2.3 Slice 2 Releases gallery/detail · bounded REAL USER PASS
 Official Phase 11   NONE
 ```
 
-Build118–120 are independently accepted Catalogue product slices outside Phase10 Slice2. A2.3 Releases/Recordings browsing and commercial persistence/synchronization still require separate review.
+Build118–121 are independently accepted Catalogue product slices outside Phase10 Slice2. The Recordings explorer and commercial persistence/synchronization remain separately scoped.
 
 ## Frozen authority model
 
