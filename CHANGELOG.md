@@ -2,13 +2,13 @@
 
 This is the **current concise changelog**. Detailed per-build records live under `changelogs/` and accepted production receipts under `docs/acceptance/`.
 
-## Unreleased candidate
-
-### v0.19.40 · Build118 — Catalogue A2.1
-
-Native read-only Catalogue foundation: daily navigation after Albums, independent commercial types, strict subroutes and honest empty/not-found states. Local import is deferred. No private dataset, new dependencies, Worker/R2 changes, merge or deployment. [Candidate evidence](docs/build118-catalogue-a2-1-candidate.md).
-
 ## Current accepted release
+
+### v0.19.40 · Build118 — 2026-09-27 reconciliation
+
+Catalogue A2.1 native empty foundation passed the owner's original seven checks. Subsequent CPU corrections: backend lean Albums (#284), Studio consumer (#239), backend Tracks (#285), deployment workflow (#286), Studio shared reads (#240). All are merged; Studio Pages and admin Worker deployment receipts are verified. Post-slice-4 owner sample passes functionality/network checks, not sustained CPU compliance. [Separate receipts](docs/acceptance/BUILD118-CPU-RECOVERY.md). A2.2 development is authorized separately. No runtime identity changes in this documentation closeout.
+
+## Prior accepted reliability release
 
 ### v0.19.39 · Build117 — 2026-09-19
 

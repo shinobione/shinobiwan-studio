@@ -1,16 +1,16 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-Updated: 2026-09-26 for **CPU corrective slice 4 / Build118 shared private browsing reads candidate**.
+## Reconciled production checkpoint — 2026-09-27
 
-## GitHub reconciliation / corrective stop line
+GitHub verified `main` = `650c8a3cf9a69f95732905562535394fac94a12e`, repository `shinobione/shinobiwan-studio`, production branch `main`. Build118 / v0.19.40 is merged and Pages deployed. PR #240 exact head `de730435dbca23df592f8fc4afe142ca80e186d5` passed [CI 36272677513](https://github.com/shinobione/shinobiwan-studio/actions/runs/36272677513); [Pages 36272890963](https://github.com/shinobione/shinobiwan-studio/actions/runs/36272890963) succeeded on the merge SHA.
 
-Verified `main`: `9306ab4b6dafcce87c1bc68411719d01102612c0` (PR #239, CPU slice 2). Exact candidate `a910b70856e344bc6c6896cc59a9f9107f9539a1` passed [validation 36258542918](https://github.com/shinobione/shinobiwan-studio/actions/runs/36258542918); merged Build118 / v0.19.40 passed [Pages 36258902897](https://github.com/shinobione/shinobiwan-studio/actions/runs/36258902897). The former slice-2 candidate checkpoint is superseded.
+The original [seven-check A2.1 REAL USER PASS](docs/acceptance/BUILD118-REAL-USER-PASS.md) is preserved verbatim from PR #237. The later CPU incident and recovery are separate: see [CPU closeout](docs/acceptance/BUILD118-CPU-RECOVERY.md). Owner-reported post-slice-4 sample: 7 canonical Albums, 4 Healthy / 3 Attention / 0 Unverified; artwork present; one HTTP 200 each for canonical Albums, Tracks, SonicTrace and health; no visible 503. This is bounded functionality/network acceptance, not sustained Cloudflare CPU compliance. No CPU durations were measured. Issues #238 and LaunchPAD #283 remain open.
 
-Build117 remains the latest merged standalone acceptance receipt. Build118 shell acceptance docs PR #237 is still open and **not incorporated here**. Later [owner evidence in #238](https://github.com/shinobione/shinobiwan-studio/issues/238#issuecomment-5849807422) records a bounded Albums/Tracks REAL USER PASS on deployed slice 2 plus LaunchPAD slice 3: 7 Albums, 4 Healthy / 3 Attention / 0 Unverified and two sampled loads with all captured GET invocations `Ok`. This is functional acceptance of that deployed corrective, not sustained CPU-budget proof. A2.2 remains on hold.
+LaunchPAD #284/#285/#286 are merged. Admin-only [deploy 36265326176](https://github.com/shinobione/LaunchPAD-APP/actions/runs/36265326176) succeeded at `e1737f0e29d3411c30c34c134ab0d68650b0617a`, version `51c9d61e-2c69-4f4a-b106-3e4829bfb461`. Public Worker steps were skipped. This documentation work deploys nothing and mutates no R2 data.
 
-Active runtime corrective: share pending Album/Track browsing reads across Albums Health, Management and Tracks; reuse canonical Album data for artwork; remove Tracks import-time prefetch and settled cache. Raw mutation verification and full migration reads remain independent. Keep Build118 identity for this bounded incident corrective. Stop at Draft PR + exact-head CI; no merge or production deployment. See [slice 4 scope and validation](docs/CPU-SLICE4-SHARED-PRIVATE-READS.md). Slice 4 has no REAL USER PASS and does not establish per-invocation CPU compliance.
+PR #237 stays open for owner review and is superseded for reconciliation by this documentation candidate. Its stale canonical file versions were not copied. Build117 remains the accepted prior reliability baseline and its receipt is unchanged.
 
-This is the short current checkpoint. Historical implementation detail remains in `changelogs/`, milestone docs and acceptance receipts.
+The owner's 2026-09-27 mission authorizes A2.2 local-private import/dry-run on a separate branch, ending at Draft PR + exact-head CI. This supersedes the earlier A2.2 hold for development only. No merge, Pages/Worker deployment, R2 write, billing/configuration change or A2.3 gallery is authorized.
 
 ## Accepted reliability baseline / latest merged standalone receipt
 
@@ -32,7 +32,7 @@ Public Worker           unchanged / intentionally skipped
 Real-user smoke         PASS · production metadata validation after corrective
 ```
 
-**Build117 is the accepted reliability baseline.** The currently deployed Build118 corrective has the bounded functional acceptance described above; slice 4 remains a candidate.
+**Build117 is the prior accepted reliability baseline.** Build118 has the separately bounded A2.1 and post-slice-4 acceptance above.
 
 Latest receipt:
 
@@ -121,7 +121,7 @@ Build114                COMPLETE · Album create operation identity · REAL USER
 Build115                COMPLETE · Safe Album Delete · REAL USER PASS
 Build116                COMPLETE · Safe Track Delete · REAL USER PASS
 Build117                COMPLETE · exact-byte Track asset SHA-256 proof · REAL USER PASS
-Build118                MERGED / PAGES DEPLOYED · CPU slice 2 functional PASS; slice 4 candidate
+Build118                MERGED / PAGES DEPLOYED · A2.1 PASS; slice 4 bounded functional PASS
 Official Phase 11       NONE
 ```
 
@@ -154,9 +154,7 @@ Build108/109/114–117 are bounded reliability/lifecycle work outside Phase10 Sl
 
 ## Immediate next action
 
-**Review CPU slice 4 Draft PR and exact-head CI on `fix/studio-shared-private-reads`; stop before merge/deploy.**
-
-Base is the verified main above. Issue #238 records LaunchPAD #285/#286 deployed at `e1737f0e29d3411c30c34c134ab0d68650b0617a`, admin-only [run 36265326176](https://github.com/shinobione/LaunchPAD-APP/actions/runs/36265326176), Worker version `51c9d61e-2c69-4f4a-b106-3e4829bfb461`, followed by the bounded owner smoke. No related repository, Worker or R2 changes belong to slice 4. SonicTrace backend optimization and commercial import remain outside scope; #237 needs reconciliation before merge. Album asset digest proof remains backlog; Phase10 Slice2 remains unallocated.
+Review the reconciled documentation candidate and independently develop/review A2.2 local-private import/dry-run. Preserve the CPU incident's open evidence gaps. Stop before merging or deploying either deliverable. A2.3 and Album asset digest proof remain separate future scope; Phase10 Slice2 remains unallocated.
 
 ## Release mechanics
 

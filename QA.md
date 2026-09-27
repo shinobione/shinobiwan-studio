@@ -1,20 +1,20 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-09-26 for CPU slice 4 candidate; Build117 remains the latest merged standalone acceptance receipt. Build118 corrective functional acceptance is recorded in issue #238; shell acceptance docs remain pending in #237.
+## Current accepted runtime and evidence — 2026-09-27
 
-This file records accepted runtime truth, automated proof boundaries, real-user evidence and major remaining unproven areas. Historical run-by-run detail belongs in `changelogs/` and `docs/`.
+GitHub verified `main` = `650c8a3cf9a69f95732905562535394fac94a12e`, repository `shinobione/shinobiwan-studio`, production branch `main`. Build118 / v0.19.40 is merged and Pages deployed. PR #240 exact head `de730435dbca23df592f8fc4afe142ca80e186d5` passed [CI 36272677513](https://github.com/shinobione/shinobiwan-studio/actions/runs/36272677513); [Pages 36272890963](https://github.com/shinobione/shinobiwan-studio/actions/runs/36272890963) succeeded on the merge SHA.
 
-## Current accepted Studio runtime
+The original [seven-check A2.1 REAL USER PASS](docs/acceptance/BUILD118-REAL-USER-PASS.md) is preserved verbatim from PR #237. The later CPU incident and recovery are separate: see [CPU closeout](docs/acceptance/BUILD118-CPU-RECOVERY.md). Owner-reported post-slice-4 sample: 7 canonical Albums, 4 Healthy / 3 Attention / 0 Unverified; artwork present; one HTTP 200 each for canonical Albums, Tracks, SonicTrace and health; no visible 503. This is bounded functionality/network acceptance, not sustained Cloudflare CPU compliance. No CPU durations were measured. Issues #238 and LaunchPAD #283 remain open.
 
-**Deployed v0.19.40 / Build118 CPU slice 2 + backend slice 3 — bounded Albums/Tracks functional REAL USER PASS.** [Owner evidence](https://github.com/shinobione/shinobiwan-studio/issues/238#issuecomment-5849807422): 7 Albums, 4 Healthy / 3 Attention / 0 Unverified, artwork and Track work rows restored; all captured GET invocations `Ok` in two sampled loads. No sustained CPU/load proof. The [Build117 receipt](docs/acceptance/BUILD117-REAL-USER-PASS.md) remains the prior accepted reliability baseline, with exact-byte upload proof automated rather than physical smoke evidence.
+LaunchPAD #284/#285/#286 are merged. Admin-only [deploy 36265326176](https://github.com/shinobione/LaunchPAD-APP/actions/runs/36265326176) succeeded at `e1737f0e29d3411c30c34c134ab0d68650b0617a`, version `51c9d61e-2c69-4f4a-b106-3e4829bfb461`. Public Worker steps were skipped. This documentation work deploys nothing and mutates no R2 data.
 
-Current main is `9306ab4b6dafcce87c1bc68411719d01102612c0` (PR #239), with Pages `36258902897` SUCCESS. Candidate `a910b70856e344bc6c6896cc59a9f9107f9539a1` passed validation `36258542918`. Backend deployed source/version and separate acceptance boundaries are in PROJECT_STATE.md. Track Manager remains the protected write authority; #238 remains open and #237 needs reconciliation.
+PR #237 stays open for owner review and is superseded for reconciliation by this documentation candidate. Its stale canonical file versions were not copied. Build117 remains the accepted prior reliability baseline and its receipt is unchanged.
 
-## Build118 / CPU slice 4 — candidate only
+The owner's 2026-09-27 mission authorizes A2.2 local-private import/dry-run on a separate branch, ending at Draft PR + exact-head CI. This supersedes the earlier A2.2 hold for development only. No merge, Pages/Worker deployment, R2 write, billing/configuration change or A2.3 gallery is authorized.
 
-The corrective shares pending browsing operations across Health/Management/Tracks, removes Tracks import-time prefetch and settled caching, and reuses Album payloads for artwork. Synthetic tests execute actual clients and component effects to count requests, verify retry ceilings, forced-read replacement, fresh navigation, unmount safety, provenance and independent canonical/migration reads. Existing slice-2 tests retain private delete recovery/detail-write verification and Health/Management rendering. The full build includes reliability guards, TypeScript and the Catalogue artifact/privacy scan.
+## Automated CPU regression coverage
 
-No slice-4 browser acceptance, CPU benchmark or incident resolution is claimed. Exact-head CI belongs to the Draft PR, not a deployment. See [scope, validation and proposed browser checklist](docs/CPU-SLICE4-SHARED-PRIVATE-READS.md). Navigation now performs a fresh read after prior work settles; the existing loading skeleton remains visible during that read.
+The inherited Build118 gate retains lean canonical Albums, shared private requests, private/public Track provenance, independent full migration/write verification, transient retry ceilings, SonicTrace additive semantics, freshness and unmount checks. Local A2.2 tests and future owner smoke must be reported separately from these accepted production receipts.
 
 ## Historical Build109 accepted receipt
 
@@ -179,4 +179,4 @@ Studio must not fabricate causal certainty when a different backend operation do
 
 ## Next QA gate
 
-Review CPU slice 4 Draft PR and exact-head CI. Merge/deployment require separate authorization, followed by the proposed browser acceptance checklist. Local-private import remains on hold; bounded prior recovery does not close the CPU incident.
+Review A2.2 synthetic/source-compatibility/privacy evidence and exact-head CI. Owner browser acceptance of the candidate remains pending until separately authorized deployment. CPU incidents stay open without sustained telemetry.

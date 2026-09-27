@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-09-26 for CPU corrective slice 4; see PROJECT_STATE.md for reconciled deployment and acceptance boundaries.
+Updated: 2026-09-27 after deployed CPU slice 4; see PROJECT_STATE.md for reconciled deployment and acceptance boundaries.
 
 This file tracks durable Done / Active / Next / Backlog state. Historical implementation detail belongs in changelogs, milestone docs and acceptance receipts.
 
@@ -92,15 +92,17 @@ Evidence: [`docs/acceptance/BUILD117-REAL-USER-PASS.md`](docs/acceptance/BUILD11
 
 ### CPU corrective slices 2–3 — bounded functional recovery
 
-Studio #239 lean canonical Album consumer is merged and Pages deployed. The separately deployed LaunchPAD Tracks CPU corrective and Studio slice 2 received a bounded Albums/Tracks functional PASS in [issue #238](https://github.com/shinobione/shinobiwan-studio/issues/238#issuecomment-5849807422). This does not close the incident or prove sustained CPU compliance; frontend request duplication is the active slice below.
+Studio #239 lean canonical Album consumer is merged and Pages deployed. The separately deployed LaunchPAD Tracks CPU corrective and Studio slice 2 received a bounded Albums/Tracks functional PASS in [issue #238](https://github.com/shinobione/shinobiwan-studio/issues/238#issuecomment-5849807422). This does not close the incident or prove sustained CPU compliance; frontend request sharing is now merged in #240.
+
+### CPU corrective slice 4 — merged, deployed, bounded owner PASS
+
+PR #240 merged at `650c8a3cf9a69f95732905562535394fac94a12e`; exact-head CI and Pages succeeded. Owner reports one HTTP 200 per core private collection/health endpoint on a clean load, correct artwork and 7 Albums (4/3/0). Sustained CPU compliance remains unmeasured and incidents remain open. [Separate original and recovery receipts](docs/acceptance/BUILD118-CPU-RECOVERY.md).
 
 ## Active
 
-### CPU corrective slice 4 — shared private browsing reads
+### Catalogue A2.2 — authorized local-private import/dry-run
 
-Build118 slice 2 merged in #239 and deployed at `9306ab4b6dafcce87c1bc68411719d01102612c0`. Together with the separately deployed LaunchPAD Tracks slice 3, it received the bounded owner Albums/Tracks functional PASS recorded in #238. Repeated frontend reads remain; sustained CPU compliance is unproven. Acceptance-docs PR #237 remains open and excluded. The commercial foundation stays empty and read-only.
-
-Issue #238 / LaunchPAD #283: share only pending browsing reads, reuse canonical Album payloads for artwork, remove eager Tracks prefetch/settled cache and guard stale component replies. Preserve full migration evidence, raw private write verification, provenance, bounded retries and SonicTrace semantics. No backend or production-data changes. Stop at Draft PR + exact-head CI. See [slice 4 receipt](docs/CPU-SLICE4-SHARED-PRIVATE-READS.md).
+Separate implementation branch and Draft PR. Audit actual local sources; preserve provenance and uncertain evidence; explicit file selection, atomic validation, memory-only preview and unload. No production mutation/deployment or automatic Studio binding. A2.3 is excluded.
 
 ### Phase 10 — progressive extraction
 
@@ -129,7 +131,7 @@ Phase10 remains active as a program, not permission for continuous refactoring. 
 
 ### Corrective review / browser gate
 
-Review CPU slice 4 Draft PR and exact-head validation before separately authorizing merge/deployment and browser acceptance. The CPU incident remains open despite the bounded functional recovery. A2.2 local-private import/dry-run stays on hold; A2.3 populated views require a separate mission. Reconcile #237 with the later corrective evidence before its merge.
+Review the reconciled Build118 docs and A2.2 Draft PRs, then separately authorize any merge/deployment and owner acceptance. PR #237 remains open, superseded by reconciliation. A2.3 requires its own scope.
 
 Album asset exact-byte/digest proof remains independently auditable backlog and is not part of Build118.
 
