@@ -8,7 +8,8 @@ import { chromium } from 'playwright';
 import { fixture, recount } from './catalogue-synthetic.mjs';
 
 const read = file => fs.readFileSync(file, 'utf8');
-assert.equal(JSON.parse(read('package.json')).version, '0.19.42');
+assert.match(read('src/release.ts'), /build120AncestryMarker.*version: '0\.19\.42'.*build: 120/);
+assert.equal(JSON.parse(read('package.json')).version, read('src/release.ts').match(/version: '([^']+)'/)[1]);
 assert.match(read('src/release.ts'), /build: 120/);
 function load(file) {
   const exports = {};

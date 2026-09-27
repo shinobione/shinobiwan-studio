@@ -3,6 +3,7 @@ import type { SessionState } from '../catalogue/session';
 import { FINDING_LABELS as LABELS } from '../catalogue/finding-labels';
 import { catalogueHref } from '../catalogue-router';
 import { CatalogueOverview } from './CatalogueOverview';
+import { CatalogueReleases } from './CatalogueReleases';
 import type { CatalogueSection } from '../catalogue-router';
 
 
@@ -12,7 +13,12 @@ export function CatalogueImport({ section, emptyCopy, state, onSelect, onReset }
   const input = useRef<HTMLInputElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const reviewFocus = useRef(false);
-  useEffect(() => { setPage(0); setCode(null); }, [state]);
+  const resetFocus = useRef(false);
+  useEffect(() => {
+    setPage(0); setCode(null);
+    // A discarded release dialog must leave the top layer before picker focus.
+    if (resetFocus.current && state.phase === 'empty') { input.current?.focus(); resetFocus.current = false; }
+  }, [state]);
   useEffect(() => {
     if (section === 'qa' && reviewFocus.current) { heading.current?.focus(); reviewFocus.current = false; }
   }, [section]);
@@ -33,7 +39,7 @@ export function CatalogueImport({ section, emptyCopy, state, onSelect, onReset }
           if (file) onSelect(file);
         }} />
       </label>
-      {state.phase !== 'empty' && <button type="button" onClick={() => { onReset(); input.current?.focus(); }}>Reset / unload</button>}
+      {state.phase !== 'empty' && <button type="button" onClick={() => { resetFocus.current = true; onReset(); input.current?.focus(); }}>Reset / unload</button>}
     </div>
     <p id="catalogue-privacy">Private, temporary preview. JSON only, up to 10 MiB. Nothing is uploaded or saved. Leaving Catalogue or refreshing clears it.</p>
     <div role="status" aria-live="polite" aria-atomic="true">
@@ -46,6 +52,7 @@ export function CatalogueImport({ section, emptyCopy, state, onSelect, onReset }
       setCode(value); setPage(0); reviewFocus.current = true;
       globalThis.location.hash = catalogueHref({ section: 'qa' });
     }} />}
+    {snapshot && section === 'releases' && <CatalogueReleases snapshot={snapshot} />}
     {snapshot && <>
       <details className="catalogue-source-details"><summary>Source audit & provenance</summary>
       <dl className="catalogue-import-summary">
@@ -63,7 +70,7 @@ export function CatalogueImport({ section, emptyCopy, state, onSelect, onReset }
         <p>Recording-level Spotify and SoundCloud text is retained only as private evidence. No Spotify, Apple Music or pitch status is inferred.</p>
       </details>
       </details>
-      {(section === 'releases' || section === 'recordings') && <p>Your snapshot is available. {section === 'releases' ? 'Release browsing' : 'Recording details'} is not available in this slice. Open Overview for counts or QA for evidence.</p>}
+      {section === 'recordings' && <p>Your snapshot is available. The Recordings explorer is not available in this slice. Open Overview for counts or QA for evidence.</p>}
     </>}
     {findings.length > 0 && (section === 'qa' || result?.status === 'rejected') && <div className="catalogue-findings">
       <h3 ref={heading} tabIndex={-1}>Pending review</h3>

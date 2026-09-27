@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-09-27 after Build120 / A2.3 Slice 1 merged, Pages deployed and bounded owner REAL USER PASS. The next Releases gallery/detail slice is planning only. See PROJECT_STATE.md for exact receipts.
+Updated: 2026-09-27 after Build120 / A2.3 Slice 1 merged, Pages deployed and bounded owner REAL USER PASS. Build121 is the undeployed Releases gallery/detail candidate. See PROJECT_STATE.md for exact receipts.
 
 This file tracks durable Done / Active / Next / Backlog state. Historical implementation detail belongs in changelogs, milestone docs and acceptance receipts.
 
@@ -112,6 +112,10 @@ PR #244 exact candidate `de1000940c32efcc8024c4fd61f240cfa7f93860` passed CI 363
 
 ## Active
 
+### Catalogue A2.3 Slice 2 — Build121 candidate
+
+Source-only Releases grid/list, factual search/filter/sort and transient accessible Release detail. Exact per-release unbound appearances preserved by an additive validated projection. Local inherited/full build and nine new Chromium scenarios PASS. [Validation and owner handoff](docs/CATALOGUE-A2-3-SLICE2-VALIDATION.md). Draft PR + exact-head CI only; no merge/deploy or REAL USER PASS.
+
 ### Phase 10 — progressive extraction
 
 Phase10 remains active as a program, not permission for continuous refactoring. **Phase10 Slice2 remains unallocated.** Builds108/109/114–117 are bounded reliability/lifecycle work outside it; Builds110–113 are human-facing/product workflow improvements outside it.
@@ -139,7 +143,7 @@ Phase10 remains active as a program, not permission for continuous refactoring. 
 
 ### Corrective review / browser gate
 
-Review the docs-only Build120 acceptance closeout. Independently scope A2.3 Slice 2 (session-only Releases gallery/details) before allocating its runtime version/build. Recording explorer and commercial persistence/STUDIO ↔ LaunchPAD sync require later, separate authority decisions. PR #237 remains open, superseded by merged #241; CPU issues remain open without sustained telemetry.
+Review the Build121 Draft and exact-head CI; merge, Pages deployment and owner acceptance require separate authorization. Recording explorer and commercial persistence/STUDIO ↔ LaunchPAD sync require later, separate authority decisions. PR #237 remains open, superseded by merged #241; CPU issues remain open without sustained telemetry.
 
 Album asset exact-byte/digest proof remains independently auditable backlog and is not part of Build118.
 

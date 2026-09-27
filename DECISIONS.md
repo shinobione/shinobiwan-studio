@@ -273,6 +273,12 @@ Build120 / v0.19.42, merged in #244 and Pages deployed, received the owner's bou
 
 Overview derives counts and code/severity groups solely from the accepted Snapshot; source appearances include unbound rows. QA group selection remains component state, with only the fixed QA route in the URL. Source audit and complete private evidence remain available. This refines the owner location in D-020 without changing its parser, identities or review/publication boundaries. New Playwright dependency is development-only; no runtime dependency is added. [Owner receipt](docs/acceptance/BUILD120-REAL-USER-PASS.md). Releases gallery, Recording explorer and any commercial persistence/synchronization remain separately gated, not implied by this acceptance.
 
+## D-022 — Source-only release browsing with explicit unbound appearances
+
+Build121 candidate implements A2.3 Slice 2. A readonly `unboundAppearances` projection is produced only after existing strict atomic source validation succeeds. It retains exact branded release/appearance identities, position, title, observed ISRC text and evidence with `recordingId: null`. Existing bound appearances, global counts, provenance, findings and channel-unknown rules retain their semantics. Explicit release source and historical distribution observation are projected from the same validated row; original evidence remains intact.
+
+Release detail joins exact identity/evidence maps; no sorted-index or title association. Query/view/selection state is transient, and selection is tied to its snapshot reference. Native modal close/Escape restores the opener; discard/unmount removes detail. Source cover URLs remain inert text inside on-demand evidence; all covers are labeled placeholders. Reference dates remain source text; only valid complete YYYY-MM-DD values sort chronologically, with other text after dated entries. No new commercial/creative authority or publication inference.
+
 ## Changing a decision
 
 When a durable decision changes:

@@ -1,4 +1,4 @@
-import type { Recording, CommercialRelease, ReleaseAppearance, Evidence, ChannelPublication } from '../types/commercial-catalogue';
+import type { Recording, CommercialRelease, ReleaseAppearance, UnboundReleaseAppearance, Evidence, ChannelPublication } from '../types/commercial-catalogue';
 
 export const MAX_BYTES = 10 * 1024 * 1024;
 export const MAX_ROWS = 50_000;
@@ -8,6 +8,7 @@ export interface Finding { severity: 'error' | 'warning'; code: string; locator:
 export interface Snapshot {
   source: { schema: string; snapshotDate: string; sourceFile: string; claimedWorkbookSha256: string; inputSha256: string };
   recordings: Recording[]; releases: CommercialRelease[]; appearances: ReleaseAppearance[];
+  readonly unboundAppearances: readonly UnboundReleaseAppearance[];
   evidence: Evidence[]; channels: ChannelPublication[];
   findings: Finding[];
   summary: { sourceRows: number; parsedRows: number; rejectedRows: number; knownIsrc: number; missingIsrc: number; unboundAppearances: number; amuseCandidates: number; sourceQA: number; recentObservations: number };
@@ -148,11 +149,14 @@ export function parseCatalogue(input: string, inputSha256: string): ImportResult
     for (const channel of new Set(channelNames)) channels.push({ publicationId: `publication:${JSON.stringify([r.id, channel])}` as ChannelPublication['publicationId'], releaseId, channel, status: 'unknown', plannedAt: null, submittedAt: null, deliveredAt: null, verifiedLiveAt: null, removedAt: null, evidenceIds: [evidenceId] });
     warn('PUBLICATION_UNVERIFIED', `releases[${i}]`);
     const kind = clean(r.releaseType)?.toLowerCase();
-    return { releaseId, title: String(r.title).trim(), kind: kind === 'single' || kind === 'ep' || kind === 'album' ? kind : 'unknown', upc, distributor: r.source === 'Master août 2026' ? null : String(r.source), referenceDate: clean(r.referenceDate), evidenceIds: [evidenceId] };
+    return { releaseId, title: String(r.title).trim(), kind: kind === 'single' || kind === 'ep' || kind === 'album' ? kind : 'unknown', upc, distributor: r.source === 'Master août 2026' ? null : String(r.source), source: String(r.source), historicalDistributionStatus: clean(r.distributionStatus), referenceDate: clean(r.referenceDate), evidenceIds: [evidenceId] };
   });
+  const unboundAppearances: UnboundReleaseAppearance[] = [];
   const appearances = rows('appearances').flatMap((a): ReleaseAppearance[] => {
     const evidenceId = ev('appearances', a, String(a.id));
-    return a.recordingId === null ? [] : [{ appearanceId: `appearance:${a.id}` as ReleaseAppearance['appearanceId'], recordingId: `recording:${a.recordingId}` as Recording['recordingId'], releaseId: `release:${a.releaseId}` as CommercialRelease['releaseId'], position: a.position as number | null, displayTitle: clean(a.displayTitle), status: 'unverified', evidenceIds: [evidenceId] }];
+    const common = { appearanceId: `appearance:${a.id}` as ReleaseAppearance['appearanceId'], releaseId: `release:${a.releaseId}` as CommercialRelease['releaseId'], position: a.position as number | null, displayTitle: clean(a.displayTitle), status: 'unverified' as const, evidenceIds: [evidenceId] };
+    if (a.recordingId === null) { unboundAppearances.push({ ...common, recordingId: null, observedIsrc: clean(a.isrcObserved) }); return []; }
+    return [{ ...common, recordingId: `recording:${a.recordingId}` as Recording['recordingId'] }];
   });
   for (const [table, c] of [['unverifiedAmuseCandidates','AMUSE_PENDING_REVIEW'], ['soundcloudRecent','CHANNEL_OBSERVATION_UNVERIFIED'], ['qa','SOURCE_QA_PENDING']] as const) rows(table).forEach((r, i) => { ev(table, r, String(i)); warn(c, `${table}[${i}]`); });
   ev('source', { warnings: root.warnings, sourceSheets: root.sourceSheets, artist: root.artist }, 'metadata');
@@ -163,6 +167,7 @@ export function parseCatalogue(input: string, inputSha256: string): ImportResult
   }
   const snapshot: Snapshot = {
     source: { schema: SOURCE_SCHEMA, snapshotDate: String(root.snapshotDate), sourceFile: String(root.sourceFile), claimedWorkbookSha256: String(root.sourceSha256), inputSha256 },
+    unboundAppearances: sort(unboundAppearances, a => a.appearanceId),
     recordings: sort(recordings, r => r.recordingId), releases: sort(releases, r => r.releaseId), appearances: sort(appearances, a => a.appearanceId), evidence: sort(evidence, e => e.evidenceId), channels: sort(channels, c => c.publicationId), findings: sort(findings, f => `${f.locator}:${f.code}`),
     summary: { sourceRows, parsedRows: sourceRows, rejectedRows: 0, knownIsrc: recordings.filter(r => r.isrc).length, missingIsrc: recordings.filter(r => !r.isrc).length, unboundAppearances: rows('appearances').filter(a => a.recordingId === null).length, amuseCandidates: rows('unverifiedAmuseCandidates').length, sourceQA: rows('qa').length, recentObservations: rows('soundcloudRecent').length },
   };

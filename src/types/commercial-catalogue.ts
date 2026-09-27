@@ -35,6 +35,8 @@ export interface CommercialRelease {
   readonly kind: 'single' | 'ep' | 'album' | 'unknown';
   readonly upc: string | null;
   readonly distributor: string | null;
+  readonly source: string;
+  readonly historicalDistributionStatus: string | null;
   readonly referenceDate: string | null;
   readonly evidenceIds: readonly EvidenceId[];
 }
@@ -47,6 +49,12 @@ export interface ReleaseAppearance {
   readonly displayTitle: string | null;
   readonly status: 'certified' | 'unverified';
   readonly evidenceIds: readonly EvidenceId[];
+}
+
+// Preserve a validated source position without inventing a Recording association.
+export interface UnboundReleaseAppearance extends Omit<ReleaseAppearance, 'recordingId'> {
+  readonly recordingId: null;
+  readonly observedIsrc: string | null;
 }
 
 export interface ChannelPublication {

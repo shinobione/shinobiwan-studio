@@ -22,9 +22,9 @@ The Catalogue remains temporary and read-only, with an explicit local file selec
 
 **Build119 / v0.19.41** retains its independent [A2.2 local-private import acceptance](docs/acceptance/BUILD119-REAL-USER-PASS.md). **Build118 / v0.19.40** retains the separate [original A2.1 acceptance](docs/acceptance/BUILD118-REAL-USER-PASS.md) and [bounded CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md). STUDIO CPU issue #238 / LaunchPAD #283 remain open without sustained CPU compliance evidence. [Build117](docs/acceptance/BUILD117-REAL-USER-PASS.md) remains previous reliability history.
 
-## Next scope — Catalogue A2.3 Slice 2 (planning only)
+## Active candidate — Build121 / v0.19.43
 
-[Catalogue A2.3 blueprint](docs/CATALOGUE-A2-3-BLUEPRINT.md): native **session-only Releases gallery and detail** with true source evidence, explicit unknown channel availability and deliberate placeholders until artwork is independently proven. A later Recording explorer/QA slice and any persistent living commercial registry or STUDIO ↔ LaunchPAD synchronization each need separate review and authority decisions. No additional runtime build allocated by the Build120 closeout.
+A2.3 Slice 2 adds a source-derived Releases gallery with grid/list, search, factual filters and stable sorting; a transient keyboard-accessible Release detail preserves bound/unbound appearances and exact source evidence. Local full build and synthetic Chromium/privacy gates PASS. **Draft review only; not merged/deployed and no REAL USER PASS.** [Implementation and owner handoff](docs/CATALOGUE-A2-3-SLICE2-VALIDATION.md). Recording explorer, artwork mapping and commercial persistence/sync retain separate scope.
 
 ## Product model
 
