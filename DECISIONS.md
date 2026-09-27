@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Decisions
 
-Updated: 2026-09-26 for the CPU slice 4 browsing-read boundary.
+Updated: 2026-09-27 after merged Build118 closeout #241 and main integration into Build119 Draft #242. Build118 is accepted production; D-020 applies only to the undeployed Build119 candidate.
 
 This file records durable product, architecture and safety decisions. It is not a changelog. Add an entry only when a decision is introduced, changed or explicitly superseded.
 
@@ -253,15 +253,19 @@ canonical reread        verified
 
 ## D-018 — Commercial Catalogue is independent and initially read-only
 
-Introduced for A2.1 / Build118 candidate. `#/catalogue` is commercial discography; `#/catalog` remains creative Tracks. Recordings and commercial releases have independent identities. ISRC/UPC are optional metadata; appearances allow a recording on multiple releases. A Studio Track binding requires private proof and human review, never title similarity. Creative Album membership remains `album.trackIds`.
+Introduced for A2.1 / Build118, now accepted within its seven-check scope. `#/catalogue` is commercial discography; `#/catalog` remains creative Tracks. Recordings and commercial releases have independent identities. ISRC/UPC are optional metadata; appearances allow a recording on multiple releases. A Studio Track binding requires private proof and human review, never title similarity. Creative Album membership remains `album.trackIds`.
 
-A2.1 contains no commercial data or import. Local-private import/dry-run is deferred to A2.2, in memory only unless separately reviewed. Channel publication evidence remains channel-specific. No commercial persistence or canonical write authority is introduced.
+A2.1 contains no commercial data or import. A2.2 local-private import/dry-run is implemented only in the undeployed Build119 candidate under D-020, in memory only. Channel publication evidence remains channel-specific. No commercial persistence or canonical write authority is introduced.
 
 ## D-019 — Browsing may share pending reads; verification stays fresh
 
-CPU slice 4 candidate, retaining the existing Build118 incident-corrective identity. Albums Health, Management and Tracks may share an in-flight Album collection or complete Track projection operation. Settlement (success, public fallback or failure) clears the shared slot; no TTL, persistent storage or settled-result cache is introduced. Explicit retry and post-mutation UI reload bypass pending work. Superseded requests cannot clear newer slots or overwrite newer component state.
+CPU slice 4 merged/deployed with bounded owner acceptance, retaining the existing Build118 incident-corrective identity. Albums Health, Management and Tracks may share an in-flight Album collection or complete Track projection operation. Settlement (success, public fallback or failure) clears the shared slot; no TTL, persistent storage or settled-result cache is introduced. Explicit retry and post-mutation UI reload bypass pending work. Superseded requests cannot clear newer slots or overwrite newer component state.
 
 Raw canonical clients used for capability checks, stale guards, write verification/recovery, detail reads and the full migration endpoint remain independent. Sharing does not broaden timeouts, retries, provenance, SonicTrace semantics or write authority. Existing Tracks import-time prefetch and indefinite settled caching are superseded; route re-entry after settlement performs a fresh read with the existing loading skeleton.
+
+## D-020 — A2.2 explicit local-private dry-run
+
+Build119 / v0.19.41 in Draft #242 implements the owner-authorized A2.2 slice and remains unmerged, undeployed and without REAL USER PASS. Main integration changes no runtime or authority decision. A bundled Web Worker parses the verified derived JSON schema after explicit selection, without new dependencies, remote IO or storage. Complete validation precedes activation; replacement/reset/unmount cancels stale work and discards the snapshot. Source omissions stay explicit. All imported channel availability remains unknown; Amuse candidates and Studio link proposals require human review. No automatic identity merge, canonical write authority or A2.3 browsing is introduced. [Formal contract](docs/CATALOGUE-A2-2-CONTRACT.md).
 
 ## Changing a decision
 
@@ -272,7 +276,3 @@ When a durable decision changes:
 3. update `PROJECT_STATE.md` / `ROADMAP.md` if the change affects current scope;
 4. add QA evidence if the decision changes runtime behavior;
 5. preserve old milestone evidence rather than rewriting history.
-
-## D-020 — A2.2 explicit local-private dry-run
-
-Build119 candidate implements the owner-authorized A2.2 slice. D-018's A2.1 import deferral is superseded only for this candidate. A bundled Web Worker parses the verified derived JSON schema after explicit selection, without new dependencies, remote IO or storage. Complete validation precedes activation; replacement/reset/unmount cancels stale work and discards the snapshot. Source omissions stay explicit. All imported channel availability remains unknown; Amuse candidates and Studio link proposals require human review. No automatic identity merge, canonical write authority or A2.3 browsing is introduced. [Formal contract](docs/CATALOGUE-A2-2-CONTRACT.md).

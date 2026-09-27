@@ -1,6 +1,6 @@
 # Catalogue A2.2 — local-private import contract
 
-Candidate scope proven against the private V5 package on 2026-09-27. This is Build119 / v0.19.41 development, not deployed or accepted. Production remains Build118 at `650c8a3cf9a69f95732905562535394fac94a12e`. Documentation reconciliation is independently reviewed in #241; #237 remains open.
+Candidate scope proven against the private V5 package on 2026-09-27. Build119 / v0.19.41 remains the undeployed, unaccepted candidate in Draft #242. Production remains Build118; original runtime merge `650c8a3cf9a69f95732905562535394fac94a12e`. Documentation #241 is now merged at main `8c6a67eb9a1476fa864d136174199402a12498a8`, integrated into the existing A2.2 branch without changing this import contract or its runtime. #237 remains open. The local private audit is separate from public CI evidence.
 
 ## Input and source coverage
 

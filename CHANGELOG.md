@@ -4,11 +4,17 @@ This is the **current concise changelog**. Detailed per-build records live under
 
 ## Unreleased candidate
 
-### v0.19.40 · Build118 — Catalogue A2.1
+### v0.19.41 · Build119 — Catalogue A2.2 / Draft #242
 
-Native read-only Catalogue foundation: daily navigation after Albums, independent commercial types, strict subroutes and honest empty/not-found states. Local import is deferred. No private dataset, new dependencies, Worker/R2 changes, merge or deployment. [Candidate evidence](docs/build118-catalogue-a2-1-candidate.md).
+Explicit local JSON selection, bundled-worker validation, provenance-preserving commercial normalization, atomic memory-only preview, pending QA/evidence and reset. No dependencies, backend/persistence/publication actions or A2.3 gallery. [Validation](docs/CATALOGUE-A2-2-VALIDATION.md). Current main `8c6a67eb9a1476fa864d136174199402a12498a8` is integrated into the existing branch after #241; the six canonical documents are reconciled and the reviewed A2.2 runtime is unchanged. Build119 remains unmerged, undeployed and without REAL USER PASS. Stop at new exact-head CI and owner Draft review.
 
 ## Current accepted release
+
+### v0.19.40 · Build118 — 2026-09-27 reconciliation
+
+Catalogue A2.1 native empty foundation passed the owner's original seven checks. Subsequent CPU corrections: backend lean Albums (#284), Studio consumer (#239), backend Tracks (#285), deployment workflow (#286), Studio shared reads (#240). All are merged; Studio Pages and admin Worker deployment receipts are verified. Post-slice-4 owner sample passes functionality/network checks, not sustained CPU compliance. [Separate receipts](docs/acceptance/BUILD118-CPU-RECOVERY.md). Documentation closeout #241 merged at `8c6a67e`, followed by successful automatic Pages run 36310871264. This docs-only merge introduced no runtime identity change.
+
+## Prior accepted reliability release
 
 ### v0.19.39 · Build117 — 2026-09-19
 
@@ -55,7 +61,3 @@ Real-user receipt: [`docs/acceptance/BUILD117-REAL-USER-PASS.md`](docs/acceptanc
 - **Build104** — falsely classified pre-submit/node-offline Deep Audio transport as compute UNKNOWN; superseded by accepted Build105.
 
 All detailed historical records remain preserved under `changelogs/` and `docs/`.
-
-## Build119 / v0.19.41 — unreleased A2.2 candidate
-
-Explicit local JSON selection, bundled-worker validation, provenance-preserving commercial normalization, atomic memory-only preview, pending QA/evidence and reset. No dependencies, backend/persistence/publication actions or A2.3 gallery. [Validation](docs/CATALOGUE-A2-2-VALIDATION.md). Production remains Build118; its historical acceptance and later CPU recovery are independently reconciled by #241, superseding the older Build118 candidate entry above. No Build119 REAL USER PASS.

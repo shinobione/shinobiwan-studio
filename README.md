@@ -16,9 +16,13 @@ Then verify real GitHub state before mutation.
 
 ## Current accepted state
 
-**Studio v0.19.39 / Build117 — REAL USER PASS**, with Track Manager v5.28 / bridge v1.18. [Build117 acceptance receipt](docs/acceptance/BUILD117-REAL-USER-PASS.md) records the precise automated and real-user boundaries. [PROJECT_STATE.md](PROJECT_STATE.md) holds current GitHub and runtime truth.
+**Build118 / v0.19.40 — A2.1 REAL USER PASS; CPU slice 4 merged, Pages deployed and bounded owner recovery PASS.** [Original acceptance](docs/acceptance/BUILD118-REAL-USER-PASS.md) and [CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md) remain distinct. CPU duration/compliance is unmeasured; incident issues stay open. A2.2 local-private import is authorized as a separate candidate, with no merge/deploy permission.
 
-**Build118 / v0.19.40 — Catalogue A2.1 candidate only.** Native commercial Catalogue navigation, routes/types and empty states; local import is coming in a later slice. No embedded commercial dataset, backend change or canonical persistence. Not merged, deployed or accepted. [Candidate scope](docs/build118-catalogue-a2-1-candidate.md).
+Documentation #241 is merged at main `8c6a67eb9a1476fa864d136174199402a12498a8`; its automatic Pages run 36310871264 succeeded without creating a new runtime build. [Build117](docs/acceptance/BUILD117-REAL-USER-PASS.md) remains the prior accepted reliability baseline. [PROJECT_STATE.md](PROJECT_STATE.md) holds exact current receipts.
+
+## Current candidate
+
+**Build119 / v0.19.41 — Catalogue A2.2, Draft #242, not merged or deployed; no REAL USER PASS.** The existing branch integrates current main and preserves the reviewed implementation. Select a local JSON explicitly, inspect summary/QA, then unload. No upload, persistence or production write. The derived JSON has documented workbook-coverage omissions. [Contract](docs/CATALOGUE-A2-2-CONTRACT.md) · [Validation and owner acceptance gate](docs/CATALOGUE-A2-2-VALIDATION.md). Stop at new exact-head CI and Draft review; owner private-source smoke follows only separately authorized deployment.
 
 ## Product model
 
@@ -77,11 +81,12 @@ Phase 10            ACTIVE · progressive extraction by bounded audited slices
 Build108            COMPLETE · catalog rebuild identity · REAL USER PASS
 Build109            COMPLETE · Track-create identity · REAL USER PASS
 Build110–117        COMPLETE · see canonical checkpoint and acceptance receipts
-Build118            CANDIDATE · Catalogue A2.1 foundation
+Build118            ACCEPTED · A2.1 PASS; deployed CPU slice 4 bounded owner PASS
+Build119            CANDIDATE · Catalogue A2.2 Draft #242 · undeployed
 Official Phase 11   NONE
 ```
 
-Build118 is bounded Catalogue product work outside Phase10 Slice2. Stop at Draft PR review; no merge or deployment is authorized.
+Build118 and Build119 are bounded Catalogue product work outside Phase10 Slice2. Build118 is accepted production. Build119 stops at Draft #242 review; its merge and deployment require separate authorization.
 
 ## Frozen authority model
 
@@ -124,7 +129,3 @@ Preserved backlog includes Album asset exact-byte/digest proof, optional future 
 See [`ROADMAP.md`](ROADMAP.md) for current Done / Active / Next / Backlog state and [`QA.md`](QA.md) for accepted test boundaries.
 
 The repository still publishes no formal GitHub Release objects and no Git tags. Runtime identity is carried by code, docs and Pages.
-
-## Current candidate / production reconciliation
-
-The older candidate wording above is superseded: Build118 is merged/Pages deployed with original A2.1 acceptance and bounded CPU recovery, reconciled independently in Draft #241. Build119 / v0.19.41 is the separate **A2.2 local-private import/dry-run candidate**, not deployed or owner-accepted. Select a local JSON explicitly, inspect summary/QA, then unload. No upload, persistence or production write. [Contract](docs/CATALOGUE-A2-2-CONTRACT.md) · [Validation and acceptance gate](docs/CATALOGUE-A2-2-VALIDATION.md).

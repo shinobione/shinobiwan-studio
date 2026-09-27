@@ -1,20 +1,24 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-Updated: 2026-09-26 for CPU slice 4 candidate; Build117 remains the latest merged standalone acceptance receipt. Build118 corrective functional acceptance is recorded in issue #238; shell acceptance docs remain pending in #237.
+## Current accepted runtime and evidence — 2026-09-27
 
-This file records accepted runtime truth, automated proof boundaries, real-user evidence and major remaining unproven areas. Historical run-by-run detail belongs in `changelogs/` and `docs/`.
+GitHub verified `main` = `8c6a67eb9a1476fa864d136174199402a12498a8`, repository `shinobione/shinobiwan-studio`, production branch `main`. Documentation PR #241 is merged and automatic [Pages 36310871264](https://github.com/shinobione/shinobiwan-studio/actions/runs/36310871264) succeeded on that exact SHA. Production remains accepted Build118 / v0.19.40; a docs-only merge creates no runtime build. Runtime PR #240 merged at `650c8a3cf9a69f95732905562535394fac94a12e`, with exact-head [CI 36272677513](https://github.com/shinobione/shinobiwan-studio/actions/runs/36272677513) and merge-SHA [Pages 36272890963](https://github.com/shinobione/shinobiwan-studio/actions/runs/36272890963) successful.
 
-## Current accepted Studio runtime
+The original [seven-check A2.1 REAL USER PASS](docs/acceptance/BUILD118-REAL-USER-PASS.md) is preserved verbatim from PR #237. The later CPU incident and recovery are separate: see [CPU closeout](docs/acceptance/BUILD118-CPU-RECOVERY.md). Owner-reported post-slice-4 sample: 7 canonical Albums, 4 Healthy / 3 Attention / 0 Unverified; artwork present; one HTTP 200 each for canonical Albums, Tracks, SonicTrace and health; no visible 503. This is bounded functionality/network acceptance, not sustained Cloudflare CPU compliance. No CPU durations were measured. Issues #238 and LaunchPAD #283 remain open.
 
-**Deployed v0.19.40 / Build118 CPU slice 2 + backend slice 3 — bounded Albums/Tracks functional REAL USER PASS.** [Owner evidence](https://github.com/shinobione/shinobiwan-studio/issues/238#issuecomment-5849807422): 7 Albums, 4 Healthy / 3 Attention / 0 Unverified, artwork and Track work rows restored; all captured GET invocations `Ok` in two sampled loads. No sustained CPU/load proof. The [Build117 receipt](docs/acceptance/BUILD117-REAL-USER-PASS.md) remains the prior accepted reliability baseline, with exact-byte upload proof automated rather than physical smoke evidence.
+LaunchPAD #284/#285/#286 are merged. Admin-only [deploy 36265326176](https://github.com/shinobione/LaunchPAD-APP/actions/runs/36265326176) succeeded at `e1737f0e29d3411c30c34c134ab0d68650b0617a`, version `51c9d61e-2c69-4f4a-b106-3e4829bfb461`. Public Worker steps were skipped. This documentation work deploys nothing and mutates no R2 data.
 
-Current main is `9306ab4b6dafcce87c1bc68411719d01102612c0` (PR #239), with Pages `36258902897` SUCCESS. Candidate `a910b70856e344bc6c6896cc59a9f9107f9539a1` passed validation `36258542918`. Backend deployed source/version and separate acceptance boundaries are in PROJECT_STATE.md. Track Manager remains the protected write authority; #238 remains open and #237 needs reconciliation.
+PR #237 stays open for owner review and is superseded for reconciliation by merged #241. Its stale canonical file versions were not copied. Build117 remains the accepted prior reliability baseline and its receipt is unchanged.
 
-## Build118 / CPU slice 4 — candidate only
+## Build119 / A2.2 — undeployed candidate validation
 
-The corrective shares pending browsing operations across Health/Management/Tracks, removes Tracks import-time prefetch and settled caching, and reuses Album payloads for artwork. Synthetic tests execute actual clients and component effects to count requests, verify retry ceilings, forced-read replacement, fresh navigation, unmount safety, provenance and independent canonical/migration reads. Existing slice-2 tests retain private delete recovery/detail-write verification and Health/Management rendering. The full build includes reliability guards, TypeScript and the Catalogue artifact/privacy scan.
+Draft #242 integrates current main without changing the reviewed runtime. Build119 is not merged or deployed and has no REAL USER PASS. The authorized integration ends at new exact-head CI and Draft review; merge, deployment and production writes remain unauthorized.
 
-No slice-4 browser acceptance, CPU benchmark or incident resolution is claimed. Exact-head CI belongs to the Draft PR, not a deployment. See [scope, validation and proposed browser checklist](docs/CPU-SLICE4-SHARED-PRIVATE-READS.md). Navigation now performs a fresh read after prior work settles; the existing loading skeleton remains visible during that read.
+Post-integration automated checks PASS: 55 focused synthetic cases, inherited Build118/CPU regressions, typecheck, full build and artifact guard. The staged private fingerprint scan is recorded in the detailed validation receipt. The prior private local audit reported 444 rows, 0 rejected and 355 pending findings, with 3,024 field comparisons; these are local source-audit results, not public-CI reproduction. The derived JSON omits workbook evidence, so complete workbook equivalence is not established. Prior agent browser checks covered synthetic selection, QA, keyboard reset, malformed rejection and refresh. Owner private-source, Network/Storage, mobile and keyboard smoke remains pending. [Detailed validation and limitations](docs/CATALOGUE-A2-2-VALIDATION.md).
+
+## Automated CPU regression coverage
+
+The inherited Build118 gate retains lean canonical Albums, shared private requests, private/public Track provenance, independent full migration/write verification, transient retry ceilings, SonicTrace additive semantics, freshness and unmount checks. Local A2.2 tests and future owner smoke must be reported separately from these accepted production receipts.
 
 ## Historical Build109 accepted receipt
 
@@ -123,12 +127,6 @@ Deep Audio compute
 
 No generic write-retry or generic idempotency service was introduced.
 
-## Current mission overlay — Build119 candidate validation
-
-The earlier slice-4 candidate wording is superseded by merged #240 / Pages 36272890963 and the owner's bounded post-deploy report; #241 holds the reconciled historical acceptance. No sustained CPU compliance is claimed.
-
-A2.2: 55 focused synthetic cases, inherited Build118/CPU regressions, typecheck and full build pass. Actual local JSON compatibility: 444 rows, 0 rejected, 355 pending findings. Agent browser tested synthetic selection, QA, keyboard reset, malformed rejection and refresh. Private audit found coverage omissions, explicitly disclosed; no source rows in CI. [Detailed validation, privacy evidence and pending owner checklist](docs/CATALOGUE-A2-2-VALIDATION.md). Build119 has no production deployment or REAL USER PASS.
-
 ## Release metadata guard
 
 Build109 release closeout adds `check:release` to the Studio build chain. It verifies:
@@ -185,4 +183,4 @@ Studio must not fabricate causal certainty when a different backend operation do
 
 ## Next QA gate
 
-Review CPU slice 4 Draft PR and exact-head CI. Merge/deployment require separate authorization, followed by the proposed browser acceptance checklist. Local-private import remains on hold; bounded prior recovery does not close the CPU incident.
+Review A2.2 synthetic/source-compatibility/privacy evidence and exact-head CI. Owner browser acceptance of the candidate remains pending until separately authorized deployment. CPU incidents stay open without sustained telemetry.

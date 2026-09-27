@@ -1,8 +1,10 @@
 # Build119 / Catalogue A2.2 — candidate validation
 
-Base: Studio main `650c8a3cf9a69f95732905562535394fac94a12e`. Candidate v0.19.41 / Build119. Documentation closeout is independent Draft #241; A2.2 has no merge, deployment or REAL USER PASS. [Contract and mapping](CATALOGUE-A2-2-CONTRACT.md).
+Original base: Studio main `650c8a3cf9a69f95732905562535394fac94a12e`. Integrated main: `8c6a67eb9a1476fa864d136174199402a12498a8`, after owner-authorized documentation #241 merge. Candidate v0.19.41 / Build119 remains in Draft #242 with no merge, deployment or REAL USER PASS. The integration reconciles documentation only; runtime, tests, package metadata and privacy guards remain byte-identical to reviewed head `0593a57f0548cf30a83fa5065a876999d92c829e`. Build117 and both Build118 acceptance receipts remain identical to main. [Contract and mapping](CATALOGUE-A2-2-CONTRACT.md).
 
 ## Local evidence
+
+Integration rerun after main `8c6a67e`: `check:build118`, all 55 `check:build119` synthetic cases, `typecheck`, and the full inherited `build` chain including Vite and the artifact guard PASS. Runtime and test trees are unchanged from `0593a57`; the browser and private compatibility findings below are retained prior local evidence, not newly reproduced by CI. NEW exact-head CI is required after pushing the integration commit; owner acceptance remains pending.
 
 - `npm run check:build119`: 55 synthetic cases PASS. Parser, unsupported/malformed input, field types, optional/malformed/duplicate codes, independent identities, multiple releases per recording, duplicate release metadata and position ownership, orphans, channel contradictions, pending Amuse review, no title binding, source provenance, deterministic repeat, atomic rejection, worker lifetime/replacement/reset/unmount races, actual React controls/summary/escaped QA evidence and privacy boundaries.
 - `npm run check:build118`: PASS, retaining route/type/empty-state tests plus lean Album and CPU slice-4 request/freshness/provenance/retry/verification coverage. The old empty shell test now stubs the independently tested import child; all route, empty/not-found and commercial identity assertions remain. Historical metadata assertions now accept the exact Build118 ancestry marker and successor release metadata.
@@ -21,7 +23,7 @@ Audit: 3 known release UPCs; 114 recordings request review; 25 groups of repeate
 
 Artifact guard scans Git tracked/staged filenames and source/public/dist content including source maps. A2.2 must ship schema vocabulary, so the old key-name blacklist is replaced by embedded-snapshot detection, literal identifier checks and executable positive/negative probes; private pack names remain forbidden. Schema strings alone are not private source rows. This is defense in depth, not universal leak detection.
 
-Local fingerprint check compares 611 actual private values against runtime sources, tests, generated bundle/maps, build logs and diffs without printing matched content or hashes. It found **zero new matches**. Three literal overlaps exist in two unchanged historical files, verified byte-equivalent to main after newline normalization; they are recorded privately, not removed or misrepresented as a new leak. No private values matched generated assets. Repeat the local scan after staging and inspect the exact staged diff before push.
+Local fingerprint check compares 611 actual private values against runtime sources, tests, generated bundle/maps, build logs and diffs without printing matched content or hashes. The integration rerun covered 235 files/logs/diffs, including the integration build log and staged diff, and found **zero new matches**. Three literal overlaps exist in two unchanged historical files, verified byte-equivalent to main after newline normalization; they are recorded privately, not removed or misrepresented as a new leak. No private values matched generated assets.
 
 ## Synthetic performance
 
