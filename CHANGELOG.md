@@ -2,6 +2,12 @@
 
 This is the **current concise changelog**. Detailed per-build records live under `changelogs/` and accepted production receipts under `docs/acceptance/`.
 
+## Current candidate
+
+### v0.19.42 · Build120 — Catalogue A2.3 Slice 1 · 2026-09-27
+
+One parent-owned private session across Catalogue routes; native snapshot-only Overview with dynamic counts, source date/private/temporary status and finding-code review groups opening filtered QA. A2.2 parser/provenance/cancellation retained. Responsive and keyboard refinements, development-only Chromium regression gate. Local full build/privacy and inherited tests PASS; no merge, deployment or REAL USER PASS. [Handoff](docs/CATALOGUE-A2-3-SLICE1-VALIDATION.md).
+
 ## Current accepted release
 
 ### v0.19.41 · Build119 — Catalogue A2.2 · 2026-09-27

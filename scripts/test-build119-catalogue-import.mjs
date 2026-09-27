@@ -91,25 +91,29 @@ test('worker bounds and actual hash path', () => {
   const source=read('src/catalogue/import.worker.ts'); assert.match(source,/crypto.subtle.digest\('SHA-256', bytes\)/); assert.match(source,/fatal: true/); assert.match(source,/file.size > MAX_BYTES/);
 });
 test('no private IO or unsafe HTML dependencies', () => {
-  for (const file of ['src/catalogue/import.ts','src/catalogue/import.worker.ts','src/catalogue/session.ts','src/components/CatalogueImport.tsx']) {
+  for (const file of ['src/catalogue/import.ts','src/catalogue/import.worker.ts','src/catalogue/session.ts','src/components/CatalogueImport.tsx','src/catalogue/useCatalogueSession.ts','src/catalogue/overview.ts','src/catalogue/finding-labels.ts','src/components/CatalogueOverview.tsx']) {
     const s=read(file); assert.doesNotMatch(s,/fetch\(|XMLHttpRequest|localStorage|sessionStorage|indexedDB|console\.|sendBeacon|dangerouslySetInnerHTML|https?:\/\/|services\//);
   }
-  const s=read('src/components/CatalogueImport.tsx'); assert.match(s,/event.currentTarget.value = ''/); assert.match(s,/current.dispose\(\)/); assert.match(s,/type="file"/); assert.match(s,/aria-describedby/); assert.match(s,/role="status"/); assert.match(s,/snapshot.findings/);
+  const s=read('src/components/CatalogueImport.tsx'); assert.match(s,/event.currentTarget.value = ''/); assert.match(read('src/catalogue/useCatalogueSession.ts'),/current.dispose\(\)/); assert.match(s,/type="file"/); assert.match(s,/aria-describedby/); assert.match(s,/role="status"/); assert.match(s,/snapshot.findings/);
 });
-test('release metadata', () => { const p=JSON.parse(read('package.json')); assert.equal(p.version,'0.19.41'); assert.match(p.scripts.build,/check:build119/); assert.match(read('src/release.ts'),/build: 119/); });
+test('release metadata', () => { const p=JSON.parse(read('package.json')); assert.match(read('src/release.ts'),/build119AncestryMarker.*version: '0\.19\.41'.*build: 119/); assert.equal(p.version,read('src/release.ts').match(/version: '([^']+)'/)[1]); assert.match(p.scripts.build,/check:build119/); assert.match(read('src/release.ts'),/build: 119/); });
 
 // Exercise the actual UI with deterministic React hooks and local worker messages.
 const slots=[]; let cursor=0; let effect; const uiJobs=[];
+let uiState = { phase: 'empty' };
+const uiSession = createImportSession(() => { const job={postMessage(){},terminate(){this.terminated=true;}}; uiJobs.push(job); return job; }, value => { uiState=value; });
+const labels=load('src/catalogue/finding-labels.ts');
+const overview=load('src/components/CatalogueOverview.tsx', { react:React,'react/jsx-runtime':jsx,'../catalogue/overview':load('src/catalogue/overview.ts'),'../catalogue/finding-labels':labels });
 const ui=load('src/components/CatalogueImport.tsx', {
   react: { useState: initial => { const i=cursor++; if (!(i in slots)) slots[i]=initial; return [slots[i],v=>{slots[i]=typeof v==='function'?v(slots[i]):v;}]; }, useRef: initial => {const i=cursor++; slots[i]??={current:initial};return slots[i];},useEffect:fn=>{effect=fn;} },
-  'react/jsx-runtime':jsx,'../catalogue/session':{createImportSession},
+  'react/jsx-runtime':jsx,'../catalogue/finding-labels':labels,'../catalogue-router':load('src/catalogue-router.ts'),'./CatalogueOverview':overview,
 }, {URL, Worker:class { constructor(){uiJobs.push(this);} postMessage(){} terminate(){this.terminated=true;} }});
 let section='overview';
-const tree=()=>{cursor=0;return ui.CatalogueImport({section,emptyCopy:{title:'Empty synthetic Catalogue',body:'No source selected'}});};
+const tree=()=>{cursor=0;return ui.CatalogueImport({state:uiState,onSelect:file=>uiSession.select(file),onReset:()=>uiSession.reset(),section,emptyCopy:{title:'Empty synthetic Catalogue',body:'No source selected'}});};
 const html=()=>renderToStaticMarkup(tree());
 function nodes(node, predicate, output=[]) { if (!node || typeof node !== 'object') return output; if(predicate(node))output.push(node); React.Children.forEach(node.props?.children,child=>nodes(child,predicate,output));return output; }
 test('actual UI empty and accessible',()=>{assert.match(html(),/No private source loaded/);assert.equal(uiJobs.length,0);assert.match(html(),/type="file"/);assert.match(html(),/aria-describedby="catalogue-privacy"/);assert.doesNotMatch(html(),/<(?:img|iframe|form)\b/);});
-const unmount=effect();
+const unmount=()=>uiSession.dispose();
 test('actual UI selection clears input and renders summary',()=>{
   const input=nodes(tree(),n=>n.type==='input')[0]; const event={currentTarget:{files:[{name:'synthetic.json',size:200}],value:'synthetic.json'}};input.props.onChange(event);assert.equal(event.currentTarget.value,'');assert.match(html(),/Reading and validating locally/);
   uiJobs[0].onmessage({data:parse(fixture())});assert.match(html(),/Source structurally accepted/);assert.doesNotMatch(html(),/Empty synthetic Catalogue/);assert.match(html(),/Commercial releases/);assert.match(html(),/Known ISRC/);

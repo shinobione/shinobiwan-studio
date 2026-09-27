@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { catalogueHref, readCatalogueRoute, type CatalogueSection } from '../catalogue-router';
 import './commercial-catalogue.css';
+import { useCatalogueSession } from '../catalogue/useCatalogueSession';
 import { CatalogueImport } from './CatalogueImport';
 
 const SECTIONS: Array<{ section: CatalogueSection; label: string }> = [
@@ -18,6 +19,7 @@ const EMPTY_COPY: Record<CatalogueSection, { title: string; body: string }> = {
 };
 
 export function CommercialCatalogue() {
+  const session = useCatalogueSession();
   const [route, setRoute] = useState(readCatalogueRoute);
 
   useEffect(() => {
@@ -56,7 +58,7 @@ export function CommercialCatalogue() {
         {missing ? (
           <a className="commercial-catalogue-link" href={catalogueHref({ section: 'overview' })}>Back to Catalogue overview →</a>
         ) : (
-          <CatalogueImport section={route.section as CatalogueSection} emptyCopy={copy!} />
+          <CatalogueImport {...session} section={route.section as CatalogueSection} emptyCopy={copy!} />
         )}
       </div>
       <p className="commercial-catalogue-footnote">A historical snapshot is not live publication status. Your creative Tracks and Albums remain in their own workspaces.</p>

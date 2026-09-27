@@ -267,6 +267,12 @@ Raw canonical clients used for capability checks, stale guards, write verificati
 
 Build119 / v0.19.41 was merged in #242, Pages deployed and accepted by the owner for bounded local-private import/dry-run only. A bundled Web Worker parses the derived JSON schema after explicit selection, without new dependencies, remote IO or storage. Complete validation precedes activation; replacement/reset/unmount cancels stale work and discards the snapshot. Source omissions stay explicit. All imported channel availability remains unknown; Amuse candidates and Studio link proposals require human review. No automatic identity merge, canonical write authority or A2.3 browsing is introduced. [Formal contract](docs/CATALOGUE-A2-2-CONTRACT.md) · [owner receipt](docs/acceptance/BUILD119-REAL-USER-PASS.md). Future A2.3 session-only views and any commercial persistence/synchronization require independent scope and authority review.
 
+## D-021 — Catalogue session ownership and snapshot-only Overview
+
+Build120 candidate implements A2.3 Slice 1. The mounted `CommercialCatalogue` owns one import session; its child views consume that state. Normal and invalid Catalogue subroutes retain the session; leaving Catalogue, explicit reset, replacement/rejection, document pagehide or refresh discard it. The existing Worker generation fence prevents late results from restoring discarded data. No global snapshot, storage, remote IO or commercial authority is introduced.
+
+Overview derives counts and code/severity groups solely from the accepted Snapshot; source appearances include unbound rows. QA group selection remains component state, with only the fixed QA route in the URL. Source audit and complete private evidence remain available. This refines the owner location in D-020 without changing its parser, identities or review/publication boundaries. New Playwright dependency is development-only; no runtime dependency is added.
+
 ## Changing a decision
 
 When a durable decision changes:

@@ -22,9 +22,9 @@ The preview is explicitly selected, temporary, in-memory and read-only. Findings
 
 **Build118 / v0.19.40** retains its independent [A2.1 original seven-check acceptance](docs/acceptance/BUILD118-REAL-USER-PASS.md) and [later bounded CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md); CPU issue #238 / LaunchPAD #283 remain open without sustained CPU-duration evidence. [Build117](docs/acceptance/BUILD117-REAL-USER-PASS.md) remains the prior accepted reliability baseline.
 
-## Next scope — Catalogue A2.3 (blueprint only)
+## Active candidate — Build120 / v0.19.42
 
-[Native A2.3 functional blueprint](docs/CATALOGUE-A2-3-BLUEPRINT.md): a populated **session-only** Overview, Releases gallery/details, Recordings explorer and evidence-linked QA. Do not invent absent commercial artwork, genre or publication facts. Persistent living commercial registry, reviewed creative bindings and STUDIO ↔ LaunchPAD bidirectional synchronization need their own future authority/architecture decision. No runtime build has been allocated for A2.3.
+A2.3 Slice 1 adds a parent-owned temporary private session and native Overview with dynamic counts and finding-code QA links. Local automated gates pass; delivery stops at a Draft PR and exact-head CI. **Not merged/deployed; no REAL USER PASS.** [Implementation and acceptance handoff](docs/CATALOGUE-A2-3-SLICE1-VALIDATION.md). Release gallery, Recording details, persistence and synchronization remain later scope in the [blueprint](docs/CATALOGUE-A2-3-BLUEPRINT.md).
 
 ## Product model
 
@@ -89,7 +89,7 @@ Build119            ACCEPTED · A2.2 local-private dry-run · bounded REAL USER 
 Official Phase 11   NONE
 ```
 
-Build118 and Build119 are independently accepted Catalogue product slices outside Phase10 Slice2. A2.3 is a specification only; implementation, persistent storage and synchronization require separate review.
+Build118 and Build119 are independently accepted Catalogue product slices outside Phase10 Slice2. Build120 implements only A2.3 Slice 1 as an undeployed candidate; further browsing, persistent storage and synchronization require separate review.
 
 ## Frozen authority model
 

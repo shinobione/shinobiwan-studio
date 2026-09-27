@@ -69,6 +69,8 @@ const ui = load('src/components/CommercialCatalogue.tsx', {
   'react/jsx-runtime': jsx,
   '../catalogue-router': catalogue,
   './commercial-catalogue.css': {},
+  // Parent lifecycle is exercised with real React/Chromium by Build120.
+  '../catalogue/useCatalogueSession': { useCatalogueSession: () => ({ state: { phase: 'empty' }, onSelect() {}, onReset() {} }) },
   // A2.2 child is tested separately against its actual hooks and worker lifecycle.
   './CatalogueImport': { CatalogueImport: ({ emptyCopy }) => React.createElement('div', null, React.createElement('h3', null, emptyCopy.title), React.createElement('p', null, emptyCopy.body), 'No private source loaded.') },
 }, {
