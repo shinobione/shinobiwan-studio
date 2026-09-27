@@ -12,7 +12,7 @@ LaunchPAD #284/#285/#286 and admin-only [Worker deployment 36265326176](https://
 
 ## Active candidate — Build120 / A2.3 Slice 1
 
-Build120 / v0.19.42 implements the owner-authorized [issue #235](https://github.com/shinobione/shinobiwan-studio/issues/235) Slice 1: one parent-owned private Catalogue session and a source-derived native Overview. Branch: `codex/catalogue-a23-slice1-build120-20260927`, based on verified `cba3fb35fec57edd307500f1a76474e48089efa4`. Existing A2.2 and CPU branches/worktrees are preserved.
+Build120 / v0.19.42 implements the owner-authorized [issue #235](https://github.com/shinobione/shinobiwan-studio/issues/235) Slice 1: one parent-owned private Catalogue session and a source-derived native Overview. [Draft PR #244](https://github.com/shinobione/shinobiwan-studio/pull/244), branch: `codex/catalogue-a23-slice1-build120-20260927`, based on verified `cba3fb35fec57edd307500f1a76474e48089efa4`. Existing A2.2 and CPU branches/worktrees are preserved.
 
 Local full build, release/TypeScript, inherited Build118/119/CPU tests, 12 real Chromium scenarios and the 130-file runtime artifact/privacy scan PASS. [Implementation and acceptance handoff](docs/CATALOGUE-A2-3-SLICE1-VALIDATION.md). Delivery gate: Draft PR and exact-head CI; **not merged, not deployed, no REAL USER PASS**. Production remains accepted Build119. No private V5 dataset was read, uploaded or added during this slice.
 

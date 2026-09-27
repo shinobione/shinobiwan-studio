@@ -10,6 +10,8 @@ Date: 2026-09-27. Candidate only; **no merge, deployment or REAL USER PASS**.
 - New branch `codex/catalogue-a23-slice1-build120-20260927`; prior clean A2.2 branch and CPU worktree preserved. No other repository changed.
 - Scope: latest implementation comment in [issue #235](https://github.com/shinobione/shinobiwan-studio/issues/235), narrowing the [blueprint](CATALOGUE-A2-3-BLUEPRINT.md) to session ownership + Overview. Deliver Draft PR and exact-head CI only.
 
+Candidate delivery: [Draft PR #244](https://github.com/shinobione/shinobiwan-studio/pull/244). Its head SHA and checks are the exact CI authority; the PR body records the final result after completion. No merge/deployment is authorized.
+
 ## Lifecycle audit and implementation
 
 Before: App holds the coarse `catalogue` route; CommercialCatalogue subscribes to subroute hash changes. CatalogueImport held its own session. Ordinary four-section navigation reused the same child, but invalid/detail routes removed that child and disposed its snapshot. Inherited tests used hook harnesses rather than the mounted App.
