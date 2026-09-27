@@ -4,11 +4,11 @@ Date: 2026-09-27. **Owner-reported acceptance of the deployed local-private impo
 
 ## Exact code and deployment evidence
 
-- Repository: \`shinobione/shinobiwan-studio\`; production branch \`main\`.
-- Runtime: Build119 / v0.19.41, \`studio-focus-build119-catalogue-private-import\`.
-- Implementation: [PR #242](https://github.com/shinobione/shinobiwan-studio/pull/242); reconciled exact candidate \`e2b4adc70da6952713c3e74f1987e92bd40e0348\`.
+- Repository: `shinobione/shinobiwan-studio`; production branch `main`.
+- Runtime: Build119 / v0.19.41, `studio-focus-build119-catalogue-private-import`.
+- Implementation: [PR #242](https://github.com/shinobione/shinobiwan-studio/pull/242); reconciled exact candidate `e2b4adc70da6952713c3e74f1987e92bd40e0348`.
 - Exact candidate validation: [Actions #36312536104](https://github.com/shinobione/shinobiwan-studio/actions/runs/36312536104) — SUCCESS; inherited regression gates, TypeScript, build and artifact/privacy check.
-- Merge commit: \`20a0adf15271a0f9bff0cbd2a318c441685ec2bc\`.
+- Merge commit: `20a0adf15271a0f9bff0cbd2a318c441685ec2bc`.
 - Automatic Pages: [Deploy #36316493317](https://github.com/shinobione/shinobiwan-studio/actions/runs/36316493317) — build and deploy SUCCESS on that exact merge SHA.
 - This slice made no independent Cloudflare Worker deployment or R2/catalog mutation. Docs-only closeout does not allocate another runtime build.
 
