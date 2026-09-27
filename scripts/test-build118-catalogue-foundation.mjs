@@ -69,6 +69,8 @@ const ui = load('src/components/CommercialCatalogue.tsx', {
   'react/jsx-runtime': jsx,
   '../catalogue-router': catalogue,
   './commercial-catalogue.css': {},
+  // A2.2 child is tested separately against its actual hooks and worker lifecycle.
+  './CatalogueImport': { CatalogueImport: ({ emptyCopy }) => React.createElement('div', null, React.createElement('h3', null, emptyCopy.title), React.createElement('p', null, emptyCopy.body), 'No private source loaded.') },
 }, {
   fetch: () => { networkRequests++; throw new Error('Catalogue A2.1 must not request network data.'); },
   XMLHttpRequest: class { constructor() { networkRequests++; throw new Error('Catalogue A2.1 must not request network data.'); } },
@@ -92,8 +94,8 @@ for (const [hash, expected] of [
   listeners.get('hashchange')();
   assert.match(render(), new RegExp(expected));
 }
-assert.match(render(), /Local import · coming next/);
-assert.match(render(), /Historical snapshot · not loaded/);
+assert.match(render(), /No private source loaded/);
+assert.match(render(), /Local-private dry-run/);
 assert.doesNotMatch(render(), /<(?:input|iframe|img|form|button)\b/);
 cleanup();
 assert.equal(listeners.size, 0);
@@ -140,10 +142,10 @@ assert.match(css, /:focus-visible/);
 assert.match(css, /prefers-reduced-motion/);
 assert.match(css, /max-width: 600px/);
 const release = read('src/release.ts');
-assert.equal(release.match(/version: '([^']+)'/)[1], '0.19.40');
-assert.equal(Number(release.match(/build: (\d+)/)[1]), 118);
+assert.match(release, /build118AncestryMarker.*version: '0\.19\.40'.*build: 118/);
+assert.ok(Number(release.match(/build: (\d+)/)[1]) >= 118);
 const pkg = JSON.parse(read('package.json'));
-assert.equal(pkg.version, '0.19.40');
+assert.equal(pkg.version, release.match(/version: '([^']+)'/)[1]);
 assert.match(pkg.scripts.build, /check:build118/);
 assert.match(pkg.scripts.build, /vite build && npm run check:catalogue-artifacts/);
 console.log('Build118 PASS: legacy routes, strict commercial routes, hash navigation/refresh, honest empty/not-found views, independent identities and read-only boundaries.');

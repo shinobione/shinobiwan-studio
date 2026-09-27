@@ -2,17 +2,21 @@
 
 ## Reconciled production checkpoint — 2026-09-27
 
-GitHub verified `main` = `650c8a3cf9a69f95732905562535394fac94a12e`, repository `shinobione/shinobiwan-studio`, production branch `main`. Build118 / v0.19.40 is merged and Pages deployed. PR #240 exact head `de730435dbca23df592f8fc4afe142ca80e186d5` passed [CI 36272677513](https://github.com/shinobione/shinobiwan-studio/actions/runs/36272677513); [Pages 36272890963](https://github.com/shinobione/shinobiwan-studio/actions/runs/36272890963) succeeded on the merge SHA.
+GitHub verified `main` = `8c6a67eb9a1476fa864d136174199402a12498a8`, repository `shinobione/shinobiwan-studio`, production branch `main`. Owner-authorized documentation PR #241 is merged; automatic [Pages 36310871264](https://github.com/shinobione/shinobiwan-studio/actions/runs/36310871264) succeeded on that SHA. This docs-only merge introduces no runtime build: production remains accepted Build118 / v0.19.40. Runtime PR #240 merged at `650c8a3cf9a69f95732905562535394fac94a12e`; its exact head `de730435dbca23df592f8fc4afe142ca80e186d5` passed [CI 36272677513](https://github.com/shinobione/shinobiwan-studio/actions/runs/36272677513) and [Pages 36272890963](https://github.com/shinobione/shinobiwan-studio/actions/runs/36272890963) succeeded on its merge SHA.
 
 The original [seven-check A2.1 REAL USER PASS](docs/acceptance/BUILD118-REAL-USER-PASS.md) is preserved verbatim from PR #237. The later CPU incident and recovery are separate: see [CPU closeout](docs/acceptance/BUILD118-CPU-RECOVERY.md). Owner-reported post-slice-4 sample: 7 canonical Albums, 4 Healthy / 3 Attention / 0 Unverified; artwork present; one HTTP 200 each for canonical Albums, Tracks, SonicTrace and health; no visible 503. This is bounded functionality/network acceptance, not sustained Cloudflare CPU compliance. No CPU durations were measured. Issues #238 and LaunchPAD #283 remain open.
 
 LaunchPAD #284/#285/#286 are merged. Admin-only [deploy 36265326176](https://github.com/shinobione/LaunchPAD-APP/actions/runs/36265326176) succeeded at `e1737f0e29d3411c30c34c134ab0d68650b0617a`, version `51c9d61e-2c69-4f4a-b106-3e4829bfb461`. Public Worker steps were skipped. This documentation work deploys nothing and mutates no R2 data.
 
-PR #237 stays open for owner review and is superseded for reconciliation by this documentation candidate. Its stale canonical file versions were not copied. Build117 remains the accepted prior reliability baseline and its receipt is unchanged.
+PR #237 stays open for owner review and is superseded for reconciliation by merged #241. Its stale canonical file versions were not copied. Build117 remains the accepted prior reliability baseline and its receipt is unchanged.
 
-The owner's 2026-09-27 mission authorizes A2.2 local-private import/dry-run on a separate branch, ending at Draft PR + exact-head CI. This supersedes the earlier A2.2 hold for development only. No merge, Pages/Worker deployment, R2 write, billing/configuration change or A2.3 gallery is authorized.
+## Active candidate — Build119 / Catalogue A2.2
 
-## Accepted reliability baseline / latest merged standalone receipt
+Build119 / v0.19.41 is implemented in [Draft PR #242](https://github.com/shinobione/shinobiwan-studio/pull/242), branch `codex/catalogue-a2-2-local-private-import`, with current main integrated. It is **not merged, not deployed and has no REAL USER PASS**. Local-private JSON selection, strict atomic dry-run, pending QA and unload remain the exact reviewed runtime scope. [Contract](docs/CATALOGUE-A2-2-CONTRACT.md) and [validation](docs/CATALOGUE-A2-2-VALIDATION.md).
+
+The owner authorizes integration, documentation reconciliation, testing and a normal push to the existing Draft. Stop at new exact-head CI and owner review. No Build119 merge, Pages/Worker deployment, R2 write, billing/configuration change or A2.3 gallery is authorized. Private-source smoke remains an owner gate after separately authorized deployment.
+
+## Prior accepted reliability baseline — Build117
 
 ```text
 Studio version          v0.19.39
@@ -34,7 +38,7 @@ Real-user smoke         PASS · production metadata validation after corrective
 
 **Build117 is the prior accepted reliability baseline.** Build118 has the separately bounded A2.1 and post-slice-4 acceptance above.
 
-Latest receipt:
+Prior reliability receipt:
 
 - [`docs/acceptance/BUILD117-REAL-USER-PASS.md`](docs/acceptance/BUILD117-REAL-USER-PASS.md)
 
@@ -122,6 +126,7 @@ Build115                COMPLETE · Safe Album Delete · REAL USER PASS
 Build116                COMPLETE · Safe Track Delete · REAL USER PASS
 Build117                COMPLETE · exact-byte Track asset SHA-256 proof · REAL USER PASS
 Build118                MERGED / PAGES DEPLOYED · A2.1 PASS; slice 4 bounded functional PASS
+Build119                CANDIDATE · A2.2 Draft #242 · not deployed / no REAL USER PASS
 Official Phase 11       NONE
 ```
 
@@ -154,7 +159,7 @@ Build108/109/114–117 are bounded reliability/lifecycle work outside Phase10 Sl
 
 ## Immediate next action
 
-Review the reconciled documentation candidate and independently develop/review A2.2 local-private import/dry-run. Preserve the CPU incident's open evidence gaps. Stop before merging or deploying either deliverable. A2.3 and Album asset digest proof remain separate future scope; Phase10 Slice2 remains unallocated.
+Review the reconciled A2.2 Draft #242 and its new exact-head CI after integration of main `8c6a67e`. Documentation #241 is already merged. Preserve the CPU incident's open evidence gaps. Stop before merging or deploying Build119; owner private-source, Network/Storage, mobile and keyboard acceptance remains pending. A2.3 and Album asset digest proof remain separate future scope; Phase10 Slice2 remains unallocated.
 
 ## Release mechanics
 

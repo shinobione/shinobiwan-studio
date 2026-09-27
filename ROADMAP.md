@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-09-27 after deployed CPU slice 4; see PROJECT_STATE.md for reconciled deployment and acceptance boundaries.
+Updated: 2026-09-27 after merged documentation #241 and its integration into A2.2 Draft #242. Build118 is accepted production; Build119 remains an undeployed candidate. See PROJECT_STATE.md for exact receipts.
 
 This file tracks durable Done / Active / Next / Backlog state. Historical implementation detail belongs in changelogs, milestone docs and acceptance receipts.
 
@@ -90,6 +90,10 @@ Pre-merge corrective: bounded duration-evidence compatibility now explicitly inc
 
 Evidence: [`docs/acceptance/BUILD117-REAL-USER-PASS.md`](docs/acceptance/BUILD117-REAL-USER-PASS.md).
 
+### Catalogue A2.1 — Build118 accepted foundation
+
+Native empty read-only Catalogue accepted by the owner's original seven checks. Documentation #241 is merged and preserves the [original acceptance receipt](docs/acceptance/BUILD118-REAL-USER-PASS.md) separately from the later CPU recovery. Local-private import belongs only to the Build119 candidate below.
+
 ### CPU corrective slices 2–3 — bounded functional recovery
 
 Studio #239 lean canonical Album consumer is merged and Pages deployed. The separately deployed LaunchPAD Tracks CPU corrective and Studio slice 2 received a bounded Albums/Tracks functional PASS in [issue #238](https://github.com/shinobione/shinobiwan-studio/issues/238#issuecomment-5849807422). This does not close the incident or prove sustained CPU compliance; frontend request sharing is now merged in #240.
@@ -100,9 +104,9 @@ PR #240 merged at `650c8a3cf9a69f95732905562535394fac94a12e`; exact-head CI and 
 
 ## Active
 
-### Catalogue A2.2 — authorized local-private import/dry-run
+### Catalogue A2.2 — Build119 candidate / Draft #242
 
-Separate implementation branch and Draft PR. Audit actual local sources; preserve provenance and uncertain evidence; explicit file selection, atomic validation, memory-only preview and unload. No production mutation/deployment or automatic Studio binding. A2.3 is excluded.
+Implemented on `codex/catalogue-a2-2-local-private-import`, with verified main `8c6a67eb9a1476fa864d136174199402a12498a8` integrated after #241. Preserve the exact local-private runtime: explicit file selection, atomic validation, provenance, memory-only preview, pending QA and unload. No automatic Studio binding or A2.3 browsing. Build119 is not merged, deployed or owner-accepted. [Contract](docs/CATALOGUE-A2-2-CONTRACT.md) and [validation](docs/CATALOGUE-A2-2-VALIDATION.md).
 
 ### Phase 10 — progressive extraction
 
@@ -131,7 +135,7 @@ Phase10 remains active as a program, not permission for continuous refactoring. 
 
 ### Corrective review / browser gate
 
-Review the reconciled Build118 docs and A2.2 Draft PRs, then separately authorize any merge/deployment and owner acceptance. PR #237 remains open, superseded by reconciliation. A2.3 requires its own scope.
+Review new exact-head CI and the reconciled A2.2 Draft #242. Documentation #241 is merged; PR #237 remains open, superseded by that closeout. Build119 merge/deployment requires separate authorization, followed by owner private-source, Network/Storage, mobile and keyboard acceptance. A2.3 requires its own scope.
 
 Album asset exact-byte/digest proof remains independently auditable backlog and is not part of Build118.
 
@@ -170,4 +174,4 @@ There is currently **no official Phase11**.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md` for current runtime/cross-stack truth and [`docs/acceptance/BUILD117-REAL-USER-PASS.md`](docs/acceptance/BUILD117-REAL-USER-PASS.md) for the latest accepted Studio receipt.
+See `PROJECT_STATE.md`, the [original Build118 A2.1 acceptance](docs/acceptance/BUILD118-REAL-USER-PASS.md) and the separate [bounded CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md). [Build117](docs/acceptance/BUILD117-REAL-USER-PASS.md) remains the prior accepted reliability receipt. CPU incidents remain open without sustained CPU measurements.

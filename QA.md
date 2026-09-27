@@ -2,15 +2,19 @@
 
 ## Current accepted runtime and evidence — 2026-09-27
 
-GitHub verified `main` = `650c8a3cf9a69f95732905562535394fac94a12e`, repository `shinobione/shinobiwan-studio`, production branch `main`. Build118 / v0.19.40 is merged and Pages deployed. PR #240 exact head `de730435dbca23df592f8fc4afe142ca80e186d5` passed [CI 36272677513](https://github.com/shinobione/shinobiwan-studio/actions/runs/36272677513); [Pages 36272890963](https://github.com/shinobione/shinobiwan-studio/actions/runs/36272890963) succeeded on the merge SHA.
+GitHub verified `main` = `8c6a67eb9a1476fa864d136174199402a12498a8`, repository `shinobione/shinobiwan-studio`, production branch `main`. Documentation PR #241 is merged and automatic [Pages 36310871264](https://github.com/shinobione/shinobiwan-studio/actions/runs/36310871264) succeeded on that exact SHA. Production remains accepted Build118 / v0.19.40; a docs-only merge creates no runtime build. Runtime PR #240 merged at `650c8a3cf9a69f95732905562535394fac94a12e`, with exact-head [CI 36272677513](https://github.com/shinobione/shinobiwan-studio/actions/runs/36272677513) and merge-SHA [Pages 36272890963](https://github.com/shinobione/shinobiwan-studio/actions/runs/36272890963) successful.
 
 The original [seven-check A2.1 REAL USER PASS](docs/acceptance/BUILD118-REAL-USER-PASS.md) is preserved verbatim from PR #237. The later CPU incident and recovery are separate: see [CPU closeout](docs/acceptance/BUILD118-CPU-RECOVERY.md). Owner-reported post-slice-4 sample: 7 canonical Albums, 4 Healthy / 3 Attention / 0 Unverified; artwork present; one HTTP 200 each for canonical Albums, Tracks, SonicTrace and health; no visible 503. This is bounded functionality/network acceptance, not sustained Cloudflare CPU compliance. No CPU durations were measured. Issues #238 and LaunchPAD #283 remain open.
 
 LaunchPAD #284/#285/#286 are merged. Admin-only [deploy 36265326176](https://github.com/shinobione/LaunchPAD-APP/actions/runs/36265326176) succeeded at `e1737f0e29d3411c30c34c134ab0d68650b0617a`, version `51c9d61e-2c69-4f4a-b106-3e4829bfb461`. Public Worker steps were skipped. This documentation work deploys nothing and mutates no R2 data.
 
-PR #237 stays open for owner review and is superseded for reconciliation by this documentation candidate. Its stale canonical file versions were not copied. Build117 remains the accepted prior reliability baseline and its receipt is unchanged.
+PR #237 stays open for owner review and is superseded for reconciliation by merged #241. Its stale canonical file versions were not copied. Build117 remains the accepted prior reliability baseline and its receipt is unchanged.
 
-The owner's 2026-09-27 mission authorizes A2.2 local-private import/dry-run on a separate branch, ending at Draft PR + exact-head CI. This supersedes the earlier A2.2 hold for development only. No merge, Pages/Worker deployment, R2 write, billing/configuration change or A2.3 gallery is authorized.
+## Build119 / A2.2 — undeployed candidate validation
+
+Draft #242 integrates current main without changing the reviewed runtime. Build119 is not merged or deployed and has no REAL USER PASS. The authorized integration ends at new exact-head CI and Draft review; merge, deployment and production writes remain unauthorized.
+
+Post-integration automated checks PASS: 55 focused synthetic cases, inherited Build118/CPU regressions, typecheck, full build and artifact guard. The staged private fingerprint scan is recorded in the detailed validation receipt. The prior private local audit reported 444 rows, 0 rejected and 355 pending findings, with 3,024 field comparisons; these are local source-audit results, not public-CI reproduction. The derived JSON omits workbook evidence, so complete workbook equivalence is not established. Prior agent browser checks covered synthetic selection, QA, keyboard reset, malformed rejection and refresh. Owner private-source, Network/Storage, mobile and keyboard smoke remains pending. [Detailed validation and limitations](docs/CATALOGUE-A2-2-VALIDATION.md).
 
 ## Automated CPU regression coverage
 

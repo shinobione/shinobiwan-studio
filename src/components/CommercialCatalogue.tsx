@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { catalogueHref, readCatalogueRoute, type CatalogueSection } from '../catalogue-router';
 import './commercial-catalogue.css';
+import { CatalogueImport } from './CatalogueImport';
 
 const SECTIONS: Array<{ section: CatalogueSection; label: string }> = [
   { section: 'overview', label: 'Overview' },
@@ -39,7 +40,7 @@ export function CommercialCatalogue() {
           <p>Recordings, releases and the evidence that connects them.</p>
         </div>
         <div className="commercial-catalogue-badges" aria-label="Catalogue data status">
-          <span>Read-only</span><span>Historical snapshot · not loaded</span>
+          <span>Read-only</span><span>Local-private dry-run</span>
         </div>
       </header>
 
@@ -49,17 +50,13 @@ export function CommercialCatalogue() {
         ))}
       </nav>
 
-      <div className="commercial-catalogue-empty" aria-live="polite" aria-atomic="true">
-        <p className="commercial-catalogue-eyebrow">{missing ? 'NOT FOUND' : 'NO SNAPSHOT LOADED'}</p>
-        <h3>{missing ? 'Catalogue item not found.' : copy?.title}</h3>
-        <p>{missing ? 'This address is invalid or the item is not available in this session. No historical snapshot has been loaded.' : copy?.body}</p>
+      <div className="commercial-catalogue-empty">
+        <p className="commercial-catalogue-eyebrow">{missing ? 'NOT FOUND' : 'LOCAL SOURCE PREVIEW'}</p>
+        {missing && <><h3>Catalogue item not found.</h3><p>This address is invalid or the item is not available in this session.</p></>}
         {missing ? (
           <a className="commercial-catalogue-link" href={catalogueHref({ section: 'overview' })}>Back to Catalogue overview →</a>
         ) : (
-          <div className="commercial-catalogue-import-note">
-            <strong>Local import · coming next</strong>
-            <p>File selection will arrive in the next slice. No commercial data is loaded or saved in this version.</p>
-          </div>
+          <CatalogueImport section={route.section as CatalogueSection} emptyCopy={copy!} />
         )}
       </div>
       <p className="commercial-catalogue-footnote">A historical snapshot is not live publication status. Your creative Tracks and Albums remain in their own workspaces.</p>
