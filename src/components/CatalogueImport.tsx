@@ -1,31 +1,47 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { SessionState } from '../catalogue/session';
 import { FINDING_LABELS as LABELS } from '../catalogue/finding-labels';
 import { catalogueHref } from '../catalogue-router';
 import { CatalogueOverview } from './CatalogueOverview';
 import { CatalogueReleases } from './CatalogueReleases';
+import { CatalogueRecordings } from './CatalogueRecordings';
+import { CatalogueDetails } from './CatalogueDetails';
+import { allFindings, catalogueIndex, findingTargets, selectFindings, type CatalogueContext, type ReviewFilter } from '../catalogue/recordings';
+import type { Snapshot } from '../catalogue/import';
 import type { CatalogueSection } from '../catalogue-router';
 
 
 export function CatalogueImport({ section, emptyCopy, state, onSelect, onReset }: { section: CatalogueSection; emptyCopy: { title: string; body: string }; state: SessionState; onSelect: (file: File) => void; onReset: () => void }) {
   const [page, setPage] = useState(0);
-  const [code, setCode] = useState<string | null>(null);
+  const [filter, setFilter] = useState<ReviewFilter>(allFindings);
+  const [selection, setSelection] = useState<{ target: CatalogueContext; snapshot: Snapshot; section: CatalogueSection } | null>(null);
   const input = useRef<HTMLInputElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const reviewFocus = useRef(false);
   const resetFocus = useRef(false);
   useEffect(() => {
-    setPage(0); setCode(null);
+    setPage(0); setFilter(allFindings); setSelection(null);
     // A discarded release dialog must leave the top layer before picker focus.
     if (resetFocus.current && state.phase === 'empty') { input.current?.focus(); resetFocus.current = false; }
   }, [state]);
   useEffect(() => {
+    setSelection(null);
+    // Preserve Build120's code selection across tabs; entity context expires on exit.
+    if (section !== 'qa' && filter.context && !reviewFocus.current) { setFilter(allFindings); setPage(0); }
     if (section === 'qa' && reviewFocus.current) { heading.current?.focus(); reviewFocus.current = false; }
-  }, [section]);
+  }, [section, filter]);
   const result = state.phase === 'complete' ? state.result : null;
   const snapshot = result?.status === 'accepted' ? result.snapshot : null;
   const findings = result?.status === 'accepted' ? result.snapshot.findings : result?.findings ?? [];
-  const visibleFindings = code ? findings.filter(f => f.code === code) : findings;
+  const index = useMemo(() => snapshot ? catalogueIndex(snapshot) : null, [snapshot]);
+  const visibleFindings = index ? selectFindings(index, filter) : findings;
+  const contextLabel = !index || !filter.context ? null : filter.context.kind === 'recording' ? index.recordingById.get(filter.context.id)?.title
+    : filter.context.kind === 'release' ? index.releaseById.get(filter.context.id)?.title : index.appearanceById.get(filter.context.id)?.displayTitle;
+  const open = (target: CatalogueContext) => { if (snapshot) setSelection({ target, snapshot, section }); };
+  const review = (context: CatalogueContext) => {
+    setSelection(null); setFilter({ code: null, context }); setPage(0); reviewFocus.current = true;
+    globalThis.location.hash = catalogueHref({ section: 'qa' });
+  };
   const pageSize = 20;
   const channelCounts = new Map<string, number>();
   snapshot?.channels.forEach(c => channelCounts.set(c.channel, (channelCounts.get(c.channel) ?? 0) + 1));
@@ -49,10 +65,12 @@ export function CatalogueImport({ section, emptyCopy, state, onSelect, onReset }
       {snapshot && <p><strong>Source structurally accepted for dry-run.</strong> {findings.length} findings await human review. Nothing has been imported into production.</p>}
     </div>
     {snapshot && section === 'overview' && <CatalogueOverview snapshot={snapshot} onReview={value => {
-      setCode(value); setPage(0); reviewFocus.current = true;
+      setFilter({ code: value, context: null }); setPage(0); reviewFocus.current = true;
       globalThis.location.hash = catalogueHref({ section: 'qa' });
     }} />}
-    {snapshot && section === 'releases' && <CatalogueReleases snapshot={snapshot} />}
+    {snapshot && section === 'releases' && <CatalogueReleases snapshot={snapshot} onOpen={id => open({ kind: 'release', id })} />}
+    {index && section === 'recordings' && <CatalogueRecordings index={index} onOpen={open} />}
+    {index && selection?.snapshot === snapshot && selection.section === section && <CatalogueDetails index={index} target={selection.target} onClose={() => setSelection(null)} onReview={review} />}
     {snapshot && <>
       <details className="catalogue-source-details"><summary>Source audit & provenance</summary>
       <dl className="catalogue-import-summary">
@@ -70,19 +88,21 @@ export function CatalogueImport({ section, emptyCopy, state, onSelect, onReset }
         <p>Recording-level Spotify and SoundCloud text is retained only as private evidence. No Spotify, Apple Music or pitch status is inferred.</p>
       </details>
       </details>
-      {section === 'recordings' && <p>Your snapshot is available. The Recordings explorer is not available in this slice. Open Overview for counts or QA for evidence.</p>}
     </>}
-    {findings.length > 0 && (section === 'qa' || result?.status === 'rejected') && <div className="catalogue-findings">
+    {(findings.length > 0 || snapshot) && (section === 'qa' || result?.status === 'rejected') && <div className="catalogue-findings">
       <h3 ref={heading} tabIndex={-1}>Pending review</h3>
-      {code && <p>Showing {visibleFindings.length} of {findings.length} findings · {LABELS[code] ?? code}. <button type="button" onClick={() => { setCode(null); setPage(0); heading.current?.focus(); }}>Show all findings</button></p>}
+      {filter.context && <p>Context: <strong>{contextLabel ?? 'Title not documented'}</strong></p>}
+      {(filter.code || filter.context) && <p>Showing {visibleFindings.length} of {findings.length} findings · {filter.code ? LABELS[filter.code] ?? filter.code : 'Exact ' + filter.context!.kind + ' evidence context'}. <button type="button" onClick={() => { setFilter(allFindings); setPage(0); heading.current?.focus(); }}>Show all findings</button></p>}
+      {!visibleFindings.length && <p>No findings with a proven link in this context. This does not establish source completeness or approval.</p>}
       <p>{findings.filter(f => f.severity === 'error').length} errors · {findings.filter(f => f.severity === 'warning').length} warnings. No decisions are applied automatically.</p>
       <ol start={page * pageSize + 1}>{visibleFindings.slice(page * pageSize, (page + 1) * pageSize).map((f, i) => <li key={`${page}-${i}`}>
         <strong>{f.severity === 'error' ? 'Error' : 'Review'}: {LABELS[f.code] ?? 'Source evidence needs review'}</strong><span>{f.locator}</span>
+        {index && <div className="catalogue-finding-links">{findingTargets(index, f).map(target => <button type="button" aria-haspopup="dialog" key={target.kind + target.id} onClick={() => open(target)}>{target.kind === 'recording' ? 'View Recording' : target.kind === 'release' ? 'View Release' : 'Review appearance'}</button>)}</div>}
         {f.evidenceId && <details><summary>Private source evidence</summary><pre>{evidence.get(f.evidenceId)?.note}</pre></details>}
       </li>)}</ol>
       <div className="catalogue-import-controls">
         <button type="button" disabled={page === 0} onClick={() => setPage(p => p - 1)}>Previous cases</button>
-        <span aria-live="polite">Page {page + 1} of {Math.ceil(visibleFindings.length / pageSize)}</span>
+        <span aria-live="polite">Page {page + 1} of {Math.max(1, Math.ceil(visibleFindings.length / pageSize))}</span>
         <button type="button" disabled={(page + 1) * pageSize >= visibleFindings.length} onClick={() => setPage(p => p + 1)}>Next cases</button>
       </div>
     </div>}

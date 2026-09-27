@@ -2,7 +2,7 @@
 
 ## Current accepted runtime and evidence — 2026-09-27
 
-Verified production pre-closeout main `6fd52f9f21ceb54d2014eaa99efb77d5ec899937`, merged [PR #246](https://github.com/shinobione/shinobiwan-studio/pull/246). Exact final candidate `757a46d0d83804ae5cd2b7a7c03c483125c0c67e` passed [CI #36324001763](https://github.com/shinobione/shinobiwan-studio/actions/runs/36324001763); automatic [Pages #36325763251](https://github.com/shinobione/shinobiwan-studio/actions/runs/36325763251) build/upload/deploy SUCCESS on merge SHA. **Build121 / v0.19.43 A2.3 Slice 2 has bounded owner REAL USER PASS for session-only Releases gallery and detail.**
+Verified current main `1add68bc6f9c476374eafaefd58f865263f6e9ad` after docs #247, Pages 36335916511 SUCCESS. Runtime merge `6fd52f9f21ceb54d2014eaa99efb77d5ec899937`, merged [PR #246](https://github.com/shinobione/shinobiwan-studio/pull/246). Exact final candidate `757a46d0d83804ae5cd2b7a7c03c483125c0c67e` passed [CI #36324001763](https://github.com/shinobione/shinobiwan-studio/actions/runs/36324001763); automatic [Pages #36325763251](https://github.com/shinobione/shinobiwan-studio/actions/runs/36325763251) build/upload/deploy SUCCESS on merge SHA. **Build121 / v0.19.43 A2.3 Slice 2 has bounded owner REAL USER PASS for session-only Releases gallery and detail.**
 
 [Owner-reported Build121 production receipt](docs/acceptance/BUILD121-REAL-USER-PASS.md): all seven requested checks PASS — 84 distinct commercial Release cards and no remote artwork fetching; source-derived search/filter/sort and Grid/List; exact detailed metadata, source positions/linked Recording/provenance; visible unbound evidence with no fabricated association and publication state remaining unverified; keyboard open/Tab/Escape/Close restoring opener focus; shared session navigation with Reset/refresh clearing; DevTools no private-source upload, persistence, source identifiers in URL or external cover loads in the tested workflow. These are owner's reports, not independent captured browser logs, formal accessibility/penetration review or separate owner mobile certification. Findings remain pending.
 
@@ -10,9 +10,11 @@ Pre-merge automated candidate evidence is separately documented in the [original
 
 [Build120 Slice 1](docs/acceptance/BUILD120-REAL-USER-PASS.md), [Build119 import](docs/acceptance/BUILD119-REAL-USER-PASS.md), [Build118 original A2.1](docs/acceptance/BUILD118-REAL-USER-PASS.md), [CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md) and Build117 historical reliability evidence remain independent. The derived JSON omits portions of the private workbook; 355 earlier findings are not resolved, channel availability is not live-verified, and no artwork authority is conferred. No Worker/R2/backend/LaunchPAD changes or commercial persistence/writes occurred. CPU issues Studio #238 and LaunchPAD #283 stay open without sustained measurements.
 
-### Next QA boundary
+### Build122 candidate — independent automated and owner gates
 
-A2.3 Slice 3 (session-only Recordings explorer and evidence-linked contextual QA) is [planning only](docs/CATALOGUE-A2-3-BLUEPRINT.md). The next runtime candidate requires its own exact-ID/multi-release/ISRC evidence checks, lifecycle/privacy/keyboard/mobile synthetic regressions, inherited gates and separately authorized owner deployment/smoke. No Build122 allocation, Slice 3 CI or REAL USER PASS is claimed here.
+Build122 adds pure exact-identity/evidence selectors, rendered missing-reference checks and eight synthetic real App/StrictMode Chromium scenarios covering Recordings filters, bound-only multi-Release detail, contextual/global QA, shared modal keyboard/navigation, responsive widths 320/390/768/1280/2560, lifecycle, late Worker races and privacy. The full gate inherits Build118–121/CPU, release checks, TypeScript/build and artifact scanning. Local full build PASS: inherited gates, eight Build122 Chromium scenarios, release/TypeScript and 137-file artifact/privacy scan. [Detailed contract and owner handoff](docs/CATALOGUE-A2-3-SLICE3-VALIDATION.md).
+
+Production remains accepted Build121. Build122 requires Draft PR/final-head CI before delivery; merge/Pages and owner private-source acceptance are separate. **No Build122 REAL USER PASS.**
 
 ## Automated CPU regression coverage
 
@@ -181,4 +183,4 @@ Studio must not fabricate causal certainty when a different backend operation do
 
 ## Next QA gate
 
-Review the Build121 documentation-only acceptance closeout and independently scope A2.3 Slice 3. Recording explorer and commercial persistence/sync have not been implemented or authorized; CPU issues remain open without sustained telemetry.
+Review the Build122 Draft and final-head CI, then perform the Slice 3 owner checklist after separately authorized deployment. Commercial persistence/sync remains out of scope; CPU issues remain open without sustained telemetry.

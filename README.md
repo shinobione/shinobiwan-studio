@@ -22,9 +22,9 @@ The Catalogue still requires explicit local JSON selection, and the snapshot rem
 
 **Build120 / v0.19.42** retains its independent [A2.3 Slice 1 owner acceptance](docs/acceptance/BUILD120-REAL-USER-PASS.md); **Build119 / v0.19.41** its [A2.2 import receipt](docs/acceptance/BUILD119-REAL-USER-PASS.md); **Build118 / v0.19.40** its separate [A2.1 original acceptance](docs/acceptance/BUILD118-REAL-USER-PASS.md) and [bounded CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md). Studio CPU issue #238 / LaunchPAD #283 remain open without sustained CPU compliance evidence.
 
-## Next scope — A2.3 Slice 3 (planning only)
+## Active candidate — Build122 / v0.19.44
 
-[Catalogue A2.3 blueprint](docs/CATALOGUE-A2-3-BLUEPRINT.md): session-only native **Recordings explorer and evidence-linked contextual QA**, retaining distinct identities, missing ISRC and appearance relationships without auto-reconciliation. Reviewed artwork mapping, persistent commercial registry and STUDIO ↔ LaunchPAD synchronization need independent design and owner gates. The Build121 docs closeout does not allocate a new runtime build.
+Native Recordings explorer, exact multi-Release appearances and contextual QA are implemented as a separate candidate. [Implementation and owner handoff](docs/CATALOGUE-A2-3-SLICE3-VALIDATION.md). Draft PR/final-head CI delivery only; no merge/deployment/REAL USER PASS. Reviewed artwork, persistence, Track binding and synchronization retain separate gates.
 
 ## Product model
 
