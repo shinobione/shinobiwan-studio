@@ -2,21 +2,17 @@
 
 ## Current accepted production — 2026-09-27
 
-GitHub-verified `main`: `cba3fb35fec57edd307500f1a76474e48089efa4` after docs-only PR #243; [Pages 36317610337](https://github.com/shinobione/shinobiwan-studio/actions/runs/36317610337) SUCCESS on that SHA. The accepted runtime merged at `20a0adf15271a0f9bff0cbd2a318c441685ec2bc` in owner-authorized [PR #242](https://github.com/shinobione/shinobiwan-studio/pull/242), exact tested candidate `e2b4adc70da6952713c3e74f1987e92bd40e0348`. [CI #36312536104](https://github.com/shinobione/shinobiwan-studio/actions/runs/36312536104) SUCCESS on that candidate; automatic [Pages #36316493317](https://github.com/shinobione/shinobiwan-studio/actions/runs/36316493317) build/deploy SUCCESS on the merge SHA. **Current runtime: Build119 / v0.19.41, Catalogue A2.2 local-private dry-run.**
+GitHub-verified main `09681904e69b9f2c3ab7bf0d41de1cf1a7dd5d11` (owner-authorized [PR #244](https://github.com/shinobione/shinobiwan-studio/pull/244)); exact candidate head `de1000940c32efcc8024c4fd61f240cfa7f93860` passed [CI #36318925988](https://github.com/shinobione/shinobiwan-studio/actions/runs/36318925988); [Pages #36320947983](https://github.com/shinobione/shinobiwan-studio/actions/runs/36320947983) build and deploy SUCCESS on the exact merge SHA. **Current accepted runtime: Build120 / v0.19.42, Catalogue A2.3 Slice 1 — parent-owned local-private session and native Overview.**
 
-The owner's bounded [Build119 REAL USER PASS](docs/acceptance/BUILD119-REAL-USER-PASS.md) confirms the explicit local JSON import summary: 444 rows, 168 recordings, 84 source releases, 109 appearances, 120 known / 48 missing ISRC, zero rejects and 355 pending findings. Shino also confirmed QA, Reset/unload, empty state after refresh and DevTools showing no private-source upload or browser-storage persistence. This is reported owner browser evidence, not an independent network capture or a complete security/mobile/accessibility audit. All findings remain pending. Source workbook evidence coverage is incomplete and clearly disclosed; no commercial records are embedded in GitHub Pages.
+The owner's bounded [Build120 REAL USER PASS](docs/acceptance/BUILD120-REAL-USER-PASS.md) confirms all five production browser checks: selected private snapshot Overview metrics (168 Recordings / 84 commercial Releases / 109 appearances / 120 known and 48 missing ISRC / 355 pending findings); navigation among Overview, Releases, Recordings and QA and back without re-import; two finding groups opening filtered QA then Show all; Reset/unload and refresh clear state; DevTools showed no private-source upload/storage or source IDs in URL during the tested workflow. It is an explicit owner report, not an independently captured network trace or full accessibility/security/mobile audit. No finding is marked resolved.
 
-The original [Build118 A2.1 seven-check acceptance](docs/acceptance/BUILD118-REAL-USER-PASS.md), later [bounded CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md), and [Build117 reliability receipt](docs/acceptance/BUILD117-REAL-USER-PASS.md) remain separate historical evidence. CPU issue STUDIO #238 and LaunchPAD #283 stay open: no measured sustained Workers Free CPU compliance or permanent 503-free guarantee. Documentation #241 merged at `8c6a67eb9a1476fa864d136174199402a12498a8`; superseded PR #237 is still open for separate housekeeping.
+Pre-merge [Build120 validation](docs/CATALOGUE-A2-3-SLICE1-VALIDATION.md): full build/release/TypeScript, inherited Build118/119/CPU gates, 12 synthetic real-Chromium scenarios and 130-file artifact/privacy scan PASS. The Build119 parser and Worker generation fence remain unchanged. No new Worker/LaunchPAD deployment, R2/catalog mutation or commercial persistence.
 
-LaunchPAD #284/#285/#286 and admin-only [Worker deployment 36265326176](https://github.com/shinobione/LaunchPAD-APP/actions/runs/36265326176) at `e1737f0e29d3411c30c34c134ab0d68650b0617a` / version `51c9d61e-2c69-4f4a-b106-3e4829bfb461` predate Build119. Build119 did not deploy another Worker or mutate R2.
+The independent [Build119 A2.2 receipt](docs/acceptance/BUILD119-REAL-USER-PASS.md) documents the original import (444 rows, zero rejected), QA and local-private lifetime. The [Build118 A2.1 original acceptance](docs/acceptance/BUILD118-REAL-USER-PASS.md), [bounded CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md) and [Build117 reliability receipt](docs/acceptance/BUILD117-REAL-USER-PASS.md) remain separate. Derived JSON does not retain every ten-sheet workbook proof. Current external channel availability remains unknown and the 355 cases remain pending. Studio CPU issue #238 and LaunchPAD issue #283 remain open without sustained CPU-duration measurements; superseded PR #237 remains open for separate housekeeping, with #241 merged.
 
-## Active candidate — Build120 / A2.3 Slice 1
+## Next bounded Catalogue scope — A2.3 Slice 2 (planning only)
 
-Build120 / v0.19.42 implements the owner-authorized [issue #235](https://github.com/shinobione/shinobiwan-studio/issues/235) Slice 1: one parent-owned private Catalogue session and a source-derived native Overview. [Draft PR #244](https://github.com/shinobione/shinobiwan-studio/pull/244), branch: `codex/catalogue-a23-slice1-build120-20260927`, based on verified `cba3fb35fec57edd307500f1a76474e48089efa4`. Existing A2.2 and CPU branches/worktrees are preserved.
-
-Local full build, release/TypeScript, inherited Build118/119/CPU tests, 12 real Chromium scenarios and the 130-file runtime artifact/privacy scan PASS. [Implementation and acceptance handoff](docs/CATALOGUE-A2-3-SLICE1-VALIDATION.md). Delivery gate: Draft PR and exact-head CI; **not merged, not deployed, no REAL USER PASS**. Production remains accepted Build119. No private V5 dataset was read, uploaded or added during this slice.
-
-Releases/Recording detail views and persistence remain future scope in the [blueprint](docs/CATALOGUE-A2-3-BLUEPRINT.md). No Worker/R2, LaunchPAD or Blackhole change.
+The [A2.3 blueprint](docs/CATALOGUE-A2-3-BLUEPRINT.md) identifies populated session-only commercial Releases gallery and details as the next independent slice; Recording explorer and contextual QA follow separately. Existing imported source has no reviewed artwork/genre references; truthful placeholders and source-derived facts only. A long-lived commercial registry, reviewed Track mapping and STUDIO ↔ LaunchPAD synchronization require separate source-of-truth/write-authority design. **No Build121 allocated, no next implementation PR authorized by this docs closeout.**
 
 ## Prior accepted reliability baseline — Build117
 
@@ -129,7 +125,7 @@ Build116                COMPLETE · Safe Track Delete · REAL USER PASS
 Build117                COMPLETE · exact-byte Track asset SHA-256 proof · REAL USER PASS
 Build118                MERGED / PAGES DEPLOYED · A2.1 PASS; slice 4 bounded functional PASS
 Build119                MERGED / PAGES DEPLOYED · A2.2 bounded REAL USER PASS
-Build120                CANDIDATE · A2.3 Slice 1 session + Overview · no REAL USER PASS
+Build120                MERGED / PAGES DEPLOYED · A2.3 Slice 1 bounded REAL USER PASS
 Official Phase 11       NONE
 ```
 
@@ -162,7 +158,7 @@ Build108/109/114–117 are bounded reliability/lifecycle work outside Phase10 Sl
 
 ## Immediate next action
 
-Review the Build120 Draft diff and exact-head CI, then obtain separate authorization for merge/Pages deployment and owner acceptance using the Slice 1 handoff. Stop before merge/deployment. Retain CPU incidents and workbook coverage limits. Release gallery, Recording details, persistence/sync, Album asset digest proof and Phase10 Slice2 remain separate.
+Review the documentation-only Build120 acceptance receipt and refreshed canonical checkpoint, then separately scope A2.3 Slice 2 (Releases gallery/details) before allocating any new runtime build. Retain workbook evidence gaps, open CPU issues, and separate gates for Recording explorer, commercial persistence/sync, Album asset digest proof and Phase10 Slice2.
 
 ## Release mechanics
 

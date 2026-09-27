@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-09-27 after Build119 / A2.2 merged, deployed and bounded owner REAL USER PASS. Build120 is the undeployed A2.3 Slice 1 candidate. See PROJECT_STATE.md for exact receipts.
+Updated: 2026-09-27 after Build120 / A2.3 Slice 1 merged, Pages deployed and bounded owner REAL USER PASS. The next Releases gallery/detail slice is planning only. See PROJECT_STATE.md for exact receipts.
 
 This file tracks durable Done / Active / Next / Backlog state. Historical implementation detail belongs in changelogs, milestone docs and acceptance receipts.
 
@@ -106,11 +106,11 @@ PR #240 merged at `650c8a3cf9a69f95732905562535394fac94a12e`; exact-head CI and 
 
 PR #242 merged at `20a0adf15271a0f9bff0cbd2a318c441685ec2bc`; candidate CI 36312536104 and Pages 36316493317 SUCCESS. The owner confirmed the explicit local-private JSON import (444 rows / 168 Recordings / 84 Releases / 109 appearances / 120 known and 48 missing ISRC / 0 rejected / 355 pending), QA, Reset/unload, refresh-empty and no private upload/storage in DevTools. Scope is **temporary, read-only, session-only**; no resolved source cases, full workbook coverage, persistent registry or A2.3 browsing. [Owner receipt](docs/acceptance/BUILD119-REAL-USER-PASS.md).
 
+### Catalogue A2.3 Slice 1 — Build120 accepted
+
+PR #244 exact candidate `de1000940c32efcc8024c4fd61f240cfa7f93860` passed CI 36318925988; merge `09681904e69b9f2c3ab7bf0d41de1cf1a7dd5d11`, Pages 36320947983 SUCCESS. Owner confirmed the five requested checks: live source-derived metrics, session continuity across Catalogue sections, finding-group QA links/Show all, Reset/refresh empty and DevTools no private upload/storage/source ID in route. **Bounded REAL USER PASS** for session + Overview only. [Owner receipt](docs/acceptance/BUILD120-REAL-USER-PASS.md); [original candidate validation](docs/CATALOGUE-A2-3-SLICE1-VALIDATION.md). No commercial persistence, source auto-link or release gallery.
+
 ## Active
-
-### Catalogue A2.3 Slice 1 — Build120 candidate
-
-Parent-owned memory-only session plus native Overview, derived counts and finding-code QA links. Source parser, provenance, channel unknown and cancellation protections retained. Local full build and synthetic Chromium gate PASS. [Validation and owner handoff](docs/CATALOGUE-A2-3-SLICE1-VALIDATION.md). Draft PR + exact-head CI only; no merge/deploy or REAL USER PASS. Future Release gallery/details, Recording explorer, commercial persistence and sync retain separate scope.
 
 ### Phase 10 — progressive extraction
 
@@ -139,7 +139,7 @@ Phase10 remains active as a program, not permission for continuous refactoring. 
 
 ### Corrective review / browser gate
 
-Review Build120 Slice 1 Draft and exact-head CI. Merge, Pages and owner smoke require separate authorization. Release gallery and Recording details are subsequent slices; persistence and cross-repository sync require separate authority decisions. PR #237 is still open, superseded by merged #241. CPU issues remain open without sustained measurements.
+Review the docs-only Build120 acceptance closeout. Independently scope A2.3 Slice 2 (session-only Releases gallery/details) before allocating its runtime version/build. Recording explorer and commercial persistence/STUDIO ↔ LaunchPAD sync require later, separate authority decisions. PR #237 remains open, superseded by merged #241; CPU issues remain open without sustained telemetry.
 
 Album asset exact-byte/digest proof remains independently auditable backlog and is not part of Build118.
 
@@ -178,4 +178,4 @@ There is currently **no official Phase11**.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md`, [Build119 owner A2.2 acceptance](docs/acceptance/BUILD119-REAL-USER-PASS.md), [original Build118 A2.1 acceptance](docs/acceptance/BUILD118-REAL-USER-PASS.md) and separate [bounded CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md). [Build117](docs/acceptance/BUILD117-REAL-USER-PASS.md) remains the prior reliability receipt. CPU incidents stay open without sustained CPU measurements.
+See `PROJECT_STATE.md`, [Build120 owner A2.3 Slice 1 acceptance](docs/acceptance/BUILD120-REAL-USER-PASS.md), [Build119 A2.2 acceptance](docs/acceptance/BUILD119-REAL-USER-PASS.md), [Build118 A2.1 acceptance](docs/acceptance/BUILD118-REAL-USER-PASS.md) and separate [CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md). CPU issues remain open without sustained CPU measurements.

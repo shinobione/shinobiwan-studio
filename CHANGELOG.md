@@ -2,17 +2,17 @@
 
 This is the **current concise changelog**. Detailed per-build records live under `changelogs/` and accepted production receipts under `docs/acceptance/`.
 
-## Current candidate
+## Current accepted release
 
 ### v0.19.42 · Build120 — Catalogue A2.3 Slice 1 · 2026-09-27
 
-One parent-owned private session across Catalogue routes; native snapshot-only Overview with dynamic counts, source date/private/temporary status and finding-code review groups opening filtered QA. A2.2 parser/provenance/cancellation retained. Responsive and keyboard refinements, development-only Chromium regression gate. Local full build/privacy and inherited tests PASS; no merge, deployment or REAL USER PASS. [Handoff](docs/CATALOGUE-A2-3-SLICE1-VALIDATION.md).
+A single parent-owned temporary private session survives Catalogue subroute navigation; native Overview uses source-derived counts/date and finding-code highlights opening filtered QA. A2.2 parser, provenance and cancellation behavior remain. Responsive and keyboard refinements plus development-only Chromium regressions. [PR #244](https://github.com/shinobione/shinobiwan-studio/pull/244), exact candidate `de1000940c32efcc8024c4fd61f240cfa7f93860` passed [CI #36318925988](https://github.com/shinobione/shinobiwan-studio/actions/runs/36318925988); merged at `09681904e69b9f2c3ab7bf0d41de1cf1a7dd5d11`; [Pages #36320947983](https://github.com/shinobione/shinobiwan-studio/actions/runs/36320947983) build/deploy SUCCESS. Owner reported bounded five-check REAL USER PASS for metrics, session continuity, QA filtering, Reset/refresh and DevTools privacy. [Acceptance receipt](docs/acceptance/BUILD120-REAL-USER-PASS.md). No Worker/R2/persistence change, gallery or durable source status.
 
-## Current accepted release
+## Prior accepted Catalogue release
 
 ### v0.19.41 · Build119 — Catalogue A2.2 · 2026-09-27
 
-Explicit local-private JSON selection, bundled-worker validation, provenance-preserving commercial normalization, atomic memory-only preview, pending QA/evidence and reset. [PR #242](https://github.com/shinobione/shinobiwan-studio/pull/242) merged at `20a0adf15271a0f9bff0cbd2a318c441685ec2bc`; exact-head [CI 36312536104](https://github.com/shinobione/shinobiwan-studio/actions/runs/36312536104) and [Pages 36316493317](https://github.com/shinobione/shinobiwan-studio/actions/runs/36316493317) SUCCESS. The owner reported bounded REAL USER PASS for source aggregates, QA, reset/unload, refresh-empty and no private upload or browser storage. [Receipt](docs/acceptance/BUILD119-REAL-USER-PASS.md). No backend/persistence/publication actions; no A2.3 gallery. The derived source omits some original workbook evidence.
+Explicit local-private JSON selection, bundled-worker validation, provenance-preserving commercial normalization, atomic memory-only preview, pending QA/evidence and reset. [PR #242](https://github.com/shinobione/shinobiwan-studio/pull/242) merged at `20a0adf15271a0f9bff0cbd2a318c441685ec2bc`; exact-head [CI 36312536104](https://github.com/shinobione/shinobiwan-studio/actions/runs/36312536104) and [Pages 36316493317](https://github.com/shinobione/shinobiwan-studio/actions/runs/36316493317) SUCCESS. The owner reported bounded REAL USER PASS for source aggregates, QA, reset/unload, refresh-empty and no private upload or browser storage. [Receipt](docs/acceptance/BUILD119-REAL-USER-PASS.md). No backend/persistence/publication actions; derived source omits some original workbook evidence.
 
 ## Previous accepted release
 

@@ -16,15 +16,15 @@ Then verify real GitHub state before mutation.
 
 ## Current accepted state
 
-**Build119 / v0.19.41 — Catalogue A2.2 REAL USER PASS (bounded).** PR #242 merged at `20a0adf15271a0f9bff0cbd2a318c441685ec2bc`; candidate CI 36312536104 and automatic Pages deploy 36316493317 SUCCESS. The owner explicitly validated a local-private V5-derived JSON summary (444 rows, 168 Recordings, 84 commercial Releases, 109 appearances, 120 known / 48 missing ISRC, zero rejects, 355 pending findings), QA, reset/unload, refresh-empty and no private-source network upload or browser-storage persistence in DevTools. [Exact owner receipt](docs/acceptance/BUILD119-REAL-USER-PASS.md) · [A2.2 contract](docs/CATALOGUE-A2-2-CONTRACT.md).
+**Build120 / v0.19.42 — Catalogue A2.3 Slice 1 · bounded REAL USER PASS.** Owner-authorized [PR #244](https://github.com/shinobione/shinobiwan-studio/pull/244) merged at `09681904e69b9f2c3ab7bf0d41de1cf1a7dd5d11`; [CI #36318925988](https://github.com/shinobione/shinobiwan-studio/actions/runs/36318925988) SUCCESS on the exact candidate and [Pages #36320947983](https://github.com/shinobione/shinobiwan-studio/actions/runs/36320947983) build/deploy SUCCESS on the merge SHA. Shino confirmed the live private-source Overview counts, one retained snapshot across sections, finding-group links to filtered QA/Show all, Reset/refresh clearing, and DevTools no private upload/storage or source IDs in the URL during the tested flow. [Bounded owner receipt](docs/acceptance/BUILD120-REAL-USER-PASS.md) · [original implementation handoff](docs/CATALOGUE-A2-3-SLICE1-VALIDATION.md).
 
-The preview is explicitly selected, temporary, in-memory and read-only. Findings remain pending, current platform availability remains unknown, and the derived JSON has documented workbook-evidence omissions. No commercial persistence, Track auto-link, R2/Worker write, A2.3 gallery or distributor synchronization was delivered.
+The Catalogue remains temporary and read-only, with an explicit local file selected per session. Missing workbook evidence remains disclosed; 355 findings remain pending, not resolved or certified publication facts. No commercial persistence, external platform publishing, Track auto-binding, Worker/R2 change or Releases/Recordings detail gallery was introduced.
 
-**Build118 / v0.19.40** retains its independent [A2.1 original seven-check acceptance](docs/acceptance/BUILD118-REAL-USER-PASS.md) and [later bounded CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md); CPU issue #238 / LaunchPAD #283 remain open without sustained CPU-duration evidence. [Build117](docs/acceptance/BUILD117-REAL-USER-PASS.md) remains the prior accepted reliability baseline.
+**Build119 / v0.19.41** retains its independent [A2.2 local-private import acceptance](docs/acceptance/BUILD119-REAL-USER-PASS.md). **Build118 / v0.19.40** retains the separate [original A2.1 acceptance](docs/acceptance/BUILD118-REAL-USER-PASS.md) and [bounded CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md). STUDIO CPU issue #238 / LaunchPAD #283 remain open without sustained CPU compliance evidence. [Build117](docs/acceptance/BUILD117-REAL-USER-PASS.md) remains previous reliability history.
 
-## Active candidate — Build120 / v0.19.42
+## Next scope — Catalogue A2.3 Slice 2 (planning only)
 
-A2.3 Slice 1 adds a parent-owned temporary private session and native Overview with dynamic counts and finding-code QA links. Local automated gates pass; delivery stops at a Draft PR and exact-head CI. **Not merged/deployed; no REAL USER PASS.** [Implementation and acceptance handoff](docs/CATALOGUE-A2-3-SLICE1-VALIDATION.md). Release gallery, Recording details, persistence and synchronization remain later scope in the [blueprint](docs/CATALOGUE-A2-3-BLUEPRINT.md).
+[Catalogue A2.3 blueprint](docs/CATALOGUE-A2-3-BLUEPRINT.md): native **session-only Releases gallery and detail** with true source evidence, explicit unknown channel availability and deliberate placeholders until artwork is independently proven. A later Recording explorer/QA slice and any persistent living commercial registry or STUDIO ↔ LaunchPAD synchronization each need separate review and authority decisions. No additional runtime build allocated by the Build120 closeout.
 
 ## Product model
 
@@ -86,10 +86,11 @@ Build109            COMPLETE · Track-create identity · REAL USER PASS
 Build110–117        COMPLETE · see canonical checkpoint and acceptance receipts
 Build118            ACCEPTED · A2.1 PASS; deployed CPU slice 4 bounded owner PASS
 Build119            ACCEPTED · A2.2 local-private dry-run · bounded REAL USER PASS
+Build120            ACCEPTED · A2.3 Slice 1 shared session/Overview · bounded REAL USER PASS
 Official Phase 11   NONE
 ```
 
-Build118 and Build119 are independently accepted Catalogue product slices outside Phase10 Slice2. Build120 implements only A2.3 Slice 1 as an undeployed candidate; further browsing, persistent storage and synchronization require separate review.
+Build118–120 are independently accepted Catalogue product slices outside Phase10 Slice2. A2.3 Releases/Recordings browsing and commercial persistence/synchronization still require separate review.
 
 ## Frozen authority model
 
