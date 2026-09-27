@@ -16,9 +16,9 @@ Then verify real GitHub state before mutation.
 
 ## Current accepted state
 
-**Studio v0.19.39 / Build117 — REAL USER PASS**, with Track Manager v5.28 / bridge v1.18. [Build117 acceptance receipt](docs/acceptance/BUILD117-REAL-USER-PASS.md) records the precise automated and real-user boundaries. [PROJECT_STATE.md](PROJECT_STATE.md) holds current GitHub and runtime truth.
+**Prior reliability baseline: Studio v0.19.39 / Build117 — REAL USER PASS**, with Track Manager v5.28 / bridge v1.18. [Build117 acceptance receipt](docs/acceptance/BUILD117-REAL-USER-PASS.md) records the precise automated and real-user boundaries. [PROJECT_STATE.md](PROJECT_STATE.md) holds current GitHub and runtime truth.
 
-**Build118 / v0.19.40 — Catalogue A2.1 candidate only.** Native commercial Catalogue navigation, routes/types and empty states; local import is coming in a later slice. No embedded commercial dataset, backend change or canonical persistence. Not merged, deployed or accepted. [Candidate scope](docs/build118-catalogue-a2-1-candidate.md).
+**Build118 / v0.19.40 — A2.1 REAL USER PASS; CPU slice 4 merged, Pages deployed and bounded owner recovery PASS.** [Original acceptance](docs/acceptance/BUILD118-REAL-USER-PASS.md) and [CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md) remain distinct. CPU duration/compliance is unmeasured; incident issues stay open. A2.2 local-private import is authorized as a separate candidate, with no merge/deploy permission.
 
 ## Product model
 
