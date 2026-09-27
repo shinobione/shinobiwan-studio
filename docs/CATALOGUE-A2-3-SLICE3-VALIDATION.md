@@ -2,6 +2,8 @@
 
 Date: 2026-09-27. **Candidate only; no merge, deployment or REAL USER PASS.**
 
+Delivery: [Draft PR #248](https://github.com/shinobione/shinobiwan-studio/pull/248). Its receipt records final exact-head CI after this documentation commit; an earlier head is not a substitute.
+
 ## Baseline and scope
 
 Fetched `origin/main` exactly matched the owner baseline `1add68bc6f9c476374eafaefd58f865263f6e9ad` (docs #247); [Pages 36335916511](https://github.com/shinobione/shinobiwan-studio/actions/runs/36335916511) SUCCESS on that SHA. Runtime Build121 / v0.19.43 remains production, with its separate [bounded owner receipt](acceptance/BUILD121-REAL-USER-PASS.md). Initial checkout `757a46d0d83804ae5cd2b7a7c03c483125c0c67e` was clean; old branches and the CPU worktree were preserved. Dedicated branch: `codex/catalogue-a23-slice3-build122-20260927`, from verified main.

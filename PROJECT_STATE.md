@@ -12,6 +12,8 @@ Prior [Build120 A2.3 Slice 1 acceptance](docs/acceptance/BUILD120-REAL-USER-PASS
 
 ## Active candidate — Build122 / v0.19.44, A2.3 Slice 3
 
+Delivery: [Draft PR #248](https://github.com/shinobione/shinobiwan-studio/pull/248). Final exact-head CI is required and recorded in the PR receipt; merge/Pages remain separately gated.
+
 The [owner kickoff in #235](https://github.com/shinobione/shinobiwan-studio/issues/235#issuecomment-5858138120) authorizes a native session-only Recordings explorer and exact-evidence contextual QA. Branch `codex/catalogue-a23-slice3-build122-20260927` starts from verified main above. [Implementation, relationship rules and owner handoff](docs/CATALOGUE-A2-3-SLICE3-VALIDATION.md). Production remains accepted Build121. **Candidate only: no merge, deployment or REAL USER PASS.**
 
 Exact bound appearances may span multiple Releases; unbound lookalikes never acquire a Recording. Global QA retains every finding; unsupported note-only relationships remain global. One transient modal supports exact evidence navigation. Parser/Worker/session safeguards and commercial/creative authority stay unchanged. Final delivery requires Draft PR and final-head CI. Local full build PASS: inherited gates, eight Build122 Chromium scenarios, release/TypeScript and 137-file artifact/privacy scan. Artwork, persistence/sync and reviewed Track mapping remain separate decisions.
