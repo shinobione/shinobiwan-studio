@@ -123,6 +123,12 @@ Deep Audio compute
 
 No generic write-retry or generic idempotency service was introduced.
 
+## Current mission overlay — Build119 candidate validation
+
+The earlier slice-4 candidate wording is superseded by merged #240 / Pages 36272890963 and the owner's bounded post-deploy report; #241 holds the reconciled historical acceptance. No sustained CPU compliance is claimed.
+
+A2.2: 55 focused synthetic cases, inherited Build118/CPU regressions, typecheck and full build pass. Actual local JSON compatibility: 444 rows, 0 rejected, 355 pending findings. Agent browser tested synthetic selection, QA, keyboard reset, malformed rejection and refresh. Private audit found coverage omissions, explicitly disclosed; no source rows in CI. [Detailed validation, privacy evidence and pending owner checklist](docs/CATALOGUE-A2-2-VALIDATION.md). Build119 has no production deployment or REAL USER PASS.
+
 ## Release metadata guard
 
 Build109 release closeout adds `check:release` to the Studio build chain. It verifies:
@@ -180,9 +186,3 @@ Studio must not fabricate causal certainty when a different backend operation do
 ## Next QA gate
 
 Review CPU slice 4 Draft PR and exact-head CI. Merge/deployment require separate authorization, followed by the proposed browser acceptance checklist. Local-private import remains on hold; bounded prior recovery does not close the CPU incident.
-
-## Current mission overlay — Build119 candidate validation
-
-The earlier slice-4 candidate wording is superseded by merged #240 / Pages 36272890963 and the owner's bounded post-deploy report; #241 holds the reconciled historical acceptance. No sustained CPU compliance is claimed.
-
-A2.2: 55 focused synthetic cases, inherited Build118/CPU regressions, typecheck and full build pass. Actual local JSON compatibility: 444 rows, 0 rejected, 355 pending findings. Agent browser tested synthetic selection, QA, keyboard reset, malformed rejection and refresh. Private audit found coverage omissions, explicitly disclosed; no source rows in CI. [Detailed validation, privacy evidence and pending owner checklist](docs/CATALOGUE-A2-2-VALIDATION.md). Build119 has no production deployment or REAL USER PASS.
