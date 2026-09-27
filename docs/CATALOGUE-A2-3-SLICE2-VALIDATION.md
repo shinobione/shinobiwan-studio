@@ -26,6 +26,8 @@ The read model indexes releases, Recordings, all appearances, evidence, channels
 
 ## Validation evidence
 
+[Draft PR #246](https://github.com/shinobione/shinobiwan-studio/pull/246), implementation head `2d0eacdf78d21c82353aa6fb557a73723e0c9b45`: [CI 36323849563](https://github.com/shinobione/shinobiwan-studio/actions/runs/36323849563) SUCCESS. Its logs confirm inherited gates, Build120's 12 Chromium scenarios, Build121's nine Chromium scenarios, full build and the 133-file artifact/privacy scan. The PR receipt must also confirm CI on the final documentation head before delivery; neither result authorizes merge or deployment.
+
 | Gate | Local result |
 | --- | --- |
 | Full `npm run build` | PASS, all inherited gates |
