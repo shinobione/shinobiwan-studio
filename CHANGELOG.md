@@ -2,17 +2,17 @@
 
 This is the **current concise changelog**. Detailed per-build records live under `changelogs/` and accepted production receipts under `docs/acceptance/`.
 
-## Current candidate
+## Current accepted release
 
 ### v0.19.43 · Build121 — Catalogue A2.3 Slice 2 · 2026-09-27
 
-Native private Releases grid/list and transient detail; source-derived search/filter/stable sorting, deliberate artwork placeholders, explicit reference dates/publication uncertainty. Additive typed projection retains unbound source positions within the exact release without Recording inference. Native modal keyboard/Escape/close focus and reset focus preserved. Local full build, inherited gates, nine Chromium scenarios and artifact/privacy scan PASS. No merge/deployment/REAL USER PASS. [Owner handoff](docs/CATALOGUE-A2-3-SLICE2-VALIDATION.md).
+Native private Releases grid/list and transient detail; factual source search/filter/stable sorting, deliberate artwork placeholders, historical reference dates versus current publication unknown. Additive validated in-memory projection retains exact unbound source appearance positions/evidence with no guessed Recording. Native modal keyboard/Escape/Close and picker/opener focus preserved. [PR #246](https://github.com/shinobione/shinobiwan-studio/pull/246), final tested `757a46d0d83804ae5cd2b7a7c03c483125c0c67e`, [CI #36324001763](https://github.com/shinobione/shinobiwan-studio/actions/runs/36324001763) SUCCESS, merge `6fd52f9f21ceb54d2014eaa99efb77d5ec899937`, [Pages #36325763251](https://github.com/shinobione/shinobiwan-studio/actions/runs/36325763251) build/upload/deploy SUCCESS. Owner confirms seven bounded source/keyboard/session/privacy checks — **REAL USER PASS**. [Post-deploy acceptance receipt](docs/acceptance/BUILD121-REAL-USER-PASS.md). No Worker/R2/commercial storage or publication action.
 
-## Current accepted release
+## Previous accepted Catalogue release
 
 ### v0.19.42 · Build120 — Catalogue A2.3 Slice 1 · 2026-09-27
 
-A single parent-owned temporary private session survives Catalogue subroute navigation; native Overview uses source-derived counts/date and finding-code highlights opening filtered QA. A2.2 parser, provenance and cancellation behavior remain. Responsive and keyboard refinements plus development-only Chromium regressions. [PR #244](https://github.com/shinobione/shinobiwan-studio/pull/244), exact candidate `de1000940c32efcc8024c4fd61f240cfa7f93860` passed [CI #36318925988](https://github.com/shinobione/shinobiwan-studio/actions/runs/36318925988); merged at `09681904e69b9f2c3ab7bf0d41de1cf1a7dd5d11`; [Pages #36320947983](https://github.com/shinobione/shinobiwan-studio/actions/runs/36320947983) build/deploy SUCCESS. Owner reported bounded five-check REAL USER PASS for metrics, session continuity, QA filtering, Reset/refresh and DevTools privacy. [Acceptance receipt](docs/acceptance/BUILD120-REAL-USER-PASS.md). No Worker/R2/persistence change, gallery or durable source status.
+A single parent-owned temporary private session survives Catalogue subroute navigation; native Overview uses source-derived counts/date and finding-code highlights opening filtered QA. A2.2 parser, provenance and cancellation behavior remain. Responsive and keyboard refinements plus development-only Chromium regressions. [PR #244](https://github.com/shinobione/shinobiwan-studio/pull/244), exact candidate `de1000940c32efcc8024c4fd61f240cfa7f93860` passed [CI #36318925988](https://github.com/shinobione/shinobiwan-studio/actions/runs/36318925988); merged at `09681904e69b9f2c3ab7bf0d41de1cf1a7dd5d11`; [Pages #36320947983](https://github.com/shinobione/shinobiwan-studio/actions/runs/36320947983) build/deploy SUCCESS. Owner reported bounded five-check REAL USER PASS for metrics, session continuity, QA filtering, Reset/refresh and DevTools privacy. [Acceptance receipt](docs/acceptance/BUILD120-REAL-USER-PASS.md). No Worker/R2/persistence change.
 
 ## Prior accepted Catalogue release
 
