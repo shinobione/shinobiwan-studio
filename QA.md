@@ -2,19 +2,17 @@
 
 ## Current accepted runtime and evidence — 2026-09-27
 
-GitHub verified `main` = `8c6a67eb9a1476fa864d136174199402a12498a8`, repository `shinobione/shinobiwan-studio`, production branch `main`. Documentation PR #241 is merged and automatic [Pages 36310871264](https://github.com/shinobione/shinobiwan-studio/actions/runs/36310871264) succeeded on that exact SHA. Production remains accepted Build118 / v0.19.40; a docs-only merge creates no runtime build. Runtime PR #240 merged at `650c8a3cf9a69f95732905562535394fac94a12e`, with exact-head [CI 36272677513](https://github.com/shinobione/shinobiwan-studio/actions/runs/36272677513) and merge-SHA [Pages 36272890963](https://github.com/shinobione/shinobiwan-studio/actions/runs/36272890963) successful.
+Production `main`: `20a0adf15271a0f9bff0cbd2a318c441685ec2bc` (PR #242 merged); exact candidate `e2b4adc70da6952713c3e74f1987e92bd40e0348` passed [CI #36312536104](https://github.com/shinobione/shinobiwan-studio/actions/runs/36312536104). [Pages #36316493317](https://github.com/shinobione/shinobiwan-studio/actions/runs/36316493317) build and deployment succeeded on merge SHA. **Build119 / v0.19.41 A2.2 is accepted in its bounded local-private import/dry-run scope.**
 
-The original [seven-check A2.1 REAL USER PASS](docs/acceptance/BUILD118-REAL-USER-PASS.md) is preserved verbatim from PR #237. The later CPU incident and recovery are separate: see [CPU closeout](docs/acceptance/BUILD118-CPU-RECOVERY.md). Owner-reported post-slice-4 sample: 7 canonical Albums, 4 Healthy / 3 Attention / 0 Unverified; artwork present; one HTTP 200 each for canonical Albums, Tracks, SonicTrace and health; no visible 503. This is bounded functionality/network acceptance, not sustained Cloudflare CPU compliance. No CPU durations were measured. Issues #238 and LaunchPAD #283 remain open.
+[Owner-reported Build119 receipt](docs/acceptance/BUILD119-REAL-USER-PASS.md): private JSON loaded with 444 rows, 168 recordings, 84 releases, 109 appearances, 120 known / 48 missing ISRC, 0 rejected and 355 pending findings. Owner additionally confirmed QA, Reset/unload, empty state after refresh, and no private-source network upload or browser-storage persistence in DevTools. This does not prove all future sources, complete security or owner mobile/assistive-technology acceptance; the full ten-sheet workbook is not completely represented in derived JSON. 355 findings are unresolved review items, not import failures or certified platform states. No A2.3 gallery or durable catalogue state is accepted.
 
-LaunchPAD #284/#285/#286 are merged. Admin-only [deploy 36265326176](https://github.com/shinobione/LaunchPAD-APP/actions/runs/36265326176) succeeded at `e1737f0e29d3411c30c34c134ab0d68650b0617a`, version `51c9d61e-2c69-4f4a-b106-3e4829bfb461`. Public Worker steps were skipped. This documentation work deploys nothing and mutates no R2 data.
+Build119 pre-merge automated receipt: 55 synthetic import/parser/lifecycle/UI tests plus inherited Build118/CPU guards, TypeScript, full build and artifact/privacy scanning PASS on exact candidate. The prior local private-audit 3,024 field comparisons and fingerprint scans are locally reported evidence, not public CI reproduction. [Candidate validation/limitations](docs/CATALOGUE-A2-2-VALIDATION.md).
 
-PR #237 stays open for owner review and is superseded for reconciliation by merged #241. Its stale canonical file versions were not copied. Build117 remains the accepted prior reliability baseline and its receipt is unchanged.
+The [original Build118 A2.1 receipt](docs/acceptance/BUILD118-REAL-USER-PASS.md), [separate bounded CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md) and Build117 reliability receipt remain unchanged. CPU issues STUDIO #238 and LaunchPAD #283 stay open without sustained CPU-duration telemetry. Superseded #237 stays open; #241 was merged before #242. No Build119 Worker deployment/R2 mutation.
 
-## Build119 / A2.2 — undeployed candidate validation
+### Next acceptance boundary
 
-Draft #242 integrates current main without changing the reviewed runtime. Build119 is not merged or deployed and has no REAL USER PASS. The authorized integration ends at new exact-head CI and Draft review; merge, deployment and production writes remain unauthorized.
-
-Post-integration automated checks PASS: 55 focused synthetic cases, inherited Build118/CPU regressions, typecheck, full build and artifact guard. The staged private fingerprint scan is recorded in the detailed validation receipt. The prior private local audit reported 444 rows, 0 rejected and 355 pending findings, with 3,024 field comparisons; these are local source-audit results, not public-CI reproduction. The derived JSON omits workbook evidence, so complete workbook equivalence is not established. Prior agent browser checks covered synthetic selection, QA, keyboard reset, malformed rejection and refresh. Owner private-source, Network/Storage, mobile and keyboard smoke remains pending. [Detailed validation and limitations](docs/CATALOGUE-A2-2-VALIDATION.md).
+[Proposed A2.3 session-only blueprint](docs/CATALOGUE-A2-3-BLUEPRINT.md) is **specification only**, not coded, CI green, deployed or owner-accepted. Next real-user gate must cover source-derived gallery/detail/QA links, missing cover/genre truth, multiple appearances, keyboard/mobile, route/privacy and unload/no-storage boundaries after a separately authorized runtime slice.
 
 ## Automated CPU regression coverage
 
@@ -183,4 +181,4 @@ Studio must not fabricate causal certainty when a different backend operation do
 
 ## Next QA gate
 
-Review A2.2 synthetic/source-compatibility/privacy evidence and exact-head CI. Owner browser acceptance of the candidate remains pending until separately authorized deployment. CPU incidents stay open without sustained telemetry.
+Review the docs-only Build119 owner receipt and A2.3 blueprint. A2.3 runtime and owner smoke are not yet authorized/completed; keep CPU incidents open without sustained telemetry.
