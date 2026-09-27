@@ -1,6 +1,6 @@
 # A2.4-A — Local-only source coverage / identity audit checklist
 
-Date: 2026-09-27. **Planning checklist only. No private package has been opened or exported in this GitHub task. No approval to implement a new exporter, persist, upload, or modify private sources.** Follow the broader [living Catalogue architecture proposal](CATALUE-A2-4-LIVING-ARCHITECTURE-PROPOSAL.md).
+Date: 2026-09-27. **Planning checklist only. No private package has been opened or exported in this GitHub task. No approval to implement a new exporter, persist, upload, or modify private sources.** Follow the broader [living Catalogue architecture proposal](CATALOGUE-A2-4-LIVING-ARCHITECTURE-PROPOSAL.md).
 
 ## Scope and local-only execution boundary
 
