@@ -169,3 +169,9 @@ There is currently **no official Phase11**.
 ## Current acceptance pointer
 
 See `PROJECT_STATE.md` for current runtime/cross-stack truth and [`docs/acceptance/BUILD117-REAL-USER-PASS.md`](docs/acceptance/BUILD117-REAL-USER-PASS.md) for the latest accepted Studio receipt.
+
+## Current mission overlay — A2.2 candidate
+
+Supersedes the earlier CPU slice-4 candidate and A2.2 hold above: #240 is merged/Pages deployed at `650c8a3cf9a69f95732905562535394fac94a12e`, with bounded owner recovery PASS. #241 independently reconciles historical documentation. CPU incidents remain open, with no sustained CPU measurement.
+
+Active: Build119 local-private import/dry-run, candidate only. [Contract and stop line](docs/CATALOGUE-A2-2-CONTRACT.md). Next: independent Draft review, then separately authorized deployment/owner gate. A2.3 populated browsing is backlog requiring its own scope; no gallery or sync is included.

@@ -161,3 +161,9 @@ Base is the verified main above. Issue #238 records LaunchPAD #285/#286 deployed
 ## Release mechanics
 
 Runtime identity is canonical in `src/release.ts` and must match `package.json`. `check:release` must remain green. Runtime truth is carried by code, docs and deployed Pages; no formal GitHub Release/tag is required.
+
+## Current mission overlay — A2.2 candidate, 2026-09-27
+
+This supersedes earlier candidate/hold wording above. Verified production main is `650c8a3cf9a69f95732905562535394fac94a12e` (Build118 / v0.19.40): #240 merged, exact-head CI 36272677513 and Pages 36272890963 SUCCESS. Owner reports bounded post-slice-4 recovery (7 Albums, 4/3/0, one HTTP 200 per core private endpoint). Sustained CPU compliance remains unmeasured; issues stay open. Independent docs Draft #241 reconciles the original A2.1 seven-check PASS and later CPU evidence, preserving #237 open and Build117 history.
+
+Active candidate: Build119 / v0.19.41, `codex/catalogue-a2-2-local-private-import`, from that verified main. [Contract](docs/CATALOGUE-A2-2-CONTRACT.md) and [validation](docs/CATALOGUE-A2-2-VALIDATION.md). Local-private JSON selection, strict atomic dry-run, pending QA and unload only. The owner's mission authorizes development/push/Draft review, superseding the earlier development hold. No merge/deployment/R2/Worker permission. Next: review both independent Drafts and exact-head CI; owner browser acceptance after separately authorized deployment. A2.3 remains separate.

@@ -12,6 +12,7 @@ export interface Evidence {
   readonly sourceLocator: string | null;
   readonly observedAt: string | null;
   readonly note: string | null;
+  readonly classification?: 'source-observation' | 'derived' | 'human-confirmed' | 'missing' | 'contradictory';
 }
 
 export interface Recording {

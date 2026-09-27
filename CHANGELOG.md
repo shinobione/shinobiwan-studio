@@ -55,3 +55,7 @@ Real-user receipt: [`docs/acceptance/BUILD117-REAL-USER-PASS.md`](docs/acceptanc
 - **Build104** — falsely classified pre-submit/node-offline Deep Audio transport as compute UNKNOWN; superseded by accepted Build105.
 
 All detailed historical records remain preserved under `changelogs/` and `docs/`.
+
+## Build119 / v0.19.41 — unreleased A2.2 candidate
+
+Explicit local JSON selection, bundled-worker validation, provenance-preserving commercial normalization, atomic memory-only preview, pending QA/evidence and reset. No dependencies, backend/persistence/publication actions or A2.3 gallery. [Validation](docs/CATALOGUE-A2-2-VALIDATION.md). Production remains Build118; its historical acceptance and later CPU recovery are independently reconciled by #241, superseding the older Build118 candidate entry above. No Build119 REAL USER PASS.

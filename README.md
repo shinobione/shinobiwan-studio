@@ -124,3 +124,7 @@ Preserved backlog includes Album asset exact-byte/digest proof, optional future 
 See [`ROADMAP.md`](ROADMAP.md) for current Done / Active / Next / Backlog state and [`QA.md`](QA.md) for accepted test boundaries.
 
 The repository still publishes no formal GitHub Release objects and no Git tags. Runtime identity is carried by code, docs and Pages.
+
+## Current candidate / production reconciliation
+
+The older candidate wording above is superseded: Build118 is merged/Pages deployed with original A2.1 acceptance and bounded CPU recovery, reconciled independently in Draft #241. Build119 / v0.19.41 is the separate **A2.2 local-private import/dry-run candidate**, not deployed or owner-accepted. Select a local JSON explicitly, inspect summary/QA, then unload. No upload, persistence or production write. [Contract](docs/CATALOGUE-A2-2-CONTRACT.md) · [Validation and acceptance gate](docs/CATALOGUE-A2-2-VALIDATION.md).

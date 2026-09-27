@@ -18,6 +18,21 @@
 .commercial-catalogue a:hover { color: var(--text); background-color: rgba(82,227,214,.06); }
 .commercial-catalogue a:active { transform: scale(.98); }
 .commercial-catalogue a:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+.catalogue-import { margin-top: 24px; min-width: 0; }
+.catalogue-import-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.catalogue-file-label { display: grid; gap: 8px; font-weight: 600; max-width: 100%; }
+.catalogue-file-label input { max-width: 100%; color: var(--text); }
+.catalogue-import button, .catalogue-file-label input::file-selector-button { min-height: 44px; padding: 10px 16px; background: rgba(82,227,214,.08); border: 1px solid var(--line-strong); color: var(--text); border-radius: 9px; cursor: pointer; }
+.catalogue-import button:disabled { opacity: .45; cursor: default; }
+.catalogue-import :is(button,input,summary):focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
+.catalogue-import-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 12px; margin: 24px 0; }
+.catalogue-import-summary > div { padding: 12px; border: 1px solid var(--line); border-radius: 9px; }
+.catalogue-import-summary dt { color: #a8bec2; font-size: 12px; }
+.catalogue-import-summary dd { margin: 6px 0 0; font-size: 24px; }
+.catalogue-findings li { margin-block: 12px; overflow-wrap: anywhere; }
+.catalogue-findings li span { display: block; color: #a8bec2; font-size: 12px; }
+.catalogue-import summary { min-height: 44px; cursor: pointer; }
+.catalogue-import pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 280px; overflow: auto; font-size: 12px; }
 @media (max-width: 600px) {
   .commercial-catalogue .commercial-catalogue-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .commercial-catalogue .commercial-catalogue-nav a { justify-content: center; padding-inline: 8px; }

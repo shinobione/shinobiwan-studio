@@ -272,3 +272,7 @@ When a durable decision changes:
 3. update `PROJECT_STATE.md` / `ROADMAP.md` if the change affects current scope;
 4. add QA evidence if the decision changes runtime behavior;
 5. preserve old milestone evidence rather than rewriting history.
+
+## D-020 — A2.2 explicit local-private dry-run
+
+Build119 candidate implements the owner-authorized A2.2 slice. D-018's A2.1 import deferral is superseded only for this candidate. A bundled Web Worker parses the verified derived JSON schema after explicit selection, without new dependencies, remote IO or storage. Complete validation precedes activation; replacement/reset/unmount cancels stale work and discards the snapshot. Source omissions stay explicit. All imported channel availability remains unknown; Amuse candidates and Studio link proposals require human review. No automatic identity merge, canonical write authority or A2.3 browsing is introduced. [Formal contract](docs/CATALOGUE-A2-2-CONTRACT.md).
