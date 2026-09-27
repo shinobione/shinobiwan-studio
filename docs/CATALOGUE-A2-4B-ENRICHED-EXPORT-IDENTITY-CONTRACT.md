@@ -1,6 +1,6 @@
 # A2.4-B — Enriched local export v2 + identity/delta simulation contract
 
-2026-09-27 · **DESIGN CANDIDATE, not an implemented/exported file, accepted runtime schema, persistence or write authority.** Owner authorized progressing from the bounded [A2.4-A sanitized audit](CATALOGUE-A2-4A-SANITIZED-COVERAGE-AUDIT-2026-09-27.md); this document proposes the independently testable contract. Do not retroactively change the historical v1 import or the earlier owner receipt.
+2026-09-27 · **DESIGN + independently fictional, Node-only contract rehearsal candidate; not a real exporter, accepted runtime schema, private v2 package, persistence or write authority.** Owner authorized progressing from the bounded [A2.4-A sanitized audit](CATALOGUE-A2-4A-SANITIZED-COVERAGE-AUDIT-2026-09-27.md); this document proposes the independently testable contract. Do not retroactively change the historical v1 import or the earlier owner receipt.
 
 ## Ground truth and acceptance boundary
 
@@ -62,13 +62,13 @@ A pure **synthetic-only migration simulation** takes an immutable fictional base
 
 Independent fictional fixtures, without source-derived examples or fixed source row counts, must cover: duplicate title/ISRC but distinct IDs; one Recording on many Releases; a genuinely unbound Appearance; exact source Release/position reference, accidental same-position across different Releases, source namespace collision, nonunique source Release identity, missing/null/ambiguous target, duplicate evidence alias, contradictory corroboration-only title/ISRC, several evidence rows for one Appearance, arbitrary reordered input, missing source section, v1/v2 fail-closed, digest syntax/coverage count contradiction, row/byte/string bounds and HTML-like evidence escaping.
 
-Assertions: old v1 selection and Build119–122 tests continue to pass; v1 rejects v2 until separately shipped; **evidence count never inflates appearance count**; every pending global QA finding is preserved or new v2 findings are additive; no source/title/ISRC/row content in public assets/routes/logs/network/storage. A pure projection with no storage or API may be prototyped in a subsequent **separately scoped** PR; synthetic CLI output must contain no private data. End-to-end browser acceptance and actual private v2 package selection need an independent later runtime build and owner approval.
+Assertions: old v1 selection and Build119–122 tests continue to pass; v1 rejects v2 until separately shipped; **evidence count never inflates appearance count**; every pending global QA finding is preserved or new v2 findings are additive; no source/title/ISRC/row content in public assets/routes/logs/network/storage. This Draft includes a **standalone fictional Node-only rehearsal** in `scripts/test-a24b-synthetic-contract.mjs`, run by `check:a24b` before the unchanged Build122 production build. It proves a narrow core relation/delta model, **not** the full envelope, a real workbook exporter, security review or a deployable v2 adapter. It uses no private source or external service. Its only outputs are static case labels and synthetic aggregate counts. End-to-end browser acceptance and actual private v2 package selection need an independent later runtime build and owner approval.
 
 ## 7. Proposed gates to exit design
 
 1. Owner approves which detailed original fields, source namespace keys, provenance and original-sheet body coverage should be carried into a privately generated v2 package. Confirm whether unlinked detail is a blocking export error or a pending-review evidence row.
 2. Review the exact evidence/Appearance relation and source alias semantics on local actual source, without uploading private data. The historical **14/14** mapping is comparison evidence only, not a mandated fixed count.
-3. Approve a separate standalone synthetic-only parser/projection/delta rehearsal. No private export or production registry until that gate passes.
+3. Review the included synthetic-only evidence relation and alias/delta rehearsal and CI independently; approve/refine the complete schema and importer/exporter contract before any real private export or production registry.
 4. Later decide **local encrypted package vs protected private commercial service**, including key custody, backup, revision/operation ID, conflict policy and sustained backend CPU budget. No automatic Cloudflare/R2/Track Manager writer.
 5. Only after independent source/review/storage decisions may an actual Build123-sized runtime slice be allocated with version/build guard, Draft PR, exact-head CI, separate merge/Pages and owner private-source smoke.
 
