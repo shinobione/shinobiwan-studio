@@ -2,6 +2,12 @@
 
 This is the **current concise changelog**. Detailed per-build records live under `changelogs/` and accepted production receipts under `docs/acceptance/`.
 
+## Candidate — not merged or deployed
+
+### v0.19.44 · Build122 — Catalogue A2.3 Slice 3 · 2026-09-27
+
+Native source-only Recording explorer, factual filters, deterministic identity/title sorting, shared accessible transient detail and exact bound multi-Release navigation. Contextual QA uses proven evidence memberships; every original finding remains globally available, and unbound appearances never acquire a Recording by similarity. Synthetic Chromium gate plus inherited regressions. [Implementation and owner handoff](docs/CATALOGUE-A2-3-SLICE3-VALIDATION.md). No persistence, backend/Worker/R2 change or REAL USER PASS.
+
 ## Current accepted release
 
 ### v0.19.43 · Build121 — Catalogue A2.3 Slice 2 · 2026-09-27

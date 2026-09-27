@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Snapshot } from '../catalogue/import';
-import type { CommercialReleaseId, EvidenceId } from '../types/commercial-catalogue';
+import type { CommercialReleaseId, EvidenceId, RecordingId, ReleaseAppearance } from '../types/commercial-catalogue';
 import { compareText, emptyReleaseQuery, releaseDetail, releaseIndex, selectReleases, type ReleaseIndex, type ReleaseQuery } from '../catalogue/releases';
 import { FINDING_LABELS } from '../catalogue/finding-labels';
 import './catalogue-releases.css';
@@ -11,7 +11,7 @@ function CoverPlaceholder() {
   return <span className="catalogue-cover-placeholder"><span aria-hidden="true" className="catalogue-cover-mark">◫</span><span>Artwork not documented</span></span>;
 }
 
-function EvidenceDisclosure({ ids, index }: { ids: readonly EvidenceId[]; index: ReleaseIndex }) {
+export function EvidenceDisclosure({ ids, index }: { ids: readonly EvidenceId[]; index: ReleaseIndex }) {
   return <details className="release-evidence"><summary>Private source evidence</summary>
     {ids.length === 0 && <p>Evidence not available in this snapshot.</p>}
     {ids.map(id => {
@@ -21,10 +21,11 @@ function EvidenceDisclosure({ ids, index }: { ids: readonly EvidenceId[]; index:
   </details>;
 }
 
-export function CatalogueReleaseDetail({ index, releaseId, onClose }: { index: ReleaseIndex; releaseId: CommercialReleaseId; onClose: () => void }) {
+export function CatalogueReleaseDetail({ index, releaseId, onClose, embedded = false, onRecording, onReview, onAppearance }: { index: ReleaseIndex; releaseId: CommercialReleaseId; onClose: () => void; embedded?: boolean; onRecording?: (id: RecordingId) => void; onReview?: () => void; onAppearance?: (id: ReleaseAppearance['appearanceId']) => void }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const detail = useMemo(() => releaseDetail(index, releaseId), [index, releaseId]);
   useEffect(() => {
+    if (embedded) return;
     const element = dialog.current!;
     const opener = document.activeElement;
     element.showModal();
@@ -32,9 +33,10 @@ export function CatalogueReleaseDetail({ index, releaseId, onClose }: { index: R
       element.close();
       if (opener instanceof HTMLElement && opener.isConnected) opener.focus({ preventScroll: true });
     };
-  }, []);
-  return <dialog ref={dialog} className="catalogue-release-dialog" aria-labelledby="release-detail-title" onCancel={event => { event.preventDefault(); onClose(); }}>
-    <header className="release-detail-header"><p className="commercial-catalogue-eyebrow">PRIVATE RELEASE DETAIL</p><button type="button" autoFocus onClick={onClose}>Close detail</button></header>
+  }, [embedded]);
+  const content = <>
+    {!embedded && <header className="release-detail-header"><p className="commercial-catalogue-eyebrow">PRIVATE RELEASE DETAIL</p><button type="button" autoFocus onClick={onClose}>Close detail</button></header>}
+    {onReview && <><button type="button" onClick={onReview}>Review Release findings</button><p>Release QA shows this Release row and its appearance rows. Linked Recording findings remain in Recording or global QA.</p></>}
     {!detail ? <><h3 id="release-detail-title">Release not found.</h3><p>This release is not available in the current snapshot.</p></> : <>
       <div className="release-detail-intro"><CoverPlaceholder /><div><p className="release-kind">{KIND_LABELS[detail.release.kind]}</p><h3 id="release-detail-title">{detail.release.title}</h3><p>Publication unverified · Private, temporary source view</p></div></div>
       <dl className="release-detail-metadata">
@@ -57,6 +59,8 @@ export function CatalogueReleaseDetail({ index, releaseId, onClose }: { index: R
             <p className="release-position">{appearance.position === null ? 'Position unknown' : `Position ${appearance.position}`}</p>
             <h5>{appearance.displayTitle ?? 'Appearance title not documented'}</h5>
             {appearance.recordingId === null ? <><p>Unbound appearance · No Recording association documented.</p><p>Source ISRC observation (unverified): {appearance.observedIsrc ?? 'Not documented'}</p></> : recording ? <><p>Linked Recording: <strong>{recording.title}</strong></p><p>Recording ISRC: {recording.isrc ?? 'Unknown / not documented'}</p><p>Source binding is unreviewed. No Studio Track binding is inferred.</p><EvidenceDisclosure ids={recording.evidenceIds} index={index} /></> : <p>Referenced Recording is unavailable. No substitute has been selected.</p>}
+            {recording && onRecording && <button type="button" onClick={() => onRecording(recording.recordingId)}>View Recording</button>}
+            {onAppearance && <button type="button" onClick={() => onAppearance(appearance.appearanceId)}>Review appearance</button>}
             <EvidenceDisclosure ids={appearance.evidenceIds} index={index} />
           </li>;
         })}</ol>
@@ -71,10 +75,11 @@ export function CatalogueReleaseDetail({ index, releaseId, onClose }: { index: R
         <p>Workbook coverage is incomplete. This derived snapshot does not retain all original sheet bodies or detailed Amuse evidence.</p>
       </section>
     </>}
-  </dialog>;
+  </>;
+  return embedded ? content : <dialog ref={dialog} className="catalogue-release-dialog" aria-labelledby="release-detail-title" onCancel={event => { event.preventDefault(); onClose(); }}>{content}</dialog>;
 }
 
-export function CatalogueReleases({ snapshot }: { snapshot: Snapshot }) {
+export function CatalogueReleases({ snapshot, onOpen }: { snapshot: Snapshot; onOpen?: (id: CommercialReleaseId) => void }) {
   const index = useMemo(() => releaseIndex(snapshot), [snapshot]);
   const [query, setQuery] = useState<ReleaseQuery>(emptyReleaseQuery);
   const [presentation, setPresentation] = useState<'grid' | 'list'>('grid');
@@ -96,7 +101,7 @@ export function CatalogueReleases({ snapshot }: { snapshot: Snapshot }) {
     <div className="release-gallery-results"><p role="status">{releases.length} of {snapshot.releases.length} releases</p><button type="button" onClick={() => setQuery(emptyReleaseQuery)}>Clear filters</button></div>
     {!snapshot.releases.length ? <p>No commercial releases documented in this snapshot.</p> : !releases.length ? <p>No releases match these filters. Clear filters to see the selected source again.</p> : <ul className={`release-gallery release-gallery-${presentation}`}>{releases.map(release => {
       const appearances = index.appearancesByReleaseId.get(release.releaseId) ?? [];
-      return <li key={release.releaseId}><button type="button" className="release-card" onClick={() => setSelection({ id: release.releaseId, snapshot })} aria-haspopup="dialog">
+      return <li key={release.releaseId}><button type="button" className="release-card" onClick={() => onOpen ? onOpen(release.releaseId) : setSelection({ id: release.releaseId, snapshot })} aria-haspopup="dialog">
         <CoverPlaceholder /><span className="release-card-copy"><span className="release-kind">{KIND_LABELS[release.kind]} · {release.source}</span><strong className="release-card-title">{release.title}</strong><span>Reference date: {release.referenceDate ?? 'Not documented'}</span><span>UPC / EAN: {release.upc ?? 'Not documented'}</span><span>{appearances.length} source appearances</span><span className="release-publication">Publication unverified <span aria-hidden="true">↗</span></span></span>
       </button></li>;
     })}</ul>}

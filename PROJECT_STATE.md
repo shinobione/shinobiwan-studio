@@ -2,7 +2,7 @@
 
 ## Current accepted production — 2026-09-27
 
-Verified pre-closeout `main`: `6fd52f9f21ceb54d2014eaa99efb77d5ec899937` after owner-authorized [PR #246](https://github.com/shinobione/shinobiwan-studio/pull/246). Exact final candidate `757a46d0d83804ae5cd2b7a7c03c483125c0c67e` passed [CI #36324001763](https://github.com/shinobione/shinobiwan-studio/actions/runs/36324001763); automatic [Pages #36325763251](https://github.com/shinobione/shinobiwan-studio/actions/runs/36325763251) build/upload/deploy SUCCESS on the merge SHA. **Current accepted runtime: Build121 / v0.19.43, Catalogue A2.3 Slice 2 — native session-only Releases gallery and transient detail.**
+Verified production `main`: `1add68bc6f9c476374eafaefd58f865263f6e9ad` after docs #247, [Pages 36335916511](https://github.com/shinobione/shinobiwan-studio/actions/runs/36335916511) SUCCESS. Runtime merge: `6fd52f9f21ceb54d2014eaa99efb77d5ec899937` after owner-authorized [PR #246](https://github.com/shinobione/shinobiwan-studio/pull/246). Exact final candidate `757a46d0d83804ae5cd2b7a7c03c483125c0c67e` passed [CI #36324001763](https://github.com/shinobione/shinobiwan-studio/actions/runs/36324001763); automatic [Pages #36325763251](https://github.com/shinobione/shinobiwan-studio/actions/runs/36325763251) build/upload/deploy SUCCESS on the merge SHA. **Current accepted runtime: Build121 / v0.19.43, Catalogue A2.3 Slice 2 — native session-only Releases gallery and transient detail.**
 
 The owner's bounded [Build121 REAL USER PASS](docs/acceptance/BUILD121-REAL-USER-PASS.md) confirms all seven requested production browser checks: 84 distinct release cards without title/UPC merging and no external artwork fetch; working search/filter/sort/Grid/List; exact source metadata, appearance positions, linked Recording evidence and proofs in detail; visible unbound appearances with no fabricated Recording association and unknown current publication; keyboard open/Tab/Escape/Close with opener focus restored; preserved Catalogue session with correct Reset/refresh clearing; and DevTools no private upload, browser-storage persistence, source IDs in URL or third-party cover loading during the tested workflow. This is the owner's report, not an independent captured browser trace, general-source audit or complete mobile/accessibility/security certification.
 
@@ -10,9 +10,11 @@ Candidate [Build121 implementation handoff](docs/CATALOGUE-A2-3-SLICE2-VALIDATIO
 
 Prior [Build120 A2.3 Slice 1 acceptance](docs/acceptance/BUILD120-REAL-USER-PASS.md), [Build119 A2.2 acceptance](docs/acceptance/BUILD119-REAL-USER-PASS.md), [Build118 A2.1 acceptance](docs/acceptance/BUILD118-REAL-USER-PASS.md), [bounded CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md) and [Build117 reliability receipt](docs/acceptance/BUILD117-REAL-USER-PASS.md) remain distinct. The earlier private snapshot's 355 review findings have not been resolved by gallery acceptance. Derived JSON does not retain the full ten-sheet workbook evidence; publication remains unknown. Studio CPU issue #238 / LaunchPAD issue #283 remain open without sustained CPU measurements. Superseded docs PR #237 remains open for separate housekeeping; #241 merged.
 
-## Next bounded Catalogue scope — A2.3 Slice 3 (planning only)
+## Active candidate — Build122 / v0.19.44, A2.3 Slice 3
 
-The [A2.3 blueprint](docs/CATALOGUE-A2-3-BLUEPRINT.md) identifies a **session-only Recordings explorer and evidence-linked contextual QA** as the next independent read-only slice. Exact commercial Recording identities, missing/ambiguous ISRC and multi-release appearances must stay explicit. No Build122 allocation, new runtime implementation, reviewed artwork mapping, persistence, commercial/creative Track binding or STUDIO ↔ LaunchPAD synchronization is authorized by this docs closeout. Each future implementation and production deployment needs its own gate.
+The [owner kickoff in #235](https://github.com/shinobione/shinobiwan-studio/issues/235#issuecomment-5858138120) authorizes a native session-only Recordings explorer and exact-evidence contextual QA. Branch `codex/catalogue-a23-slice3-build122-20260927` starts from verified main above. [Implementation, relationship rules and owner handoff](docs/CATALOGUE-A2-3-SLICE3-VALIDATION.md). Production remains accepted Build121. **Candidate only: no merge, deployment or REAL USER PASS.**
+
+Exact bound appearances may span multiple Releases; unbound lookalikes never acquire a Recording. Global QA retains every finding; unsupported note-only relationships remain global. One transient modal supports exact evidence navigation. Parser/Worker/session safeguards and commercial/creative authority stay unchanged. Final delivery requires Draft PR and final-head CI. Local full build PASS: inherited gates, eight Build122 Chromium scenarios, release/TypeScript and 137-file artifact/privacy scan. Artwork, persistence/sync and reviewed Track mapping remain separate decisions.
 
 ## Prior accepted reliability baseline — Build117
 
@@ -127,6 +129,7 @@ Build118                MERGED / PAGES DEPLOYED · A2.1 PASS; slice 4 bounded fu
 Build119                MERGED / PAGES DEPLOYED · A2.2 bounded REAL USER PASS
 Build120                MERGED / PAGES DEPLOYED · A2.3 Slice 1 bounded REAL USER PASS
 Build121                MERGED / PAGES DEPLOYED · A2.3 Slice 2 bounded REAL USER PASS
+Build122                CANDIDATE · A2.3 Slice 3 Recordings / contextual QA · no REAL USER PASS
 Official Phase 11       NONE
 ```
 
@@ -159,7 +162,7 @@ Build108/109/114–117 are bounded reliability/lifecycle work outside Phase10 Sl
 
 ## Immediate next action
 
-Review the docs-only Build121 owner acceptance closeout and independently scope A2.3 Slice 3 (Recordings explorer plus contextual QA) before any new runtime allocation. Retain incomplete workbook evidence, open CPU incidents, and independent decisions for artwork, commercial persistence/sync, Album asset digest proof and Phase10 Slice2. Do not merge/deploy the closeout without separate owner approval.
+Review Build122 Draft and final-head CI, then follow the Slice 3 owner handoff only after separate merge/Pages authorization. Preserve incomplete workbook evidence, open CPU incidents and independent artwork/persistence/sync/Track-binding decisions.
 
 ## Release mechanics
 

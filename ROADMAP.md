@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-09-27 after Build121 / A2.3 Slice 2 merged, Pages deployed and bounded owner REAL USER PASS. Recordings explorer / contextual QA remains separately planned. See PROJECT_STATE.md for exact receipts.
+Updated: 2026-09-27 after Build121 / A2.3 Slice 2 merged, Pages deployed and bounded owner REAL USER PASS. Build122 Recordings explorer / contextual QA is the separately authorized active candidate. See PROJECT_STATE.md for exact receipts.
 
 This file tracks durable Done / Active / Next / Backlog state. Historical implementation detail belongs in changelogs, milestone docs and acceptance receipts.
 
@@ -116,6 +116,10 @@ PR #244 exact candidate `de1000940c32efcc8024c4fd61f240cfa7f93860` passed CI 363
 
 ## Active
 
+### Catalogue A2.3 Slice 3 — Build122 candidate
+
+Native Recordings explorer, exact bound multi-Release detail and evidence-linked contextual QA; all findings remain globally available. Dedicated branch from verified main; Draft PR/final-head CI delivery only. No merge/deployment/REAL USER PASS. [Implementation and owner handoff](docs/CATALOGUE-A2-3-SLICE3-VALIDATION.md).
+
 ### Phase 10 — progressive extraction
 
 Phase10 remains active as a program, not permission for continuous refactoring. **Phase10 Slice2 remains unallocated.** Builds108/109/114–117 are bounded reliability/lifecycle work outside it; Builds110–113 are human-facing/product workflow improvements outside it.
@@ -143,7 +147,7 @@ Phase10 remains active as a program, not permission for continuous refactoring. 
 
 ### Corrective review / browser gate
 
-Review the docs-only Build121 owner receipt, then independently scope session-only A2.3 Slice 3 (Recordings explorer + contextual QA) before new runtime allocation. Commercial persistence/STUDIO ↔ LaunchPAD sync and real artwork mapping require later authority decisions. PR #237 remains open, superseded by merged #241; CPU issues remain open without sustained measurements.
+Review Build122 Draft and final-head CI, then separately authorize merge/Pages and perform the Slice 3 owner acceptance handoff. Commercial persistence/STUDIO ↔ LaunchPAD sync and real artwork mapping require later authority decisions. PR #237 remains open, superseded by merged #241; CPU issues remain open without sustained measurements.
 
 Album asset exact-byte/digest proof remains independently auditable backlog and is not part of Build118.
 

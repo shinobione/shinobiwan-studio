@@ -279,6 +279,12 @@ Build121 / v0.19.43 merged in #246, Pages deployed and received the owner's boun
 
 Release detail joins exact identity/evidence maps; no sorted-index or title association. Query/view/selection state is transient, and selection is tied to its snapshot reference. Native modal close/Escape restores the opener; discard/unmount removes detail. Source cover URLs remain inert text inside on-demand evidence; all covers are labeled placeholders. Reference dates remain source text; only valid complete YYYY-MM-DD values sort chronologically, with other text after dated entries. No new commercial/creative authority or publication inference. [Owner receipt](docs/acceptance/BUILD121-REAL-USER-PASS.md). Recordings explorer, reviewed artwork, commercial persistence and cross-repository synchronization require independent later gates.
 
+## D-023 — Exact evidence context and transient cross-detail browsing
+
+Build122 candidate uses accepted normalized evidence memberships only. Recording context includes its own and explicitly bound appearance rows; Release context includes its own and exact bound/unbound appearance rows; appearance context includes only its row. Source-note-only cases stay global. No raw-note/index/title/ISRC inference, resolution or Track binding is introduced. Global QA preserves every source finding. One controlled code/context filter retains inherited Overview code behavior and clears entity context on exit or source discard.
+
+One in-memory modal visit supports exact Recording/Release/appearance navigation and Back without source IDs in routes. Close/Escape restores the original opener; route/source discard removes the visit. The parser, Worker generation fence and Build120 session ownership are unchanged. No new persistence, publication or commercial authority. [Candidate handoff](docs/CATALOGUE-A2-3-SLICE3-VALIDATION.md).
+
 ## Changing a decision
 
 When a durable decision changes:
