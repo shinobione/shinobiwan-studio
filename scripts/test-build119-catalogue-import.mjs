@@ -106,7 +106,7 @@ const labels=load('src/catalogue/finding-labels.ts');
 const overview=load('src/components/CatalogueOverview.tsx', { react:React,'react/jsx-runtime':jsx,'../catalogue/overview':load('src/catalogue/overview.ts'),'../catalogue/finding-labels':labels });
 const ui=load('src/components/CatalogueImport.tsx', {
   react: { useState: initial => { const i=cursor++; if (!(i in slots)) slots[i]=initial; return [slots[i],v=>{slots[i]=typeof v==='function'?v(slots[i]):v;}]; }, useRef: initial => {const i=cursor++; slots[i]??={current:initial};return slots[i];},useEffect:fn=>{effect=fn;} },
-  'react/jsx-runtime':jsx,'../catalogue/finding-labels':labels,'../catalogue-router':load('src/catalogue-router.ts'),'./CatalogueOverview':overview,
+  'react/jsx-runtime':jsx,'../catalogue/finding-labels':labels,'../catalogue-router':load('src/catalogue-router.ts'),'./CatalogueOverview':overview,'./CatalogueReleases':{CatalogueReleases:()=>null},
 }, {URL, Worker:class { constructor(){uiJobs.push(this);} postMessage(){} terminate(){this.terminated=true;} }});
 let section='overview';
 const tree=()=>{cursor=0;return ui.CatalogueImport({state:uiState,onSelect:file=>uiSession.select(file),onReset:()=>uiSession.reset(),section,emptyCopy:{title:'Empty synthetic Catalogue',body:'No source selected'}});};

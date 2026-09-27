@@ -1,9 +1,9 @@
 export const studioRelease = {
-  version: '0.19.42',
-  build: 120,
+  version: '0.19.43',
+  build: 121,
   phase: 10,
-  codename: 'studio-focus-build120-catalogue-session-overview',
-  summary: 'Private Catalogue session and native Overview',
+  codename: 'studio-focus-build121-catalogue-releases',
+  summary: 'Private Catalogue Releases gallery and detail',
   releasedAt: '2026-09-27',
 } as const;
 
@@ -66,3 +66,5 @@ export const build117AncestryMarker = "version: '0.19.39' · build: 117 · coden
 export const build118AncestryMarker = "version: '0.19.40' · build: 118 · codename: 'studio-focus-build118-catalogue-a2-1-foundation'";
 
 export const build119AncestryMarker = "version: '0.19.41' · build: 119 · codename: 'studio-focus-build119-catalogue-private-import'";
+
+export const build120AncestryMarker = "version: '0.19.42' · build: 120 · codename: 'studio-focus-build120-catalogue-session-overview'";

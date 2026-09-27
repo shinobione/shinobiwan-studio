@@ -2,7 +2,7 @@
 
 ## Current accepted runtime and evidence — 2026-09-27
 
-Production main `09681904e69b9f2c3ab7bf0d41de1cf1a7dd5d11` from merged [PR #244](https://github.com/shinobione/shinobiwan-studio/pull/244). Exact Build120 candidate `de1000940c32efcc8024c4fd61f240cfa7f93860` passed [CI #36318925988](https://github.com/shinobione/shinobiwan-studio/actions/runs/36318925988); automatic [Pages #36320947983](https://github.com/shinobione/shinobiwan-studio/actions/runs/36320947983) build/deploy SUCCESS on merge SHA. **Build120 / v0.19.42 A2.3 Slice 1 is accepted for its bounded private Catalogue session + native Overview scope.**
+Production main `72151c00c5a89cae2bf5e73a6fb98f9ba9c5d90a` after docs-only #245, Pages 36322272124 SUCCESS. Runtime merge `09681904e69b9f2c3ab7bf0d41de1cf1a7dd5d11` from merged [PR #244](https://github.com/shinobione/shinobiwan-studio/pull/244). Exact Build120 candidate `de1000940c32efcc8024c4fd61f240cfa7f93860` passed [CI #36318925988](https://github.com/shinobione/shinobiwan-studio/actions/runs/36318925988); automatic [Pages #36320947983](https://github.com/shinobione/shinobiwan-studio/actions/runs/36320947983) build/deploy SUCCESS on merge SHA. **Build120 / v0.19.42 A2.3 Slice 1 is accepted for its bounded private Catalogue session + native Overview scope.**
 
 [Owner-reported Build120 browser receipt](docs/acceptance/BUILD120-REAL-USER-PASS.md): five requested checks PASS for source-derived Overview (168 Recordings, 84 Releases, 109 appearances, 120 known / 48 missing ISRC, 355 pending), tab/back navigation with no repeated import, two finding-group links into QA and Show all, Reset/refresh clearing the snapshot, and DevTools no private-source network upload, browser-storage persistence or source identifiers in URL. This is the owner's production confirmation, not an independently recorded DevTools session or a full security/accessibility/mobile audit. Pending QA has not been resolved.
 
@@ -10,9 +10,11 @@ Automated candidate validation, independently separate from the owner smoke: ful
 
 The earlier [Build119 A2.2 owner receipt](docs/acceptance/BUILD119-REAL-USER-PASS.md), [Build118 A2.1 original receipt](docs/acceptance/BUILD118-REAL-USER-PASS.md), [CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md) and Build117 reliability evidence remain distinct. The derived JSON omits parts of the ten-sheet workbook; no full source equivalence or current distributor/DSP verification is claimed. CPU issues STUDIO #238 and LaunchPAD #283 stay open without sustained measurements. Build120 involved no Worker/R2 or commercial write/persistence changes.
 
-### Next QA boundary
+### Build121 candidate — automated validation, no REAL USER PASS
 
-A2.3 Slice 2 (commercial Releases gallery/details) is [planning only](docs/CATALOGUE-A2-3-BLUEPRINT.md). It needs separate source-derived UI, identity/provenance, missing-cover truth, mobile/keyboard, private routes/session/lifecycle, inherited privacy/reliability gates and owner smoke after any separately authorized deployment. No new build allocation or Slice 2 REAL USER PASS here.
+Local full build, release metadata/TypeScript, inherited Build118/119/120/CPU gates and artifact/privacy scan (133 runtime source/build files including maps) PASS. Build121 adds pure projection checks and nine real Chromium scenarios: empty/one/multiple releases; duplicate titles/UPC; exact evidence relationships under shuffled source order; per-release bound/unbound positions; source-only search/filter/stable sort; grid/list and 320/390/1280/2560px; native modal focus containment, Escape/close restoration; replacement/rejection/reset/pagehide/refresh/unmount; private URL/network/storage/log guards. Missing IDs/evidence/Recording references fail closed in rendered component checks. No new dependency or private source fixture. [Detailed handoff](docs/CATALOGUE-A2-3-SLICE2-VALIDATION.md).
+
+Owner real-source correctness, target-browser/assistive-technology and production mobile/visual/privacy acceptance remain pending after separately authorized merge and Pages. Build120 remains the accepted production baseline.
 
 ## Automated CPU regression coverage
 
@@ -181,4 +183,4 @@ Studio must not fabricate causal certainty when a different backend operation do
 
 ## Next QA gate
 
-Review the documentation-only Build120 owner receipt and independently scope A2.3 Slice 2. Release gallery, Recording explorer and persistent synchronization are not yet implemented; CPU incidents remain open without sustained telemetry.
+Review Build121 Draft and exact-head CI, then follow the Slice 2 owner handoff after separately authorized deployment. Recording explorer and persistence/sync remain future scope; CPU incidents remain open without sustained telemetry.

@@ -2,6 +2,12 @@
 
 This is the **current concise changelog**. Detailed per-build records live under `changelogs/` and accepted production receipts under `docs/acceptance/`.
 
+## Current candidate
+
+### v0.19.43 · Build121 — Catalogue A2.3 Slice 2 · 2026-09-27
+
+Native private Releases grid/list and transient detail; source-derived search/filter/stable sorting, deliberate artwork placeholders, explicit reference dates/publication uncertainty. Additive typed projection retains unbound source positions within the exact release without Recording inference. Native modal keyboard/Escape/close focus and reset focus preserved. Local full build, inherited gates, nine Chromium scenarios and artifact/privacy scan PASS. No merge/deployment/REAL USER PASS. [Owner handoff](docs/CATALOGUE-A2-3-SLICE2-VALIDATION.md).
+
 ## Current accepted release
 
 ### v0.19.42 · Build120 — Catalogue A2.3 Slice 1 · 2026-09-27
