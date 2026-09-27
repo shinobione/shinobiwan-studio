@@ -2,7 +2,7 @@
 
 ## Current accepted runtime and evidence — 2026-09-27
 
-Production `main`: `20a0adf15271a0f9bff0cbd2a318c441685ec2bc` (PR #242 merged); exact candidate `e2b4adc70da6952713c3e74f1987e92bd40e0348` passed [CI #36312536104](https://github.com/shinobione/shinobiwan-studio/actions/runs/36312536104). [Pages #36316493317](https://github.com/shinobione/shinobiwan-studio/actions/runs/36316493317) build and deployment succeeded on merge SHA. **Build119 / v0.19.41 A2.2 is accepted in its bounded local-private import/dry-run scope.**
+Production `main`: `cba3fb35fec57edd307500f1a76474e48089efa4` (docs-only #243, Pages 36317610337 SUCCESS). Runtime merge: `20a0adf15271a0f9bff0cbd2a318c441685ec2bc` (#242); exact candidate `e2b4adc70da6952713c3e74f1987e92bd40e0348` passed [CI #36312536104](https://github.com/shinobione/shinobiwan-studio/actions/runs/36312536104). [Pages #36316493317](https://github.com/shinobione/shinobiwan-studio/actions/runs/36316493317) build and deployment succeeded on merge SHA. **Build119 / v0.19.41 A2.2 is accepted in its bounded local-private import/dry-run scope.**
 
 [Owner-reported Build119 receipt](docs/acceptance/BUILD119-REAL-USER-PASS.md): private JSON loaded with 444 rows, 168 recordings, 84 releases, 109 appearances, 120 known / 48 missing ISRC, 0 rejected and 355 pending findings. Owner additionally confirmed QA, Reset/unload, empty state after refresh, and no private-source network upload or browser-storage persistence in DevTools. This does not prove all future sources, complete security or owner mobile/assistive-technology acceptance; the full ten-sheet workbook is not completely represented in derived JSON. 355 findings are unresolved review items, not import failures or certified platform states. No A2.3 gallery or durable catalogue state is accepted.
 
@@ -10,9 +10,11 @@ Build119 pre-merge automated receipt: 55 synthetic import/parser/lifecycle/UI te
 
 The [original Build118 A2.1 receipt](docs/acceptance/BUILD118-REAL-USER-PASS.md), [separate bounded CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md) and Build117 reliability receipt remain unchanged. CPU issues STUDIO #238 and LaunchPAD #283 stay open without sustained CPU-duration telemetry. Superseded #237 stays open; #241 was merged before #242. No Build119 Worker deployment/R2 mutation.
 
-### Next acceptance boundary
+### Build120 candidate — synthetic validation, no REAL USER PASS
 
-[Proposed A2.3 session-only blueprint](docs/CATALOGUE-A2-3-BLUEPRINT.md) is **specification only**, not coded, CI green, deployed or owner-accepted. Next real-user gate must cover source-derived gallery/detail/QA links, missing cover/genre truth, multiple appearances, keyboard/mobile, route/privacy and unload/no-storage boundaries after a separately authorized runtime slice.
+Local `npm run build` PASS: release guard, TypeScript, all inherited gates including Build118/CPU and 55 Build119 cases, plus `check:build120` with 12 actual Chromium scenarios in the real App/StrictMode. Covers native Worker selection, continuity/history/invalid routes, finding groups → filtered QA, provenance/pagination/escaped evidence, dynamic/unbound/zero counts, replacement/rejection/reset/unmount/refresh/pagehide, stale Worker success/error, keyboard focus, 320/390/768/2560px layouts and reduced motion. Runtime/source/map privacy scan PASS over 130 files. All source data in tests is independently synthetic.
+
+Owner private-source, production Network/Storage, target-browser/mobile/assistive-technology and subjective visual acceptance remain pending after separately authorized deployment. Exact candidate SHA/CI comes from the Draft PR; local success is not deployed acceptance. [Detailed handoff](docs/CATALOGUE-A2-3-SLICE1-VALIDATION.md). Release/Recording detail browsing is outside Slice 1.
 
 ## Automated CPU regression coverage
 

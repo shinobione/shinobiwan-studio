@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-09-27 after Build119 / A2.2 merged, deployed and bounded owner REAL USER PASS. A2.3 is a session-only blueprint, not implemented. See PROJECT_STATE.md for exact receipts.
+Updated: 2026-09-27 after Build119 / A2.2 merged, deployed and bounded owner REAL USER PASS. Build120 is the undeployed A2.3 Slice 1 candidate. See PROJECT_STATE.md for exact receipts.
 
 This file tracks durable Done / Active / Next / Backlog state. Historical implementation detail belongs in changelogs, milestone docs and acceptance receipts.
 
@@ -108,9 +108,9 @@ PR #242 merged at `20a0adf15271a0f9bff0cbd2a318c441685ec2bc`; candidate CI 36312
 
 ## Active
 
-### Catalogue A2.3 — native populated views, blueprint only
+### Catalogue A2.3 Slice 1 — Build120 candidate
 
-[Functional blueprint](docs/CATALOGUE-A2-3-BLUEPRINT.md): session-aware Overview, Releases gallery/details, Recordings and evidence-linked QA, no invented artwork/genre/publication state. Separate future gate for persistent commercial authority, reviewed Track mappings and STUDIO ↔ LaunchPAD sync. No new build allocated and no A2.3 runtime implementation/merge/deploy authorized.
+Parent-owned memory-only session plus native Overview, derived counts and finding-code QA links. Source parser, provenance, channel unknown and cancellation protections retained. Local full build and synthetic Chromium gate PASS. [Validation and owner handoff](docs/CATALOGUE-A2-3-SLICE1-VALIDATION.md). Draft PR + exact-head CI only; no merge/deploy or REAL USER PASS. Future Release gallery/details, Recording explorer, commercial persistence and sync retain separate scope.
 
 ### Phase 10 — progressive extraction
 
@@ -139,7 +139,7 @@ Phase10 remains active as a program, not permission for continuous refactoring. 
 
 ### Corrective review / browser gate
 
-Review the bounded Build119 owner acceptance closeout and the A2.3 blueprint. A2.3 must start with an independent scope/version/build/test gate; no persistence or cross-repository sync by implication. PR #237 is still open, superseded by merged #241. CPU issues remain open without sustained measurements.
+Review Build120 Slice 1 Draft and exact-head CI. Merge, Pages and owner smoke require separate authorization. Release gallery and Recording details are subsequent slices; persistence and cross-repository sync require separate authority decisions. PR #237 is still open, superseded by merged #241. CPU issues remain open without sustained measurements.
 
 Album asset exact-byte/digest proof remains independently auditable backlog and is not part of Build118.
 
