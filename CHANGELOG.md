@@ -2,17 +2,17 @@
 
 This is the **current concise changelog**. Detailed per-build records live under `changelogs/` and accepted production receipts under `docs/acceptance/`.
 
-## Unreleased candidate
-
-### v0.19.41 · Build119 — Catalogue A2.2 / Draft #242
-
-Explicit local JSON selection, bundled-worker validation, provenance-preserving commercial normalization, atomic memory-only preview, pending QA/evidence and reset. No dependencies, backend/persistence/publication actions or A2.3 gallery. [Validation](docs/CATALOGUE-A2-2-VALIDATION.md). Current main `8c6a67eb9a1476fa864d136174199402a12498a8` is integrated into the existing branch after #241; the six canonical documents are reconciled and the reviewed A2.2 runtime is unchanged. Build119 remains unmerged, undeployed and without REAL USER PASS. Stop at new exact-head CI and owner Draft review.
-
 ## Current accepted release
+
+### v0.19.41 · Build119 — Catalogue A2.2 · 2026-09-27
+
+Explicit local-private JSON selection, bundled-worker validation, provenance-preserving commercial normalization, atomic memory-only preview, pending QA/evidence and reset. [PR #242](https://github.com/shinobione/shinobiwan-studio/pull/242) merged at `20a0adf15271a0f9bff0cbd2a318c441685ec2bc`; exact-head [CI 36312536104](https://github.com/shinobione/shinobiwan-studio/actions/runs/36312536104) and [Pages 36316493317](https://github.com/shinobione/shinobiwan-studio/actions/runs/36316493317) SUCCESS. The owner reported bounded REAL USER PASS for source aggregates, QA, reset/unload, refresh-empty and no private upload or browser storage. [Receipt](docs/acceptance/BUILD119-REAL-USER-PASS.md). No backend/persistence/publication actions; no A2.3 gallery. The derived source omits some original workbook evidence.
+
+## Previous accepted release
 
 ### v0.19.40 · Build118 — 2026-09-27 reconciliation
 
-Catalogue A2.1 native empty foundation passed the owner's original seven checks. Subsequent CPU corrections: backend lean Albums (#284), Studio consumer (#239), backend Tracks (#285), deployment workflow (#286), Studio shared reads (#240). All are merged; Studio Pages and admin Worker deployment receipts are verified. Post-slice-4 owner sample passes functionality/network checks, not sustained CPU compliance. [Separate receipts](docs/acceptance/BUILD118-CPU-RECOVERY.md). Documentation closeout #241 merged at `8c6a67e`, followed by successful automatic Pages run 36310871264. This docs-only merge introduced no runtime identity change.
+Catalogue A2.1 native empty foundation passed the owner's original seven checks. Subsequent CPU corrections: backend lean Albums (#284), Studio consumer (#239), backend Tracks (#285), deployment workflow (#286), Studio shared reads (#240). All merged/deployed with bounded owner browser recovery. Sustained CPU compliance remains unmeasured and issues open. [Separate receipts](docs/acceptance/BUILD118-REAL-USER-PASS.md) · [CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md). Documentation closeout #241 merged at `8c6a67e`, Pages 36310871264 SUCCESS; it did not create a new runtime identity.
 
 ## Prior accepted reliability release
 
