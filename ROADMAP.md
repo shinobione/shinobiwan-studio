@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-09-27 after merged documentation #241 and its integration into A2.2 Draft #242. Build118 is accepted production; Build119 remains an undeployed candidate. See PROJECT_STATE.md for exact receipts.
+Updated: 2026-09-27 after Build119 / A2.2 merged, deployed and bounded owner REAL USER PASS. A2.3 is a session-only blueprint, not implemented. See PROJECT_STATE.md for exact receipts.
 
 This file tracks durable Done / Active / Next / Backlog state. Historical implementation detail belongs in changelogs, milestone docs and acceptance receipts.
 
@@ -92,7 +92,7 @@ Evidence: [`docs/acceptance/BUILD117-REAL-USER-PASS.md`](docs/acceptance/BUILD11
 
 ### Catalogue A2.1 — Build118 accepted foundation
 
-Native empty read-only Catalogue accepted by the owner's original seven checks. Documentation #241 is merged and preserves the [original acceptance receipt](docs/acceptance/BUILD118-REAL-USER-PASS.md) separately from the later CPU recovery. Local-private import belongs only to the Build119 candidate below.
+Native empty read-only Catalogue accepted by the owner's original seven checks. Documentation #241 is merged and preserves the [original acceptance receipt](docs/acceptance/BUILD118-REAL-USER-PASS.md) separately from the later CPU recovery. The later, independent A2.2 import belongs to accepted Build119 below.
 
 ### CPU corrective slices 2–3 — bounded functional recovery
 
@@ -102,11 +102,15 @@ Studio #239 lean canonical Album consumer is merged and Pages deployed. The sepa
 
 PR #240 merged at `650c8a3cf9a69f95732905562535394fac94a12e`; exact-head CI and Pages succeeded. Owner reports one HTTP 200 per core private collection/health endpoint on a clean load, correct artwork and 7 Albums (4/3/0). Sustained CPU compliance remains unmeasured and incidents remain open. [Separate original and recovery receipts](docs/acceptance/BUILD118-CPU-RECOVERY.md).
 
+### Catalogue A2.2 — Build119 accepted
+
+PR #242 merged at `20a0adf15271a0f9bff0cbd2a318c441685ec2bc`; candidate CI 36312536104 and Pages 36316493317 SUCCESS. The owner confirmed the explicit local-private JSON import (444 rows / 168 Recordings / 84 Releases / 109 appearances / 120 known and 48 missing ISRC / 0 rejected / 355 pending), QA, Reset/unload, refresh-empty and no private upload/storage in DevTools. Scope is **temporary, read-only, session-only**; no resolved source cases, full workbook coverage, persistent registry or A2.3 browsing. [Owner receipt](docs/acceptance/BUILD119-REAL-USER-PASS.md).
+
 ## Active
 
-### Catalogue A2.2 — Build119 candidate / Draft #242
+### Catalogue A2.3 — native populated views, blueprint only
 
-Implemented on `codex/catalogue-a2-2-local-private-import`, with verified main `8c6a67eb9a1476fa864d136174199402a12498a8` integrated after #241. Preserve the exact local-private runtime: explicit file selection, atomic validation, provenance, memory-only preview, pending QA and unload. No automatic Studio binding or A2.3 browsing. Build119 is not merged, deployed or owner-accepted. [Contract](docs/CATALOGUE-A2-2-CONTRACT.md) and [validation](docs/CATALOGUE-A2-2-VALIDATION.md).
+[Functional blueprint](docs/CATALOGUE-A2-3-BLUEPRINT.md): session-aware Overview, Releases gallery/details, Recordings and evidence-linked QA, no invented artwork/genre/publication state. Separate future gate for persistent commercial authority, reviewed Track mappings and STUDIO ↔ LaunchPAD sync. No new build allocated and no A2.3 runtime implementation/merge/deploy authorized.
 
 ### Phase 10 — progressive extraction
 
@@ -135,7 +139,7 @@ Phase10 remains active as a program, not permission for continuous refactoring. 
 
 ### Corrective review / browser gate
 
-Review new exact-head CI and the reconciled A2.2 Draft #242. Documentation #241 is merged; PR #237 remains open, superseded by that closeout. Build119 merge/deployment requires separate authorization, followed by owner private-source, Network/Storage, mobile and keyboard acceptance. A2.3 requires its own scope.
+Review the bounded Build119 owner acceptance closeout and the A2.3 blueprint. A2.3 must start with an independent scope/version/build/test gate; no persistence or cross-repository sync by implication. PR #237 is still open, superseded by merged #241. CPU issues remain open without sustained measurements.
 
 Album asset exact-byte/digest proof remains independently auditable backlog and is not part of Build118.
 
@@ -174,4 +178,4 @@ There is currently **no official Phase11**.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md`, the [original Build118 A2.1 acceptance](docs/acceptance/BUILD118-REAL-USER-PASS.md) and the separate [bounded CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md). [Build117](docs/acceptance/BUILD117-REAL-USER-PASS.md) remains the prior accepted reliability receipt. CPU incidents remain open without sustained CPU measurements.
+See `PROJECT_STATE.md`, [Build119 owner A2.2 acceptance](docs/acceptance/BUILD119-REAL-USER-PASS.md), [original Build118 A2.1 acceptance](docs/acceptance/BUILD118-REAL-USER-PASS.md) and separate [bounded CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md). [Build117](docs/acceptance/BUILD117-REAL-USER-PASS.md) remains the prior reliability receipt. CPU incidents stay open without sustained CPU measurements.

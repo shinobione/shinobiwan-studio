@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Decisions
 
-Updated: 2026-09-27 after merged Build118 closeout #241 and main integration into Build119 Draft #242. Build118 is accepted production; D-020 applies only to the undeployed Build119 candidate.
+Updated: 2026-09-27 after accepted Build119 A2.2 owner smoke. D-020 remains a bounded memory-only authority decision; A2.3 and persistence are future scope.
 
 This file records durable product, architecture and safety decisions. It is not a changelog. Add an entry only when a decision is introduced, changed or explicitly superseded.
 
@@ -255,7 +255,7 @@ canonical reread        verified
 
 Introduced for A2.1 / Build118, now accepted within its seven-check scope. `#/catalogue` is commercial discography; `#/catalog` remains creative Tracks. Recordings and commercial releases have independent identities. ISRC/UPC are optional metadata; appearances allow a recording on multiple releases. A Studio Track binding requires private proof and human review, never title similarity. Creative Album membership remains `album.trackIds`.
 
-A2.1 contains no commercial data or import. A2.2 local-private import/dry-run is implemented only in the undeployed Build119 candidate under D-020, in memory only. Channel publication evidence remains channel-specific. No commercial persistence or canonical write authority is introduced.
+A2.1 contained no commercial data or import. A2.2 local-private import/dry-run is accepted within Build119 under D-020, in memory only. Channel publication evidence remains channel-specific. No commercial persistence or canonical write authority is introduced.
 
 ## D-019 — Browsing may share pending reads; verification stays fresh
 
@@ -265,7 +265,7 @@ Raw canonical clients used for capability checks, stale guards, write verificati
 
 ## D-020 — A2.2 explicit local-private dry-run
 
-Build119 / v0.19.41 in Draft #242 implements the owner-authorized A2.2 slice and remains unmerged, undeployed and without REAL USER PASS. Main integration changes no runtime or authority decision. A bundled Web Worker parses the verified derived JSON schema after explicit selection, without new dependencies, remote IO or storage. Complete validation precedes activation; replacement/reset/unmount cancels stale work and discards the snapshot. Source omissions stay explicit. All imported channel availability remains unknown; Amuse candidates and Studio link proposals require human review. No automatic identity merge, canonical write authority or A2.3 browsing is introduced. [Formal contract](docs/CATALOGUE-A2-2-CONTRACT.md).
+Build119 / v0.19.41 was merged in #242, Pages deployed and accepted by the owner for bounded local-private import/dry-run only. A bundled Web Worker parses the derived JSON schema after explicit selection, without new dependencies, remote IO or storage. Complete validation precedes activation; replacement/reset/unmount cancels stale work and discards the snapshot. Source omissions stay explicit. All imported channel availability remains unknown; Amuse candidates and Studio link proposals require human review. No automatic identity merge, canonical write authority or A2.3 browsing is introduced. [Formal contract](docs/CATALOGUE-A2-2-CONTRACT.md) · [owner receipt](docs/acceptance/BUILD119-REAL-USER-PASS.md). Future A2.3 session-only views and any commercial persistence/synchronization require independent scope and authority review.
 
 ## Changing a decision
 
