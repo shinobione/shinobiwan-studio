@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Decisions
 
-Updated: 2026-09-27 after accepted Build119 A2.2 owner smoke. D-020 remains a bounded memory-only authority decision; A2.3 and persistence are future scope.
+Updated: 2026-09-27 after accepted Build120 A2.3 Slice 1 owner smoke. D-021 session ownership and snapshot-only Overview are accepted within bounded memory-only scope; later gallery and persistence remain separate.
 
 This file records durable product, architecture and safety decisions. It is not a changelog. Add an entry only when a decision is introduced, changed or explicitly superseded.
 
@@ -269,9 +269,9 @@ Build119 / v0.19.41 was merged in #242, Pages deployed and accepted by the owner
 
 ## D-021 — Catalogue session ownership and snapshot-only Overview
 
-Build120 candidate implements A2.3 Slice 1. The mounted `CommercialCatalogue` owns one import session; its child views consume that state. Normal and invalid Catalogue subroutes retain the session; leaving Catalogue, explicit reset, replacement/rejection, document pagehide or refresh discard it. The existing Worker generation fence prevents late results from restoring discarded data. No global snapshot, storage, remote IO or commercial authority is introduced.
+Build120 / v0.19.42, merged in #244 and Pages deployed, received the owner's bounded five-check REAL USER PASS for A2.3 Slice 1. The mounted `CommercialCatalogue` owns one import session; its child views consume that state. Normal and invalid Catalogue subroutes retain the session; leaving Catalogue, explicit reset, replacement/rejection, document pagehide or refresh discard it. The existing Worker generation fence prevents late results from restoring discarded data. No global snapshot, storage, remote IO or commercial authority is introduced.
 
-Overview derives counts and code/severity groups solely from the accepted Snapshot; source appearances include unbound rows. QA group selection remains component state, with only the fixed QA route in the URL. Source audit and complete private evidence remain available. This refines the owner location in D-020 without changing its parser, identities or review/publication boundaries. New Playwright dependency is development-only; no runtime dependency is added.
+Overview derives counts and code/severity groups solely from the accepted Snapshot; source appearances include unbound rows. QA group selection remains component state, with only the fixed QA route in the URL. Source audit and complete private evidence remain available. This refines the owner location in D-020 without changing its parser, identities or review/publication boundaries. New Playwright dependency is development-only; no runtime dependency is added. [Owner receipt](docs/acceptance/BUILD120-REAL-USER-PASS.md). Releases gallery, Recording explorer and any commercial persistence/synchronization remain separately gated, not implied by this acceptance.
 
 ## Changing a decision
 
