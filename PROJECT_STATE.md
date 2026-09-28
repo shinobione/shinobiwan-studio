@@ -6,7 +6,7 @@
 
 [Bounded Build123 owner REAL USER PASS](docs/acceptance/BUILD123-REAL-USER-PASS.md): 14 independent historical distributor evidence rows, 14 exact existing Appearance links, 0 unlinked; one actual enriched proof opened under the exact source appearance next to its original evidence, historical snapshot labeling preserved, current channel status unknown; appearances and 355 pending QA findings preserved; owner reported successful Reset/refresh and DevTools privacy checks. This is a temporary local-only **reader**, not an accepted durable registry, manual proof of all 14 details, source workbook certification, DSP status verification or new commercial write. No new Worker/R2/LaunchPAD deployment or mutation was part of the slice.
 
-**Active next gate:** [A2.4-C storage/privacy decision packet](docs/CATALOGUE-A2-4C-STORAGE-PRIVACY-DECISION-PACKET.md). Owner must choose A (portable encrypted owner-held package), B (isolated authenticated private service) or staged A→B and key custody/backup/migration authority. No option is accepted, no Build124 allocated and no persistence or cross-repository sync authorized by the Build123 acceptance. CPU #238 / LaunchPAD #283 remain independently open.
+**Active next gate:** [A2.4-C storage/privacy decision packet](docs/CATALOGUE-A2-4C-STORAGE-PRIVACY-DECISION-PACKET.md). **Owner selected A: explicit owner-held encrypted portable package**. B and staged service are deferred. [C1 architecture and synthetic-only contract](docs/CATALOGUE-A2-4C-A-LOCAL-PACKAGE-C1-CONTRACT.md) is prepared on a Draft branch alongside this docs closeout, with no encryption/runtime/storage implementation. Key/KDF choice, recovery, first registry promotion and real export remain separate approval gates; no Build124 or persistence/sync is authorized. CPU #238 / LaunchPAD #283 remain independently open.
 
 ## Historical accepted production checkpoint — 2026-09-27
 
@@ -168,7 +168,7 @@ Build108/109/114–117 are bounded reliability/lifecycle work outside Phase10 Sl
 
 ## Immediate next action
 
-Review and obtain an explicit owner choice on A2.4-C storage/privacy and keys/backup/source authority; Build123 acceptance is recorded above. This documentation-only proposal authorizes neither Build124 nor commercial persistence, Worker/R2/LaunchPAD mutation or automatic Studio↔LaunchPAD sync. Keep QA and CPU #238 / LaunchPAD #283 independently open.
+Review the chosen A local package C1 contract and synthetic-only rehearsal in Draft PR #254; confirm future key/KDF/backup/recovery and original-source registry-promotion policy before separately authorizing any C2 implementation. Build123 remains accepted and unchanged. No Build124, real local export/write, Worker/R2/LaunchPAD mutation or sync; QA and CPU #238 / LaunchPAD #283 remain independently open.
 
 ## Release mechanics
 
