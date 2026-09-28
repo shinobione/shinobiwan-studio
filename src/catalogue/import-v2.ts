@@ -147,7 +147,10 @@ export function parseCatalogueInput(input: string, inputSha256: string): ImportR
     evidence.push({
       evidenceId, source: snapshot.source.sourceFile,
       sourceLocator: String(proof.sourceLocator), observedAt: snapshot.source.snapshotDate,
-      note: JSON.stringify({ sourceNamespace: proof.sourceNamespace, sourceRecordAliasScope: proof.sourceRecordAliasScope,
+      note: JSON.stringify({ sourceNamespace: proof.sourceNamespace, sourceRecordAlias: proof.sourceRecordAlias,
+        sourceRecordAliasScope: proof.sourceRecordAliasScope, sourceReleaseId: proof.sourceReleaseId,
+        releaseId: proof.releaseId, appearanceId: proof.appearanceId, position: proof.position,
+        linkStatus: proof.linkStatus, linkProof: proof.linkProof, linkIssueCode: proof.linkIssueCode,
         historicalSourceOnly: true, originalEvidence: proof.originalEvidence, statusText: proof.statusText,
         storeSyncText: proof.storeSyncText, timecodeVideo: proof.timecodeVideo,
         fileNote: proof.fileNote, evidenceFindingCodes: proof.evidenceFindingCodes }),
