@@ -4,7 +4,7 @@ Date: 2026-09-28. **CANDIDATE / TEST HARNESS ONLY / NOT A STUDIO FEATURE.** The 
 
 ## Exactly what is tested
 
-The CI-only `scripts/test-a24c-browser-rehearsal.mjs` starts the existing Vite app server on ephemeral localhost and Playwright Chromium in a secure context. It executes independently invented package-format routines *inside an isolated `page.evaluate` closure*, **not** imported by `src/`, rendered by Studio, loaded into the Catalogue Worker, integrated with source import or published as a real export/open button.
+The CI-only `scripts/test-a24c-browser-rehearsal.mjs` starts the existing Vite server on ephemeral localhost and Playwright Chromium in a secure context. A network-routed, same-origin **test-only HTML fixture** is served without loading the STUDIO application shell, so its unrelated app traffic cannot pollute the fictional crypto/privacy test. It executes independently invented package-format routines *inside an isolated `page.evaluate` closure*, **not** imported by `src/`, rendered by Studio, loaded into the Catalogue Worker, integrated with source import or published as a real export/open button. External requests are aborted by the test harness; no private source or browser upload is involved.
 
 The test creates an **in-memory fictional `File` object** from an encrypted invented payload, reads the bytes via browser `File.text()`, rederives a non-extractable AES-256-GCM key from an invented passphrase (PBKDF2 SHA-256, 600,000 iterations), authenticates the minimal canonical header as AAD, and opens it. The reverse cross-implementation proof decrypts the browser-produced invented ciphertext with Node/OpenSSL-backed PBKDF2 and AES-GCM. The independent C2 Node suite already runs the corresponding implementation-side checks.
 
