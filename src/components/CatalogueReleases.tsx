@@ -16,7 +16,7 @@ export function EvidenceDisclosure({ ids, index }: { ids: readonly EvidenceId[];
     {ids.length === 0 && <p>Evidence not available in this snapshot.</p>}
     {ids.map(id => {
       const evidence = index.evidenceById.get(id);
-      return <div key={id}>{evidence ? <>{evidence.detailKind === 'distributor-detail' && <p><strong>Independent distributor detail · historical source proof (not current DSP verification)</strong></p>}<p>{evidence.sourceLocator ?? 'Source location not documented'} · Observed {evidence.observedAt ?? 'date unknown'}</p><pre>{evidence.note ?? 'Evidence text not documented.'}</pre></> : <p>Evidence not available in this snapshot.</p>}</div>;
+      return <div key={id}>{evidence ? <>{evidence.detailKind === 'distributor-detail' && <p><strong>Independent distributor detail · historical source proof (not current DSP verification)</strong></p>}<p>{evidence.sourceLocator ?? 'Source location not documented'} · {evidence.detailKind === 'distributor-detail' ? 'Source snapshot' : 'Observed'} {evidence.observedAt ?? 'date unknown'}</p><pre>{evidence.note ?? 'Evidence text not documented.'}</pre></> : <p>Evidence not available in this snapshot.</p>}</div>;
     })}
   </details>;
 }
