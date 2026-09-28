@@ -1,8 +1,7 @@
 export type CatalogueSection = 'overview' | 'releases' | 'recordings' | 'qa';
 export type CatalogueRoute =
-  | { section: CatalogueSection; id?: never }
+  | { section: CatalogueSection | 'lab'; id?: never }
   | { section: 'releases' | 'recordings'; id: string }
-  | { section: 'lab'; id?: never }
   | { section: 'not-found'; id?: never };
 
 // Commercial IDs are opaque, case-sensitive identifiers, never titles or ISRCs.
