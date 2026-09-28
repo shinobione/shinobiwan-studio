@@ -16,7 +16,7 @@ export function EvidenceDisclosure({ ids, index }: { ids: readonly EvidenceId[];
     {ids.length === 0 && <p>Evidence not available in this snapshot.</p>}
     {ids.map(id => {
       const evidence = index.evidenceById.get(id);
-      return <div key={id}>{evidence ? <><p>{evidence.sourceLocator ?? 'Source location not documented'} · Observed {evidence.observedAt ?? 'date unknown'}</p><pre>{evidence.note ?? 'Evidence text not documented.'}</pre></> : <p>Evidence not available in this snapshot.</p>}</div>;
+      return <div key={id}>{evidence ? <>{evidence.detailKind === 'distributor-detail' && <p><strong>Independent distributor detail · historical source proof (not current DSP verification)</strong></p>}<p>{evidence.sourceLocator ?? 'Source location not documented'} · Observed {evidence.observedAt ?? 'date unknown'}</p><pre>{evidence.note ?? 'Evidence text not documented.'}</pre></> : <p>Evidence not available in this snapshot.</p>}</div>;
     })}
   </details>;
 }
@@ -72,7 +72,7 @@ export function CatalogueReleaseDetail({ index, releaseId, onClose, embedded = f
       <section aria-labelledby="release-findings-title" className="release-detail-section"><h4 id="release-findings-title">Pending review</h4>
         <p>{detail.findings.length} findings linked through release, appearance or bound Recording evidence. No decisions are applied.</p>
         {detail.findings.length > 0 && <details><summary>Inspect linked findings</summary><ul>{detail.findings.map((finding, n) => <li key={n}>{FINDING_LABELS[finding.code] ?? 'Source evidence needs review'} · {finding.code} · {finding.locator}</li>)}</ul></details>}
-        <p>Workbook coverage is incomplete. This derived snapshot does not retain all original sheet bodies or detailed Amuse evidence.</p>
+        <p>{index.enrichment ? 'Workbook coverage remains partial. Independently documented distributor details are retained as evidence of their exact appearances, not extra tracks or verified-live DSP status.' : 'Workbook coverage is incomplete. This derived snapshot does not retain all original sheet bodies or detailed Amuse evidence.'}</p>
       </section>
     </>}
   </>;
