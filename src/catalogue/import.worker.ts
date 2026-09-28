@@ -1,4 +1,5 @@
-import { MAX_BYTES, parseCatalogue, reject } from './import';
+import { MAX_BYTES, reject } from './import';
+import { parseCatalogueInput } from './import-v2';
 
 self.onmessage = async (event: MessageEvent<File>) => {
   try {
@@ -8,6 +9,6 @@ self.onmessage = async (event: MessageEvent<File>) => {
     const hash = await crypto.subtle.digest('SHA-256', bytes);
     const sha = Array.from(new Uint8Array(hash), b => b.toString(16).padStart(2, '0')).join('');
     const input = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
-    self.postMessage(parseCatalogue(input, sha));
+    self.postMessage(parseCatalogueInput(input, sha));
   } catch { self.postMessage(reject('UNREADABLE_SOURCE')); }
 };
