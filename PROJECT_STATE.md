@@ -168,7 +168,7 @@ Build108/109/114–117 are bounded reliability/lifecycle work outside Phase10 Sl
 
 ## Immediate next action
 
-Review C1/C2 plus the [C3a actual-Chromium fictional File/Web Crypto test-only rehearsal](docs/CATALOGUE-A2-4C-A-C3A-CHROMIUM-REHEARSAL.md) in Draft PR #254; confirm actual owner-device crypto performance, key/KDF/backup/recovery and original-source registry-promotion policy before separately authorizing any C2 implementation. Build123 remains accepted and unchanged. No Build124, real local export/write, Worker/R2/LaunchPAD mutation or sync; QA and CPU #238 / LaunchPAD #283 remain independently open.
+Review the distinct [Build124/C3b fictional-only Save As/Open candidate](docs/CATALOGUE-BUILD124-C3B-FICTIONAL-CANDIDATE.md) added to Draft PR #254 after C1/C2/C3a. Require exact-final-head CI, independent merge/Pages authorization and owner browser smoke before accepting any runtime. This is NOT an owner-source persistence feature; key custody, recovery, actual commercial registry schema and first source promotion require later separate approval before separately authorizing any C2 implementation. Build123 remains accepted and unchanged. No Build124, real local export/write, Worker/R2/LaunchPAD mutation or sync; QA and CPU #238 / LaunchPAD #283 remain independently open.
 
 ## Release mechanics
 
