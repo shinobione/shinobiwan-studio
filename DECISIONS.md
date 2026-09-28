@@ -291,6 +291,12 @@ Build123 / v0.19.45, merged [PR #253](https://github.com/shinobione/shinobiwan-s
 
 This decision does **not** select commercial storage, encryption/key holder, an owner-managed package, a remote commercial service, a new generic writer, approved creative bindings, per-channel event authority or Studio↔LaunchPAD sync. [A2.4-C decision packet](docs/CATALOGUE-A2-4C-STORAGE-PRIVACY-DECISION-PACKET.md) remains a proposal pending distinct owner approval.
 
+## D-025 — A2.4-C path A selected: explicit owner-held encrypted commercial package
+
+On 2026-09-28 the owner chose **A** (portable encrypted local file), expressly **not** B (private hosted service) or staged A→B. The existing temporary Build123 v2 reader remains unchanged until a separate implementation gate. Commercial private data will not be silently stored in browser Storage, Git/Pages, Worker/R2/public projection or LaunchPAD. A future owner-triggered local encrypted export/open/restore must have distinct cryptographic review, secret/recovery custody, authenticated format, explicit revisions/backup, fail-closed import/restore and owner-only trial. The original workbook remains private historical source evidence; registry promotion and human-reviewed commercial decisions need independent approval. No automatic Creative Track/Album identity, title/ISRC match or current DSP status may be inferred.
+
+[Owner choice and gate packet](docs/CATALOGUE-A2-4C-STORAGE-PRIVACY-DECISION-PACKET.md) · [C1 fictional architecture/tests](docs/CATALOGUE-A2-4C-A-LOCAL-PACKAGE-C1-CONTRACT.md). **Decision A is accepted; implementation, cryptosystem/parameter selection, actual local data save, Build124, sync and merge are not authorized by it.**
+
 ## Changing a decision
 
 When a durable decision changes:
