@@ -101,7 +101,6 @@ export function parseCatalogueInput(input: string, inputSha256: string): ImportR
   const rawAppearances = root.appearances as Row[];
   const releaseById = new Map(rawReleases.map(r => [r.id, r]));
   const appearanceById = new Map(rawAppearances.map(r => [r.id, r]));
-  const appearanceIds = new Set<string>();
   const evidenceAliases = new Set<string>();
   const sourceAliases = new Set<string>();
   const evidence: Evidence[] = [...snapshot.evidence];
@@ -128,9 +127,8 @@ export function parseCatalogueInput(input: string, inputSha256: string): ImportR
       const appearance = appearanceById.get(proof.appearanceId);
       if (!release || !appearance || release.source !== proof.sourceNamespace ||
           release.sourceId !== proof.sourceReleaseId || appearance.releaseId !== proof.releaseId ||
-          appearance.position !== proof.position || appearanceIds.has(String(proof.appearanceId)))
+          appearance.position !== proof.position)
         return reject('V2_DETAIL_LINK_CONFLICT');
-      appearanceIds.add(String(proof.appearanceId));
       linked++;
       adds.set(String(proof.appearanceId), [...(adds.get(String(proof.appearanceId)) ?? []), evidenceId]);
       if (safeText(proof.displayTitle) && safeText(appearance.displayTitle) && proof.displayTitle !== appearance.displayTitle)
