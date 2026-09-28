@@ -6,7 +6,7 @@
 
 [Bounded Build123 owner REAL USER PASS](docs/acceptance/BUILD123-REAL-USER-PASS.md): 14 independent historical distributor evidence rows, 14 exact existing Appearance links, 0 unlinked; one actual enriched proof opened under the exact source appearance next to its original evidence, historical snapshot labeling preserved, current channel status unknown; appearances and 355 pending QA findings preserved; owner reported successful Reset/refresh and DevTools privacy checks. This is a temporary local-only **reader**, not an accepted durable registry, manual proof of all 14 details, source workbook certification, DSP status verification or new commercial write. No new Worker/R2/LaunchPAD deployment or mutation was part of the slice.
 
-**Active next gate:** [A2.4-C storage/privacy decision packet](docs/CATALOGUE-A2-4C-STORAGE-PRIVACY-DECISION-PACKET.md). **Owner selected A: explicit owner-held encrypted portable package**. B and staged service are deferred. [C1 architecture and synthetic-only contract](docs/CATALOGUE-A2-4C-A-LOCAL-PACKAGE-C1-CONTRACT.md) is prepared on a Draft branch alongside this docs closeout, with no encryption/runtime/storage implementation. Key/KDF choice, recovery, first registry promotion and real export remain separate approval gates; no Build124 or persistence/sync is authorized. CPU #238 / LaunchPAD #283 remain independently open.
+**Active next gate:** [A2.4-C storage/privacy decision packet](docs/CATALOGUE-A2-4C-STORAGE-PRIVACY-DECISION-PACKET.md). **Owner selected A: explicit owner-held encrypted portable package**. B and staged service are deferred. [C1 architecture and synthetic-only contract](docs/CATALOGUE-A2-4C-A-LOCAL-PACKAGE-C1-CONTRACT.md) is prepared on a Draft branch alongside this docs closeout, with a companion [C2 fictional-only browser-native cryptography rehearsal](docs/CATALOGUE-A2-4C-A-C2-CRYPTO-FORMAT-REHEARSAL.md) on the same Draft branch, but no runtime/storage implementation or private file encryption. Candidate PBKDF2/AES-GCM parameters, owner device performance and key/KDF choice, recovery, first registry promotion and real export remain separate approval gates; no Build124 or persistence/sync is authorized. CPU #238 / LaunchPAD #283 remain independently open.
 
 ## Historical accepted production checkpoint — 2026-09-27
 
@@ -168,7 +168,7 @@ Build108/109/114–117 are bounded reliability/lifecycle work outside Phase10 Sl
 
 ## Immediate next action
 
-Review the chosen A local package C1 contract and synthetic-only rehearsal in Draft PR #254; confirm future key/KDF/backup/recovery and original-source registry-promotion policy before separately authorizing any C2 implementation. Build123 remains accepted and unchanged. No Build124, real local export/write, Worker/R2/LaunchPAD mutation or sync; QA and CPU #238 / LaunchPAD #283 remain independently open.
+Review the chosen A local package C1 contract and C2 fictional-only crypto/format rehearsal in Draft PR #254; confirm actual owner-device crypto performance, key/KDF/backup/recovery and original-source registry-promotion policy before separately authorizing any C2 implementation. Build123 remains accepted and unchanged. No Build124, real local export/write, Worker/R2/LaunchPAD mutation or sync; QA and CPU #238 / LaunchPAD #283 remain independently open.
 
 ## Release mechanics
 
