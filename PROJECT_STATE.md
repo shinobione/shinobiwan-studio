@@ -1,6 +1,14 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-## Current accepted production — 2026-09-27
+## Current accepted browser runtime — 2026-09-28
+
+**Build123 / v0.19.45**: [PR #253](https://github.com/shinobione/shinobiwan-studio/pull/253) merged into `main` as `bfcad4b2c75b72bf02c316b9f1096141dab05957`. Exact final feature head `78cab3b6fee6022df6ddffad91404e9c4edda9f5` passed [CI #36459697086](https://github.com/shinobione/shinobiwan-studio/actions/runs/36459697086). Owner observed the deployed Build123 version and successfully imported their own private local v2 export. The precise automatic Pages merge-SHA run was not independently retrieved for this checkpoint; do not equate owner-observed live runtime with an independently verified Pages run.
+
+[Bounded Build123 owner REAL USER PASS](docs/acceptance/BUILD123-REAL-USER-PASS.md): 14 independent historical distributor evidence rows, 14 exact existing Appearance links, 0 unlinked; one actual enriched proof opened under the exact source appearance next to its original evidence, historical snapshot labeling preserved, current channel status unknown; appearances and 355 pending QA findings preserved; owner reported successful Reset/refresh and DevTools privacy checks. This is a temporary local-only **reader**, not an accepted durable registry, manual proof of all 14 details, source workbook certification, DSP status verification or new commercial write. No new Worker/R2/LaunchPAD deployment or mutation was part of the slice.
+
+**Active next gate:** [A2.4-C storage/privacy decision packet](docs/CATALOGUE-A2-4C-STORAGE-PRIVACY-DECISION-PACKET.md). Owner must choose A (portable encrypted owner-held package), B (isolated authenticated private service) or staged A→B and key custody/backup/migration authority. No option is accepted, no Build124 allocated and no persistence or cross-repository sync authorized by the Build123 acceptance. CPU #238 / LaunchPAD #283 remain independently open.
+
+## Historical accepted production checkpoint — 2026-09-27
 
 GitHub-verified pre-closeout `main`: `58f976218600757632efd58e36b2c74a8a47fcef`, after owner-authorized [PR #248](https://github.com/shinobione/shinobiwan-studio/pull/248). Exact final candidate `881845487d3119f45814a0ade2e8b7ef7487c352` passed [CI #36338838575](https://github.com/shinobione/shinobiwan-studio/actions/runs/36338838575); automatic [Pages #36339663943](https://github.com/shinobione/shinobiwan-studio/actions/runs/36339663943) build/upload/deploy SUCCESS on the merge SHA. **Current accepted runtime: Build122 / v0.19.44, Catalogue A2.3 Slice 3 — session-only Recordings explorer and contextual QA.**
 
@@ -12,7 +20,7 @@ Prior [Build121 A2.3 Slice 2 acceptance](docs/acceptance/BUILD121-REAL-USER-PASS
 
 ## Next decision gate — living commercial Catalogue architecture (planning only)
 
-The [A2.3 blueprint](docs/CATALOGUE-A2-3-BLUEPRINT.md) has three separately accepted read-only session slices: Overview, Releases and Recordings/contextual QA. A truly living commercial registry, possible richer private exporter, reviewed artwork, per-channel event ledger, exact Recording ↔ creative Track bindings and STUDIO ↔ LaunchPAD synchronization each need an independently scoped source-of-truth, identity/evidence, confidentiality, write-authority, conflict and rollback decision. **No Build123, implementation PR, new storage or bidirectional sync is allocated or authorized by this docs closeout.** Do not merge/deploy it without separate owner approval.
+The [A2.3 blueprint](docs/CATALOGUE-A2-3-BLUEPRINT.md) has three separately accepted read-only session slices: Overview, Releases and Recordings/contextual QA. A truly living commercial registry, possible richer private exporter, reviewed artwork, per-channel event ledger, exact Recording ↔ creative Track bindings and STUDIO ↔ LaunchPAD synchronization each need an independently scoped source-of-truth, identity/evidence, confidentiality, write-authority, conflict and rollback decision. **Build123 was subsequently merged and received bounded owner view-only acceptance; see current checkpoint above.** Durable storage, automatic commercial writes and bidirectional sync still require separate owner choice and authority review.
 
 ## Prior accepted reliability baseline — Build117
 
@@ -160,7 +168,7 @@ Build108/109/114–117 are bounded reliability/lifecycle work outside Phase10 Sl
 
 ## Immediate next action
 
-Review the docs-only Build122 acceptance closeout; next brainstorm and explicitly scope the living Catalogue architecture (private source coverage, commercial source-of-truth, reviewed IDs/artwork, channel evidence, storage and STUDIO ↔ LaunchPAD authority) before any new runtime build. Preserve unresolved QA, CPU #238 / LaunchPAD #283, and independent Album digest and Phase10 gates. No merge/Pages for this closeout without separate owner approval.
+Review and obtain an explicit owner choice on A2.4-C storage/privacy and keys/backup/source authority; Build123 acceptance is recorded above. This documentation-only proposal authorizes neither Build124 nor commercial persistence, Worker/R2/LaunchPAD mutation or automatic Studio↔LaunchPAD sync. Keep QA and CPU #238 / LaunchPAD #283 independently open.
 
 ## Release mechanics
 
