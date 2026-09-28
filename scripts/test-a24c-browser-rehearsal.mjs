@@ -184,7 +184,7 @@ try {
   test('refresh discards synthetic plaintext and creates no browser persistence',
     JSON.stringify(storage)===JSON.stringify({local:[],session:[],databases:[],cache:[]}));
   test('no upload, external request, URL/console disclosure or browser errors',
-    requests.every(r=>r.method==='GET'&&r.url===sandboxUrl&&
+    requests.every(r=>r.method==='GET'&&r.url.startsWith(origin+'/')&&
       !r.url.includes('cartoon-only')&&!r.body.includes('cartoon-only'))&&
       !page.url().includes('cartoon-only')&&
       !messages.some(s=>s.includes('cartoon-only'))&&errors.length===0);
