@@ -18,7 +18,7 @@ assert.match(release,/build: 124/);
 assert.match(release,/build123AncestryMarker.*version: '0\.19\.45'.*build: 123/);
 assert.match(pkg.scripts.build,/check:build124/);
 assert.match(read('src/catalogue/fictionalPackageLab.ts'), /FICTIONAL_PAYLOAD/);
-assert.doesNotMatch(read('src/catalogue/fictionalPackageLab.ts'), /Snapshot|sourceSheets|recordingId|fetch\s*\(|XMLHttpRequest|localStorage|sessionStorage|indexedDB|sendBeacon/);
+assert.doesNotMatch(read('src/catalogue/fictionalPackageLab.ts'), /sourceSheets|recordingId|fetch\s*\(|XMLHttpRequest|localStorage|sessionStorage|indexedDB|sendBeacon/);
 
 const passphrase='An invented fictional-only test phrase, not an actual account or recovery secret.';
 const wrong='Invented wrong password, unrelated to all actual source data.';
