@@ -168,7 +168,7 @@ Build108/109/114–117 are bounded reliability/lifecycle work outside Phase10 Sl
 
 ## Immediate next action
 
-Review the chosen A local package C1 contract and C2 fictional-only crypto/format rehearsal in Draft PR #254; confirm actual owner-device crypto performance, key/KDF/backup/recovery and original-source registry-promotion policy before separately authorizing any C2 implementation. Build123 remains accepted and unchanged. No Build124, real local export/write, Worker/R2/LaunchPAD mutation or sync; QA and CPU #238 / LaunchPAD #283 remain independently open.
+Review C1/C2 plus the [C3a actual-Chromium fictional File/Web Crypto test-only rehearsal](docs/CATALOGUE-A2-4C-A-C3A-CHROMIUM-REHEARSAL.md) in Draft PR #254; confirm actual owner-device crypto performance, key/KDF/backup/recovery and original-source registry-promotion policy before separately authorizing any C2 implementation. Build123 remains accepted and unchanged. No Build124, real local export/write, Worker/R2/LaunchPAD mutation or sync; QA and CPU #238 / LaunchPAD #283 remain independently open.
 
 ## Release mechanics
 
