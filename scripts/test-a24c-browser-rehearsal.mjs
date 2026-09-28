@@ -132,15 +132,20 @@ try {
   browser=await chromium.launch({headless:true});
   const context=await browser.newContext({serviceWorkers:'block'});
   const requests=[],errors=[],messages=[];
+  const sandboxUrl=origin+'/__a24c_fictional_browser_fixture__';
   await context.route('**/*',route=>{
     const r=route.request();
     requests.push({url:r.url(),method:r.method(),body:r.postData()??''});
-    return r.url().startsWith(origin+'/')?route.continue():route.abort();
+    if (r.url() === sandboxUrl && r.method() === 'GET')
+      return route.fulfill({status:200,contentType:'text/html; charset=utf-8',
+        body:'<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Invented-only C3a sandbox</title></head><body>Fictional in-memory crypto fixture; no STUDIO runtime loaded.</body></html>'});
+    // Disallow external requests. The only intended page is a locally fulfilled fixture.
+    return route.abort();
   });
   const page=await context.newPage();
   page.on('pageerror',e=>errors.push(e.message));
   page.on('console',m=>messages.push(m.text()));
-  await page.goto(origin+'/#/catalogue');
+  await page.goto(sandboxUrl);
   const results=await page.evaluate(browserRehearsal,{
     passphrase:fictionalPassphrase,fakeText:fictionalText,
     workFloor:minWork,workCeiling:maxWork
@@ -179,7 +184,7 @@ try {
   test('refresh discards synthetic plaintext and creates no browser persistence',
     JSON.stringify(storage)===JSON.stringify({local:[],session:[],databases:[],cache:[]}));
   test('no upload, external request, URL/console disclosure or browser errors',
-    requests.every(r=>r.method==='GET'&&r.url.startsWith(origin+'/')&&
+    requests.every(r=>r.method==='GET'&&r.url===sandboxUrl&&
       !r.url.includes('cartoon-only')&&!r.body.includes('cartoon-only'))&&
       !page.url().includes('cartoon-only')&&
       !messages.some(s=>s.includes('cartoon-only'))&&errors.length===0);
