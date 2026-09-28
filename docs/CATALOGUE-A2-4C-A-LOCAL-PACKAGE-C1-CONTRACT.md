@@ -47,7 +47,7 @@ Required cases (all with invented fixtures, aggregate PASS labels only):
 7. Restore planning never mutates the current registry and rejects mismatched registry identity; this does *not* stand in for real authentication/decryption.
 8. Test fixture and public script contain no user source examples, secrets, real source fingerprint/filename or network/storage calls. Source/build artifact privacy scanner and all inherited Build118–123 tests remain required.
 
-Future **C2 crypto/security acceptance**, not covered by these tests: independently reviewed real AES-GCM/approved AEAD and KDF vectors, wrong password, byte/header tamper, truncation, nonce/salt uniqueness, wrong algorithm/version, over-budget KDF/size, disk-file re-open and recovery copy, no public metadata leakage, browser Network/Storage/URL/log checks and restoration after refresh. Owner-only private-data trial requires a distinct approval.
+The separately proposed [C2 fictional cryptographic rehearsal](CATALOGUE-A2-4C-A-C2-CRYPTO-FORMAT-REHEARSAL.md) verifies candidate Node Web Crypto PBKDF2/AES-GCM round-trip, cross-implementation decryption and tamper/format guards with independently invented bytes only. C1 still does **not** encrypt. Future **real product crypto/security acceptance** remains separate: audited implementation, real browser/Worker performance and compatibility, disk-file re-open and recovery copy, browser Network/Storage/URL/log checks and restoration after refresh. Owner-only private-data trial requires distinct approval.
 
 ## 6. Independent stop line
 
