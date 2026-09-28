@@ -2,6 +2,7 @@ export type CatalogueSection = 'overview' | 'releases' | 'recordings' | 'qa';
 export type CatalogueRoute =
   | { section: CatalogueSection; id?: never }
   | { section: 'releases' | 'recordings'; id: string }
+  | { section: 'lab'; id?: never }
   | { section: 'not-found'; id?: never };
 
 // Commercial IDs are opaque, case-sensitive identifiers, never titles or ISRCs.
@@ -13,7 +14,7 @@ export function readCatalogueRoute(hash = globalThis.location.hash): CatalogueRo
   if (parts[0] !== 'catalogue') return { section: 'not-found' };
   if (parts.length === 1) return { section: 'overview' };
   const section = parts[1];
-  if (parts.length === 2 && (section === 'releases' || section === 'recordings' || section === 'qa')) {
+  if (parts.length === 2 && (section === 'releases' || section === 'recordings' || section === 'qa' || section === 'lab')) {
     return { section };
   }
   if (parts.length === 3 && (section === 'releases' || section === 'recordings')) {
