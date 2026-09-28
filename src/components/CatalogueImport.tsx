@@ -62,7 +62,7 @@ export function CatalogueImport({ section, emptyCopy, state, onSelect, onReset }
       {state.phase === 'empty' && <p>No private source loaded.</p>}
       {state.phase === 'reading' && <p>Reading and validating locally… You can reset or select a replacement.</p>}
       {result?.status === 'rejected' && <p><strong>Source rejected.</strong> No snapshot is active. Source rows: {result.sourceRows ?? 'unknown'}. Parsed records were not activated.</p>}
-      {snapshot && <p><strong>Source structurally accepted for dry-run.</strong> {findings.length} findings await human review. Nothing has been imported into production.</p>}
+      {snapshot && <><p><strong>Source structurally accepted for dry-run.</strong> {findings.length} findings await human review. Nothing has been imported into production.</p>{snapshot.enrichment && <p>Enriched v2 · {snapshot.enrichment.detailedEvidenceCount} independent historical distributor evidence rows · {snapshot.enrichment.linkedEvidenceCount} exact appearance links · {snapshot.enrichment.unlinkedEvidenceCount} unlinked pending review. Existing appearances are never recounted as new recordings.</p>}</>}
     </div>
     {snapshot && section === 'overview' && <CatalogueOverview snapshot={snapshot} onReview={value => {
       setFilter({ code: value, context: null }); setPage(0); reviewFocus.current = true;
@@ -78,10 +78,13 @@ export function CatalogueImport({ section, emptyCopy, state, onSelect, onReset }
           Recordings: snapshot.recordings.length, 'Commercial releases': snapshot.releases.length, 'Source appearances': snapshot.appearances.length + snapshot.summary.unboundAppearances,
           'Unbound appearances': snapshot.summary.unboundAppearances, 'Known ISRC': snapshot.summary.knownIsrc, 'Missing / invalid ISRC': snapshot.summary.missingIsrc,
           'Amuse review candidates': snapshot.summary.amuseCandidates, 'Source QA cases': snapshot.summary.sourceQA, 'Recent SoundCloud observations': snapshot.summary.recentObservations,
+          ...(snapshot.enrichment ? { 'V2 workbook sections': snapshot.enrichment.sectionCount, 'Independent detail evidence': snapshot.enrichment.detailedEvidenceCount,
+            'Exact evidence links': snapshot.enrichment.linkedEvidenceCount, 'Unlinked detail evidence': snapshot.enrichment.unlinkedEvidenceCount,
+            'Partial sections': snapshot.enrichment.partialSections, 'Omitted sections': snapshot.enrichment.omittedSections } : {}),
         }).map(([label, n]) => <div key={label}><dt>{label}</dt><dd>{n}</dd></div>)}
       </dl>
       <p>Historical source date: {snapshot.source.snapshotDate}. Source workbook fingerprint is a claim in the JSON; workbook bytes are not verified here.</p>
-      <p>Coverage is incomplete: dashboard and source-method text and a separate detailed Amuse table are not retained by this derived format. Review the private workbook for full evidence.</p>
+      <p>{snapshot.enrichment ? 'V2 retains independent distributor detail for validated positions. Source coverage remains partial or omitted in other sections. These are historical records, not a complete workbook migration or current DSP verification.' : 'Coverage is incomplete: dashboard and source-method text and a separate detailed Amuse table are not retained by this derived format. Review the private workbook for full evidence.'}</p>
       <details><summary>Channel evidence</summary>
         <p>All current availability remains unknown. These are historical source observations, not verified platform publication.</p>
         <ul>{Array.from(channelCounts).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([channel, n]) => <li key={channel}>{channel}: {n} release observations · unknown</li>)}</ul>
