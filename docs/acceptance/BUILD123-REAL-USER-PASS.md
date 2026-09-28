@@ -4,8 +4,8 @@ Date: 2026-09-28. Status: **OWNER-REPORTED BOUNDED PASS** for the explicit local
 
 ## Independent delivery facts
 
-- Studio [PR #253](https://github.com/shinobione/shinobiwan-studio/pull/253) merged on \`main\` at \`bfcad4b2c75b72bf02c316b9f1096141dab05957\`.
-- Tested final feature head: \`78cab3b6fee6022df6ddffad91404e9c4edda9f5\`; [CI #36459697086](https://github.com/shinobione/shinobiwan-studio/actions/runs/36459697086) completed SUCCESS at that SHA.
+- Studio [PR #253](https://github.com/shinobione/shinobiwan-studio/pull/253) merged on `main` at `bfcad4b2c75b72bf02c316b9f1096141dab05957`.
+- Tested final feature head: `78cab3b6fee6022df6ddffad91404e9c4edda9f5`; [CI #36459697086](https://github.com/shinobione/shinobiwan-studio/actions/runs/36459697086) completed SUCCESS at that SHA.
 - Owner observed **Build123 / v0.19.45 in the actual Studio browser** and successfully selected their own private local v2 export. The precise automatic Pages workflow run/merge-SHA receipt was **not independently retrieved** in this closeout. Do not silently label an unobserved Pages run independently verified.
 - No Worker/backend deployment, R2 change, LaunchPAD modification or commercial write was part of this slice. No owner source file, source-specific filename, private source ID/ISRC/UPC/title/hash, original row or screenshot is attached here.
 
