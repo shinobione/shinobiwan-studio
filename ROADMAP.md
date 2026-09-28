@@ -151,7 +151,7 @@ Phase10 remains active as a program, not permission for continuous refactoring. 
 
 ### Corrective review / browser gate
 
-A2.4-C: obtain explicit owner decision on A (encrypted local package), B (isolated private commercial service) or staged A→B, including key custody, backup/restore and migration authority. [Review packet](docs/CATALOGUE-A2-4C-STORAGE-PRIVACY-DECISION-PACKET.md). Allocate no Build124, writer, production private storage, Worker/R2/LaunchPAD mutation or automatic sync from the docs-only proposal. CPU issues remain open without sustained measurements.
+A2.4-C **A selected** by owner (explicit encrypted portable file under owner control). [Decision packet](docs/CATALOGUE-A2-4C-STORAGE-PRIVACY-DECISION-PACKET.md) and [C1 architecture + fictional regression gate](docs/CATALOGUE-A2-4C-A-LOCAL-PACKAGE-C1-CONTRACT.md) are a Draft candidate. Approve specific cryptography/key custody, independently verified backup/restore and first registry migration separately before any runtime/storage slice. No Build124, real export/writer, Worker/R2/LaunchPAD mutation or sync. CPU issues remain open without sustained measurements.
 
 Album asset exact-byte/digest proof remains independently auditable backlog and is not part of Build118.
 
