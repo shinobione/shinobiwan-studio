@@ -11,6 +11,8 @@ export interface Snapshot {
   readonly unboundAppearances: readonly UnboundReleaseAppearance[];
   evidence: Evidence[]; channels: ChannelPublication[];
   findings: Finding[];
+  // Optional Build123 v2-only coverage; v1 remains structurally and semantically unchanged.
+  readonly enrichment?: { readonly sectionCount: number; readonly detailedEvidenceCount: number; readonly linkedEvidenceCount: number; readonly unlinkedEvidenceCount: number; readonly partialSections: number; readonly omittedSections: number };
   summary: { sourceRows: number; parsedRows: number; rejectedRows: number; knownIsrc: number; missingIsrc: number; unboundAppearances: number; amuseCandidates: number; sourceQA: number; recentObservations: number };
 }
 export type ImportResult = { status: 'accepted'; snapshot: Snapshot } | { status: 'rejected'; findings: Finding[]; sourceRows: number | null };
