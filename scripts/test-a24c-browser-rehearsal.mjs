@@ -11,12 +11,12 @@ const fictionalPassphrase = 'Fictional passphrase exclusively for automated brow
 const fictionalText = '{"fictionalRegistry":"cartoon-only","revision":3,"detail":"invented"}';
 const minWork = 600_000;
 const maxWork = 1_200_000;
-const MAX_ENVELOPE = 14 * 1024 * 1024;
 
 // Browser-contained rehearsal, deliberately NOT shipped in src/ or imported by the app.
 // Never use this isolated test function to process actual Catalogue material.
 async function browserRehearsal({ passphrase, fakeText, workFloor, workCeiling }) {
   const enc = new TextEncoder();
+  const MAX_ENVELOPE = 14 * 1024 * 1024; // browser-local: Playwright serializes this function without Node scope
   const dec = new TextDecoder('utf-8', { fatal: true });
   const u64 = bytes => btoa(String.fromCharCode(...bytes))
     .replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/g, '');
