@@ -16,4 +16,13 @@ export const FINDING_LABELS: Record<string, string> = {
   SOURCE_COUNT_CONFLICT: 'Source sheet count disagrees with data', PROVENANCE_CONFLICT: 'Recording provenance disagrees with identity',
   FILE_TOO_LARGE: 'File exceeds the 10 MiB limit', TOO_MANY_ROWS: 'File exceeds the 50,000-row limit', JSON_ONLY: 'Select a JSON file',
   UNREADABLE_SOURCE: 'File could not be read as UTF-8', LOCAL_PARSER_FAILED: 'Local parser could not complete', INVALID_INPUT_DIGEST: 'Input fingerprint could not be verified',
+  V2_INVALID_ENVELOPE: 'Enriched v2 metadata or exporter version does not match the reviewed local contract',
+  V2_COVERAGE_COUNT_CONFLICT: 'Enriched source coverage or row counters disagree',
+  V2_INVALID_DETAIL: 'Detailed distributor evidence has invalid or unexpected fields',
+  V2_DUPLICATE_EVIDENCE: 'Distributor evidence source identity is duplicated',
+  V2_DETAIL_LINK_CONFLICT: 'An asserted exact distributor evidence link contradicts source identity or position',
+  V2_DETAIL_TITLE_CONTRADICTION: 'Historical distributor detail title disagrees with its exact Appearance',
+  V2_DETAIL_ISRC_CONTRADICTION: 'Historical distributor detail ISRC disagrees with its exact Appearance',
+  V2_DETAIL_UNLINKED: 'Independent distributor detail is preserved without an inferred Appearance link',
+  V2_DETAIL_SOURCE_REVIEW: 'Independent distributor detail requires human source review',
 };
