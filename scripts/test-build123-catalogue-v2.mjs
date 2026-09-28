@@ -89,6 +89,13 @@ test('v2 enriches exact appearance without adding entities or losing original fi
   assert.equal(appearance.evidenceIds.length, 2);
   const evidence = accepted.snapshot.evidence.find(e => e.detailKind === 'distributor-detail');
   assert.ok(evidence); assert.ok(appearance.evidenceIds.includes(evidence.evidenceId));
+  const provenance = JSON.parse(evidence.note);
+  assert.equal(provenance.sourceRecordAlias, 'fictional-row-A');
+  assert.equal(provenance.sourceReleaseId, 'release-1');
+  assert.equal(provenance.releaseId, 'amuse:release-1');
+  assert.equal(provenance.appearanceId, 'app-1');
+  assert.equal(provenance.position, 1);
+  assert.equal(provenance.linkProof, 'EXACT_SOURCE_RELEASE_AND_POSITION');
   assert.equal(accepted.snapshot.recordings[0].studioTrackLink, null);
   assert.ok(accepted.snapshot.channels.every(row => row.status === 'unknown'));
 });
@@ -185,6 +192,8 @@ try {
     assert.match(await details.innerText(), /Independent distributor detail · historical source proof/);
     assert.equal(await details.locator('img').count(), 0);
     assert.match(await details.locator('pre').last().innerText(), /Fictional marker|fictional observation/i);
+    assert.match(await details.locator('pre').last().innerText(), /"sourceRecordAlias":"fictional-row-A"/);
+    assert.match(await details.locator('pre').last().innerText(), /"sourceReleaseId":"release-1"/);
     await dialog.getByRole('button', { name: 'Close detail' }).click();
   });
   await step('v2 conflicting source link rejects whole replacement rather than retaining any stale detail', async () => {
