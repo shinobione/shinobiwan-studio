@@ -23,7 +23,7 @@ export function releaseIndex(snapshot: Snapshot) {
     const entries = channelsByReleaseId.get(channel.releaseId) ?? [];
     entries.push(channel); channelsByReleaseId.set(channel.releaseId, entries);
   }
-  return { releaseById, recordingById, evidenceById, appearancesByReleaseId, findingsByEvidenceId, channelsByReleaseId };
+  return { releaseById, recordingById, evidenceById, appearancesByReleaseId, findingsByEvidenceId, channelsByReleaseId, enrichment: snapshot.enrichment ?? null };
 }
 export type ReleaseIndex = ReturnType<typeof releaseIndex>;
 export function releaseDetail(index: ReleaseIndex, id: CommercialReleaseId) {

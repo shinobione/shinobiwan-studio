@@ -13,6 +13,8 @@ export interface Evidence {
   readonly observedAt: string | null;
   readonly note: string | null;
   readonly classification?: 'source-observation' | 'derived' | 'human-confirmed' | 'missing' | 'contradictory';
+  // An independent distributor evidence row supplements, never creates, an Appearance.
+  readonly detailKind?: 'distributor-detail';
 }
 
 export interface Recording {
