@@ -11,8 +11,7 @@ import * as jsx from 'react/jsx-runtime';
 import { fixture, recount } from './catalogue-synthetic.mjs';
 
 const read = path => fs.readFileSync(path, 'utf8');
-assert.equal(JSON.parse(read('package.json')).version, '0.19.44');
-assert.match(read('src/release.ts'), /build: 122/);
+assert.match(read('src/release.ts'), /build122AncestryMarker.*version: '0\.19\.44'.*build: 122/);
 assert.match(JSON.parse(read('package.json')).scripts.build, /check:build122/);
 function load(path, imports = {}) {
   const exports = {};
