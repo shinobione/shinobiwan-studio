@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Decisions
 
-Updated: 2026-09-27 after accepted Build122 A2.3 Slice 3 owner smoke. D-023 exact-evidence Recordings browsing and contextual QA are accepted within the temporary read-only session; commercial persistence and synchronization remain separate.
+Updated: 2026-09-28 after Build123 bounded owner v2 reader smoke. D-024 accepts only the explicit temporary private v2 view; A2.4-C durable storage, key custody, backup/recovery and sync choice remain undecided.
 
 This file records durable product, architecture and safety decisions. It is not a changelog. Add an entry only when a decision is introduced, changed or explicitly superseded.
 
@@ -284,6 +284,18 @@ Release detail joins exact identity/evidence maps; no sorted-index or title asso
 Build122 / v0.19.44 merged in #248, Pages deployed and received the owner's bounded eight-check REAL USER PASS for A2.3 Slice 3. The read model uses accepted normalized evidence memberships only. Recording context includes its own and explicitly bound appearance rows; Release context includes its own and exact bound/unbound appearance rows; appearance context includes only its row. Source-note-only cases stay global. No raw-note/index/title/ISRC inference, resolution or Track binding is introduced. Global QA preserves every source finding. One controlled code/context filter retains inherited Overview code behavior and clears entity context on exit or source discard.
 
 One in-memory modal visit supports exact Recording/Release/appearance navigation and Back without source IDs in routes. Close/Escape restores the original opener; route/source discard removes the visit. The parser, Worker generation fence and Build120 session ownership are unchanged. No new persistence, publication or commercial authority. [Owner acceptance](docs/acceptance/BUILD122-REAL-USER-PASS.md); the [candidate handoff](docs/CATALOGUE-A2-3-SLICE3-VALIDATION.md) remains historical pre-merge evidence. All three session-only A2.3 views are independently accepted, but a living commercial registry requires a separate source-of-truth and write-authority architecture decision.
+
+## D-024 — Explicit private v2 reader enriches existing Appearance evidence only
+
+Build123 / v0.19.45, merged [PR #253](https://github.com/shinobione/shinobiwan-studio/pull/253) and bounded [owner acceptance](docs/acceptance/BUILD123-REAL-USER-PASS.md), allows an explicitly selected owner-local `catalogue-readonly-seed-v2` through a separate strict v2 adapter while retaining the accepted v1 parser. Independent detailed distributor observations attach to an existing Appearance by exact source namespace + source Release identity + Release/Appearance IDs + positive position; they never become extra Recordings, Releases or Appearances, current DSP delivery or verified Track bindings. Inconsistent exact links reject atomically; unlinked evidence remains global pending QA; historical status/QA remain unapproved. The snapshot and detail text are private, escaped, memory-only and removed by the accepted discard lifecycle.
+
+This decision does **not** select commercial storage, encryption/key holder, an owner-managed package, a remote commercial service, a new generic writer, approved creative bindings, per-channel event authority or Studio↔LaunchPAD sync. [A2.4-C decision packet](docs/CATALOGUE-A2-4C-STORAGE-PRIVACY-DECISION-PACKET.md) remains a proposal pending distinct owner approval.
+
+## D-025 — A2.4-C path A selected: explicit owner-held encrypted commercial package
+
+On 2026-09-28 the owner chose **A** (portable encrypted local file), expressly **not** B (private hosted service) or staged A→B. The existing temporary Build123 v2 reader remains unchanged until a separate implementation gate. Commercial private data will not be silently stored in browser Storage, Git/Pages, Worker/R2/public projection or LaunchPAD. A future owner-triggered local encrypted export/open/restore must have distinct cryptographic review, secret/recovery custody, authenticated format, explicit revisions/backup, fail-closed import/restore and owner-only trial. The original workbook remains private historical source evidence; registry promotion and human-reviewed commercial decisions need independent approval. No automatic Creative Track/Album identity, title/ISRC match or current DSP status may be inferred.
+
+[Owner choice and gate packet](docs/CATALOGUE-A2-4C-STORAGE-PRIVACY-DECISION-PACKET.md) · [C1 fictional architecture/tests](docs/CATALOGUE-A2-4C-A-LOCAL-PACKAGE-C1-CONTRACT.md). **Decision A is accepted; implementation, cryptosystem/parameter selection, actual local data save, Build124, sync and merge are not authorized by it.**
 
 ## Changing a decision
 

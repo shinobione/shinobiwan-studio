@@ -57,14 +57,14 @@ assert.deepEqual(plain(catalogue.readCatalogueRoute('#/catalog')), { section: 'n
 // Exercise the component's actual subscription and rendered output with a small
 // hook harness; no browser services, private source data or new test dependency.
 let state;
-let effect;
+const effects = [];
 const listeners = new Map();
 let networkRequests = 0;
 const jsx = await import('react/jsx-runtime');
 const ui = load('src/components/CommercialCatalogue.tsx', {
   react: {
     useState: init => { state ??= init(); return [state, value => { state = value; }]; },
-    useEffect: callback => { effect = callback; },
+    useEffect: callback => { effects.push(callback); },
   },
   'react/jsx-runtime': jsx,
   '../catalogue-router': catalogue,
@@ -73,6 +73,8 @@ const ui = load('src/components/CommercialCatalogue.tsx', {
   '../catalogue/useCatalogueSession': { useCatalogueSession: () => ({ state: { phase: 'empty' }, onSelect() {}, onReset() {} }) },
   // A2.2 child is tested separately against its actual hooks and worker lifecycle.
   './CatalogueImport': { CatalogueImport: ({ emptyCopy }) => React.createElement('div', null, React.createElement('h3', null, emptyCopy.title), React.createElement('p', null, emptyCopy.body), 'No private source loaded.') },
+  // Build124's separate fictional-only child is not allowed to receive a commercial Snapshot.
+  './FictionalPackageLab': { FictionalPackageLab: () => React.createElement('div', null, 'Fictional only lab') },
 }, {
   fetch: () => { networkRequests++; throw new Error('Catalogue A2.1 must not request network data.'); },
   XMLHttpRequest: class { constructor() { networkRequests++; throw new Error('Catalogue A2.1 must not request network data.'); } },
@@ -82,11 +84,12 @@ const ui = load('src/components/CommercialCatalogue.tsx', {
 const render = () => renderToStaticMarkup(React.createElement(ui.CommercialCatalogue));
 location.hash = '#/catalogue';
 assert.match(render(), /Your commercial discography starts here/);
-const cleanup = effect();
+const cleanup = effects[0](); // preserved hash subscription; second effect only resets the isolated lab
 for (const [hash, expected] of [
   ['#/catalogue/releases', 'No commercial releases loaded'],
   ['#/catalogue/recordings', 'No recordings loaded'],
   ['#/catalogue/qa', 'No reconciliation cases loaded'],
+  ['#/catalogue/lab', 'Fictional only lab'],
   ['#/catalogue/recordings/synthetic-missing', 'Catalogue item not found'],
   ['#/catalogue/releases/synthetic-missing', 'Catalogue item not found'],
   ['#/catalogue/recordings/%', 'Catalogue item not found'],

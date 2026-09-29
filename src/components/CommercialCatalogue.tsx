@@ -3,12 +3,14 @@ import { catalogueHref, readCatalogueRoute, type CatalogueSection } from '../cat
 import './commercial-catalogue.css';
 import { useCatalogueSession } from '../catalogue/useCatalogueSession';
 import { CatalogueImport } from './CatalogueImport';
+import { FictionalPackageLab } from './FictionalPackageLab';
 
-const SECTIONS: Array<{ section: CatalogueSection; label: string }> = [
+const SECTIONS: Array<{ section: CatalogueSection | 'lab'; label: string }> = [
   { section: 'overview', label: 'Overview' },
   { section: 'releases', label: 'Releases' },
   { section: 'recordings', label: 'Recordings' },
   { section: 'qa', label: 'QA' },
+  { section: 'lab', label: 'Fictional package lab' },
 ];
 
 const EMPTY_COPY: Record<CatalogueSection, { title: string; body: string }> = {
@@ -30,8 +32,12 @@ export function CommercialCatalogue() {
     return () => globalThis.removeEventListener('hashchange', syncLocation);
   }, []);
 
+  // Entering the sealed synthetic lab discards any real in-memory imported source.
+  // The lab has no Snapshot prop, CommercialCatalogue writer or data-sharing path.
+  useEffect(() => { if (route.section === 'lab') session.onReset(); }, [route.section]);
+
   const missing = route.section === 'not-found' || route.id !== undefined;
-  const copy = route.section === 'not-found' ? null : EMPTY_COPY[route.section];
+  const copy = route.section === 'not-found' || route.section === 'lab' ? null : EMPTY_COPY[route.section];
 
   return (
     <section className="commercial-catalogue" aria-label="Commercial Catalogue">
@@ -57,6 +63,8 @@ export function CommercialCatalogue() {
         {missing && <><h3>Catalogue item not found.</h3><p>This address is invalid or the item is not available in this session.</p></>}
         {missing ? (
           <a className="commercial-catalogue-link" href={catalogueHref({ section: 'overview' })}>Back to Catalogue overview →</a>
+        ) : route.section === 'lab' ? (
+          <FictionalPackageLab />
         ) : (
           <CatalogueImport {...session} section={route.section as CatalogueSection} emptyCopy={copy!} />
         )}

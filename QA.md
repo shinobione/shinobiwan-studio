@@ -1,6 +1,12 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-## Current accepted runtime and evidence — 2026-09-27
+## Current owner-observed runtime and evidence — 2026-09-28
+
+**Build123 / v0.19.45** merged as [PR #253](https://github.com/shinobione/shinobiwan-studio/pull/253) at `bfcad4b2c75b72bf02c316b9f1096141dab05957`; exact tested feature head `78cab3b6fee6022df6ddffad91404e9c4edda9f5`, [CI #36459697086 SUCCESS](https://github.com/shinobione/shinobiwan-studio/actions/runs/36459697086). Owner saw Build123 live, imported their private v2 locally and reported bounded REAL USER PASS. Merge-SHA Pages workflow-run receipt was not separately obtained. [Sanitized Build123 receipt](docs/acceptance/BUILD123-REAL-USER-PASS.md): 14 detail rows / 14 exact existing appearance links / zero unlinked; one independent historical detail visually confirmed under exact appearance with original evidence; 355 QA findings pending and channel current status unknown; Reset/refresh and owner-reported DevTools privacy PASS. It does not prove every source row manually, whole original workbook, actual DSP availability, formal security/a11y audit, private write, backup or sustained CPU compliance.
+
+**Next QA gate:** Owner chose Path A, a future explicit portable encrypted package. The proposed [C1 architecture and independently invented Node-only tests](docs/CATALOGUE-A2-4C-A-LOCAL-PACKAGE-C1-CONTRACT.md) check only dry-run aliases, revision conflicts, evidence edges, restore *planning* and zero-write discipline; they neither encrypt/decrypt nor write actual files. The accompanying [C2 synthetic Node Web Crypto rehearsal](docs/CATALOGUE-A2-4C-A-C2-CRYPTO-FORMAT-REHEARSAL.md) checks invented-byte tamper/interoperability, and [C3a test-only Chromium rehearsal](docs/CATALOGUE-A2-4C-A-C3A-CHROMIUM-REHEARSAL.md) checks invented in-memory File/Web Crypto on localhost, **without** a production file/storage module or actual browser Save As. The separate [Build124 C3b candidate](docs/CATALOGUE-BUILD124-C3B-FICTIONAL-CANDIDATE.md) exercises actual browser download to a disposable **fictional** disk file and re-selection through the Studio lab. No actual commercial source is supported. Real owner device/major browsers, password quality, complete private inner payload, independent recovery-copy and private-source browser Network/Storage still require separately approved acceptance. No Build124, persistence, Worker/R2/LaunchPAD mutation or commercial↔creative sync authorized. Preserve inherited v1 and Build118–122 regressions, exact evidence provenance and unresolved CPU #238 / LaunchPAD #283.
+
+## Previous accepted runtime and evidence — 2026-09-27
 
 Verified production pre-closeout `main` `58f976218600757632efd58e36b2c74a8a47fcef`, owner-authorized [PR #248](https://github.com/shinobione/shinobiwan-studio/pull/248). Exact final candidate `881845487d3119f45814a0ade2e8b7ef7487c352` passed [CI #36338838575](https://github.com/shinobione/shinobiwan-studio/actions/runs/36338838575); [Pages #36339663943](https://github.com/shinobione/shinobiwan-studio/actions/runs/36339663943) build/upload/deploy SUCCESS on the merge SHA. **Build122 / v0.19.44 A2.3 Slice 3 has bounded owner REAL USER PASS** for session-only Recordings explorer and evidence-linked contextual QA.
 
@@ -14,7 +20,7 @@ Prior [Build121 Slice 2](docs/acceptance/BUILD121-REAL-USER-PASS.md), [Build120 
 
 ### Next QA boundary
 
-The three A2.3 session-only read/view slices now have independent bounded owner receipts. A future **living commercial Catalogue** needs separate identity/source-of-truth, richer private-source coverage if required, exact reviewed artwork/Track matching, channel-specific status/evidence, confidentiality, persistence, conflict/rollback and cross-repository write-authority design. No new runtime, persistent storage or Build123 acceptance is granted by this closeout.
+The three A2.3 session-only read/view slices now have independent bounded owner receipts. A future **living commercial Catalogue** needs separate identity/source-of-truth, richer private-source coverage if required, exact reviewed artwork/Track matching, channel-specific status/evidence, confidentiality, persistence, conflict/rollback and cross-repository write-authority design. This paragraph is the historical Build122-only closeout; Build123 later received its independent bounded owner acceptance as recorded above. No persistence or Build124 follows.
 
 ## Automated CPU regression coverage
 

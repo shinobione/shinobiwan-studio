@@ -1,0 +1,11 @@
+.fictional-package-lab { max-width: 760px; }
+.fictional-package-lab h3 { margin: 9px 0 16px; }
+.fictional-package-lab > label { display: block; margin: 20px 0 8px; font-weight: 700; }
+.fictional-package-lab input[type="password"] { width: min(100%, 560px); min-height: 44px; border: 1px solid var(--line-strong); border-radius: 10px; padding: 10px 14px; background: rgba(4, 15, 19, .85); color: #f4faf9; font: inherit; }
+.fictional-package-lab input:focus-visible, .fictional-package-lab button:focus-visible, .fictional-package-lab a:focus-visible { outline: 2px solid var(--cyan-soft); outline-offset: 3px; }
+.fictional-package-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; margin: 18px 0; }
+.fictional-package-actions button, .fictional-package-download { min-height: 44px; border: 1px solid var(--line-strong); border-radius: 10px; background: rgba(60, 127, 117, .16); color: var(--cyan-soft); padding: 10px 14px; font: inherit; }
+.fictional-package-actions button:disabled { opacity: .47; cursor: not-allowed; }
+.fictional-package-actions input[type="file"] { max-width: 100%; color: #e0eded; }
+.fictional-package-lab [role="status"] { border-radius: 10px; border: 1px solid var(--line); background: rgba(8, 24, 28, .7); padding: 12px 15px; }
+.fictional-package-lab #fictional-lab-privacy { max-width: 65ch; font-size: 12px; }

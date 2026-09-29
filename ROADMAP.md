@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-09-27 after Build122 / A2.3 Slice 3 merged, Pages deployed and bounded owner REAL USER PASS. All three session-only A2.3 browsing slices are accepted; a living commercial Catalogue requires a separate architecture decision. See PROJECT_STATE.md.
+Updated: 2026-09-28 for merged Build123 / v0.19.45 bounded owner view-only REAL USER PASS. A2.4-C storage/privacy choice remains pending; no commercial persistence or Build124 allocated. See PROJECT_STATE.md.
 
 This file tracks durable Done / Active / Next / Backlog state. Historical implementation detail belongs in changelogs, milestone docs and acceptance receipts.
 
@@ -118,6 +118,10 @@ PR #244 exact candidate `de1000940c32efcc8024c4fd61f240cfa7f93860` passed CI 363
 
 [PR #248](https://github.com/shinobione/shinobiwan-studio/pull/248), final candidate `881845487d3119f45814a0ade2e8b7ef7487c352`, [CI #36338838575](https://github.com/shinobione/shinobiwan-studio/actions/runs/36338838575) SUCCESS; merged at `58f976218600757632efd58e36b2c74a8a47fcef`, [Pages #36339663943](https://github.com/shinobione/shinobiwan-studio/actions/runs/36339663943) SUCCESS. The owner confirms eight production checks for private-source aggregates, distinct Recording browse/filter/sort, exact bound/unbound multi-Release evidence, transient cross-detail navigation, contextual/global QA, keyboard/responsive presentation, session lifecycle and DevTools privacy. **Bounded REAL USER PASS** for read-only Recordings/contextual QA only. [Owner receipt](docs/acceptance/BUILD122-REAL-USER-PASS.md); [original candidate handoff](docs/CATALOGUE-A2-3-SLICE3-VALIDATION.md) remains pre-merge history. The original findings remain pending; no persistence, commercial/creative Track auto-binding or channel publication verification.
 
+### Build123 — private v2 historical detail reader
+
+Merged [PR #253](https://github.com/shinobione/shinobiwan-studio/pull/253), exact feature-head [CI PASS](https://github.com/shinobione/shinobiwan-studio/actions/runs/36459697086), owner-observed live Build123 / v0.19.45 and [bounded owner REAL USER PASS](docs/acceptance/BUILD123-REAL-USER-PASS.md). Explicit private local v2 import enriches existing appearances with independently linked historical details, preserves v1/QA and temporary no-persistence behavior. The specific Pages workflow-run receipt was not independently retrieved. No backend, R2, LaunchPAD or commercial write.
+
 ## Active
 
 ### Phase 10 — progressive extraction
@@ -147,7 +151,7 @@ Phase10 remains active as a program, not permission for continuous refactoring. 
 
 ### Corrective review / browser gate
 
-Review the docs-only Build122 owner receipt. Independently scope the living Catalogue architecture: private source completeness, commercial identity/source-of-truth, reviewed artwork and creative Track mapping, per-channel release evidence, confidentiality, storage, conflict policy and STUDIO ↔ LaunchPAD sync; allocate no new runtime build before owner review. PR #237 remains open, superseded by merged #241; CPU issues remain open without sustained measurements.
+A2.4-C **A selected** by owner (explicit encrypted portable file under owner control). [Decision packet](docs/CATALOGUE-A2-4C-STORAGE-PRIVACY-DECISION-PACKET.md) [C1 architecture + fictional regression gate](docs/CATALOGUE-A2-4C-A-LOCAL-PACKAGE-C1-CONTRACT.md), [C2 invented-byte crypto format](docs/CATALOGUE-A2-4C-A-C2-CRYPTO-FORMAT-REHEARSAL.md), [C3a test-only Chromium rehearsal](docs/CATALOGUE-A2-4C-A-C3A-CHROMIUM-REHEARSAL.md) and separately allocated **Build124/v0.19.46 C3b fictional-only UI candidate** ([handoff](docs/CATALOGUE-BUILD124-C3B-FICTIONAL-CANDIDATE.md)) are on a Draft PR, unmerged. The live baseline remains Build123. C3b is not real-source encrypted persistence. Approve specific cryptography/key custody, independently verified backup/restore and first registry migration separately before any runtime/storage slice. No Build124, real export/writer, Worker/R2/LaunchPAD mutation or sync. CPU issues remain open without sustained measurements.
 
 Album asset exact-byte/digest proof remains independently auditable backlog and is not part of Build118.
 
@@ -186,4 +190,4 @@ There is currently **no official Phase11**.
 
 ## Current acceptance pointer
 
-See `PROJECT_STATE.md`, [Build122 Slice 3 acceptance](docs/acceptance/BUILD122-REAL-USER-PASS.md), [Build121 Slice 2 acceptance](docs/acceptance/BUILD121-REAL-USER-PASS.md), [Build120 Slice 1 acceptance](docs/acceptance/BUILD120-REAL-USER-PASS.md), [Build119 import acceptance](docs/acceptance/BUILD119-REAL-USER-PASS.md), [Build118 A2.1 acceptance](docs/acceptance/BUILD118-REAL-USER-PASS.md) and [bounded CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md). CPU issues remain open without sustained CPU measurements.
+See `PROJECT_STATE.md`, [Build123 v2 owner acceptance](docs/acceptance/BUILD123-REAL-USER-PASS.md), [Build122 Slice 3 acceptance](docs/acceptance/BUILD122-REAL-USER-PASS.md), [Build121 Slice 2 acceptance](docs/acceptance/BUILD121-REAL-USER-PASS.md), [Build120 Slice 1 acceptance](docs/acceptance/BUILD120-REAL-USER-PASS.md), [Build119 import acceptance](docs/acceptance/BUILD119-REAL-USER-PASS.md), [Build118 A2.1 acceptance](docs/acceptance/BUILD118-REAL-USER-PASS.md) and [bounded CPU recovery](docs/acceptance/BUILD118-CPU-RECOVERY.md). CPU issues remain open without sustained CPU measurements.

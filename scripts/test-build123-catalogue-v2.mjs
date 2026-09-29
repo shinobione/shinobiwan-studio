@@ -11,8 +11,8 @@ import { fixture } from './catalogue-synthetic.mjs';
 // commercial title, ISRC, source record, fingerprint or local output enters CI.
 const read = path => fs.readFileSync(path, 'utf8');
 const pkg = JSON.parse(read('package.json'));
-assert.equal(pkg.version, '0.19.45');
-assert.match(read('src/release.ts'), /build: 123/);
+assert.ok(read('src/release.ts').includes(`build123AncestryMarker = "version: '0.19.45' · build: 123`));
+// Current runtime/version is checked independently by check:release and its latest Build gate.
 assert.match(read('src/release.ts'), /build122AncestryMarker.*version: '0\.19\.44'.*build: 122/);
 assert.match(pkg.scripts.build, /check:build123/);
 function load(file, imports = {}) {

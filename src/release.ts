@@ -1,9 +1,9 @@
 export const studioRelease = {
-  version: '0.19.45',
-  build: 123,
+  version: '0.19.46',
+  build: 124,
   phase: 10,
-  codename: 'studio-focus-build123-catalogue-v2-private-evidence',
-  summary: 'Temporary local v2 evidence reader with unchanged v1 compatibility',
+  codename: 'studio-focus-build124-fictional-local-package-lab',
+  summary: 'Isolated synthetic-only encrypted-file Save/Open laboratory',
   releasedAt: '2026-09-28',
 } as const;
 
@@ -71,3 +71,5 @@ export const build120AncestryMarker = "version: '0.19.42' · build: 120 · coden
 
 export const build121AncestryMarker = "version: '0.19.43' · build: 121 · codename: 'studio-focus-build121-catalogue-releases'";
 export const build122AncestryMarker = "version: '0.19.44' · build: 122 · codename: 'studio-focus-build122-catalogue-recordings'";
+
+export const build123AncestryMarker = "version: '0.19.45' · build: 123 · codename: 'studio-focus-build123-catalogue-v2-private-evidence'";
