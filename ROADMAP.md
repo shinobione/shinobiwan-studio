@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-09-28 for merged Build123 / v0.19.45 bounded owner view-only REAL USER PASS. A2.4-C storage/privacy choice remains pending; no commercial persistence or Build124 allocated. See PROJECT_STATE.md.
+Updated: 2026-10-04. Build124 / v0.19.46 fictional-only package lab merged and owner-observed. C4 encrypted private-registry/recovery model is the next synthetic-only Draft gate. No real-source persistence or Build125 is allocated. See PROJECT_STATE.md.
 
 This file tracks durable Done / Active / Next / Backlog state. Historical implementation detail belongs in changelogs, milestone docs and acceptance receipts.
 
@@ -122,7 +122,15 @@ PR #244 exact candidate `de1000940c32efcc8024c4fd61f240cfa7f93860` passed CI 363
 
 Merged [PR #253](https://github.com/shinobione/shinobiwan-studio/pull/253), exact feature-head [CI PASS](https://github.com/shinobione/shinobiwan-studio/actions/runs/36459697086), owner-observed live Build123 / v0.19.45 and [bounded owner REAL USER PASS](docs/acceptance/BUILD123-REAL-USER-PASS.md). Explicit private local v2 import enriches existing appearances with independently linked historical details, preserves v1/QA and temporary no-persistence behavior. The specific Pages workflow-run receipt was not independently retrieved. No backend, R2, LaunchPAD or commercial write.
 
+### Build124 — fictional-only local encrypted package lab
+
+Merged [PR #254](https://github.com/shinobione/shinobiwan-studio/pull/254) at `705df3a15fd6ea8076615d1d523564501e6b2362`, exact final-head [CI #801 SUCCESS](https://github.com/shinobione/shinobiwan-studio/actions/runs/36483767882). Owner screenshot confirms live v0.19.46 · 124; owner video confirms the invented-only generate/download/reopen success and Reset. [Bounded owner smoke](docs/acceptance/BUILD124-BOUNDED-OWNER-UI-SMOKE.md). Owner DevTools Network/Storage check remains pending. This is **not** real-source commercial persistence or recoverable private backup.
+
 ## Active
+
+### Catalogue C4 — private registry and encrypted recovery contract (fictional only)
+
+[Contract](docs/CATALOGUE-A24C-C4-REGISTRY-RESTORE-CONTRACT.md). Work on the schema, independently reviewed source aliases, immutable historical evidence, human decisions, per-channel truth, expected-revision restore and backup policy. The rehearsal encrypts only an invented in-memory registry. No Build125, general runtime encoder, commercial file writer, service or migration is approved.
 
 ### Phase 10 — progressive extraction
 
@@ -151,7 +159,7 @@ Phase10 remains active as a program, not permission for continuous refactoring. 
 
 ### Corrective review / browser gate
 
-A2.4-C **A selected** by owner (explicit encrypted portable file under owner control). [Decision packet](docs/CATALOGUE-A2-4C-STORAGE-PRIVACY-DECISION-PACKET.md) [C1 architecture + fictional regression gate](docs/CATALOGUE-A2-4C-A-LOCAL-PACKAGE-C1-CONTRACT.md), [C2 invented-byte crypto format](docs/CATALOGUE-A2-4C-A-C2-CRYPTO-FORMAT-REHEARSAL.md), [C3a test-only Chromium rehearsal](docs/CATALOGUE-A2-4C-A-C3A-CHROMIUM-REHEARSAL.md) and separately allocated **Build124/v0.19.46 C3b fictional-only UI candidate** ([handoff](docs/CATALOGUE-BUILD124-C3B-FICTIONAL-CANDIDATE.md)) are on a Draft PR, unmerged. The live baseline remains Build123. C3b is not real-source encrypted persistence. Approve specific cryptography/key custody, independently verified backup/restore and first registry migration separately before any runtime/storage slice. No Build124, real export/writer, Worker/R2/LaunchPAD mutation or sync. CPU issues remain open without sustained measurements.
+A2.4-C **Path A owner-held encrypted package** is selected. C1–C3b fictional rehearsal is merged with Build124, but no commercial state is durable yet. Review C4's encrypted inner-registry schema and fictional-only restore contract in its own Draft PR. Owner DevTools Network/Storage is still pending for Build124. Future real-source commercial export/restore requires separately approved source authority/migration, privacy/crypto/key policy, owner-held backups/reopen, actual browser smoke and explicit Build125 allocation; no R2/Worker/LaunchPAD mutation or automatic sync. CPU #238 / LaunchPAD #283 stay open.
 
 Album asset exact-byte/digest proof remains independently auditable backlog and is not part of Build118.
 
