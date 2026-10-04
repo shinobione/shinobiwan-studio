@@ -261,7 +261,7 @@ test('missing, duplicated and unsupported human review packets hold before any p
   assert.equal(run(input,r).code,'REVIEW_NOT_APPROVED');
   r=clone(reviewed);r.mappings.pop();
   assert.equal(run(input,r).code,'INCOMPLETE_EXACT_REVIEW');
-  r=clone(reviewed);r.mappings.push(clone(r.mappings[0]));
+  r=clone(reviewed);r.mappings[2]=clone(r.mappings[0]); // same cardinality: real duplicate alias
   assert.equal(run(input,r).code,'UNKNOWN_OR_DUPLICATE_MAPPING');
 });
 test('alias kind/namespace/source ID must be attested exactly, never inferred from titles',()=>{
