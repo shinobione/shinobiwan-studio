@@ -109,10 +109,13 @@ function reviewFor(root,parsed,prior=newPrior()) {
     reviewer:'imaginary-human-reviewer',
     authorization:'EXACT_SOURCE_ALIAS_AND_POSITION_REVIEW',
     acknowledgedCoverage:true,
-    mappings:items.map((item,i)=>({...item,targetId:
-      item.kind==='recording'?'invented-reviewed-commercial-rec-'+(i+1):
-      item.kind==='release'?'invented-reviewed-commercial-rel-'+(i+1):
-      'invented-reviewed-commercial-app-'+(i+1)})),
+    mappings:items.map(({kind,namespace,sourceId,sourceReleaseId,position,sourceRecordingId},i)=>({
+      kind,namespace,sourceId,
+      targetId:kind==='recording'?'invented-reviewed-commercial-rec-'+(i+1):
+        kind==='release'?'invented-reviewed-commercial-rel-'+(i+1):
+        'invented-reviewed-commercial-app-'+(i+1),
+      sourceReleaseId,position,sourceRecordingId,
+    })),
   };
 }
 function previewMigration(root,parsed,review,prior,readCurrent=()=>prior) {
