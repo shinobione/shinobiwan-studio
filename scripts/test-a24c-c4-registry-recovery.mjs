@@ -365,6 +365,9 @@ await test('foreign, rollback and stale current revision are always rejected',as
   let r=deep(baseline);r.registryId='different-invented-registry';
   assert.equal(previewComparison(baseline,r,expected).code,'FOREIGN_REGISTRY');
   r=deep(baseline);r.revision=1;r.parentRevision=0;
+  // A genuine older revision cannot contain a decision/audit made at later revision 2.
+  r.reviewDecisions=[];r.audit=[];
+  assert.equal(validate(r).ok,true);
   assert.equal(previewComparison(baseline,r,expected).code,'ROLLBACK_BLOCKED');
   assert.equal(previewComparison(baseline,baseline,{...expected,revision:1}).code,'STALE_CURRENT');
 });
