@@ -234,6 +234,16 @@ test('a complete exact owner review only creates a zero-write migration proposal
     [1,1,1,1]);
   assert.equal(r.writes,0);assert.equal(r.deletions,0);assert.equal(r.automaticApprovals,0);
 });
+test('manual review row order does not change exact alias identity or mutate previous state',()=>{
+  const sourceBefore=clone(input),priorBefore=clone(prior);
+  const reordered=clone(reviewed);reordered.mappings.reverse();
+  const expected=run(),actual=run(input,reordered);
+  assert.equal(actual.status,'REQUIRES_FINAL_OWNER_APPROVAL');
+  assert.deepEqual(actual.aliases,expected.aliases);
+  assert.deepEqual(actual.diff,expected.diff);
+  assert.deepEqual(input,sourceBefore);
+  assert.deepEqual(prior,priorBefore);
+});
 test('source workbook digest remains claim-only and partial/omitted coverage is retained',()=>{
   const r=run();assert.equal(r.workbookDigestAuthority,'claim-only');
   assert.equal(r.coverage.length,10);
