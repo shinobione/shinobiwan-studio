@@ -125,7 +125,7 @@ function materializeRegistry(root,parsed,plan){
     bindEvidence(a.evidenceIds,'appearance',target);
   }
 
-  const detailByEvidence=new Map(root.detailedDistributorEvidence.map(d=>[d.evidenceId,d]));
+  const detailByEvidence=new Map(root.detailedDistributorEvidence.map(d=>['evidence:v2-detail:'+d.evidenceId,d]));
   const evidence=parsed.snapshot.evidence.map(e=>{
     const detail=detailByEvidence.get(e.evidenceId);
     if(detail){
@@ -243,8 +243,9 @@ await test('selected input digest stays exact while claimed workbook digest rema
   assert.ok(registry.sourceSnapshots.every(s=>s.sections.length===source.sectionCoverage.length));
 });
 await test('linked detail remains exact and unlinked detail remains targetless pending evidence',async()=>{
-  const linked=registry.evidence.find(e=>e.id==='imaginary-detail-A');
-  const loose=registry.evidence.find(e=>e.id==='imaginary-detail-B');
+  const linked=registry.evidence.find(e=>e.sourceRecordAlias==='imaginary-evidence-row-A');
+  const loose=registry.evidence.find(e=>e.sourceRecordAlias==='imaginary-evidence-row-B');
+  assert.ok(linked);assert.ok(loose);
   assert.equal(linked.linkState,'linked');assert.equal(linked.targetKind,'appearance');
   assert.equal(loose.linkState,'unlinked');assert.equal(loose.targetKind,null);assert.equal(loose.targetId,null);
   assert.ok(registry.findings.some(f=>f.evidenceId===loose.id&&f.scope==='evidence'&&f.status==='pending'));
