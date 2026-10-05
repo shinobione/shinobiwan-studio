@@ -34,6 +34,12 @@ Outer envelope remains the separately reviewed C2 candidate: minimal \`SHINOCAT-
 
 IDs are opaque and stable inside this private commercial registry. Schema and list size limits, exact types, duplicate keys, referential integrity, bounded strings and all relationship checks must run **after successful AEAD authentication but before activating state**. Any invalid edge rejects the entire candidate atomically.
 
+### C4.1 — immutable unattached evidence
+
+Historical evidence is allowed to exist **without a commercial target** when the source itself cannot prove the target. Such a row must remain immutable and explicitly `linkState: unlinked`; both `targetKind` and `targetId` are null, while its source snapshot, source-row alias, original source Release/position (when present) and machine-readable `linkIssueCode` are retained inside ciphertext. The registry must also retain a pending **global finding** that references that evidence ID. This combination is the only accepted targetless form.
+
+No review decision, channel event, entity count, source alias or creative binding may be created from unattached evidence. Titles, ISRC/UPC, source row order and similar metadata cannot repair it. A future human decision that establishes an exact target must append a reviewed mapping/new evidence state under a new revision; it must never mutate the old unattached observation into looking as though it had always been linked.
+
 ### Source-to-registry is not an import-side effect
 
 The accepted Build123 v2 parser may yield a transient, historically incomplete snapshot. **C4 does not promote it automatically.** A later separate human-reviewed migration must show an exact diff: unchanged, proposed-new, changed-source, missing-from-current-snapshot (never delete), conflicting aliases, unbound and partial/omitted sections. First commercial identity creation requires explicit authority and a recorded review decision. The 14 linked historical detail observations seen in the previous private test illustrate evidence enrichment of existing Appearances, not extra commercial entity counts; those actual observations must never become public test fixtures. Existing unresolved QA remains unresolved.
