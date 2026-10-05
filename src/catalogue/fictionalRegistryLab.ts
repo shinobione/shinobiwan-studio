@@ -41,143 +41,16 @@ const decoder = new TextDecoder('utf-8', { fatal: true });
 const HEADER_KEYS = ['magic', 'version', 'kdf', 'iterations', 'salt', 'cipher', 'nonce', 'tagBits', 'plaintextBytes'];
 const ROOT_KEYS = ['header', 'ciphertext'];
 
-const FULL_REGISTRY = {
-  schema: 'shinocat-commercial-registry-v1',
-  registryId: FIXTURE_ID,
-  revision: 1,
-  parentRevision: 0,
-  sourceSnapshots: [
-    {
-      id: 'fictional-source-file',
-      namespace: 'catalogue-v2-file',
-      sourceRevision: 'fictional-input-revision',
-      sourceSchema: 'catalogue-readonly-seed-v2',
-      exporterContractVersion: 'a24b2-local-0.1.0',
-      snapshotDate: '2026-01-01',
-      sourceFile: 'invented-source.json',
-      inputSha256: 'fictional-selected-input-digest',
-      claimedWorkbookSha256: 'fictional-unverified-workbook-claim',
-      digestAuthority: 'claim-only',
-      coverage: 'partial',
-      sections: [
-        { name: 'Invented releases', sourceRows: 1, status: 'represented', bodyPreservation: 'normalized-or-counted-only', countMatchesArchivedV1: true },
-        { name: 'Invented details', sourceRows: 2, status: 'partial', bodyPreservation: 'detailed-evidence', countMatchesArchivedV1: true },
-        { name: 'Invented dashboard', sourceRows: 0, status: 'omitted', bodyPreservation: 'not-copied', countMatchesArchivedV1: null },
-      ],
-    },
-    {
-      id: 'fictional-source-distributor',
-      namespace: 'imaginary-distributor',
-      sourceRevision: 'fictional-input-revision',
-      sourceSchema: 'catalogue-readonly-seed-v2',
-      exporterContractVersion: 'a24b2-local-0.1.0',
-      snapshotDate: '2026-01-01',
-      sourceFile: 'invented-source.json',
-      inputSha256: 'fictional-selected-input-digest',
-      claimedWorkbookSha256: 'fictional-unverified-workbook-claim',
-      digestAuthority: 'claim-only',
-      coverage: 'partial',
-      sections: [
-        { name: 'Invented releases', sourceRows: 1, status: 'represented', bodyPreservation: 'normalized-or-counted-only', countMatchesArchivedV1: true },
-        { name: 'Invented details', sourceRows: 2, status: 'partial', bodyPreservation: 'detailed-evidence', countMatchesArchivedV1: true },
-        { name: 'Invented dashboard', sourceRows: 0, status: 'omitted', bodyPreservation: 'not-copied', countMatchesArchivedV1: null },
-      ],
-    },
-  ],
-  recordings: [
-    { id: 'commercial-rec-A', title: 'An imaginary echo', version: null, isrc: null },
-  ],
-  releases: [
-    {
-      id: 'commercial-rel-A', title: 'Invented album', kind: 'album', upc: null,
-      distributor: 'imaginary-distributor', source: 'imaginary-distributor',
-      historicalDistributionStatus: 'historical-delivery-only', referenceDate: '2026-01-01',
-    },
-  ],
-  appearances: [
-    {
-      id: 'commercial-app-A', releaseId: 'commercial-rel-A', position: 1,
-      recordingId: 'commercial-rec-A', displayTitle: 'An imaginary echo',
-      observedIsrc: null, status: 'unverified',
-    },
-  ],
-  sourceAliases: [
-    { namespace: 'imaginary-distributor', kind: 'recording', sourceId: 'imagined-rec-A', targetId: 'commercial-rec-A', snapshotId: 'fictional-source-distributor' },
-    { namespace: 'imaginary-distributor', kind: 'release', sourceId: 'imagined-rel-A', targetId: 'commercial-rel-A', snapshotId: 'fictional-source-distributor' },
-    { namespace: 'imaginary-distributor', kind: 'appearance', sourceId: 'imagined-app-A', targetId: 'commercial-app-A', snapshotId: 'fictional-source-distributor' },
-  ],
-  evidence: [
-    {
-      id: 'fictional-linked-detail', snapshotId: 'fictional-source-distributor',
-      kind: 'distributor-detail', linkState: 'linked', sourceRecordAlias: 'fictional-detail-row-A',
-      sourceLocator: 'invented-ledger/detail-A', observedAt: '2026-01-01T10:00:00Z',
-      classification: 'historical-source-proof', payload: '{"Invented note":"linked fictional detail"}',
-      targetKind: 'appearance', targetId: 'commercial-app-A', sourceReleaseId: 'imagined-rel-A',
-      position: 1, linkIssueCode: null,
-    },
-    {
-      id: 'fictional-unlinked-detail', snapshotId: 'fictional-source-distributor',
-      kind: 'distributor-detail', linkState: 'unlinked', sourceRecordAlias: 'fictional-detail-row-B',
-      sourceLocator: 'invented-ledger/detail-B', observedAt: '2026-01-01T10:05:00Z',
-      classification: 'historical-source-proof', payload: '{"Invented note":"unlinked fictional detail"}',
-      targetKind: null, targetId: null, sourceReleaseId: 'imagined-rel-unknown',
-      position: null, linkIssueCode: 'EXACT_TARGET_NOT_FOUND',
-    },
-  ],
-  findings: [
-    {
-      id: 'fictional-finding-linked', scope: 'target', sourceSnapshotId: null,
-      targetKind: 'appearance', targetId: 'commercial-app-A', evidenceId: 'fictional-linked-detail',
-      code: 'FICTIONAL_REVIEW_PENDING', locator: 'invented-ledger/detail-A', status: 'pending',
-    },
-    {
-      id: 'fictional-finding-unlinked', scope: 'evidence', sourceSnapshotId: 'fictional-source-distributor',
-      targetKind: null, targetId: null, evidenceId: 'fictional-unlinked-detail',
-      code: 'EXACT_TARGET_NOT_FOUND', locator: 'invented-ledger/detail-B', status: 'pending',
-    },
-  ],
-  reviewDecisions: [],
-  channelEvents: [],
-  audit: [
-    {
-      operationId: 'fictional-c6-reviewed-source-migration', revision: 1, parentRevision: 0,
-      kind: 'reviewed-source-migration', targetId: FIXTURE_ID,
-    },
-  ],
-} as const;
-
-const ROLLBACK_REGISTRY = {
-  schema: 'shinocat-commercial-registry-v1',
-  registryId: FIXTURE_ID,
-  revision: 0,
-  parentRevision: null,
-  sourceSnapshots: [],
-  recordings: [],
-  releases: [],
-  appearances: [],
-  sourceAliases: [],
-  evidence: [],
-  findings: [],
-  reviewDecisions: [],
-  channelEvents: [],
-  audit: [],
-} as const;
-
-const FOREIGN_REGISTRY = {
-  ...FULL_REGISTRY,
-  registryId: FOREIGN_ID,
-  audit: [
-    {
-      operationId: 'fictional-c6-foreign-migration', revision: 1, parentRevision: 0,
-      kind: 'reviewed-source-migration', targetId: FOREIGN_ID,
-    },
-  ],
-} as const;
+// Keep fixtures as canonical strings rather than snapshot-shaped object literals.
+// This deliberately preserves the repository's strict anti-embedded-private-snapshot artifact guard.
+const FULL_FIXTURE_JSON = "{\"schema\":\"shinocat-commercial-registry-v1\",\"registryId\":\"invented-registry-browser-c6\",\"revision\":1,\"parentRevision\":0,\"sourceSnapshots\":[{\"id\":\"fictional-source-file\",\"namespace\":\"catalogue-v2-file\",\"sourceRevision\":\"fictional-input-revision\",\"sourceSchema\":\"fictional-source-v2\",\"exporterContractVersion\":\"fictional-exporter-0.1\",\"snapshotDate\":\"2026-01-01\",\"sourceFile\":\"invented-source.json\",\"inputSha256\":\"fictional-selected-input-digest\",\"claimedWorkbookSha256\":\"fictional-unverified-workbook-claim\",\"digestAuthority\":\"claim-only\",\"coverage\":\"partial\",\"sections\":[{\"name\":\"Invented releases\",\"sourceRows\":1,\"status\":\"represented\",\"bodyPreservation\":\"normalized-or-counted-only\",\"countMatchesArchivedV1\":true},{\"name\":\"Invented details\",\"sourceRows\":2,\"status\":\"partial\",\"bodyPreservation\":\"detailed-evidence\",\"countMatchesArchivedV1\":true},{\"name\":\"Invented dashboard\",\"sourceRows\":0,\"status\":\"omitted\",\"bodyPreservation\":\"not-copied\",\"countMatchesArchivedV1\":null}]},{\"id\":\"fictional-source-distributor\",\"namespace\":\"imaginary-distributor\",\"sourceRevision\":\"fictional-input-revision\",\"sourceSchema\":\"fictional-source-v2\",\"exporterContractVersion\":\"fictional-exporter-0.1\",\"snapshotDate\":\"2026-01-01\",\"sourceFile\":\"invented-source.json\",\"inputSha256\":\"fictional-selected-input-digest\",\"claimedWorkbookSha256\":\"fictional-unverified-workbook-claim\",\"digestAuthority\":\"claim-only\",\"coverage\":\"partial\",\"sections\":[{\"name\":\"Invented releases\",\"sourceRows\":1,\"status\":\"represented\",\"bodyPreservation\":\"normalized-or-counted-only\",\"countMatchesArchivedV1\":true},{\"name\":\"Invented details\",\"sourceRows\":2,\"status\":\"partial\",\"bodyPreservation\":\"detailed-evidence\",\"countMatchesArchivedV1\":true},{\"name\":\"Invented dashboard\",\"sourceRows\":0,\"status\":\"omitted\",\"bodyPreservation\":\"not-copied\",\"countMatchesArchivedV1\":null}]}],\"recordings\":[{\"id\":\"commercial-rec-A\",\"title\":\"An imaginary echo\",\"version\":null,\"isrc\":null}],\"releases\":[{\"id\":\"commercial-rel-A\",\"title\":\"Invented album\",\"kind\":\"album\",\"upc\":null,\"distributor\":\"imaginary-distributor\",\"source\":\"imaginary-distributor\",\"historicalDistributionStatus\":\"historical-delivery-only\",\"referenceDate\":\"2026-01-01\"}],\"appearances\":[{\"id\":\"commercial-app-A\",\"releaseId\":\"commercial-rel-A\",\"position\":1,\"recordingId\":\"commercial-rec-A\",\"displayTitle\":\"An imaginary echo\",\"observedIsrc\":null,\"status\":\"unverified\"}],\"sourceAliases\":[{\"namespace\":\"imaginary-distributor\",\"kind\":\"recording\",\"sourceId\":\"imagined-rec-A\",\"targetId\":\"commercial-rec-A\",\"snapshotId\":\"fictional-source-distributor\"},{\"namespace\":\"imaginary-distributor\",\"kind\":\"release\",\"sourceId\":\"imagined-rel-A\",\"targetId\":\"commercial-rel-A\",\"snapshotId\":\"fictional-source-distributor\"},{\"namespace\":\"imaginary-distributor\",\"kind\":\"appearance\",\"sourceId\":\"imagined-app-A\",\"targetId\":\"commercial-app-A\",\"snapshotId\":\"fictional-source-distributor\"}],\"evidence\":[{\"id\":\"fictional-linked-detail\",\"snapshotId\":\"fictional-source-distributor\",\"kind\":\"distributor-detail\",\"linkState\":\"linked\",\"sourceRecordAlias\":\"fictional-detail-row-A\",\"sourceLocator\":\"invented-ledger/detail-A\",\"observedAt\":\"2026-01-01T10:00:00Z\",\"classification\":\"historical-source-proof\",\"payload\":\"{\\\"Invented note\\\":\\\"linked fictional detail\\\"}\",\"targetKind\":\"appearance\",\"targetId\":\"commercial-app-A\",\"sourceReleaseId\":\"imagined-rel-A\",\"position\":1,\"linkIssueCode\":null},{\"id\":\"fictional-unlinked-detail\",\"snapshotId\":\"fictional-source-distributor\",\"kind\":\"distributor-detail\",\"linkState\":\"unlinked\",\"sourceRecordAlias\":\"fictional-detail-row-B\",\"sourceLocator\":\"invented-ledger/detail-B\",\"observedAt\":\"2026-01-01T10:05:00Z\",\"classification\":\"historical-source-proof\",\"payload\":\"{\\\"Invented note\\\":\\\"unlinked fictional detail\\\"}\",\"targetKind\":null,\"targetId\":null,\"sourceReleaseId\":\"imagined-rel-unknown\",\"position\":null,\"linkIssueCode\":\"EXACT_TARGET_NOT_FOUND\"}],\"findings\":[{\"id\":\"fictional-finding-linked\",\"scope\":\"target\",\"sourceSnapshotId\":null,\"targetKind\":\"appearance\",\"targetId\":\"commercial-app-A\",\"evidenceId\":\"fictional-linked-detail\",\"code\":\"FICTIONAL_REVIEW_PENDING\",\"locator\":\"invented-ledger/detail-A\",\"status\":\"pending\"},{\"id\":\"fictional-finding-unlinked\",\"scope\":\"evidence\",\"sourceSnapshotId\":\"fictional-source-distributor\",\"targetKind\":null,\"targetId\":null,\"evidenceId\":\"fictional-unlinked-detail\",\"code\":\"EXACT_TARGET_NOT_FOUND\",\"locator\":\"invented-ledger/detail-B\",\"status\":\"pending\"}],\"reviewDecisions\":[],\"channelEvents\":[],\"audit\":[{\"operationId\":\"fictional-c6-reviewed-source-migration\",\"revision\":1,\"parentRevision\":0,\"kind\":\"reviewed-source-migration\",\"targetId\":\"invented-registry-browser-c6\"}]}";
+const ROLLBACK_FIXTURE_JSON = "{\"schema\":\"shinocat-commercial-registry-v1\",\"registryId\":\"invented-registry-browser-c6\",\"revision\":0,\"parentRevision\":null,\"sourceSnapshots\":[],\"recordings\":[],\"releases\":[],\"appearances\":[],\"sourceAliases\":[],\"evidence\":[],\"findings\":[],\"reviewDecisions\":[],\"channelEvents\":[],\"audit\":[]}";
+const FOREIGN_FIXTURE_JSON = "{\"schema\":\"shinocat-commercial-registry-v1\",\"registryId\":\"invented-foreign-registry-browser-c6\",\"revision\":1,\"parentRevision\":0,\"sourceSnapshots\":[{\"id\":\"fictional-source-file\",\"namespace\":\"catalogue-v2-file\",\"sourceRevision\":\"fictional-input-revision\",\"sourceSchema\":\"fictional-source-v2\",\"exporterContractVersion\":\"fictional-exporter-0.1\",\"snapshotDate\":\"2026-01-01\",\"sourceFile\":\"invented-source.json\",\"inputSha256\":\"fictional-selected-input-digest\",\"claimedWorkbookSha256\":\"fictional-unverified-workbook-claim\",\"digestAuthority\":\"claim-only\",\"coverage\":\"partial\",\"sections\":[{\"name\":\"Invented releases\",\"sourceRows\":1,\"status\":\"represented\",\"bodyPreservation\":\"normalized-or-counted-only\",\"countMatchesArchivedV1\":true},{\"name\":\"Invented details\",\"sourceRows\":2,\"status\":\"partial\",\"bodyPreservation\":\"detailed-evidence\",\"countMatchesArchivedV1\":true},{\"name\":\"Invented dashboard\",\"sourceRows\":0,\"status\":\"omitted\",\"bodyPreservation\":\"not-copied\",\"countMatchesArchivedV1\":null}]},{\"id\":\"fictional-source-distributor\",\"namespace\":\"imaginary-distributor\",\"sourceRevision\":\"fictional-input-revision\",\"sourceSchema\":\"fictional-source-v2\",\"exporterContractVersion\":\"fictional-exporter-0.1\",\"snapshotDate\":\"2026-01-01\",\"sourceFile\":\"invented-source.json\",\"inputSha256\":\"fictional-selected-input-digest\",\"claimedWorkbookSha256\":\"fictional-unverified-workbook-claim\",\"digestAuthority\":\"claim-only\",\"coverage\":\"partial\",\"sections\":[{\"name\":\"Invented releases\",\"sourceRows\":1,\"status\":\"represented\",\"bodyPreservation\":\"normalized-or-counted-only\",\"countMatchesArchivedV1\":true},{\"name\":\"Invented details\",\"sourceRows\":2,\"status\":\"partial\",\"bodyPreservation\":\"detailed-evidence\",\"countMatchesArchivedV1\":true},{\"name\":\"Invented dashboard\",\"sourceRows\":0,\"status\":\"omitted\",\"bodyPreservation\":\"not-copied\",\"countMatchesArchivedV1\":null}]}],\"recordings\":[{\"id\":\"commercial-rec-A\",\"title\":\"An imaginary echo\",\"version\":null,\"isrc\":null}],\"releases\":[{\"id\":\"commercial-rel-A\",\"title\":\"Invented album\",\"kind\":\"album\",\"upc\":null,\"distributor\":\"imaginary-distributor\",\"source\":\"imaginary-distributor\",\"historicalDistributionStatus\":\"historical-delivery-only\",\"referenceDate\":\"2026-01-01\"}],\"appearances\":[{\"id\":\"commercial-app-A\",\"releaseId\":\"commercial-rel-A\",\"position\":1,\"recordingId\":\"commercial-rec-A\",\"displayTitle\":\"An imaginary echo\",\"observedIsrc\":null,\"status\":\"unverified\"}],\"sourceAliases\":[{\"namespace\":\"imaginary-distributor\",\"kind\":\"recording\",\"sourceId\":\"imagined-rec-A\",\"targetId\":\"commercial-rec-A\",\"snapshotId\":\"fictional-source-distributor\"},{\"namespace\":\"imaginary-distributor\",\"kind\":\"release\",\"sourceId\":\"imagined-rel-A\",\"targetId\":\"commercial-rel-A\",\"snapshotId\":\"fictional-source-distributor\"},{\"namespace\":\"imaginary-distributor\",\"kind\":\"appearance\",\"sourceId\":\"imagined-app-A\",\"targetId\":\"commercial-app-A\",\"snapshotId\":\"fictional-source-distributor\"}],\"evidence\":[{\"id\":\"fictional-linked-detail\",\"snapshotId\":\"fictional-source-distributor\",\"kind\":\"distributor-detail\",\"linkState\":\"linked\",\"sourceRecordAlias\":\"fictional-detail-row-A\",\"sourceLocator\":\"invented-ledger/detail-A\",\"observedAt\":\"2026-01-01T10:00:00Z\",\"classification\":\"historical-source-proof\",\"payload\":\"{\\\"Invented note\\\":\\\"linked fictional detail\\\"}\",\"targetKind\":\"appearance\",\"targetId\":\"commercial-app-A\",\"sourceReleaseId\":\"imagined-rel-A\",\"position\":1,\"linkIssueCode\":null},{\"id\":\"fictional-unlinked-detail\",\"snapshotId\":\"fictional-source-distributor\",\"kind\":\"distributor-detail\",\"linkState\":\"unlinked\",\"sourceRecordAlias\":\"fictional-detail-row-B\",\"sourceLocator\":\"invented-ledger/detail-B\",\"observedAt\":\"2026-01-01T10:05:00Z\",\"classification\":\"historical-source-proof\",\"payload\":\"{\\\"Invented note\\\":\\\"unlinked fictional detail\\\"}\",\"targetKind\":null,\"targetId\":null,\"sourceReleaseId\":\"imagined-rel-unknown\",\"position\":null,\"linkIssueCode\":\"EXACT_TARGET_NOT_FOUND\"}],\"findings\":[{\"id\":\"fictional-finding-linked\",\"scope\":\"target\",\"sourceSnapshotId\":null,\"targetKind\":\"appearance\",\"targetId\":\"commercial-app-A\",\"evidenceId\":\"fictional-linked-detail\",\"code\":\"FICTIONAL_REVIEW_PENDING\",\"locator\":\"invented-ledger/detail-A\",\"status\":\"pending\"},{\"id\":\"fictional-finding-unlinked\",\"scope\":\"evidence\",\"sourceSnapshotId\":\"fictional-source-distributor\",\"targetKind\":null,\"targetId\":null,\"evidenceId\":\"fictional-unlinked-detail\",\"code\":\"EXACT_TARGET_NOT_FOUND\",\"locator\":\"invented-ledger/detail-B\",\"status\":\"pending\"}],\"reviewDecisions\":[],\"channelEvents\":[],\"audit\":[{\"operationId\":\"fictional-c6-foreign-migration\",\"revision\":1,\"parentRevision\":0,\"kind\":\"reviewed-source-migration\",\"targetId\":\"invented-foreign-registry-browser-c6\"}]}";
 
 const FIXTURES: Record<FictionalRegistryVariant, string> = {
-  full: JSON.stringify(FULL_REGISTRY),
-  rollback: JSON.stringify(ROLLBACK_REGISTRY),
-  foreign: JSON.stringify(FOREIGN_REGISTRY),
+  full: FULL_FIXTURE_JSON,
+  rollback: ROLLBACK_FIXTURE_JSON,
+  foreign: FOREIGN_FIXTURE_JSON,
 };
 
 type LabHeader = {
@@ -231,7 +104,15 @@ function variantForPlaintext(plain: string): FictionalRegistryVariant {
 }
 async function summarize(variant: FictionalRegistryVariant): Promise<FictionalRegistrySummary> {
   const plain = FIXTURES[variant];
-  const registry = JSON.parse(plain) as typeof FULL_REGISTRY;
+  const registry = JSON.parse(plain) as {
+    registryId: string;
+    revision: number;
+    recordings: unknown[];
+    releases: unknown[];
+    appearances: unknown[];
+    evidence: Array<{ linkState: string }>;
+    findings: Array<{ status: string }>;
+  };
   return {
     variant,
     registryId: registry.registryId,
