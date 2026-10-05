@@ -1,6 +1,14 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-## Current owner-observed runtime and evidence — 2026-09-28
+## Current bounded owner acceptance — 2026-10-04
+
+**Build124 / v0.19.46** merged via [PR #254](https://github.com/shinobione/shinobiwan-studio/pull/254), SHA `705df3a15fd6ea8076615d1d523564501e6b2362`. Final candidate `64294bf35258c3f7f5047b782970d80bf2a2c333` passed [CI #801 SUCCESS](https://github.com/shinobione/shinobiwan-studio/actions/runs/36483767882): C1 11/11, C2 12/12, C3a 11/11, C3b 12/12 real Chromium synthetic scenarios and 141 runtime/source artifacts scanned. Owner screenshot shows live v0.19.46 · 124 and separate video shows **invented-only** encrypted package generate/download/reopen success, repeat success and Reset. [Bounded owner receipt](docs/acceptance/BUILD124-BOUNDED-OWNER-UI-SMOKE.md).
+
+**Not confirmed from that video:** independent DevTools Network/Storage check (PENDING), actual commercial-data persistence, real-source JSON encryption, second physical backup/recovery, latest DSP status, audited cryptographic implementation or independently retrieved merge-SHA Pages workflow receipt. The lab has no input path for a real source.
+
+**Next QA gate C4:** [encrypted inner commercial registry + recovery contract](docs/CATALOGUE-A24C-C4-REGISTRY-RESTORE-CONTRACT.md), test-only invented data. Require exact identities/aliases, append-only source/evidence/review histories, historical vs live channel authority, atomic expected-revision restore and two independent authenticated backup copies in a separately reviewed *future* runtime. CI's invented in-memory ciphertext copies are not actual durable backups. No Build125 or real private write authorized.
+
+## Previous owner-observed runtime and evidence — 2026-09-28
 
 **Build123 / v0.19.45** merged as [PR #253](https://github.com/shinobione/shinobiwan-studio/pull/253) at `bfcad4b2c75b72bf02c316b9f1096141dab05957`; exact tested feature head `78cab3b6fee6022df6ddffad91404e9c4edda9f5`, [CI #36459697086 SUCCESS](https://github.com/shinobione/shinobiwan-studio/actions/runs/36459697086). Owner saw Build123 live, imported their private v2 locally and reported bounded REAL USER PASS. Merge-SHA Pages workflow-run receipt was not separately obtained. [Sanitized Build123 receipt](docs/acceptance/BUILD123-REAL-USER-PASS.md): 14 detail rows / 14 exact existing appearance links / zero unlinked; one independent historical detail visually confirmed under exact appearance with original evidence; 355 QA findings pending and channel current status unknown; Reset/refresh and owner-reported DevTools privacy PASS. It does not prove every source row manually, whole original workbook, actual DSP availability, formal security/a11y audit, private write, backup or sustained CPU compliance.
 
