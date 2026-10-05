@@ -298,7 +298,8 @@ try {
     assert.equal(reopenedPrimary.ok,true);assert.equal(reopenedRecovery.ok,true);
     assert.equal(reopenedPrimary.meta.fingerprint,validated.fingerprint);
     assert.equal(reopenedRecovery.meta.fingerprint,validated.fingerprint);
-    assert.deepEqual(reopenedPrimary.registry,registry);assert.deepEqual(reopenedRecovery.registry,registry);
+    assert.equal(JSON.stringify(reopenedPrimary.registry),JSON.stringify(registry));
+    assert.equal(JSON.stringify(reopenedRecovery.registry),JSON.stringify(registry));
   });
   await test('revision-0 current state previews authenticated disk revision-1 as explicit review and never activation',async()=>{
     const current=emptyRegistry(registry.registryId);
