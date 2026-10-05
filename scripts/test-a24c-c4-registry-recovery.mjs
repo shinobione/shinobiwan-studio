@@ -221,8 +221,14 @@ function invented() {
     revision:2, parentRevision:1,
     sourceSnapshots:[{
       id:'invented-source-snapshot',namespace:'imaginary-distributor',sourceRevision:'fictional-revision-1',
-      digestClaim:'fictional-unverified-workbook-claim',digestAuthority:'claim-only',coverage:'partial',
-      sections:[{name:'Imagined releases',coverage:'complete'},{name:'Imagined legacy details',coverage:'partial'}],
+      sourceSchema:'catalogue-readonly-seed-v2',exporterContractVersion:'fictional-exporter-1',
+      snapshotDate:'2026-01-01',sourceFile:'invented-private-source.json',
+      inputSha256:'b'.repeat(64),claimedWorkbookSha256:'a'.repeat(64),
+      digestAuthority:'claim-only',coverage:'partial',
+      sections:[
+        {name:'Imagined releases',sourceRows:1,status:'represented',bodyPreservation:'normalized-or-counted-only',countMatchesArchivedV1:true},
+        {name:'Imagined legacy details',sourceRows:1,status:'partial',bodyPreservation:'detailed-evidence',countMatchesArchivedV1:null},
+      ],
     }],
     recordings:[
       {id:'commercial-rec-A',title:'An imaginary echo',isrc:null},
@@ -241,9 +247,13 @@ function invented() {
     evidence:[
       {id:'invented-proof-detail',snapshotId:'invented-source-snapshot',kind:'distributor-detail',
         linkState:'linked',sourceRecordAlias:'imagined-detail-row-A',
+        sourceLocator:'details[0]',observedAt:'2026-01-01',classification:'source-observation',
+        payload:'{"Invented note":"exact fictional detail"}',
         targetKind:'appearance',targetId:'commercial-app-A',sourceReleaseId:'imagined-source-rel',position:1,linkIssueCode:null},
       {id:'invented-proof-release',snapshotId:'invented-source-snapshot',kind:'historical-distributor',
         linkState:'linked',sourceRecordAlias:'imagined-release-evidence-A',
+        sourceLocator:'releases[0]',observedAt:'2026-01-01',classification:'source-observation',
+        payload:'{"Invented release":"historical only"}',
         targetKind:'release',targetId:'commercial-rel-A',sourceReleaseId:null,position:null,linkIssueCode:null},
     ],
     findings:[{id:'fictional-qa-A',scope:'target',sourceSnapshotId:null,targetKind:'appearance',targetId:'commercial-app-B',evidenceId:null,code:'FICTIONAL_TARGET_REVIEW',locator:'appearances[1]',status:'pending'}],
