@@ -190,7 +190,23 @@ function previewMigration(root,parsed,review,prior,readCurrent=()=>prior) {
     partial:coverage.filter(c=>c.status==='partial').length,
     omitted:coverage.filter(c=>c.status==='omitted').length,
   };
-  if(unlinked>0)return halt('C4_UNLINKED_EVIDENCE_SCHEMA_GAP',{counts});
+  const unattachedEvidence=root.detailedDistributorEvidence
+    .filter(detail=>detail.linkStatus==='unlinked')
+    .map(detail=>({
+      evidenceId:detail.evidenceId,snapshotSha:review.sourceInputSha256,
+      sourceNamespace:detail.sourceNamespace,sourceRecordAlias:detail.sourceRecordAlias,
+      sourceRecordAliasScope:detail.sourceRecordAliasScope,
+      sourceReleaseId:detail.sourceReleaseId,position:detail.position,
+      linkState:'unlinked',linkIssueCode:detail.linkIssueCode,
+      targetKind:null,targetId:null,
+    }))
+    .sort((a,b)=>a.evidenceId.localeCompare(b.evidenceId,'en'));
+  if(unattachedEvidence.length!==unlinked)
+    return halt('UNLINKED_EVIDENCE_COUNT_MISMATCH',{counts});
+  const unattachedFindings=unattachedEvidence.map(e=>({
+    evidenceId:e.evidenceId,targetKind:null,targetId:null,
+    status:'pending',code:e.linkIssueCode,
+  }));
   if(coverage.some(c=>['contradictory','unverified'].includes(c.status)))
     return halt('EXPLICIT_COVERAGE_REVIEW_REQUIRED',{counts});
   // No proof of workbook bytes and no live-channel verification follows from exporter source claim.
@@ -206,6 +222,7 @@ function previewMigration(root,parsed,review,prior,readCurrent=()=>prior) {
     counts,coverage,
     aliases:review.mappings.map(m=>({...m,snapshotSha:review.sourceInputSha256}))
       .sort((a,b)=>aliasKey(a).localeCompare(aliasKey(b),'en')),
+    unattachedEvidence,unattachedFindings,
     diff:{unchanged,changedSource,proposedNew,missingFromCurrentSnapshot:missing},
     currentChannelVerifiedLive:0,
     // Review of this plan is NOT a commercial write or source/QA approval.
@@ -320,16 +337,28 @@ test('structurally conflicting v2 detail fails in actual importer, never maps by
   const result=parse(source);assert.equal(result.status,'rejected');
   assert.equal(previewMigration(source,result,reviewed,prior).code,'SOURCE_REJECTED');
 });
-test('unlinked global detail is explicitly held: draft C4 target-only evidence cannot discard it',()=>{
+test('unlinked global detail is preserved targetless with pending global finding and zero entity creation',()=>{
   const source=clone(input);anotherDetail(source);
   const detail=source.detailedDistributorEvidence[1];
   detail.linkStatus='unlinked';detail.linkProof=null;detail.linkIssueCode='EXACT_TARGET_NOT_FOUND';
   detail.appearanceId=null;detail.releaseId=null;
   const result=parse(source);assert.equal(result.status,'accepted');
   const plan=previewMigration(source,result,reviewFor(source,result),newPrior());
-  assert.equal(plan.status,'HOLD');assert.equal(plan.code,'C4_UNLINKED_EVIDENCE_SCHEMA_GAP');
+  assert.equal(plan.status,'REQUIRES_FINAL_OWNER_APPROVAL');
   assert.equal(plan.counts.unlinked,1);
-  assert.equal(plan.writes,0);
+  assert.deepEqual([plan.counts.recordings,plan.counts.releases,plan.counts.appearances],[1,1,1]);
+  assert.equal(plan.unattachedEvidence.length,1);
+  assert.deepEqual(plan.unattachedEvidence[0],{
+    evidenceId:'imaginary-detail-B',snapshotSha:result.snapshot.source.inputSha256,
+    sourceNamespace:'Amuse',sourceRecordAlias:'imaginary-evidence-row-B',
+    sourceRecordAliasScope:'workbook-snapshot-only',sourceReleaseId:'release-1',position:1,
+    linkState:'unlinked',linkIssueCode:'EXACT_TARGET_NOT_FOUND',targetKind:null,targetId:null,
+  });
+  assert.deepEqual(plan.unattachedFindings,[{
+    evidenceId:'imaginary-detail-B',targetKind:null,targetId:null,
+    status:'pending',code:'EXACT_TARGET_NOT_FOUND',
+  }]);
+  assert.equal(plan.writes,0);assert.equal(plan.automaticApprovals,0);
 });
 test('source digest mismatch after reviewed attestation invalidates the whole plan',()=>{
   const source=clone(input);source.recordings[0].title='Imaginary revised metadata';
