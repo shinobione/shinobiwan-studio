@@ -26,8 +26,8 @@ Outer envelope remains the separately reviewed C2 candidate: minimal \`SHINOCAT-
 | \`releases[]\` | Independent opaque release IDs, optional UPC, descriptive metadata and artwork provenance; no implicit Track/Album or platform status |
 | \`appearances[]\` | Stable opaque ID, exact \`releaseId\`, positive documented position or explicit null if undocumented, \`recordingId\` or null; one exact release/position placement cannot silently identify two appearance IDs |
 | \`sourceAliases[]\` | Versioned, namespaced \`(sourceNamespace, entityKind, sourceId)\` mapped to a **reviewed** commercial target and an existing source snapshot; no merge based on title/ISRC/UPC |
-| \`evidence[]\` | Immutable evidence ID, snapshot ID, evidence class, exact target ID and, when independent distributor detail, original source Release and documented position; linked proof must resolve to the already-existing exact Appearance, not create an entity |
-| \`findings[]\` | Source-derived QA finding ID, exact context, status initially pending; no approval inferred merely because a source imported |
+| \`evidence[]\` | Immutable evidence ID, snapshot ID, evidence class and source-row alias. \`linkState: linked\` carries an exact commercial target; distributor-detail \`unlinked\` preserves a source Release/position + issue code with **no target**; generic source evidence may be \`unattached\` with no target or inferred entity. Linked distributor detail must resolve to the already-existing exact Appearance. |
+| \`findings[]\` | Source-derived QA finding with exact \`scope\` (\`target\`, \`evidence\`, or \`source\`), machine-readable code, locator and pending/reviewed state. Target scope references a proven commercial entity; evidence scope references immutable evidence; source scope references a source snapshot even when no row evidence exists. Global QA is preserved without inventing a target. |
 | \`reviewDecisions[]\` | Append-only human decision ID, reviewer, exact target, evidence refs, rationale, operation identity, expected revision and disposition; review does not erase underlying immutable evidence |
 | \`channelEvents[]\` | Independent historical event, channel/subject, occurrence and observation times, source evidence, assertion strength and verification class. Distributor “delivered” and platform “verified live” are not synonyms |
 | \`audit[]\` | Append-only per-revision/operation receipt **inside ciphertext**. Authenticated encryption protects package bytes; a self-reported inner hash alone is not an external anti-rollback authority |
@@ -39,6 +39,17 @@ IDs are opaque and stable inside this private commercial registry. Schema and li
 Historical evidence is allowed to exist **without a commercial target** when the source itself cannot prove the target. Such a row must remain immutable and explicitly `linkState: unlinked`; both `targetKind` and `targetId` are null, while its source snapshot, source-row alias, original source Release/position (when present) and machine-readable `linkIssueCode` are retained inside ciphertext. The registry must also retain a pending **global finding** that references that evidence ID. This combination is the only accepted targetless form.
 
 No review decision, channel event, entity count, source alias or creative binding may be created from unattached evidence. Titles, ISRC/UPC, source row order and similar metadata cannot repair it. A future human decision that establishes an exact target must append a reviewed mapping/new evidence state under a new revision; it must never mutate the old unattached observation into looking as though it had always been linked.
+### C4.2 — global source evidence and QA without commercial identity
+
+The accepted v1/v2 parser can emit source evidence and findings that are deliberately **not commercial-entity claims**: unverified distributor candidates, channel observations pending verification, source QA rows, and source-wide coverage warnings such as \`DERIVED_SOURCE_COVERAGE_INCOMPLETE\`. C4.2 preserves them explicitly rather than forcing them onto a Recording/Release/Appearance.
+
+- Generic immutable source evidence uses \`linkState: unattached\`, has no target, no source Release/position and no implicit identity. Its source snapshot and source-row alias remain private provenance.
+- \`finding.scope: evidence\` may reference linked, \`unlinked\`, or \`unattached\` evidence and must identify the same source snapshot; target fields remain null.
+- \`finding.scope: source\` references a source snapshot directly, carries no evidence/target and preserves source-wide warnings.
+- \`finding.scope: target\` is the only finding form allowed to name a commercial entity; optional linked evidence must match that exact target.
+- Every finding preserves its machine-readable code and source locator. Imported pending QA never becomes human-reviewed merely because a registry is built or restored.
+
+Evidence/source-scoped findings cannot support a review decision, a verified channel event, creative Track link or entity creation. A later human decision must append new reviewed state under a later revision; the original QA/evidence remains immutable.
 
 ### Source-to-registry is not an import-side effect
 
@@ -63,6 +74,6 @@ Crucial limitation: a package cannot alone prove it is the newest historical rev
 
 ## C4 synthetic gate and decisions still required
 
-\`scripts/test-a24c-c4-registry-recovery.mjs\` is a **test-only module**, never imported by \`src/\`. It uses independently invented source/identity/QA objects and a fictional passphrase. It verifies schema/referential integrity, duplicate metadata vs real identities, exact evidence binding, pending QA/review separation, channel-status truth, explicit revision/CAS/operation identity, rollback conflict/foreign registry, byte-authenticated encrypted restore rehearsal, corrupt/wrong-key rejection preserving current state, and package privacy. No real file is saved, uploaded or recovered. **A green CI is not a backup/audit certification.**
+\`scripts/test-a24c-c4-registry-recovery.mjs\` is a **test-only module**, never imported by \`src/\`. It uses independently invented source/identity/QA objects and a fictional passphrase. It verifies schema/referential integrity, duplicate metadata vs real identities, exact linked evidence, targetless distributor evidence, generic unattached source evidence, source/evidence/target-scoped pending QA, review separation, channel-status truth, explicit revision/CAS/operation identity, rollback conflict/foreign registry, byte-authenticated encrypted restore rehearsal, corrupt/wrong-key rejection preserving current state, and package privacy. No real file is saved, uploaded or recovered. **A green CI is not a backup/audit certification.**
 
 Before future C5 real-source opt-in the owner must separately approve the complete inner schema/migration and identity review process, actual crypto/password policy on their hardware, first save and two independently re-opened backup copies, explicit restore UX with rollback governance, private-browser DevTools Network/Storage checks and a source authority decision. Real file material stays entirely owner-local and out of CI/Git. No Build125 is allocated by C4.
