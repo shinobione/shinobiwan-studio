@@ -338,8 +338,10 @@ await test('independent distributor detail requires the exact existing Release a
   assert.equal(validate(r).code,'DETAIL_EXACT_LINK_CONFLICT');
   r=deep(baseline);r.evidence[0].sourceReleaseId='invented-wrong-release';
   assert.equal(validate(r).code,'DETAIL_EXACT_LINK_CONFLICT');
-  r=deep(baseline);r.evidence.push({...deep(r.evidence[0]),id:'another-fictional-exact-detail'});
+  r=deep(baseline);r.evidence.push({...deep(r.evidence[0]),id:'another-fictional-exact-detail',sourceRecordAlias:'imagined-detail-row-B'});
   const v=validate(r);assert.equal(v.ok,true);assert.equal(v.count.appearances,2);assert.equal(v.count.evidence,3);
+  r=deep(baseline);r.evidence.push({...deep(r.evidence[0]),id:'another-fictional-exact-detail'});
+  assert.equal(validate(r).code,'DUPLICATE_EVIDENCE_SOURCE_ALIAS');
 });
 await test('unlinked distributor detail is retained without inventing any commercial target',async()=>{
   const r=deep(baseline);
