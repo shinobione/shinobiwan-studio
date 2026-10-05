@@ -425,7 +425,7 @@ test('candidate remains a transient proposal: no current channel-live claim or Q
   assert.equal(r.currentChannelVerifiedLive,0);
   assert.equal(r.automaticApprovals,0);
   assert.ok(parsed.snapshot.findings.every(f=>f.state==='pending-review'));
-  assert.equal(read('package.json').includes('"version": "0.19.46"'),true);
+  assert.ok(read('src/release.ts').includes(`build124AncestryMarker = "version: '0.19.46' · build: 124`));
 });
 console.log('A2.4-C/A fictional C5: '+cases+
   ' exact source-v2/migration preview cases PASS. ZERO commercial minting, public export, disk write, runtime, network or owner data.');
