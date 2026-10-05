@@ -1,6 +1,14 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-## Current accepted browser runtime — 2026-09-28
+## Current owner-confirmed runtime — 2026-10-04
+
+**Build124 / v0.19.46**: [PR #254](https://github.com/shinobione/shinobiwan-studio/pull/254) merged on main as `705df3a15fd6ea8076615d1d523564501e6b2362`. Exact feature head `64294bf35258c3f7f5047b782970d80bf2a2c333` passed [CI #801](https://github.com/shinobione/shinobiwan-studio/actions/runs/36483767882) SUCCESS. Owner sent a browser version-footer crop clearly showing **v0.19.46 · 124** and a video showing the deliberately invented-only lab generate/download/reopen with the expected success copy, another successful verification and Reset. [Sanitized bounded Build124 receipt](docs/acceptance/BUILD124-BOUNDED-OWNER-UI-SMOKE.md). The owner's distinct DevTools Network/Storage smoke was **not** provided and remains PENDING; do not infer full privacy PASS from the video or CI. Exact merge-SHA Pages workflow receipt is not independently retrieved.
+
+The Build124 `#/catalogue/lab` code encrypts **only an internally hardcoded fictional fixture**, separate from the accepted transient private v1/v2 Catalogue reader; entering the lab unloads any selected source. **No commercial registry or actual source encryption/persistence** exists, no new Worker/R2/LaunchPAD write, no automatic sync, no real-source migration or general-use encrypted backup.
+
+**Active gate: A2.4-C Path A / C4 schema and recovery planning** — [private commercial registry contract](docs/CATALOGUE-A24C-C4-REGISTRY-RESTORE-CONTRACT.md), proposal-only **fictional** registry/revision/restore tests in a separate Draft PR. No Build125 or new runtime allocated. Before any future genuine private export: explicitly approve registry/source-identity migration, key/passphrase custody, independently verified physical backup/reopen, conflict and rollback UX, owner-only test scope and missing DevTools privacy check. Studio CPU #238 / LaunchPAD #283 remain separately open.
+
+## Previous accepted browser checkpoint — 2026-09-28
 
 **Build123 / v0.19.45**: [PR #253](https://github.com/shinobione/shinobiwan-studio/pull/253) merged into `main` as `bfcad4b2c75b72bf02c316b9f1096141dab05957`. Exact final feature head `78cab3b6fee6022df6ddffad91404e9c4edda9f5` passed [CI #36459697086](https://github.com/shinobione/shinobiwan-studio/actions/runs/36459697086). Owner observed the deployed Build123 version and successfully imported their own private local v2 export. The precise automatic Pages merge-SHA run was not independently retrieved for this checkpoint; do not equate owner-observed live runtime with an independently verified Pages run.
 

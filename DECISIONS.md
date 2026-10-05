@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Decisions
 
-Updated: 2026-09-28 after Build123 bounded owner v2 reader smoke. D-024 accepts only the explicit temporary private v2 view; A2.4-C durable storage, key custody, backup/recovery and sync choice remain undecided.
+Updated: 2026-10-04. D-024 accepts the transient v2 viewer; D-025 records owner-selected Path A (portable encrypted file). Build124 has since merged as an invented-only file lab. C4 inner registry/restore is a proposal, not an approved durable data-authority model.
 
 This file records durable product, architecture and safety decisions. It is not a changelog. Add an entry only when a decision is introduced, changed or explicitly superseded.
 
@@ -295,7 +295,7 @@ This decision does **not** select commercial storage, encryption/key holder, an 
 
 On 2026-09-28 the owner chose **A** (portable encrypted local file), expressly **not** B (private hosted service) or staged A→B. The existing temporary Build123 v2 reader remains unchanged until a separate implementation gate. Commercial private data will not be silently stored in browser Storage, Git/Pages, Worker/R2/public projection or LaunchPAD. A future owner-triggered local encrypted export/open/restore must have distinct cryptographic review, secret/recovery custody, authenticated format, explicit revisions/backup, fail-closed import/restore and owner-only trial. The original workbook remains private historical source evidence; registry promotion and human-reviewed commercial decisions need independent approval. No automatic Creative Track/Album identity, title/ISRC match or current DSP status may be inferred.
 
-[Owner choice and gate packet](docs/CATALOGUE-A2-4C-STORAGE-PRIVACY-DECISION-PACKET.md) · [C1 fictional architecture/tests](docs/CATALOGUE-A2-4C-A-LOCAL-PACKAGE-C1-CONTRACT.md). **Decision A is accepted; implementation, cryptosystem/parameter selection, actual local data save, Build124, sync and merge are not authorized by it.**
+[Owner choice and gate packet](docs/CATALOGUE-A2-4C-STORAGE-PRIVACY-DECISION-PACKET.md) · [C1 fictional architecture/tests](docs/CATALOGUE-A2-4C-A-LOCAL-PACKAGE-C1-CONTRACT.md). **Path A choice alone authorizes no actual private data save, general crypto codec, registry migration, sync or future merge.** The separate, subsequently authorized and merged [Build124 invented-only lab](docs/acceptance/BUILD124-BOUNDED-OWNER-UI-SMOKE.md) does not change that real-data prohibition. The [C4 schema/recovery draft](docs/CATALOGUE-A24C-C4-REGISTRY-RESTORE-CONTRACT.md) has not become an approved production canonical model; no D-026 is declared before independent review.
 
 ## Changing a decision
 
