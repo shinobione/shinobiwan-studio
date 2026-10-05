@@ -6,7 +6,7 @@
 
 **Not confirmed from that video:** independent DevTools Network/Storage check (PENDING), actual commercial-data persistence, real-source JSON encryption, second physical backup/recovery, latest DSP status, audited cryptographic implementation or independently retrieved merge-SHA Pages workflow receipt. The lab has no input path for a real source.
 
-**Next QA gate C4:** [encrypted inner commercial registry + recovery contract](docs/CATALOGUE-A24C-C4-REGISTRY-RESTORE-CONTRACT.md), test-only invented data. Require exact identities/aliases, append-only source/evidence/review histories, historical vs live channel authority, atomic expected-revision restore and two independent authenticated backup copies in a separately reviewed *future* runtime. CI's invented in-memory ciphertext copies are not actual durable backups. No Build125 or real private write authorized.
+**Merged synthetic architecture checkpoint:** C4/C4.1 and C5/C5b are merged as test/docs contracts through main `1979f1d0b8252de768a3485b90e9af568a0e88bb`; they do not make owner commercial data persistent. **Current QA candidate: Build125 / C6, PR #262** — hardcoded fictional full-registry browser generate/download/reopen/explicit-restore plus rollback, foreign-registry, wrong-secret/tamper, refresh and automated browser Network/Storage checks. Candidate version is v0.19.47 / Build125; no real source is accepted. Require exact-head CI, separate merge/deploy authorization and owner browser smoke. The earlier Build124 owner DevTools Network/Storage visual check remains PENDING and must not be inferred from CI.
 
 ## Previous owner-observed runtime and evidence — 2026-09-28
 
