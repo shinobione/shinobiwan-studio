@@ -413,15 +413,24 @@ await test('unlinked evidence cannot impersonate a target, channel event or revi
   r.reviewDecisions[0].evidenceIds=['invented-unlinked-detail'];
   assert.equal(validate(r).code,'INVALID_REVIEW_DECISION');
 });
-await test('global pending finding must reference an actual unlinked immutable evidence row',async()=>{
+await test('evidence-scoped global finding requires real evidence and matching source snapshot without target inference',async()=>{
   let r=deep(baseline);
   r.findings.push({id:'fictional-bad-global',scope:'evidence',sourceSnapshotId:'invented-source-snapshot',
     targetKind:null,targetId:null,evidenceId:null,code:'BAD_GLOBAL',locator:'source',status:'pending'});
   assert.equal(validate(r).code,'INVALID_FINDING');
+
   r=deep(baseline);
-  r.findings.push({id:'fictional-bad-global',scope:'evidence',sourceSnapshotId:'invented-source-snapshot',
-    targetKind:null,targetId:null,evidenceId:'invented-proof-detail',code:'BAD_GLOBAL',
-    locator:'source',status:'pending'});
+  r.findings.push({id:'fictional-linked-global',scope:'evidence',sourceSnapshotId:'invented-source-snapshot',
+    targetKind:null,targetId:null,evidenceId:'invented-proof-detail',code:'SOURCE_DETAIL_REVIEW',
+    locator:'details[0]',status:'pending'});
+  const linkedGlobal=validate(r);
+  assert.equal(linkedGlobal.ok,true);
+  assert.equal(r.findings.at(-1).targetId,null);
+
+  r=deep(baseline);
+  r.findings.push({id:'fictional-wrong-snapshot',scope:'evidence',sourceSnapshotId:'missing-snapshot',
+    targetKind:null,targetId:null,evidenceId:'invented-proof-detail',code:'SOURCE_DETAIL_REVIEW',
+    locator:'details[0]',status:'pending'});
   assert.equal(validate(r).code,'INVALID_FINDING');
 });
 await test('generic unattached source evidence is preserved with evidence-scoped pending QA',async()=>{
