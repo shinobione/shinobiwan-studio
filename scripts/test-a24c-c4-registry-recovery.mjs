@@ -15,6 +15,10 @@ const nonempty = v => typeof v === 'string' && v.length > 0 && v.length <= 160 &
 const id = nonempty;
 const positive = n => Number.isSafeInteger(n) && n > 0;
 const nonnegative = n => Number.isSafeInteger(n) && n >= 0;
+const digest64 = v => typeof v === 'string' && /^[0-9a-f]{64}$/.test(v);
+const safeText = v => typeof v === 'string' && v.length <= 262_144;
+const nullableSafeText = v => v === null || safeText(v);
+const validObservedAt = v => v === null || (typeof v === 'string' && !Number.isNaN(Date.parse(v)));
 const reject = code => ({ ok: false, code });
 const sha = text => createHash('sha256').update(text).digest('hex');
 const fingerprint = registry => sha(JSON.stringify(registry));
@@ -27,12 +31,12 @@ const exact = (row, fields) => keys(row, fields);
 
 const ROOT = ['schema','registryId','revision','parentRevision','sourceSnapshots','recordings','releases',
   'appearances','sourceAliases','evidence','findings','reviewDecisions','channelEvents','audit'];
-const SOURCE = ['id','namespace','sourceRevision','digestClaim','digestAuthority','coverage','sections'];
+const SOURCE = ['id','namespace','sourceRevision','sourceSchema','exporterContractVersion','snapshotDate','sourceFile','inputSha256','claimedWorkbookSha256','digestAuthority','coverage','sections'];
 const RECORD = ['id','title','isrc'];
 const RELEASE = ['id','title','upc'];
 const APPEAR = ['id','releaseId','position','recordingId'];
 const ALIAS = ['namespace','kind','sourceId','targetId','snapshotId'];
-const EVIDENCE = ['id','snapshotId','kind','linkState','sourceRecordAlias','targetKind','targetId','sourceReleaseId','position','linkIssueCode'];
+const EVIDENCE = ['id','snapshotId','kind','linkState','sourceRecordAlias','sourceLocator','observedAt','classification','payload','targetKind','targetId','sourceReleaseId','position','linkIssueCode'];
 const FINDING = ['id','scope','sourceSnapshotId','targetKind','targetId','evidenceId','code','locator','status'];
 const DECISION = ['id','operationId','reviewer','targetKind','targetId','evidenceIds','disposition','expectedRevision','rationale'];
 const CHANNEL = ['id','channel','subjectKind','subjectId','status','observedAt','evidenceIds'];
@@ -55,11 +59,17 @@ function validate(registry) {
     decisionIds = new Set(), operationIds = new Set(), channelIds = new Set(), auditOps = new Set();
   for (const s of registry.sourceSnapshots) {
     if (!exact(s,SOURCE) || !id(s.id) || !id(s.namespace) || !id(s.sourceRevision) ||
-        !id(s.digestClaim) || !['claim-only','original-bytes-verified'].includes(s.digestAuthority) ||
+        !id(s.sourceSchema) || !(s.exporterContractVersion === null || id(s.exporterContractVersion)) ||
+        !nonempty(s.snapshotDate) || Number.isNaN(Date.parse(s.snapshotDate)) ||
+        !safeText(s.sourceFile) || !digest64(s.inputSha256) || !digest64(s.claimedWorkbookSha256) ||
+        !['claim-only','original-bytes-verified'].includes(s.digestAuthority) ||
         !['complete','partial','omitted'].includes(s.coverage) ||
         !Array.isArray(s.sections) || s.sections.length === 0 || s.sections.length > 20 ||
-        s.sections.some(x => !exact(x,['name','coverage']) || !id(x.name) ||
-          !['complete','partial','omitted'].includes(x.coverage)) ||
+        s.sections.some(x => !exact(x,['name','sourceRows','status','bodyPreservation','countMatchesArchivedV1']) ||
+          !id(x.name) || !nonnegative(x.sourceRows) ||
+          !['represented','partial','omitted','contradictory','unverified'].includes(x.status) ||
+          !['not-copied','normalized-or-counted-only','detailed-evidence'].includes(x.bodyPreservation) ||
+          !(x.countMatchesArchivedV1 === null || typeof x.countMatchesArchivedV1 === 'boolean')) ||
         new Set(s.sections.map(x => x.name)).size !== s.sections.length ||
         snapshots.has(s.id)) return reject('INVALID_SOURCE_SNAPSHOT');
     snapshots.set(s.id,s);
@@ -101,7 +111,10 @@ function validate(registry) {
   for (const e of registry.evidence) {
     if (!exact(e,EVIDENCE) || !id(e.id) || !snapshots.has(e.snapshotId) ||
         !EVIDENCE_CLASSES.has(e.kind) || !['linked','unlinked','unattached'].includes(e.linkState) ||
-        !id(e.sourceRecordAlias) || evidence.has(e.id))
+        !id(e.sourceRecordAlias) || !nullableSafeText(e.sourceLocator) ||
+        !validObservedAt(e.observedAt) ||
+        !(e.classification === null || ['source-observation','derived','human-confirmed','missing','contradictory'].includes(e.classification)) ||
+        !nullableSafeText(e.payload) || evidence.has(e.id))
       return reject('INVALID_EVIDENCE');
     const sourceIdentity = JSON.stringify([e.snapshotId,e.sourceRecordAlias]);
     if (evidenceSourceAliases.has(sourceIdentity)) return reject('DUPLICATE_EVIDENCE_SOURCE_ALIAS');
