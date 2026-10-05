@@ -1,10 +1,10 @@
 export const studioRelease = {
-  version: '0.19.46',
-  build: 124,
+  version: '0.19.47',
+  build: 125,
   phase: 10,
-  codename: 'studio-focus-build124-fictional-local-package-lab',
-  summary: 'Isolated synthetic-only encrypted-file Save/Open laboratory',
-  releasedAt: '2026-09-28',
+  codename: 'studio-focus-build125-fictional-full-registry-browser-recovery',
+  summary: 'Synthetic full commercial-registry browser Save/Open/restore rehearsal',
+  releasedAt: '2026-10-05',
 } as const;
 
 // Historical candidate markers retained only so exact earlier guards remain immutable.
@@ -73,3 +73,5 @@ export const build121AncestryMarker = "version: '0.19.43' · build: 121 · coden
 export const build122AncestryMarker = "version: '0.19.44' · build: 122 · codename: 'studio-focus-build122-catalogue-recordings'";
 
 export const build123AncestryMarker = "version: '0.19.45' · build: 123 · codename: 'studio-focus-build123-catalogue-v2-private-evidence'";
+
+export const build124AncestryMarker = "version: '0.19.46' · build: 124 · codename: 'studio-focus-build124-fictional-local-package-lab'";
