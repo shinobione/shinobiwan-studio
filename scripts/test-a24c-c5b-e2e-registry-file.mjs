@@ -206,7 +206,7 @@ const plan=previewC5Migration(source,parsed,review,prior);
 assert.equal(plan.status,'REQUIRES_FINAL_OWNER_APPROVAL');
 const registry=materializeRegistry(source,parsed,plan);
 const validated=validateC4Registry(registry);
-assert.equal(validated.ok,true);
+assert.equal(validated.ok,true,'C5b materialized registry rejected: '+JSON.stringify(validated));
 
 let cases=0;
 async function test(name,fn){
