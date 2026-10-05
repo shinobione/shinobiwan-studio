@@ -1,0 +1,102 @@
+.fictional-registry-recovery-lab {
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+}
+.fictional-registry-recovery-lab h3 { margin: 9px 0 16px; }
+.fictional-registry-recovery-lab > label {
+  display: block;
+  margin: 20px 0 8px;
+  font-weight: 700;
+}
+.fictional-registry-recovery-lab input[type="password"] {
+  width: min(100%, 560px);
+  min-height: 44px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: rgba(4, 15, 19, .85);
+  color: #f4faf9;
+  font: inherit;
+}
+.fictional-registry-recovery-lab input:focus-visible,
+.fictional-registry-recovery-lab button:focus-visible,
+.fictional-registry-recovery-lab a:focus-visible,
+.fictional-registry-recovery-lab summary:focus-visible {
+  outline: 2px solid var(--cyan-soft);
+  outline-offset: 3px;
+}
+.fictional-registry-state {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+  gap: 10px;
+  margin: 18px 0 22px;
+}
+.fictional-registry-state > div,
+.fictional-registry-candidate {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 70px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 11px 13px;
+  background: rgba(8, 24, 28, .7);
+}
+.fictional-registry-state span,
+.fictional-registry-candidate span {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  opacity: .68;
+}
+.fictional-registry-state strong,
+.fictional-registry-candidate strong { font-size: 18px; }
+.fictional-registry-candidate small { opacity: .76; }
+.fictional-registry-actions,
+.fictional-registry-adversarial-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 18px 0;
+}
+.fictional-registry-actions button,
+.fictional-registry-actions a,
+.fictional-registry-adversarial-actions button,
+.fictional-registry-adversarial-actions a {
+  min-height: 44px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: rgba(60, 127, 117, .16);
+  color: var(--cyan-soft);
+  padding: 10px 14px;
+  font: inherit;
+}
+.fictional-registry-actions button:disabled,
+.fictional-registry-adversarial-actions button:disabled {
+  opacity: .47;
+  cursor: not-allowed;
+}
+.fictional-registry-actions input[type="file"] { max-width: 100%; color: #e0eded; }
+.fictional-registry-actions details {
+  width: min(100%, 620px);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: rgba(6, 20, 24, .52);
+}
+.fictional-registry-actions summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+.fictional-registry-recovery-lab [role="status"] {
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: rgba(8, 24, 28, .7);
+  padding: 12px 15px;
+}
+#fictional-registry-privacy {
+  max-width: 68ch;
+  font-size: 12px;
+}
