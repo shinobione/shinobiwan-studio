@@ -350,6 +350,7 @@ async function previewSealedRestore(getCurrent,raw,secret,expectedCurrent) {
   // Reread AFTER async decryption; unrelated import/reset must fence stale work.
   return previewComparison(getCurrent(),authenticated.registry,expectedCurrent);
 }
+if (process.env.A24C_LIBRARY_ONLY !== '1') {
 let cases=0;
 async function test(name,cb) {
   await cb();cases++;console.log('A2.4-C/A fictional C4: '+name+' PASS');
@@ -663,3 +664,6 @@ await test('oversized KDF/unknown schema reject before expensive derivation or a
   assert.equal((await sealInvented(r)).code,'INVALID_SOURCE_REGISTRY');
 });
 console.log('A2.4-C/A fictional C4: '+cases+' pure schema/authenticated in-memory restore checks PASS; ZERO actual files/network/browser Storage, owner source, production runtime or commercial write.');
+}
+
+export { validate as validateC4Registry, fingerprint as fingerprintC4Registry, sealInvented as sealC4Registry, openInvented as openC4Registry, previewComparison as previewC4Comparison };
