@@ -660,8 +660,9 @@ try {
     assert.equal(a.ok, true);assert.equal(b.ok, true);
     assert.equal(a.meta.fingerprint, registryValidation.fingerprint);
     assert.equal(b.meta.fingerprint, registryValidation.fingerprint);
-    assert.deepEqual(a.registry, registry);
-    assert.deepEqual(b.registry, registry);
+    // Parser fixtures originate in a VM realm; compare canonical JSON content rather than realm prototypes.
+    assert.equal(JSON.stringify(a.registry), JSON.stringify(registry));
+    assert.equal(JSON.stringify(b.registry), JSON.stringify(registry));
   });
 
   await test('one disk package independently cross-decrypts with Node PBKDF2 and OpenSSL AES-GCM', async () => {
