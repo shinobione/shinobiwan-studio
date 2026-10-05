@@ -384,6 +384,7 @@ await test('unlinked distributor detail is retained without inventing any commer
   r.evidence.push({
     id:'invented-unlinked-detail',snapshotId:'invented-source-snapshot',kind:'distributor-detail',
     linkState:'unlinked',sourceRecordAlias:'imagined-unlinked-row',
+    sourceLocator:'details[unlinked]',observedAt:'2026-01-01',classification:'source-observation',payload:'{"Invented":"unlinked detail"}',
     targetKind:null,targetId:null,sourceReleaseId:'imagined-unknown-source-release',
     position:null,linkIssueCode:'EXACT_TARGET_NOT_FOUND',
   });
@@ -403,6 +404,7 @@ await test('unlinked evidence cannot impersonate a target, channel event or revi
   r.evidence.push({
     id:'invented-unlinked-detail',snapshotId:'invented-source-snapshot',kind:'distributor-detail',
     linkState:'unlinked',sourceRecordAlias:'imagined-unlinked-row',
+    sourceLocator:'details[unlinked]',observedAt:'2026-01-01',classification:'source-observation',payload:'{"Invented":"unlinked detail"}',
     targetKind:'appearance',targetId:'commercial-app-A',sourceReleaseId:'imagined-source-rel',
     position:1,linkIssueCode:'EXACT_TARGET_NOT_FOUND',
   });
@@ -412,6 +414,7 @@ await test('unlinked evidence cannot impersonate a target, channel event or revi
   r.evidence.push({
     id:'invented-unlinked-detail',snapshotId:'invented-source-snapshot',kind:'distributor-detail',
     linkState:'unlinked',sourceRecordAlias:'imagined-unlinked-row',
+    sourceLocator:'details[unlinked]',observedAt:'2026-01-01',classification:'source-observation',payload:'{"Invented":"unlinked detail"}',
     targetKind:null,targetId:null,sourceReleaseId:'imagined-unknown-source-release',
     position:null,linkIssueCode:'EXACT_TARGET_NOT_FOUND',
   });
@@ -426,6 +429,7 @@ await test('unlinked evidence cannot impersonate a target, channel event or revi
   r.evidence.push({
     id:'invented-unlinked-detail',snapshotId:'invented-source-snapshot',kind:'distributor-detail',
     linkState:'unlinked',sourceRecordAlias:'imagined-unlinked-row',
+    sourceLocator:'details[unlinked]',observedAt:'2026-01-01',classification:'source-observation',payload:'{"Invented":"unlinked detail"}',
     targetKind:null,targetId:null,sourceReleaseId:'imagined-unknown-source-release',
     position:null,linkIssueCode:'EXACT_TARGET_NOT_FOUND',
   });
@@ -461,6 +465,7 @@ await test('generic unattached source evidence is preserved with evidence-scoped
   r.evidence.push({
     id:'invented-unattached-source-row',snapshotId:'invented-source-snapshot',kind:'source-record',
     linkState:'unattached',sourceRecordAlias:'imagined-qa-row-A',
+    sourceLocator:'qa[0]',observedAt:'2026-01-01',classification:'source-observation',payload:'{"Invented":"global QA row"}',
     targetKind:null,targetId:null,sourceReleaseId:null,position:null,linkIssueCode:null,
   });
   r.findings.push({
@@ -490,6 +495,7 @@ await test('finding scope cannot smuggle source evidence into a commercial targe
   r.evidence.push({
     id:'invented-unattached-source-row',snapshotId:'invented-source-snapshot',kind:'source-record',
     linkState:'unattached',sourceRecordAlias:'imagined-qa-row-A',
+    sourceLocator:'qa[0]',observedAt:'2026-01-01',classification:'source-observation',payload:'{"Invented":"global QA row"}',
     targetKind:null,targetId:null,sourceReleaseId:null,position:null,linkIssueCode:null,
   });
   r.findings.push({
@@ -507,12 +513,18 @@ await test('finding scope cannot smuggle source evidence into a commercial targe
   });
   assert.equal(validate(r).code,'INVALID_FINDING');
 });
-await test('source coverage and unverified digest claim remain explicit, never silently completed',async()=>{
+await test('source coverage and selected-input/workbook digest authorities remain distinct and exact',async()=>{
   const r=deep(baseline);r.sourceSnapshots[0].coverage='omitted';
-  r.sourceSnapshots[0].sections[1].coverage='omitted';
-  assert.equal(validate(r).ok,true);assert.equal(r.sourceSnapshots[0].digestAuthority,'claim-only');
+  r.sourceSnapshots[0].sections[1].status='omitted';
+  r.sourceSnapshots[0].sections[1].bodyPreservation='not-copied';
+  assert.equal(validate(r).ok,true);
+  assert.equal(r.sourceSnapshots[0].digestAuthority,'claim-only');
+  assert.notEqual(r.sourceSnapshots[0].inputSha256,r.sourceSnapshots[0].claimedWorkbookSha256);
   r.sourceSnapshots[0].digestAuthority='auto-trusted';
   assert.equal(validate(r).code,'INVALID_SOURCE_SNAPSHOT');
+
+  const wrong=deep(baseline);wrong.sourceSnapshots[0].sections[0].status='complete';
+  assert.equal(validate(wrong).code,'INVALID_SOURCE_SNAPSHOT');
 });
 await test('pending QA is not approved by source import or separate reviewed evidence',async()=>{
   assert.equal(baseline.findings[0].status,'pending');
