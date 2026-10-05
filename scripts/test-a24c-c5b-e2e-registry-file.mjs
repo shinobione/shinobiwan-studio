@@ -106,10 +106,24 @@ function materializeRegistry(root,parsed,plan){
       else targetForEvidence.set(evidenceId,{targetKind,targetId});
     }
   };
-  for(const r of parsed.snapshot.recordings)bindEvidence(r.evidenceIds,'recording',recTarget.get(r.recordingId));
-  for(const r of parsed.snapshot.releases)bindEvidence(r.evidenceIds,'release',relTarget.get(r.releaseId));
-  for(const a of [...parsed.snapshot.appearances,...parsed.snapshot.unboundAppearances])
-    bindEvidence(a.evidenceIds,'appearance',appTarget.get(a.appearanceId));
+  const sourceIdFromParser=(kind,value)=>{
+    const prefix=kind+':';
+    assert.equal(typeof value,'string');
+    assert.ok(value.startsWith(prefix),'Unexpected parser ID namespace: '+value);
+    return value.slice(prefix.length);
+  };
+  for(const r of parsed.snapshot.recordings){
+    const target=recTarget.get(sourceIdFromParser('recording',r.recordingId));assert.ok(target);
+    bindEvidence(r.evidenceIds,'recording',target);
+  }
+  for(const r of parsed.snapshot.releases){
+    const target=relTarget.get(sourceIdFromParser('release',r.releaseId));assert.ok(target);
+    bindEvidence(r.evidenceIds,'release',target);
+  }
+  for(const a of [...parsed.snapshot.appearances,...parsed.snapshot.unboundAppearances]){
+    const target=appTarget.get(sourceIdFromParser('appearance',a.appearanceId));assert.ok(target);
+    bindEvidence(a.evidenceIds,'appearance',target);
+  }
 
   const detailByEvidence=new Map(root.detailedDistributorEvidence.map(d=>[d.evidenceId,d]));
   const evidence=parsed.snapshot.evidence.map(e=>{
