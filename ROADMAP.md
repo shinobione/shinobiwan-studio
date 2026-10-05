@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-10-04. Build124 / v0.19.46 fictional-only package lab merged and owner-observed. C4 encrypted private-registry/recovery model is the next synthetic-only Draft gate. No real-source persistence or Build125 is allocated. See PROJECT_STATE.md.
+Updated: 2026-10-05. Build124 / v0.19.46 remains the owner-confirmed runtime. C4/C4.1 + C5/C5b fictional commercial-registry, migration and encrypted-file recovery contracts are merged on main. **Build125 / v0.19.47 C6 is now a Draft synthetic-only browser candidate**; no real-source persistence, owner-data export or backend sync is authorized. See PROJECT_STATE.md.
 
 This file tracks durable Done / Active / Next / Backlog state. Historical implementation detail belongs in changelogs, milestone docs and acceptance receipts.
 
@@ -127,6 +127,11 @@ Merged [PR #253](https://github.com/shinobione/shinobiwan-studio/pull/253), exac
 Merged [PR #254](https://github.com/shinobione/shinobiwan-studio/pull/254) at `705df3a15fd6ea8076615d1d523564501e6b2362`, exact final-head [CI #801 SUCCESS](https://github.com/shinobione/shinobiwan-studio/actions/runs/36483767882). Owner screenshot confirms live v0.19.46 · 124; owner video confirms the invented-only generate/download/reopen success and Reset. [Bounded owner smoke](docs/acceptance/BUILD124-BOUNDED-OWNER-UI-SMOKE.md). Owner DevTools Network/Storage check remains pending. This is **not** real-source commercial persistence or recoverable private backup.
 
 ## Active
+
+### Build125 / C6 — full fictional commercial-registry browser recovery candidate
+
+[PR #262](https://github.com/shinobione/shinobiwan-studio/pull/262) / [C6 contract](docs/CATALOGUE-BUILD125-C6-FICTIONAL-BROWSER-RECOVERY.md). Candidate only: hardcoded invented revision-1 registry plus rollback/foreign fixtures; actual browser download/open, explicit transient restore, idempotency, rollback/foreign/tamper rejection and automated Network/Storage privacy checks. No real Catalogue input path, persistent commercial registry, Worker/R2/LaunchPAD mutation or Build125 merge/deploy authorization. Owner DevTools privacy smoke remains pending.
+
 
 ### Catalogue C4 — private registry and encrypted recovery contract (fictional only)
 
