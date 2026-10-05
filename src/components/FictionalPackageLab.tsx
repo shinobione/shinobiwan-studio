@@ -4,6 +4,7 @@ import {
   openFictionalPackage, sealFictionalPackage,
 } from '../catalogue/fictionalPackageLab';
 import './fictional-package-lab.css';
+import { FictionalRegistryRecoveryLab } from './FictionalRegistryRecoveryLab';
 
 // Intentionally separate from CatalogueImport and its private Snapshot.
 // There is NO prop or path that can feed actual commercial data into this lab.
@@ -94,5 +95,6 @@ export function FictionalPackageLab() {
     </div>
     <p role="status" aria-live="polite" aria-atomic="true">{status}</p>
     <p id="fictional-lab-privacy">Nothing is uploaded or stored by STUDIO. A completed browser download does not prove a recoverable backup until the selected file is independently reopened. No recovery key is held by the service.</p>
+    <FictionalRegistryRecoveryLab />
   </section>;
 }
