@@ -32,8 +32,8 @@ const RECORD = ['id','title','isrc'];
 const RELEASE = ['id','title','upc'];
 const APPEAR = ['id','releaseId','position','recordingId'];
 const ALIAS = ['namespace','kind','sourceId','targetId','snapshotId'];
-const EVIDENCE = ['id','snapshotId','kind','targetKind','targetId','sourceReleaseId','position'];
-const FINDING = ['id','targetKind','targetId','status'];
+const EVIDENCE = ['id','snapshotId','kind','linkState','sourceRecordAlias','targetKind','targetId','sourceReleaseId','position','linkIssueCode'];
+const FINDING = ['id','targetKind','targetId','evidenceId','status'];
 const DECISION = ['id','operationId','reviewer','targetKind','targetId','evidenceIds','disposition','expectedRevision','rationale'];
 const CHANNEL = ['id','channel','subjectKind','subjectId','status','observedAt','evidenceIds'];
 const AUDIT = ['operationId','revision','parentRevision','kind','targetId'];
@@ -51,7 +51,7 @@ function validate(registry) {
     if (!Array.isArray(registry[field]) || registry[field].length > 500) return reject('INVALID_COLLECTION');
   }
   const refs = { recordings: new Map(), releases: new Map(), appearances: new Map() };
-  const snapshots = new Map(), aliases = new Map(), evidence = new Map(), findingIds = new Set(),
+  const snapshots = new Map(), aliases = new Map(), evidence = new Map(), evidenceSourceAliases = new Set(), findingIds = new Set(),
     decisionIds = new Set(), operationIds = new Set(), channelIds = new Set(), auditOps = new Set();
   for (const s of registry.sourceSnapshots) {
     if (!exact(s,SOURCE) || !id(s.id) || !id(s.namespace) || !id(s.sourceRevision) ||
@@ -100,26 +100,48 @@ function validate(registry) {
   }
   for (const e of registry.evidence) {
     if (!exact(e,EVIDENCE) || !id(e.id) || !snapshots.has(e.snapshotId) ||
-        !EVIDENCE_CLASSES.has(e.kind) || !VALID_KINDS.has(e.targetKind) ||
-        !validTarget(e.targetKind,e.targetId,refs) || evidence.has(e.id))
+        !EVIDENCE_CLASSES.has(e.kind) || !['linked','unlinked'].includes(e.linkState) ||
+        !id(e.sourceRecordAlias) || evidence.has(e.id))
       return reject('INVALID_EVIDENCE');
-    if (e.kind === 'distributor-detail') {
-      const appearance = refs.appearances.get(e.targetId);
-      const namespace = snapshots.get(e.snapshotId).namespace;
-      const rel = aliases.get(JSON.stringify([namespace,'release',e.sourceReleaseId]));
-      if (e.targetKind !== 'appearance' || !appearance || !positive(e.position) ||
-          appearance.position !== e.position || !rel ||
-          rel.targetId !== appearance.releaseId) return reject('DETAIL_EXACT_LINK_CONFLICT');
-    } else if (e.sourceReleaseId !== null || e.position !== null) {
-      return reject('UNEXPECTED_EVIDENCE_PLACEMENT');
+    const sourceIdentity = JSON.stringify([e.snapshotId,e.sourceRecordAlias]);
+    if (evidenceSourceAliases.has(sourceIdentity)) return reject('DUPLICATE_EVIDENCE_SOURCE_ALIAS');
+    evidenceSourceAliases.add(sourceIdentity);
+    if (e.linkState === 'unlinked') {
+      if (e.kind !== 'distributor-detail' || e.targetKind !== null || e.targetId !== null ||
+          !nonempty(e.sourceReleaseId) || !(e.position === null || positive(e.position)) ||
+          !id(e.linkIssueCode)) return reject('INVALID_UNLINKED_EVIDENCE');
+    } else {
+      if (!VALID_KINDS.has(e.targetKind) || !validTarget(e.targetKind,e.targetId,refs) ||
+          e.linkIssueCode !== null) return reject('INVALID_EVIDENCE');
+      if (e.kind === 'distributor-detail') {
+        const appearance = refs.appearances.get(e.targetId);
+        const namespace = snapshots.get(e.snapshotId).namespace;
+        const rel = aliases.get(JSON.stringify([namespace,'release',e.sourceReleaseId]));
+        if (e.targetKind !== 'appearance' || !appearance || !positive(e.position) ||
+            appearance.position !== e.position || !rel ||
+            rel.targetId !== appearance.releaseId) return reject('DETAIL_EXACT_LINK_CONFLICT');
+      } else if (e.sourceReleaseId !== null || e.position !== null) {
+        return reject('UNEXPECTED_EVIDENCE_PLACEMENT');
+      }
     }
     evidence.set(e.id,e);
   }
   for (const f of registry.findings) {
-    if (!exact(f,FINDING) || !id(f.id) || !VALID_KINDS.has(f.targetKind) ||
-        !validTarget(f.targetKind,f.targetId,refs) ||
+    if (!exact(f,FINDING) || !id(f.id) ||
         !['pending','human-reviewed'].includes(f.status) || findingIds.has(f.id))
       return reject('INVALID_FINDING');
+    const global = f.targetKind === null && f.targetId === null;
+    if (global) {
+      if (!id(f.evidenceId) || !evidence.has(f.evidenceId) ||
+          evidence.get(f.evidenceId).linkState !== 'unlinked') return reject('INVALID_FINDING');
+    } else {
+      if (!VALID_KINDS.has(f.targetKind) || !validTarget(f.targetKind,f.targetId,refs) ||
+          !(f.evidenceId === null || (id(f.evidenceId) && evidence.has(f.evidenceId) &&
+            evidence.get(f.evidenceId).linkState === 'linked' &&
+            evidence.get(f.evidenceId).targetKind === f.targetKind &&
+            evidence.get(f.evidenceId).targetId === f.targetId)))
+        return reject('INVALID_FINDING');
+    }
     findingIds.add(f.id);
   }
   for (const d of registry.reviewDecisions) {
@@ -163,6 +185,7 @@ function validate(registry) {
     return reject('REVIEW_AUDIT_MISSING');
   return { ok:true, count: {recordings:refs.recordings.size, releases:refs.releases.size,
     appearances:refs.appearances.size, evidence:evidence.size,
+    unattachedEvidence:registry.evidence.filter(e=>e.linkState==='unlinked').length,
     pendingQA:registry.findings.filter(f=>f.status==='pending').length}, fingerprint:fingerprint(registry) };
 }
 const deep = x => structuredClone(x);
@@ -191,11 +214,13 @@ function invented() {
     ],
     evidence:[
       {id:'invented-proof-detail',snapshotId:'invented-source-snapshot',kind:'distributor-detail',
-        targetKind:'appearance',targetId:'commercial-app-A',sourceReleaseId:'imagined-source-rel',position:1},
+        linkState:'linked',sourceRecordAlias:'imagined-detail-row-A',
+        targetKind:'appearance',targetId:'commercial-app-A',sourceReleaseId:'imagined-source-rel',position:1,linkIssueCode:null},
       {id:'invented-proof-release',snapshotId:'invented-source-snapshot',kind:'historical-distributor',
-        targetKind:'release',targetId:'commercial-rel-A',sourceReleaseId:null,position:null},
+        linkState:'linked',sourceRecordAlias:'imagined-release-evidence-A',
+        targetKind:'release',targetId:'commercial-rel-A',sourceReleaseId:null,position:null,linkIssueCode:null},
     ],
-    findings:[{id:'fictional-qa-A',targetKind:'appearance',targetId:'commercial-app-B',status:'pending'}],
+    findings:[{id:'fictional-qa-A',targetKind:'appearance',targetId:'commercial-app-B',evidenceId:null,status:'pending'}],
     reviewDecisions:[{id:'fictional-decision-A',operationId:'fictional-reviewed-op',reviewer:'imaginary-owner',
       targetKind:'appearance',targetId:'commercial-app-A',evidenceIds:['invented-proof-detail'],
       disposition:'confirmed-source-link',expectedRevision:1,rationale:'Only a wholly invented source link.'}],
@@ -283,7 +308,7 @@ async function test(name,cb) {
 const baseline=invented(), baselineProof=validate(baseline);
 assert.equal(baselineProof.ok,true);
 await test('validated registry has distinct commercial entity and historical evidence counts',async()=>{
-  assert.deepEqual(baselineProof.count,{recordings:2,releases:1,appearances:2,evidence:2,pendingQA:1});
+  assert.deepEqual(baselineProof.count,{recordings:2,releases:1,appearances:2,evidence:2,unattachedEvidence:0,pendingQA:1});
   assert.equal(baseline.appearances[1].recordingId,null);
   assert.equal(baseline.sourceSnapshots[0].digestAuthority,'claim-only');
 });
@@ -315,6 +340,66 @@ await test('independent distributor detail requires the exact existing Release a
   assert.equal(validate(r).code,'DETAIL_EXACT_LINK_CONFLICT');
   r=deep(baseline);r.evidence.push({...deep(r.evidence[0]),id:'another-fictional-exact-detail'});
   const v=validate(r);assert.equal(v.ok,true);assert.equal(v.count.appearances,2);assert.equal(v.count.evidence,3);
+});
+await test('unlinked distributor detail is retained without inventing any commercial target',async()=>{
+  const r=deep(baseline);
+  r.evidence.push({
+    id:'invented-unlinked-detail',snapshotId:'invented-source-snapshot',kind:'distributor-detail',
+    linkState:'unlinked',sourceRecordAlias:'imagined-unlinked-row',
+    targetKind:null,targetId:null,sourceReleaseId:'imagined-unknown-source-release',
+    position:null,linkIssueCode:'EXACT_TARGET_NOT_FOUND',
+  });
+  r.findings.push({
+    id:'fictional-global-unlinked-qa',targetKind:null,targetId:null,
+    evidenceId:'invented-unlinked-detail',status:'pending',
+  });
+  const v=validate(r);
+  assert.equal(v.ok,true);
+  assert.equal(v.count.unattachedEvidence,1);
+  assert.equal(v.count.recordings,2);assert.equal(v.count.releases,1);assert.equal(v.count.appearances,2);
+  assert.equal(v.count.evidence,3);assert.equal(v.count.pendingQA,2);
+});
+await test('unlinked evidence cannot impersonate a target, channel event or reviewed entity',async()=>{
+  let r=deep(baseline);
+  r.evidence.push({
+    id:'invented-unlinked-detail',snapshotId:'invented-source-snapshot',kind:'distributor-detail',
+    linkState:'unlinked',sourceRecordAlias:'imagined-unlinked-row',
+    targetKind:'appearance',targetId:'commercial-app-A',sourceReleaseId:'imagined-source-rel',
+    position:1,linkIssueCode:'EXACT_TARGET_NOT_FOUND',
+  });
+  assert.equal(validate(r).code,'INVALID_UNLINKED_EVIDENCE');
+
+  r=deep(baseline);
+  r.evidence.push({
+    id:'invented-unlinked-detail',snapshotId:'invented-source-snapshot',kind:'distributor-detail',
+    linkState:'unlinked',sourceRecordAlias:'imagined-unlinked-row',
+    targetKind:null,targetId:null,sourceReleaseId:'imagined-unknown-source-release',
+    position:null,linkIssueCode:'EXACT_TARGET_NOT_FOUND',
+  });
+  r.findings.push({id:'fictional-global-unlinked-qa',targetKind:null,targetId:null,
+    evidenceId:'invented-unlinked-detail',status:'pending'});
+  r.channelEvents[0].evidenceIds=['invented-unlinked-detail'];
+  assert.equal(validate(r).code,'INVALID_CHANNEL_EVENT');
+
+  r=deep(baseline);
+  r.evidence.push({
+    id:'invented-unlinked-detail',snapshotId:'invented-source-snapshot',kind:'distributor-detail',
+    linkState:'unlinked',sourceRecordAlias:'imagined-unlinked-row',
+    targetKind:null,targetId:null,sourceReleaseId:'imagined-unknown-source-release',
+    position:null,linkIssueCode:'EXACT_TARGET_NOT_FOUND',
+  });
+  r.findings.push({id:'fictional-global-unlinked-qa',targetKind:null,targetId:null,
+    evidenceId:'invented-unlinked-detail',status:'pending'});
+  r.reviewDecisions[0].evidenceIds=['invented-unlinked-detail'];
+  assert.equal(validate(r).code,'INVALID_REVIEW_DECISION');
+});
+await test('global pending finding must reference an actual unlinked immutable evidence row',async()=>{
+  let r=deep(baseline);
+  r.findings.push({id:'fictional-bad-global',targetKind:null,targetId:null,evidenceId:null,status:'pending'});
+  assert.equal(validate(r).code,'INVALID_FINDING');
+  r=deep(baseline);
+  r.findings.push({id:'fictional-bad-global',targetKind:null,targetId:null,evidenceId:'invented-proof-detail',status:'pending'});
+  assert.equal(validate(r).code,'INVALID_FINDING');
 });
 await test('source coverage and unverified digest claim remain explicit, never silently completed',async()=>{
   const r=deep(baseline);r.sourceSnapshots[0].coverage='omitted';
