@@ -365,8 +365,9 @@ await test('unlinked distributor detail is retained without inventing any commer
     position:null,linkIssueCode:'EXACT_TARGET_NOT_FOUND',
   });
   r.findings.push({
-    id:'fictional-global-unlinked-qa',targetKind:null,targetId:null,
-    evidenceId:'invented-unlinked-detail',status:'pending',
+    id:'fictional-global-unlinked-qa',scope:'evidence',sourceSnapshotId:'invented-source-snapshot',
+    targetKind:null,targetId:null,evidenceId:'invented-unlinked-detail',
+    code:'EXACT_TARGET_NOT_FOUND',locator:'details[unlinked]',status:'pending',
   });
   const v=validate(r);
   assert.equal(v.ok,true);
@@ -391,8 +392,10 @@ await test('unlinked evidence cannot impersonate a target, channel event or revi
     targetKind:null,targetId:null,sourceReleaseId:'imagined-unknown-source-release',
     position:null,linkIssueCode:'EXACT_TARGET_NOT_FOUND',
   });
-  r.findings.push({id:'fictional-global-unlinked-qa',targetKind:null,targetId:null,
-    evidenceId:'invented-unlinked-detail',status:'pending'});
+  r.findings.push({id:'fictional-global-unlinked-qa',scope:'evidence',
+    sourceSnapshotId:'invented-source-snapshot',targetKind:null,targetId:null,
+    evidenceId:'invented-unlinked-detail',code:'EXACT_TARGET_NOT_FOUND',
+    locator:'details[unlinked]',status:'pending'});
   r.channelEvents[0].evidenceIds=['invented-unlinked-detail'];
   assert.equal(validate(r).code,'INVALID_CHANNEL_EVENT');
 
@@ -403,17 +406,73 @@ await test('unlinked evidence cannot impersonate a target, channel event or revi
     targetKind:null,targetId:null,sourceReleaseId:'imagined-unknown-source-release',
     position:null,linkIssueCode:'EXACT_TARGET_NOT_FOUND',
   });
-  r.findings.push({id:'fictional-global-unlinked-qa',targetKind:null,targetId:null,
-    evidenceId:'invented-unlinked-detail',status:'pending'});
+  r.findings.push({id:'fictional-global-unlinked-qa',scope:'evidence',
+    sourceSnapshotId:'invented-source-snapshot',targetKind:null,targetId:null,
+    evidenceId:'invented-unlinked-detail',code:'EXACT_TARGET_NOT_FOUND',
+    locator:'details[unlinked]',status:'pending'});
   r.reviewDecisions[0].evidenceIds=['invented-unlinked-detail'];
   assert.equal(validate(r).code,'INVALID_REVIEW_DECISION');
 });
 await test('global pending finding must reference an actual unlinked immutable evidence row',async()=>{
   let r=deep(baseline);
-  r.findings.push({id:'fictional-bad-global',targetKind:null,targetId:null,evidenceId:null,status:'pending'});
+  r.findings.push({id:'fictional-bad-global',scope:'evidence',sourceSnapshotId:'invented-source-snapshot',
+    targetKind:null,targetId:null,evidenceId:null,code:'BAD_GLOBAL',locator:'source',status:'pending'});
   assert.equal(validate(r).code,'INVALID_FINDING');
   r=deep(baseline);
-  r.findings.push({id:'fictional-bad-global',targetKind:null,targetId:null,evidenceId:'invented-proof-detail',status:'pending'});
+  r.findings.push({id:'fictional-bad-global',scope:'evidence',sourceSnapshotId:'invented-source-snapshot',
+    targetKind:null,targetId:null,evidenceId:'invented-proof-detail',code:'BAD_GLOBAL',
+    locator:'source',status:'pending'});
+  assert.equal(validate(r).code,'INVALID_FINDING');
+});
+await test('generic unattached source evidence is preserved with evidence-scoped pending QA',async()=>{
+  const r=deep(baseline);
+  r.evidence.push({
+    id:'invented-unattached-source-row',snapshotId:'invented-source-snapshot',kind:'source-record',
+    linkState:'unattached',sourceRecordAlias:'imagined-qa-row-A',
+    targetKind:null,targetId:null,sourceReleaseId:null,position:null,linkIssueCode:null,
+  });
+  r.findings.push({
+    id:'fictional-source-row-qa',scope:'evidence',sourceSnapshotId:'invented-source-snapshot',
+    targetKind:null,targetId:null,evidenceId:'invented-unattached-source-row',
+    code:'SOURCE_QA_PENDING',locator:'qa[0]',status:'pending',
+  });
+  const v=validate(r);
+  assert.equal(v.ok,true);
+  assert.equal(v.count.unattachedEvidence,1);
+  assert.equal(v.count.pendingQA,2);
+  assert.equal(v.count.recordings,2);assert.equal(v.count.releases,1);assert.equal(v.count.appearances,2);
+});
+await test('source-wide coverage warning is preserved without evidence or commercial target',async()=>{
+  const r=deep(baseline);
+  r.findings.push({
+    id:'fictional-source-coverage',scope:'source',sourceSnapshotId:'invented-source-snapshot',
+    targetKind:null,targetId:null,evidenceId:null,
+    code:'DERIVED_SOURCE_COVERAGE_INCOMPLETE',locator:'source',status:'pending',
+  });
+  const v=validate(r);
+  assert.equal(v.ok,true);
+  assert.equal(v.count.pendingQA,2);
+});
+await test('finding scope cannot smuggle source evidence into a commercial target',async()=>{
+  let r=deep(baseline);
+  r.evidence.push({
+    id:'invented-unattached-source-row',snapshotId:'invented-source-snapshot',kind:'source-record',
+    linkState:'unattached',sourceRecordAlias:'imagined-qa-row-A',
+    targetKind:null,targetId:null,sourceReleaseId:null,position:null,linkIssueCode:null,
+  });
+  r.findings.push({
+    id:'fictional-bad-target-scope',scope:'target',sourceSnapshotId:null,
+    targetKind:'appearance',targetId:'commercial-app-A',evidenceId:'invented-unattached-source-row',
+    code:'SOURCE_QA_PENDING',locator:'qa[0]',status:'pending',
+  });
+  assert.equal(validate(r).code,'INVALID_FINDING');
+
+  r=deep(baseline);
+  r.findings.push({
+    id:'fictional-bad-source-scope',scope:'source',sourceSnapshotId:'invented-source-snapshot',
+    targetKind:null,targetId:null,evidenceId:'invented-proof-detail',
+    code:'DERIVED_SOURCE_COVERAGE_INCOMPLETE',locator:'source',status:'pending',
+  });
   assert.equal(validate(r).code,'INVALID_FINDING');
 });
 await test('source coverage and unverified digest claim remain explicit, never silently completed',async()=>{
