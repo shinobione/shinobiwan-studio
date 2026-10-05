@@ -229,6 +229,7 @@ function previewMigration(root,parsed,review,prior,readCurrent=()=>prior) {
     pendingReviewRequired:true,
   };
 }
+if (process.env.A24C_C5_LIBRARY_ONLY !== '1') {
 let cases=0;
 const test=(name,run)=>{
   run();cases++;console.log('A2.4-C/A fictional C5: '+name+' PASS');
@@ -428,3 +429,6 @@ test('candidate remains a transient proposal: no current channel-live claim or Q
 });
 console.log('A2.4-C/A fictional C5: '+cases+
   ' exact source-v2/migration preview cases PASS. ZERO commercial minting, public export, disk write, runtime, network or owner data.');
+}
+
+export { fictionalV2 as fictionalC5V2, anotherDetail as addFictionalC5Detail, parse as parseC5Source, newPrior as newC5Prior, reviewFor as reviewC5Source, previewMigration as previewC5Migration, aliasKey as c5AliasKey };
