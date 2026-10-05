@@ -32,9 +32,9 @@ const exact = (row, fields) => keys(row, fields);
 const ROOT = ['schema','registryId','revision','parentRevision','sourceSnapshots','recordings','releases',
   'appearances','sourceAliases','evidence','findings','reviewDecisions','channelEvents','audit'];
 const SOURCE = ['id','namespace','sourceRevision','sourceSchema','exporterContractVersion','snapshotDate','sourceFile','inputSha256','claimedWorkbookSha256','digestAuthority','coverage','sections'];
-const RECORD = ['id','title','isrc'];
-const RELEASE = ['id','title','upc'];
-const APPEAR = ['id','releaseId','position','recordingId'];
+const RECORD = ['id','title','version','isrc'];
+const RELEASE = ['id','title','kind','upc','distributor','source','historicalDistributionStatus','referenceDate'];
+const APPEAR = ['id','releaseId','position','recordingId','displayTitle','observedIsrc','status'];
 const ALIAS = ['namespace','kind','sourceId','targetId','snapshotId'];
 const EVIDENCE = ['id','snapshotId','kind','linkState','sourceRecordAlias','sourceLocator','observedAt','classification','payload','targetKind','targetId','sourceReleaseId','position','linkIssueCode'];
 const FINDING = ['id','scope','sourceSnapshotId','targetKind','targetId','evidenceId','code','locator','status'];
@@ -74,23 +74,32 @@ function validate(registry) {
         snapshots.has(s.id)) return reject('INVALID_SOURCE_SNAPSHOT');
     snapshots.set(s.id,s);
   }
-  for (const [rows,map,fields] of [
-    [registry.recordings,refs.recordings,RECORD],
-    [registry.releases,refs.releases,RELEASE],
-  ]) {
-    for (const r of rows) {
-      if (!exact(r,fields) || !id(r.id) || !nonempty(r.title) ||
-          (r.isrc !== undefined && !(r.isrc === null || nonempty(r.isrc))) ||
-          (r.upc !== undefined && !(r.upc === null || nonempty(r.upc))) ||
-          map.has(r.id)) return reject('INVALID_COMMERCIAL_IDENTITY');
-      map.set(r.id,r);
-    }
+  for (const r of registry.recordings) {
+    if (!exact(r,RECORD) || !id(r.id) || !nonempty(r.title) ||
+        !(r.version === null || safeText(r.version)) ||
+        !(r.isrc === null || nonempty(r.isrc)) ||
+        refs.recordings.has(r.id)) return reject('INVALID_COMMERCIAL_IDENTITY');
+    refs.recordings.set(r.id,r);
+  }
+  for (const r of registry.releases) {
+    if (!exact(r,RELEASE) || !id(r.id) || !nonempty(r.title) ||
+        !['single','ep','album','unknown'].includes(r.kind) ||
+        !(r.upc === null || nonempty(r.upc)) ||
+        !(r.distributor === null || safeText(r.distributor)) ||
+        !safeText(r.source) ||
+        !(r.historicalDistributionStatus === null || safeText(r.historicalDistributionStatus)) ||
+        !(r.referenceDate === null || safeText(r.referenceDate)) ||
+        refs.releases.has(r.id)) return reject('INVALID_COMMERCIAL_IDENTITY');
+    refs.releases.set(r.id,r);
   }
   const occupied = new Set();
   for (const a of registry.appearances) {
     if (!exact(a,APPEAR) || !id(a.id) || !refs.releases.has(a.releaseId) ||
         !(a.position === null || positive(a.position)) ||
         !(a.recordingId === null || refs.recordings.has(a.recordingId)) ||
+        !(a.displayTitle === null || safeText(a.displayTitle)) ||
+        !(a.observedIsrc === null || safeText(a.observedIsrc)) ||
+        !['certified','unverified'].includes(a.status) ||
         refs.appearances.has(a.id)) return reject('INVALID_APPEARANCE');
     if (a.position !== null) {
       const slot = JSON.stringify([a.releaseId,a.position]);
@@ -231,13 +240,17 @@ function invented() {
       ],
     }],
     recordings:[
-      {id:'commercial-rec-A',title:'An imaginary echo',isrc:null},
-      {id:'commercial-rec-B',title:'An imaginary echo',isrc:null},
+      {id:'commercial-rec-A',title:'An imaginary echo',version:null,isrc:null},
+      {id:'commercial-rec-B',title:'An imaginary echo',version:null,isrc:null},
     ],
-    releases:[{id:'commercial-rel-A',title:'Invented album',upc:null}],
+    releases:[{id:'commercial-rel-A',title:'Invented album',kind:'single',upc:null,
+      distributor:'Imaginary distributor',source:'imaginary-distributor',
+      historicalDistributionStatus:'Historic only',referenceDate:null}],
     appearances:[
-      {id:'commercial-app-A',releaseId:'commercial-rel-A',position:1,recordingId:'commercial-rec-A'},
-      {id:'commercial-app-B',releaseId:'commercial-rel-A',position:2,recordingId:null},
+      {id:'commercial-app-A',releaseId:'commercial-rel-A',position:1,recordingId:'commercial-rec-A',
+        displayTitle:'An imaginary echo',observedIsrc:null,status:'unverified'},
+      {id:'commercial-app-B',releaseId:'commercial-rel-A',position:2,recordingId:null,
+        displayTitle:'Unbound imaginary echo',observedIsrc:'ZZAAA2600999',status:'unverified'},
     ],
     sourceAliases:[
       {namespace:'imaginary-distributor',kind:'release',sourceId:'imagined-source-rel',targetId:'commercial-rel-A',snapshotId:'invented-source-snapshot'},
@@ -577,7 +590,7 @@ await test('foreign, rollback and stale current revision are always rejected',as
 await test('newer revision remains a review proposal, never automatic activation',async()=>{
   const expected={registryId:baseline.registryId,revision:baseline.revision,fingerprint:fingerprint(baseline)};
   const r=deep(baseline);r.revision=3;r.parentRevision=2;
-  r.recordings.push({id:'invented-commercial-rec-C',title:'Entirely fictional new version',isrc:null});
+  r.recordings.push({id:'invented-commercial-rec-C',title:'Entirely fictional new version',version:null,isrc:null});
   const plan=previewComparison(baseline,r,expected);
   assert.equal(plan.status,'requires-explicit-owner-review');
   assert.deepEqual(plan.entityDelta,{recordings:1,releases:0,appearances:0});
