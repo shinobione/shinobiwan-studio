@@ -583,6 +583,15 @@ await test('newer revision remains a review proposal, never automatic activation
   assert.deepEqual(plan.entityDelta,{recordings:1,releases:0,appearances:0});
   assert.equal(plan.writes,0);assert.equal(plan.automaticActivation,false);
 });
+await test('evidence payload and exact source coverage fields are mandatory private registry content',async()=>{
+  let r=deep(baseline);
+  delete r.evidence[0].payload;
+  assert.equal(validate(r).code,'INVALID_EVIDENCE');
+  r=deep(baseline);r.evidence[0].observedAt='not-a-date';
+  assert.equal(validate(r).code,'INVALID_EVIDENCE');
+  r=deep(baseline);delete r.sourceSnapshots[0].sections[0].bodyPreservation;
+  assert.equal(validate(r).code,'INVALID_SOURCE_SNAPSHOT');
+});
 await test('real AEAD seals and reopens ONLY an invented inner commercial registry in memory',async()=>{
   const sealed=await sealInvented(baseline);
   const authenticated=await openInvented(sealed,password);
@@ -591,6 +600,10 @@ await test('real AEAD seals and reopens ONLY an invented inner commercial regist
   assert.ok(!sealed.includes('An imaginary echo'));
   assert.ok(!sealed.includes('invented-proof-detail'));
   assert.ok(!sealed.includes('fictional-qa-A'));
+  assert.ok(!sealed.includes('exact fictional detail'));
+  assert.ok(!sealed.includes('invented-private-source.json'));
+  assert.equal(authenticated.registry.evidence[0].payload,'{"Invented note":"exact fictional detail"}');
+  assert.equal(authenticated.registry.sourceSnapshots[0].sections[0].bodyPreservation,'normalized-or-counted-only');
   assert.deepEqual(Object.keys(JSON.parse(sealed)),['header','ciphertext']);
 });
 await test('new encrypted backup candidates receive fresh salt/nonce, decode same private revision',async()=>{
