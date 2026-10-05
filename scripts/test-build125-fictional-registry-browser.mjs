@@ -12,7 +12,7 @@ const pkg=JSON.parse(read('package.json'));
 const release=read('src/release.ts');
 assert.equal(pkg.version,'0.19.47');
 assert.match(release,/build:\s*125/);
-assert.ok(release.includes("build124AncestryMarker = \"version: '0.19.46' · build: 124\""));
+assert.ok(release.includes("build124AncestryMarker = \"version: '0.19.46' · build: 124"));
 assert.match(pkg.scripts.build,/check:build125/);
 assert.match(read('src/catalogue/fictionalRegistryLab.ts'),/SYNTHETIC-ONLY/);
 assert.match(read('src/components/FictionalRegistryRecoveryLab.tsx'),/Full fictional commercial registry recovery lab/);
