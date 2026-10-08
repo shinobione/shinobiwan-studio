@@ -75,6 +75,7 @@ const ui = load('src/components/CommercialCatalogue.tsx', {
   './CatalogueImport': { CatalogueImport: ({ emptyCopy }) => React.createElement('div', null, React.createElement('h3', null, emptyCopy.title), React.createElement('p', null, emptyCopy.body), 'No private source loaded.') },
   // Build124's separate fictional-only child is not allowed to receive a commercial Snapshot.
   './FictionalPackageLab': { FictionalPackageLab: () => React.createElement('div', null, 'Fictional only lab') },
+  './CatalogueMigrationPreview': { CatalogueMigrationPreview: () => React.createElement('div', null, 'Owner-local migration preflight only') },
 }, {
   fetch: () => { networkRequests++; throw new Error('Catalogue A2.1 must not request network data.'); },
   XMLHttpRequest: class { constructor() { networkRequests++; throw new Error('Catalogue A2.1 must not request network data.'); } },
@@ -90,6 +91,7 @@ for (const [hash, expected] of [
   ['#/catalogue/recordings', 'No recordings loaded'],
   ['#/catalogue/qa', 'No reconciliation cases loaded'],
   ['#/catalogue/lab', 'Fictional only lab'],
+  ['#/catalogue/migration-preview', 'Owner-local migration preflight only'],
   ['#/catalogue/recordings/synthetic-missing', 'Catalogue item not found'],
   ['#/catalogue/releases/synthetic-missing', 'Catalogue item not found'],
   ['#/catalogue/recordings/%', 'Catalogue item not found'],

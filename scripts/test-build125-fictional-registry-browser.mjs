@@ -10,8 +10,8 @@ import { createServer } from 'vite';
 const read=p=>fs.readFileSync(p,'utf8');
 const pkg=JSON.parse(read('package.json'));
 const release=read('src/release.ts');
-assert.equal(pkg.version,'0.19.47');
-assert.match(release,/build:\s*125/);
+assert.ok(release.includes("build125AncestryMarker = \"version: '0.19.47' · build: 125"));
+// Historical Build125 browser semantics remain covered after a later current build/version bump.
 assert.ok(release.includes("build124AncestryMarker = \"version: '0.19.46' · build: 124"));
 assert.match(pkg.scripts.build,/check:build125/);
 assert.match(read('src/catalogue/fictionalRegistryLab.ts'),/SYNTHETIC-ONLY/);

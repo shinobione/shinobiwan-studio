@@ -4,13 +4,15 @@ import './commercial-catalogue.css';
 import { useCatalogueSession } from '../catalogue/useCatalogueSession';
 import { CatalogueImport } from './CatalogueImport';
 import { FictionalPackageLab } from './FictionalPackageLab';
+import { CatalogueMigrationPreview } from './CatalogueMigrationPreview';
 
-const SECTIONS: Array<{ section: CatalogueSection | 'lab'; label: string }> = [
+const SECTIONS: Array<{ section: CatalogueSection | 'lab' | 'migration-preview'; label: string }> = [
   { section: 'overview', label: 'Overview' },
   { section: 'releases', label: 'Releases' },
   { section: 'recordings', label: 'Recordings' },
   { section: 'qa', label: 'QA' },
   { section: 'lab', label: 'Fictional package lab' },
+  { section: 'migration-preview', label: 'Local migration preflight' },
 ];
 
 const EMPTY_COPY: Record<CatalogueSection, { title: string; body: string }> = {
@@ -32,12 +34,12 @@ export function CommercialCatalogue() {
     return () => globalThis.removeEventListener('hashchange', syncLocation);
   }, []);
 
-  // Entering the sealed synthetic lab discards any real in-memory imported source.
-  // The lab has no Snapshot prop, CommercialCatalogue writer or data-sharing path.
-  useEffect(() => { if (route.section === 'lab') session.onReset(); }, [route.section]);
+  // Both isolated routes must discard any source loaded in the existing Catalogue viewer.
+  // Each owns an independent worker/session and receives no Catalogue Snapshot prop.
+  useEffect(() => { if (route.section === 'lab' || route.section === 'migration-preview') session.onReset(); }, [route.section]);
 
   const missing = route.section === 'not-found' || route.id !== undefined;
-  const copy = route.section === 'not-found' || route.section === 'lab' ? null : EMPTY_COPY[route.section];
+  const copy = route.section === 'not-found' || route.section === 'lab' || route.section === 'migration-preview' ? null : EMPTY_COPY[route.section];
 
   return (
     <section className="commercial-catalogue" aria-label="Commercial Catalogue">
@@ -65,6 +67,8 @@ export function CommercialCatalogue() {
           <a className="commercial-catalogue-link" href={catalogueHref({ section: 'overview' })}>Back to Catalogue overview →</a>
         ) : route.section === 'lab' ? (
           <FictionalPackageLab />
+        ) : route.section === 'migration-preview' ? (
+          <CatalogueMigrationPreview />
         ) : (
           <CatalogueImport {...session} section={route.section as CatalogueSection} emptyCopy={copy!} />
         )}
