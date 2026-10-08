@@ -9,7 +9,7 @@ const pkg=JSON.parse(fs.readFileSync('package.json','utf8'));
 const js=ts.transpileModule(codec.replace(/^import type .*\n/m,'').replace('export function previewC7a','function previewC7a'),{
   compilerOptions:{module:ts.ModuleKind.None,target:ts.ScriptTarget.ES2022}
 }).outputText;
-const {previewC7a}=new Function(js+'; return {previewC7a};')();
+const {previewC7a}=new Function('exports',js+'; return {previewC7a};')({});
 const fiction={
   source:{schema:'catalogue-readonly-seed-v2'},
   enrichment:{linkedEvidenceCount:2,unlinkedEvidenceCount:1,partialSections:3,omittedSections:1},
