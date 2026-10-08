@@ -142,7 +142,7 @@ try{
   await scenario('moving into fictional lab unmounts C7a and leaves no private source in old Catalogue viewer',async()=>{
     await picker.setInputFiles(upload(source));await accepted();
     await nav.getByRole('link',{name:'Fictional package lab'}).click();
-    await page.getByRole('heading',{name:'Fictional encrypted package lab'}).waitFor();
+    await page.getByRole('heading',{name:'Test a local encrypted file'}).waitFor();
     assert.equal(await page.getByLabel('C7a local migration preflight').count(),0);
     await nav.getByRole('link',{name:'Overview'}).click();
     await page.getByText('No private source loaded.',{exact:true}).waitFor();
