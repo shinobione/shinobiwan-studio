@@ -46,7 +46,7 @@ export function summarizeC7aV2(input: string, result: ImportResult): C7aReport {
   if (root === null || typeof root !== 'object' || Array.isArray(root)) return rejectC7a('SOURCE_NOT_ACCEPTED');
   const source = root as Record<string, unknown>;
   if (source.schemaVersion !== 'catalogue-readonly-seed-v2' || !Array.isArray(source.sectionCoverage) ||
-      source.sectionCoverage.length !== result.snapshot.enrichment.sectionCount) return rejectC7a('SOURCE_NOT_ACCEPTED');
+      source.sectionCoverage.length !== snapshot.enrichment.sectionCount) return rejectC7a('SOURCE_NOT_ACCEPTED');
 
   const coverage = { represented: 0, partial: 0, omitted: 0, contradictory: 0, unverified: 0 };
   for (const value of source.sectionCoverage) {
