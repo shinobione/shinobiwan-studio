@@ -21,7 +21,7 @@ const source = {
     { recordingId: 'recording:fiction-b', title: 'Invented duplicate', evidenceIds: ['proof-rec-b'] },
   ],
   releases: [{ releaseId: 'release:fiction', title: 'Invented release', evidenceIds: ['proof-release'] }],
-  appearances: [{ appearanceId: 'appearance:bound', releaseId: 'release:fiction', recordingId: 'recording:fiction-a', position: 1, displayTitle: 'Invented', evidenceIds: ['proof-bound'] }],
+  appearances: [{ appearanceId: 'appearance:bound', releaseId: 'release:fiction', recordingId: 'recording:fiction-a', position: 1, displayTitle: 'Invented', evidenceIds: ['proof-bound', 'detail-linked'] }],
   unboundAppearances: [{ appearanceId: 'appearance:unbound', releaseId: 'release:fiction', recordingId: null, position: 2, displayTitle: null, evidenceIds: ['proof-unbound'] }],
   evidence: [
     { evidenceId: 'proof-rec-a' }, { evidenceId: 'proof-rec-b' },
@@ -66,7 +66,7 @@ test('unbound Appearance stays unbound without inferred recording', () => {
   assert.match(p.dossiers[4].relationship, /recording unbound/);
 });
 test('independent unattached distributor detail remains targetless', () => {
-  const p = collect(source); assert.deepEqual(p.unlinkedEvidenceIds, ['detail-linked', 'detail-unlinked']);
+  const p = collect(source); assert.deepEqual(p.unlinkedEvidenceIds, ['detail-unlinked']);
 });
 test('v1 or absent enrichment does not activate review desk', () => {
   const a = structuredClone(source); a.source.schema = 'catalogue-readonly-seed-v1';
