@@ -9,11 +9,14 @@ import { CatalogueDetails } from './CatalogueDetails';
 import { allFindings, catalogueIndex, findingTargets, selectFindings, type CatalogueContext, type ReviewFilter } from '../catalogue/recordings';
 import type { Snapshot } from '../catalogue/import';
 import { previewC7a } from '../catalogue/c7aPreview';
+import { collectC7aDossiers, type DossierKind } from '../catalogue/c7aDossiers';
 import type { CatalogueSection } from '../catalogue-router';
 
 
 export function CatalogueImport({ section, emptyCopy, state, onSelect, onReset }: { section: CatalogueSection; emptyCopy: { title: string; body: string }; state: SessionState; onSelect: (file: File) => void; onReset: () => void }) {
   const [page, setPage] = useState(0);
+  const [dossierKind, setDossierKind] = useState<DossierKind | 'unlinked'>('recording');
+  const [dossierPage, setDossierPage] = useState(0);
   const [filter, setFilter] = useState<ReviewFilter>(allFindings);
   const [selection, setSelection] = useState<{ target: CatalogueContext; snapshot: Snapshot; section: CatalogueSection } | null>(null);
   const input = useRef<HTMLInputElement>(null);
@@ -22,6 +25,7 @@ export function CatalogueImport({ section, emptyCopy, state, onSelect, onReset }
   const resetFocus = useRef(false);
   useEffect(() => {
     setPage(0); setFilter(allFindings); setSelection(null);
+    setDossierKind('recording'); setDossierPage(0);
     // A discarded release dialog must leave the top layer before picker focus.
     if (resetFocus.current && state.phase === 'empty') { input.current?.focus(); resetFocus.current = false; }
   }, [state]);
@@ -36,6 +40,11 @@ export function CatalogueImport({ section, emptyCopy, state, onSelect, onReset }
   const findings = result?.status === 'accepted' ? result.snapshot.findings : result?.findings ?? [];
   const index = useMemo(() => snapshot ? catalogueIndex(snapshot) : null, [snapshot]);
   const c7a = useMemo(() => snapshot ? previewC7a(snapshot) : null, [snapshot]);
+  const dossiers = useMemo(() => snapshot ? collectC7aDossiers(snapshot) : null, [snapshot]);
+  const dossierRows = dossiers?.status === 'preview-only' && dossierKind !== 'unlinked' ? dossiers.dossiers.filter(d => d.kind === dossierKind) : [];
+  const dossierTotal = dossiers?.status === 'preview-only' ? dossierKind === 'unlinked' ? dossiers.unlinkedEvidenceIds.length : dossierRows.length : 0;
+  const dossierPageSize = 12;
+  const evidenceById = useMemo(() => new Map(snapshot?.evidence.map(e => [e.evidenceId, e]) ?? []), [snapshot]);
   const visibleFindings = index ? selectFindings(index, filter) : findings;
   const contextLabel = !index || !filter.context ? null : filter.context.kind === 'recording' ? index.recordingById.get(filter.context.id)?.title
     : filter.context.kind === 'release' ? index.releaseById.get(filter.context.id)?.title : index.appearanceById.get(filter.context.id)?.displayTitle;
@@ -87,6 +96,60 @@ export function CatalogueImport({ section, emptyCopy, state, onSelect, onReset }
           }).map(([label,value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
         </dl>
         <p><strong>Human review required.</strong> Existing source rows are not newly minted commercial entities. Titles, ISRC/UPC and order are not mapping authority. Historical distribution does not establish current DSP availability. Nothing is uploaded, exported, persisted or approved.</p>
+      </section>
+    )}
+    {snapshot && dossiers?.status === 'preview-only' && section === 'overview' && (
+      <section className="catalogue-source-details catalogue-review-desk" aria-label="C7a2 local source dossiers for human review">
+        <h3>C7a.2 · Source review dossiers</h3>
+        <p>Private source-only inspection. Exact v2 source references and historical evidence are shown for human review; they are NOT reviewed commercial mappings. No target IDs, approvals, export or save exist here.</p>
+        <p>{dossiers.dossiers.length} source identities · {dossiers.unlinkedEvidenceIds.length} independent unattached distributor details · {dossiers.unscopedFindingCount} pending QA findings without an exact dossier evidence link.</p>
+        <p><strong>Review state: HOLD.</strong> An owner-reviewed source namespace, separate private registry and exact target decisions are still required. Titles, ISRC/UPC and source positions never authorize identity merging.</p>
+        <div className="catalogue-import-controls" role="group" aria-label="Source dossier kind">
+          {(['recording', 'release', 'appearance', 'unlinked'] as const).map(kind => (
+            <button key={kind} type="button" aria-pressed={dossierKind === kind} onClick={() => { setDossierKind(kind); setDossierPage(0); }}>
+              {kind === 'unlinked' ? 'Unlinked distributor evidence' : kind === 'recording' ? 'Recordings' : kind === 'release' ? 'Releases' : 'Appearances'}
+            </button>
+          ))}
+        </div>
+        <p aria-live="polite">Showing {dossierTotal ? dossierPage * dossierPageSize + 1 : 0}–{Math.min((dossierPage + 1) * dossierPageSize, dossierTotal)} of {dossierTotal} · No item is approved.</p>
+        {dossierKind !== 'unlinked' ? (
+          <ol className="catalogue-review-dossier-list" start={dossierPage * dossierPageSize + 1}>
+            {dossierRows.slice(dossierPage * dossierPageSize, (dossierPage + 1) * dossierPageSize).map(d => (
+              <li key={d.kind + ':' + d.sourceId}>
+                <details>
+                  <summary><strong>{d.sourceLabel}</strong> · {d.evidenceIds.length} linked proof refs · {d.findingCodes.length} QA classes{d.unbound ? ' · UNBOUND' : ''}</summary>
+                  <p><strong>Exact source {d.kind} ID:</strong> <code>{d.sourceId}</code></p>
+                  <p>{d.relationship}</p>
+                  <p><strong>Reviewed namespace:</strong> none · <strong>Commercial target:</strong> none · <strong>Decision:</strong> HUMAN REVIEW REQUIRED</p>
+                  <p><strong>QA codes:</strong> {d.findingCodes.length ? d.findingCodes.map(code => LABELS[code] ?? code).join(' · ') : 'No exactly linked findings; not a clearance'}</p>
+                  {d.evidenceIds.map(id => {
+                    const proof = evidenceById.get(id);
+                    return <details key={id}><summary>Source proof: {proof?.sourceLocator ?? 'Exact evidence reference'}</summary>
+                      <p>Evidence ID: <code>{id}</code></p>
+                      <pre>{proof?.note ?? 'Evidence note not available in this source'}</pre>
+                    </details>;
+                  })}
+                </details>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <ol className="catalogue-review-dossier-list" start={dossierPage * dossierPageSize + 1}>
+            {dossiers.unlinkedEvidenceIds.slice(dossierPage * dossierPageSize, (dossierPage + 1) * dossierPageSize).map(id => {
+              const proof = evidenceById.get(id);
+              return <li key={id}><details><summary>Independent detail · unattached · HUMAN REVIEW REQUIRED</summary>
+                <p>No Appearance, Recording, Release or commercial target is inferred from this distributor detail.</p>
+                <p>Evidence ID: <code>{id}</code> · Source: {proof?.sourceLocator ?? 'unknown'}</p>
+                <pre>{proof?.note ?? 'Evidence note not available'}</pre>
+              </details></li>;
+            })}
+          </ol>
+        )}
+        <div className="catalogue-import-controls">
+          <button type="button" disabled={dossierPage === 0} onClick={() => setDossierPage(p => p - 1)}>Previous dossiers</button>
+          <span>Page {dossierPage + 1} of {Math.max(1, Math.ceil(dossierTotal / dossierPageSize))}</span>
+          <button type="button" disabled={(dossierPage + 1) * dossierPageSize >= dossierTotal} onClick={() => setDossierPage(p => p + 1)}>Next dossiers</button>
+        </div>
       </section>
     )}
     {snapshot && section === 'overview' && <CatalogueOverview snapshot={snapshot} onReview={value => {
