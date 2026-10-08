@@ -8,6 +8,7 @@ import { CatalogueRecordings } from './CatalogueRecordings';
 import { CatalogueDetails } from './CatalogueDetails';
 import { allFindings, catalogueIndex, findingTargets, selectFindings, type CatalogueContext, type ReviewFilter } from '../catalogue/recordings';
 import type { Snapshot } from '../catalogue/import';
+import { previewC7a } from '../catalogue/c7aPreview';
 import type { CatalogueSection } from '../catalogue-router';
 
 
@@ -34,6 +35,7 @@ export function CatalogueImport({ section, emptyCopy, state, onSelect, onReset }
   const snapshot = result?.status === 'accepted' ? result.snapshot : null;
   const findings = result?.status === 'accepted' ? result.snapshot.findings : result?.findings ?? [];
   const index = useMemo(() => snapshot ? catalogueIndex(snapshot) : null, [snapshot]);
+  const c7a = useMemo(() => snapshot ? previewC7a(snapshot) : null, [snapshot]);
   const visibleFindings = index ? selectFindings(index, filter) : findings;
   const contextLabel = !index || !filter.context ? null : filter.context.kind === 'recording' ? index.recordingById.get(filter.context.id)?.title
     : filter.context.kind === 'release' ? index.releaseById.get(filter.context.id)?.title : index.appearanceById.get(filter.context.id)?.displayTitle;
@@ -64,6 +66,29 @@ export function CatalogueImport({ section, emptyCopy, state, onSelect, onReset }
       {result?.status === 'rejected' && <p><strong>Source rejected.</strong> No snapshot is active. Source rows: {result.sourceRows ?? 'unknown'}. Parsed records were not activated.</p>}
       {snapshot && <><p><strong>Source structurally accepted for dry-run.</strong> {findings.length} findings await human review. Nothing has been imported into production.</p>{snapshot.enrichment && <p>Enriched v2 · {snapshot.enrichment.detailedEvidenceCount} independent historical distributor evidence rows · {snapshot.enrichment.linkedEvidenceCount} exact appearance links · {snapshot.enrichment.unlinkedEvidenceCount} unlinked pending review. Existing appearances are never recounted as new recordings.</p>}</>}
     </div>
+    {snapshot && c7a?.status === 'preview-only' && section === 'overview' && (
+      <section className="catalogue-source-details" aria-label="C7a local read-only migration preflight">
+        <h3>C7a · Local migration readiness preview</h3>
+        <p>Private v2 source accepted locally. This is an aggregate-only preview, not a commercial registry migration or a saved backup.</p>
+        <dl className="catalogue-import-summary">
+          {Object.entries({
+            'Existing source recordings': c7a.recordings,
+            'Existing source releases': c7a.releases,
+            'Existing appearances': c7a.appearances,
+            'Unbound appearances': c7a.unbound,
+            'Historical evidence rows': c7a.evidence,
+            'Exact linked details': c7a.linkedDetail,
+            'Unlinked details pending review': c7a.unlinkedDetail,
+            'Pending QA': c7a.pendingQa,
+            'Partial source sections': c7a.partialSections,
+            'Omitted source sections': c7a.omittedSections,
+            'Automatic mappings': c7a.proposedAutomaticMappings,
+            'Commercial writes': c7a.proposedCommercialWrites,
+          }).map(([label,value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
+        </dl>
+        <p><strong>Human review required.</strong> Existing source rows are not newly minted commercial entities. Titles, ISRC/UPC and order are not mapping authority. Historical distribution does not establish current DSP availability. Nothing is uploaded, exported, persisted or approved.</p>
+      </section>
+    )}
     {snapshot && section === 'overview' && <CatalogueOverview snapshot={snapshot} onReview={value => {
       setFilter({ code: value, context: null }); setPage(0); reviewFocus.current = true;
       globalThis.location.hash = catalogueHref({ section: 'qa' });
