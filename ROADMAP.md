@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-10-05. Build124 / v0.19.46 remains the owner-confirmed runtime. C4/C4.1 + C5/C5b fictional commercial-registry, migration and encrypted-file recovery contracts are merged on main. **Build125 / v0.19.47 C6 is now a Draft synthetic-only browser candidate**; no real-source persistence, owner-data export or backend sync is authorized. See PROJECT_STATE.md.
+Updated: 2026-10-08. Build125 / v0.19.47 C6 merged, Pages-deployed and bounded owner-smoke accepted with separate shared-origin storage qualification. C4/C4.1 + C5/C5b synthetic architecture is merged. **C7 is currently a Draft review-only readiness/preflight gate**, not a real-source migration or Build126. See PROJECT_STATE.md.
 
 This file tracks durable Done / Active / Next / Backlog state. Historical implementation detail belongs in changelogs, milestone docs and acceptance receipts.
 
@@ -127,6 +127,11 @@ Merged [PR #253](https://github.com/shinobione/shinobiwan-studio/pull/253), exac
 Merged [PR #254](https://github.com/shinobione/shinobiwan-studio/pull/254) at `705df3a15fd6ea8076615d1d523564501e6b2362`, exact final-head [CI #801 SUCCESS](https://github.com/shinobione/shinobiwan-studio/actions/runs/36483767882). Owner screenshot confirms live v0.19.46 · 124; owner video confirms the invented-only generate/download/reopen success and Reset. [Bounded owner smoke](docs/acceptance/BUILD124-BOUNDED-OWNER-UI-SMOKE.md). Owner DevTools Network/Storage check remains pending. This is **not** real-source commercial persistence or recoverable private backup.
 
 ## Active
+
+### Catalogue C7 — separately authorized private-preview/export preflight
+
+[Readiness/consent contract](docs/CATALOGUE-A24C-C7-PRIVATE-TRIAL-READINESS.md): owner-accepted Build125 C6 fictional browser smoke, differential privacy on shared GitHub Pages origin, exact source-v2 authority/mapping, protected unresolved QA, secret custody and independent recovery copies. **C7a read-only private preview and C7b real encrypted export are distinct future owner authorizations.** Current branch only adds docs and invented fail-closed decision tests. No Build126 or real commercial writer, file upload, Worker/R2/LaunchPAD update or sync.
+
 
 ### Build125 / C6 — full fictional commercial-registry browser recovery candidate
 
