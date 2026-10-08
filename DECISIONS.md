@@ -297,11 +297,13 @@ On 2026-09-28 the owner chose **A** (portable encrypted local file), expressly *
 
 [Owner choice and gate packet](docs/CATALOGUE-A2-4C-STORAGE-PRIVACY-DECISION-PACKET.md) · [C1 fictional architecture/tests](docs/CATALOGUE-A2-4C-A-LOCAL-PACKAGE-C1-CONTRACT.md). **Path A choice alone authorizes no actual private data save, general crypto codec, registry migration, sync or future merge.** The separate, subsequently authorized and merged [Build124 invented-only lab](docs/acceptance/BUILD124-BOUNDED-OWNER-UI-SMOKE.md) does not change that real-data prohibition. The [C4 schema/recovery draft](docs/CATALOGUE-A24C-C4-REGISTRY-RESTORE-CONTRACT.md) has not become an approved production canonical model; no D-026 is declared before independent review.
 
-## Pending owner decision — C7a vs C7b are separate (NOT D-026)
+## D-026 — C7a implementation authorized, private execution and C7b NOT authorized (2026-10-08)
 
-After Build125/v0.19.47's [bounded owner fictional C6 smoke](docs/acceptance/BUILD125-BOUNDED-OWNER-SMOKE.md), C7 is a **preparatory readiness review only**. The [C7 packet](docs/CATALOGUE-A24C-C7-PRIVATE-TRIAL-READINESS.md) proposes a future **C7a owner-local read-only private v2 migration preview** (no export or commercial writes), followed only after separate approval by **C7b first real encrypted export/restore** with reviewed production cryptography, owner-held backups and recovery proof. **Neither is authorized now** by the generic approval to prepare C7. The owner must make separate explicit scope-specific decisions, and a new numbered D-026 should be recorded only when a real scope is approved.
+The owner explicitly approved **development** of a local, read-only owner-private v2 migration preview, **without running a real owner-source file during development**. [Candidate Build126 / v0.19.48](docs/CATALOGUE-BUILD126-C7A-LOCAL-PREVIEW.md) adds `#/catalogue/migration-preview`, independently guarded browser-worker validation and **aggregate-only** human-review requirements. This supersedes only the previous *unapproved C7a-development* portion of the C7 readiness note.
 
-Synthetic C4–C6 tests and observed no-upload-on-reopen do not approve a general commercial registry encoder, arbitrary-source decryption, public/private backend access, source-identity autofill or Studio↔LaunchPAD sync. Shared GitHub Pages origin already contains other app storage; future storage privacy must be measured as a controlled **before/after differential**, not assumed empty.
+**Permission is intentionally narrow:** no real JSON processing in Git, CI or this chat; no owner-file trial until separately agreed; no actual reviewed alias decisions, commercial ID minting or real registry creation; no export/backup/restore, backend mutation, publication inference or creative Track binding. Candidate PR remains Draft until explicit later approval. A C7b first real encrypted commercial export/restore is **not** covered by D-026 and requires its own future decision.
+
+Shared GitHub Pages origin already has other app storage. Future private owner smoke compares before/after Network and Storage changes, rather than treating non-empty origin storage as a C7a regression.
 
 ## Changing a decision
 
