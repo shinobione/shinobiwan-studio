@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-10-08. Build125 / v0.19.47 C6 merged, Pages-deployed and bounded owner-smoke accepted with separate shared-origin storage qualification. C4/C4.1 + C5/C5b synthetic architecture is merged. **C7 is currently a Draft review-only readiness/preflight gate**, not a real-source migration or Build126. See PROJECT_STATE.md.
+Updated: 2026-10-08. Build125 / v0.19.47 remains owner-accepted/deployed. C7 preparatory preflight merged in PR #263; owner approved development only of Build126/C7a aggregate read-only local v2 migration preview (Draft PR #264). No real-source trial, merge/deploy authorization, commercial backup or C7b export. See PROJECT_STATE.md.
 
 This file tracks durable Done / Active / Next / Backlog state. Historical implementation detail belongs in changelogs, milestone docs and acceptance receipts.
 
