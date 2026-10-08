@@ -74,3 +74,15 @@
   .commercial-catalogue a { transition: none; }
   .commercial-catalogue a:active { transform: none; }
 }
+
+/* C7a.2: source-only review desk; no approval/edit affordances. */
+.catalogue-review-desk { margin-block: 30px 40px; }
+.catalogue-review-desk .catalogue-import-controls { margin-block: 16px; }
+.catalogue-review-desk button[aria-pressed="true"] { border-color: var(--cyan); background: rgba(82,227,214,.16); color: #eafffd; }
+.catalogue-review-dossier-list { display: grid; gap: 10px; padding-left: 24px; margin-block: 18px; }
+.catalogue-review-dossier-list > li { min-width: 0; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: rgba(20,38,42,.6); }
+.catalogue-review-dossier-list summary { overflow-wrap: anywhere; color: #e7cfae; }
+.catalogue-review-dossier-list code { overflow-wrap: anywhere; white-space: normal; }
+.catalogue-review-dossier-list details details { padding: 10px 0 0 12px; border-left: 2px solid var(--line); }
+.catalogue-review-dossier-list pre { max-height: 220px; overflow-y: auto; }
+@media (max-width: 600px) { .catalogue-review-dossier-list { padding-left: 20px; } .catalogue-review-dossier-list > li { padding: 12px; } }
