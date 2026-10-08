@@ -44,7 +44,7 @@ export function CatalogueImport({ section, emptyCopy, state, onSelect, onReset }
   const dossierRows = dossiers?.status === 'preview-only' && dossierKind !== 'unlinked' ? dossiers.dossiers.filter(d => d.kind === dossierKind) : [];
   const dossierTotal = dossiers?.status === 'preview-only' ? dossierKind === 'unlinked' ? dossiers.unlinkedEvidenceIds.length : dossierRows.length : 0;
   const dossierPageSize = 12;
-  const evidenceById = useMemo(() => new Map(snapshot?.evidence.map(e => [e.evidenceId, e]) ?? []), [snapshot]);
+  const evidenceById = useMemo(() => new Map<string, Snapshot['evidence'][number]>(snapshot?.evidence.map(e => [String(e.evidenceId), e] as const) ?? []), [snapshot]);
   const visibleFindings = index ? selectFindings(index, filter) : findings;
   const contextLabel = !index || !filter.context ? null : filter.context.kind === 'recording' ? index.recordingById.get(filter.context.id)?.title
     : filter.context.kind === 'release' ? index.releaseById.get(filter.context.id)?.title : index.appearanceById.get(filter.context.id)?.displayTitle;
