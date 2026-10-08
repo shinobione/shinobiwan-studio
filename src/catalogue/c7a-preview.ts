@@ -37,8 +37,10 @@ export type C7aReport =
 export const rejectC7a = (code: C7aRejectCode): C7aReport => ({ status: 'rejected', code });
 
 export function summarizeC7aV2(input: string, result: ImportResult): C7aReport {
-  if (result.status !== 'accepted' || result.snapshot.source.schema !== 'catalogue-readonly-seed-v2' ||
-      !result.snapshot.enrichment) return rejectC7a('SOURCE_NOT_ACCEPTED');
+  if (result.status !== 'accepted') return rejectC7a('SOURCE_NOT_ACCEPTED');
+  const snapshot = result.snapshot;
+  if (snapshot.source.schema !== 'catalogue-readonly-seed-v2' || !snapshot.enrichment)
+    return rejectC7a('SOURCE_NOT_ACCEPTED');
   let root: unknown;
   try { root = JSON.parse(input); } catch { return rejectC7a('SOURCE_NOT_ACCEPTED'); }
   if (root === null || typeof root !== 'object' || Array.isArray(root)) return rejectC7a('SOURCE_NOT_ACCEPTED');
@@ -53,7 +55,6 @@ export function summarizeC7aV2(input: string, result: ImportResult): C7aReport {
     if (typeof state !== 'string' || !Object.hasOwn(coverage, state)) return rejectC7a('SOURCE_NOT_ACCEPTED');
     coverage[state as keyof typeof coverage]++;
   }
-  const snapshot = result.snapshot;
   const appearances = snapshot.appearances.length + snapshot.unboundAppearances.length;
   const reviewIdentities = snapshot.recordings.length + snapshot.releases.length + appearances;
   return {
