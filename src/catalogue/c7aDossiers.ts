@@ -36,15 +36,22 @@ export function collectC7aDossiers(snapshot: Snapshot): LocalDossierPack {
   }
 
   const bound = new Set<string>();
+  // Index once instead of scanning all QA findings for every source row.
+  // This remains bounded by the accepted parser's row limits.
+  const codesByEvidence = new Map<string, Set<string>>();
+  for (const finding of snapshot.findings) {
+    if (!finding.evidenceId) continue;
+    const codes = codesByEvidence.get(finding.evidenceId) ?? new Set<string>();
+    codes.add(finding.code);
+    codesByEvidence.set(finding.evidenceId, codes);
+  }
   const build = (
     kind: DossierKind, sourceId: string, sourceLabel: string, relationship: string,
     evidenceIds: readonly string[], unbound: boolean,
   ): LocalReviewDossier => {
     const distinctEvidence = [...new Set(evidenceIds)];
     for (const evidenceId of distinctEvidence) bound.add(evidenceId);
-    const findingCodes = [...new Set(snapshot.findings
-      .filter(f => f.evidenceId && distinctEvidence.includes(f.evidenceId))
-      .map(f => f.code))];
+    const findingCodes = [...new Set(distinctEvidence.flatMap(id => [...(codesByEvidence.get(id) ?? [])]))];
     return {
       kind, sourceId, sourceLabel, relationship, evidenceIds: distinctEvidence,
       findingCodes, unbound, reviewedSourceNamespace: null,
