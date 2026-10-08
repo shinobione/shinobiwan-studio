@@ -35,7 +35,7 @@
     "check:build123": "node scripts/test-build123-catalogue-v2.mjs",
     "check:build124": "node scripts/test-build124-fictional-package-lab.mjs",
     "check:build125": "node scripts/test-build125-fictional-registry-browser.mjs",
-    "check:build126": "node scripts/test-build126-c7a-migration-preview.mjs",
+    "check:build126": "node scripts/test-build126-c7a-session-fences.mjs && node scripts/test-build126-c7a-migration-preview.mjs",
     "check:a24b": "node scripts/test-a24b-synthetic-contract.mjs",
     "check:a24c": "node scripts/test-a24c-local-package-contract.mjs",
     "check:a24c-crypto": "node scripts/test-a24c-crypto-rehearsal.mjs",
