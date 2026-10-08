@@ -1,6 +1,14 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-## Current owner-confirmed runtime — 2026-10-04
+## Current owner-confirmed runtime — 2026-10-08
+
+**Build125 / v0.19.47**: merged [PR #262](https://github.com/shinobione/shinobiwan-studio/pull/262) at `ea52bfcdd02fc24ad8e0eafcb3445a65d652aed5`, exact final candidate `0e221d16050c3337fdee44ee662a364b04aa52ed` with [CI #850](https://github.com/shinobione/shinobiwan-studio/actions/runs/37302953440) SUCCESS (C4 25/25, C5 21/21, C5b 15/15, C6 13/13 Chromium). GitHub Pages merge-SHA deployment success was separately verified in the conversation; owner footer clearly showed **v0.19.47 · 125**.
+
+[Sanitized owner C6 acceptance and privacy scope](docs/acceptance/BUILD125-BOUNDED-OWNER-SMOKE.md): synthetic full-registry generate/download/authenticate, explicit in-memory revision 0→1, exact replay, rollback and foreign-registry rejection, pending QA and unattached evidence all visually PASS. On one measured re-open, the DevTools Network log showed **no requests**. Session Storage was empty; Local Storage/IndexedDB/Cache Storage contained other existing same-origin application/project data but **no visibly identifiable C6 names**. No controlled origin-storage before/after baseline was supplied, so **no general no-write or security-audit claim** is made. All private values/screenshots remain outside Git.
+
+**Current step: [C7 private-trial readiness](docs/CATALOGUE-A24C-C7-PRIVATE-TRIAL-READINESS.md), synthetic-only Draft preflight.** The owner authorized preparation, **not handling real-source bytes, implementing a general commercial encoder or persisting a real registry**. A future C7a owner-local read-only private *migration preview* and a later C7b real encrypted export/restore require **two distinct explicit permissions**. No Build126, no C7 source processing now; no public or backend writes/sync. Studio CPU #238 and LaunchPAD #283 remain separately open.
+
+## Prior owner-confirmed runtime checkpoint — 2026-10-04
 
 **Build124 / v0.19.46**: [PR #254](https://github.com/shinobione/shinobiwan-studio/pull/254) merged on main as `705df3a15fd6ea8076615d1d523564501e6b2362`. Exact feature head `64294bf35258c3f7f5047b782970d80bf2a2c333` passed [CI #801](https://github.com/shinobione/shinobiwan-studio/actions/runs/36483767882) SUCCESS. Owner sent a browser version-footer crop clearly showing **v0.19.46 · 124** and a video showing the deliberately invented-only lab generate/download/reopen with the expected success copy, another successful verification and Reset. [Sanitized bounded Build124 receipt](docs/acceptance/BUILD124-BOUNDED-OWNER-UI-SMOKE.md). The owner's distinct DevTools Network/Storage smoke was **not** provided and remains PENDING; do not infer full privacy PASS from the video or CI. Exact merge-SHA Pages workflow receipt is not independently retrieved.
 

@@ -1,6 +1,12 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-## Current bounded owner acceptance — 2026-10-04
+## Current Build125 bounded owner acceptance — 2026-10-08
+
+**Merged Build125 / v0.19.47:** [PR #262](https://github.com/shinobione/shinobiwan-studio/pull/262), merge `ea52bfcdd02fc24ad8e0eafcb3445a65d652aed5`, [candidate CI #850](https://github.com/shinobione/shinobiwan-studio/actions/runs/37302953440) SUCCESS. Owner footer confirms Build125. [Bounded smoke and non-claims](docs/acceptance/BUILD125-BOUNDED-OWNER-SMOKE.md): generation/download/reopen, explicit in-memory revision-1 promotion, same-revision idempotency, rollback (current 1/candidate 0) blocked, foreign registry rejected, expected synthetic counts and QA visible. Live DevTools Network shows an empty request list during the observed re-open (filter blank, All selected, Keep log enabled). Session Storage empty; Local Storage/IndexedDB/Cache Storage contain other same-origin app content with no recognizable C6 keys/database/cache. **Absence of newly created C6 storage is not proven by an independent before/after comparison**; third-party/shared-origin data is not a C6 failure. This is **bounded functional owner PASS and limited privacy observation PASS**, not broad storage/security certification.
+
+**Next review-only gate C7:** [private trial readiness and permissions](docs/CATALOGUE-A24C-C7-PRIVATE-TRIAL-READINESS.md). Preflight tests use invented review packets only. STOP before new real-source access or commercial export. First actual source-v2 preview C7a and first encrypted commercial export C7b require separately scoped owner decisions and reviewed implementation. No Build126/runtime change in this gate.
+
+## Historical Build124 owner checkpoint — 2026-10-04
 
 **Build124 / v0.19.46** merged via [PR #254](https://github.com/shinobione/shinobiwan-studio/pull/254), SHA `705df3a15fd6ea8076615d1d523564501e6b2362`. Final candidate `64294bf35258c3f7f5047b782970d80bf2a2c333` passed [CI #801 SUCCESS](https://github.com/shinobione/shinobiwan-studio/actions/runs/36483767882): C1 11/11, C2 12/12, C3a 11/11, C3b 12/12 real Chromium synthetic scenarios and 141 runtime/source artifacts scanned. Owner screenshot shows live v0.19.46 · 124 and separate video shows **invented-only** encrypted package generate/download/reopen success, repeat success and Reset. [Bounded owner receipt](docs/acceptance/BUILD124-BOUNDED-OWNER-UI-SMOKE.md).
 
