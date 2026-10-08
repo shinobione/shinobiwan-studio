@@ -108,6 +108,7 @@ const ui=load('src/components/CatalogueImport.tsx', {
   react: { useMemo: fn => fn(), useState: initial => { const i=cursor++; if (!(i in slots)) slots[i]=initial; return [slots[i],v=>{slots[i]=typeof v==='function'?v(slots[i]):v;}]; }, useRef: initial => {const i=cursor++; slots[i]??={current:initial};return slots[i];},useEffect:fn=>{effect=fn;} },
   'react/jsx-runtime':jsx,'../catalogue/finding-labels':labels,'../catalogue-router':load('src/catalogue-router.ts'),'./CatalogueOverview':overview,'./CatalogueReleases':{CatalogueReleases:()=>null},'./CatalogueRecordings':{CatalogueRecordings:()=>null},'./CatalogueDetails':{CatalogueDetails:()=>null},'../catalogue/recordings':load('src/catalogue/recordings.ts',{'./releases':load('src/catalogue/releases.ts')}),
   '../catalogue/c7aPreview':load('src/catalogue/c7aPreview.ts'),
+  '../catalogue/c7aDossiers':load('src/catalogue/c7aDossiers.ts'),
 }, {URL, Worker:class { constructor(){uiJobs.push(this);} postMessage(){} terminate(){this.terminated=true;} }});
 let section='overview';
 const tree=()=>{cursor=0;return ui.CatalogueImport({state:uiState,onSelect:file=>uiSession.select(file),onReset:()=>uiSession.reset(),section,emptyCopy:{title:'Empty synthetic Catalogue',body:'No source selected'}});};
