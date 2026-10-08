@@ -6,7 +6,7 @@ import ts from 'typescript';
 const codec=fs.readFileSync('src/catalogue/c7aPreview.ts','utf8');
 const component=fs.readFileSync('src/components/CatalogueImport.tsx','utf8');
 const pkg=JSON.parse(fs.readFileSync('package.json','utf8'));
-const js=ts.transpileModule(codec.replace(/^import type .*\n/m,''),{
+const js=ts.transpileModule(codec.replace(/^import type .*\n/m,'').replace('export function previewC7a','function previewC7a'),{
   compilerOptions:{module:ts.ModuleKind.None,target:ts.ScriptTarget.ES2022}
 }).outputText;
 const {previewC7a}=new Function(js+'; return {previewC7a};')();
