@@ -47,7 +47,7 @@ This is an owner-triggered local processing feature in a web browser, **not** an
 9. refresh purges preview;
 10. clean isolated-browser Storage empty and no private fixture upload/URL/console leaks.
 
-Inherited Build125 C6 real browser, C4/C5/C5b, C7 preflight 16/16, typecheck, build and private-runtime artifact scan must remain green. Candidate **Build126 / v0.19.48** follows release policy; Build125 frozen ancestry ensures its old tests stay meaningful.
+The additional `scripts/test-build126-c7a-session-fences.mjs` runs 7 deterministic mocked-worker cases: replacement cancels old callbacks, Reset/dispose fence late results, wrong-size/extension files never start workers, and parser error returns only a fixed rejection. Inherited Build125 C6 real browser, C4/C5/C5b, C7 preflight 16/16, typecheck, build and private-runtime artifact scan must remain green. Candidate **Build126 / v0.19.48** follows release policy; Build125 frozen ancestry ensures its old tests stay meaningful.
 
 Before any owner-private input to this candidate: **separate authorization to execute the actual C7a private-source trial**, deployed build/version confirmation, exact-head CI, review of this PR, and planned privacy differential. **Do not submit owner JSON in chat, Git, CI or support artifacts.** The owner keeps the file on their own computer and shares only sanitized counts and test PASS/FAIL.
 
