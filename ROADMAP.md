@@ -1,10 +1,17 @@
 # SHINOBIWAN STUDIO — Canonical Roadmap
 
-Updated: 2026-10-08. Build125 / v0.19.47 C6 merged, Pages-deployed and bounded owner-smoke accepted with separate shared-origin storage qualification. C4/C4.1 + C5/C5b synthetic architecture is merged. **C7 is currently a Draft review-only readiness/preflight gate**, not a real-source migration or Build126. See PROJECT_STATE.md.
+Updated: 2026-10-13. **C7a and C7a.2 are now merged and Pages-deployed on Build125 / v0.19.47**. Owner video confirmed the C7a aggregate preview only. **C7a.2 REAL USER PASS remains NOT VERIFIED**; first real encrypted commercial export/restore C7b remains STOP. See PROJECT_STATE.md.
 
 This file tracks durable Done / Active / Next / Backlog state. Historical implementation detail belongs in changelogs, milestone docs and acceptance receipts.
 
 ## Done
+
+### Catalogue C7a + C7a.2 — deployed technical tranche
+
+- **C7a (#265)** source-v2 aggregate preview: [CI #866](https://github.com/shinobione/shinobiwan-studio/actions/runs/37821190022), [Pages #279](https://github.com/shinobione/shinobiwan-studio/actions/runs/37824422119) SUCCESS; bounded owner video applies to this aggregate panel only.
+- **C7a.2 (#266)** source-only evidence dossiers: exact tested head `2ee57b3dc8a8a09357b03d6d88e721858bb02e93`, [CI #869](https://github.com/shinobione/shinobiwan-studio/actions/runs/37834484112) SUCCESS, merge `36f834462fdbac53f2a0bbc875596f529dc70cc8`, [Pages #280](https://github.com/shinobione/shinobiwan-studio/actions/runs/37850765849) SUCCESS. **Technical/deployment closeout only. Owner browser test pending.** [Evidence receipt](docs/acceptance/C7A2-DEPLOYED-CANDIDATE-CLOSEOUT-20261013.md).
+- Read-only v2 session and complete pending QA stay unchanged; **C7b is not authorized**.
+
 
 ### Foundation / integration
 
@@ -128,9 +135,9 @@ Merged [PR #254](https://github.com/shinobione/shinobiwan-studio/pull/254) at `7
 
 ## Active
 
-### Catalogue C7 — separately authorized private-preview/export preflight
+### Catalogue C7 — owner-browser acceptance gate / C7b STOP
 
-[Readiness/consent contract](docs/CATALOGUE-A24C-C7-PRIVATE-TRIAL-READINESS.md): owner-accepted Build125 C6 fictional browser smoke, differential privacy on shared GitHub Pages origin, exact source-v2 authority/mapping, protected unresolved QA, secret custody and independent recovery copies. **C7a read-only private preview and C7b real encrypted export are distinct future owner authorizations.** Current branch only adds docs and invented fail-closed decision tests. No Build126 or real commercial writer, file upload, Worker/R2/LaunchPAD update or sync.
+C7a/C7a.2 are published read-only owner-local source previews, not a registry migration. **Active gate: C7a.2 browser smoke** with owner-held v2, exact evidence/unbound detail, pagination and Reset; a privacy claim additionally needs controlled same-origin Network/Storage before/after. [Receipt](docs/acceptance/C7A2-DEPLOYED-CANDIDATE-CLOSEOUT-20261013.md). The [C7 consent contract](docs/CATALOGUE-A24C-C7-PRIVATE-TRIAL-READINESS.md) remains the stop for C7b: **no real encrypted export/restore, commercial registry promotion, automatic mapping or commercial writes**. No Build126 or Worker/R2/LaunchPAD mutation.
 
 
 ### Build125 / C6 — full fictional commercial-registry browser recovery candidate
