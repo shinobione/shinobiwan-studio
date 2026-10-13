@@ -1,12 +1,21 @@
 # SHINOBIWAN STUDIO — Canonical Project State
 
-## Current owner-confirmed runtime — 2026-10-08
+## Latest verified C7a.2 deployment checkpoint — 2026-10-13
+
+GitHub `main` HEAD `36f834462fdbac53f2a0bbc875596f529dc70cc8`: owner-authorized [C7a.2 PR #266](https://github.com/shinobione/shinobiwan-studio/pull/266) merged. Exact feature head `2ee57b3dc8a8a09357b03d6d88e721858bb02e93` passed [CI #869](https://github.com/shinobione/shinobiwan-studio/actions/runs/37834484112) **SUCCESS** (12/12 invented C7a.2 checks and inherited full build/typecheck). [Pages #280](https://github.com/shinobione/shinobiwan-studio/actions/runs/37850765849) **build + deploy SUCCESS** on the merge SHA. C7a.2 adds read-only source/evidence dossiers; no commercial mapping/target binding. Previous [C7a PR #265](https://github.com/shinobione/shinobiwan-studio/pull/265) merged at `ea23398679b7e5f65e9f9ab57c0094fb8ff7cb21` and [Pages #279](https://github.com/shinobione/shinobiwan-studio/actions/runs/37824422119) succeeded; the owner's earlier browser video applies to **C7a's aggregate panel only**.
+
+**State split:** C7a.2 **CODED / CI GREEN / MERGED / PAGES DEPLOYED**. **C7a.2 REAL USER PASS = NOT VERIFIED**: no distinct owner browser evidence for the C7a.2 dossier tabs, evidence expansion, pagination, Reset or controlled privacy differential. The requested closeout covers technical/documentary state, not product acceptance. [Sanitized C7a.2 receipt](docs/acceptance/C7A2-DEPLOYED-CANDIDATE-CLOSEOUT-20261013.md). **Runtime stays v0.19.47 · Build125**. No Build126 allocated, no Worker deployed by C7a.2 and no commercial R2 change.
+
+**Exact next gate:** bounded owner-only C7a.2 browser smoke using the owner-held v2 source: four dossier categories, unbound/unlinked separation, proof expansion, pagination and Reset. Record REAL USER PASS only after observed evidence. **STOP before C7b**, real encrypted export/restore, owner commercial registry promotion, commercial write/mapping, creative Track binding or cross-repo sync. Studio CPU #238 / LaunchPAD #283 stay independently unresolved.
+
+
+## Prior Build125 owner-confirmed checkpoint — 2026-10-08
 
 **Build125 / v0.19.47**: merged [PR #262](https://github.com/shinobione/shinobiwan-studio/pull/262) at `ea52bfcdd02fc24ad8e0eafcb3445a65d652aed5`, exact final candidate `0e221d16050c3337fdee44ee662a364b04aa52ed` with [CI #850](https://github.com/shinobione/shinobiwan-studio/actions/runs/37302953440) SUCCESS (C4 25/25, C5 21/21, C5b 15/15, C6 13/13 Chromium). GitHub Pages merge-SHA deployment success was separately verified in the conversation; owner footer clearly showed **v0.19.47 · 125**.
 
 [Sanitized owner C6 acceptance and privacy scope](docs/acceptance/BUILD125-BOUNDED-OWNER-SMOKE.md): synthetic full-registry generate/download/authenticate, explicit in-memory revision 0→1, exact replay, rollback and foreign-registry rejection, pending QA and unattached evidence all visually PASS. On one measured re-open, the DevTools Network log showed **no requests**. Session Storage was empty; Local Storage/IndexedDB/Cache Storage contained other existing same-origin application/project data but **no visibly identifiable C6 names**. No controlled origin-storage before/after baseline was supplied, so **no general no-write or security-audit claim** is made. All private values/screenshots remain outside Git.
 
-**Current step: [C7 private-trial readiness](docs/CATALOGUE-A24C-C7-PRIVATE-TRIAL-READINESS.md), synthetic-only Draft preflight.** The owner authorized preparation, **not handling real-source bytes, implementing a general commercial encoder or persisting a real registry**. A future C7a owner-local read-only private *migration preview* and a later C7b real encrypted export/restore require **two distinct explicit permissions**. No Build126, no C7 source processing now; no public or backend writes/sync. Studio CPU #238 and LaunchPAD #283 remain separately open.
+**As of that historical checkpoint: [C7 private-trial readiness](docs/CATALOGUE-A24C-C7-PRIVATE-TRIAL-READINESS.md), synthetic-only Draft preflight.** The owner authorized preparation, **not handling real-source bytes, implementing a general commercial encoder or persisting a real registry**. A future C7a owner-local read-only private *migration preview* and a later C7b real encrypted export/restore require **two distinct explicit permissions**. No Build126, no C7 source processing now; no public or backend writes/sync. Studio CPU #238 and LaunchPAD #283 remain separately open.
 
 ## Prior owner-confirmed runtime checkpoint — 2026-10-04
 
