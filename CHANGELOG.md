@@ -2,7 +2,15 @@
 
 This is the **current concise changelog**. Detailed per-build records live under `changelogs/` and accepted production receipts under `docs/acceptance/`.
 
-## Current accepted release
+## Latest deployed Catalogue tranche — 2026-10-13
+
+### v0.19.47 · Build125 — C7a + C7a.2 read-only owner-local evidence review
+
+- C7a aggregate readiness preview: [PR #265](https://github.com/shinobione/shinobiwan-studio/pull/265), [Pages #279](https://github.com/shinobione/shinobiwan-studio/actions/runs/37824422119) SUCCESS; bounded owner video for C7a only.
+- C7a.2 local Recording/Release/Appearance evidence dossiers: [PR #266](https://github.com/shinobione/shinobiwan-studio/pull/266), exact candidate `2ee57b3dc8a8a09357b03d6d88e721858bb02e93`, [CI #869](https://github.com/shinobione/shinobiwan-studio/actions/runs/37834484112) SUCCESS, merge `36f834462fdbac53f2a0bbc875596f529dc70cc8`, [Pages #280](https://github.com/shinobione/shinobiwan-studio/actions/runs/37850765849) SUCCESS.
+- **Technical deployment closeout only. C7a.2 REAL USER PASS pending.** No runtime version change, real commercial export, persistence, automatic mapping, Worker/R2/LaunchPAD mutation or C7b permission. [C7a.2 receipt](docs/acceptance/C7A2-DEPLOYED-CANDIDATE-CLOSEOUT-20261013.md).
+
+## Historical Build122 accepted release
 
 ### v0.19.44 · Build122 — Catalogue A2.3 Slice 3 · 2026-09-27
 
