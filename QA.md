@@ -1,6 +1,15 @@
 # SHINOBIWAN STUDIO — Canonical QA / Acceptance Matrix
 
-## Current Build125 bounded owner acceptance — 2026-10-08
+## C7a.2 technical closeout — owner browser test pending (2026-10-13)
+
+[PR #266](https://github.com/shinobione/shinobiwan-studio/pull/266) exact feature head `2ee57b3dc8a8a09357b03d6d88e721858bb02e93`: [CI #869 SUCCESS](https://github.com/shinobione/shinobiwan-studio/actions/runs/37834484112), including 12/12 invented-only dossier checks and inherited full build/typecheck. Merge `36f834462fdbac53f2a0bbc875596f529dc70cc8` and [Pages #280 SUCCESS](https://github.com/shinobione/shinobiwan-studio/actions/runs/37850765849) on that exact SHA. **CODED / CI GREEN / MERGED / PAGES DEPLOYED**; no runtime bump (v0.19.47 / Build125).
+
+**C7a.2 REAL USER PASS: NOT VERIFIED.** The earlier owner video proves the original C7a aggregate panel and Overview/QA navigation, not C7a.2 source dossier tabs, evidence expand, unbound/unlinked detail, pagination or Reset. No independent same-origin Network/Storage before-after differential for this tranche was supplied. The owner's request for closeout does not manufacture test evidence. [Sanitized receipt](docs/acceptance/C7A2-DEPLOYED-CANDIDATE-CLOSEOUT-20261013.md).
+
+**Next:** owner-only v2 local read-only dossier check, without sending private JSON into chat/Git/CI. **C7b** real commercial encryption/export/restore, registry activation and commercial writes remain separately unauthorized.
+
+
+## Previous Build125 bounded owner acceptance — 2026-10-08
 
 **Merged Build125 / v0.19.47:** [PR #262](https://github.com/shinobione/shinobiwan-studio/pull/262), merge `ea52bfcdd02fc24ad8e0eafcb3445a65d652aed5`, [candidate CI #850](https://github.com/shinobione/shinobiwan-studio/actions/runs/37302953440) SUCCESS. Owner footer confirms Build125. [Bounded smoke and non-claims](docs/acceptance/BUILD125-BOUNDED-OWNER-SMOKE.md): generation/download/reopen, explicit in-memory revision-1 promotion, same-revision idempotency, rollback (current 1/candidate 0) blocked, foreign registry rejected, expected synthetic counts and QA visible. Live DevTools Network shows an empty request list during the observed re-open (filter blank, All selected, Keep log enabled). Session Storage empty; Local Storage/IndexedDB/Cache Storage contain other same-origin app content with no recognizable C6 keys/database/cache. **Absence of newly created C6 storage is not proven by an independent before/after comparison**; third-party/shared-origin data is not a C6 failure. This is **bounded functional owner PASS and limited privacy observation PASS**, not broad storage/security certification.
 
