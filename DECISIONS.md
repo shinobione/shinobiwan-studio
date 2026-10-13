@@ -1,6 +1,6 @@
 # SHINOBIWAN STUDIO — Canonical Decisions
 
-Updated: 2026-10-04. D-024 accepts the transient v2 viewer; D-025 records owner-selected Path A (portable encrypted file). Build124 has since merged as an invented-only file lab. C4 inner registry/restore is a proposal, not an approved durable data-authority model.
+Updated: 2026-10-13. D-026 records the narrow approved C7a/C7a.2 local preview scope. D-025 preserves Path A (portable encrypted file) as future intent only; no real commercial registry, C7b export or persistence is authorized.
 
 This file records durable product, architecture and safety decisions. It is not a changelog. Add an entry only when a decision is introduced, changed or explicitly superseded.
 
@@ -297,7 +297,15 @@ On 2026-09-28 the owner chose **A** (portable encrypted local file), expressly *
 
 [Owner choice and gate packet](docs/CATALOGUE-A2-4C-STORAGE-PRIVACY-DECISION-PACKET.md) · [C1 fictional architecture/tests](docs/CATALOGUE-A2-4C-A-LOCAL-PACKAGE-C1-CONTRACT.md). **Path A choice alone authorizes no actual private data save, general crypto codec, registry migration, sync or future merge.** The separate, subsequently authorized and merged [Build124 invented-only lab](docs/acceptance/BUILD124-BOUNDED-OWNER-UI-SMOKE.md) does not change that real-data prohibition. The [C4 schema/recovery draft](docs/CATALOGUE-A24C-C4-REGISTRY-RESTORE-CONTRACT.md) has not become an approved production canonical model; no D-026 is declared before independent review.
 
-## Pending owner decision — C7a vs C7b are separate (NOT D-026)
+## D-026 — C7a scope approved: owner-local read-only v2 preview and dossiers
+
+**Status: active / narrow authority, recorded 2026-10-13.** The owner separately approved C7a's owner-local aggregate preview, then C7a.2's source-only dossier work and explicitly approved [PR #266](https://github.com/shinobione/shinobiwan-studio/pull/266) for merge and Pages deployment. The real code is published via [Pages #280](https://github.com/shinobione/shinobiwan-studio/actions/runs/37850765849). Only owner-selected v2 JSON may be inspected transiently through the existing accepted browser-local reader. Source IDs, historical evidence and QA remain observations, never approved commercial registry identities; unbound Appearances and unlinked distributor details are not inferred via title, ISRC, UPC or position. The owner retains the private source, without automatic upload/export.
+
+**Approval boundaries:** C7a.2 deployed **does not** establish a C7a.2 REAL USER PASS (still awaiting browser proof), approve source→commercial target mappings or permit an actual encrypted commercial package. **C7b first real export/restore and real registry persistence/writes require an entirely separate owner authorization** with cryptographic design review, provenance, exact reviewed mapping, private key/backup/recovery and same-origin privacy checks. No Build126, Worker/R2/LaunchPAD mutation, creative Track link or sync is authorized here.
+
+Supersedes only the historical proposition that C7a had not yet been approved; retains D-024/D-025 data and custody constraints. [Technical C7a.2 receipt](docs/acceptance/C7A2-DEPLOYED-CANDIDATE-CLOSEOUT-20261013.md).
+
+## Historical pre-C7a authorization decision (superseded for C7a, not for C7b)
 
 After Build125/v0.19.47's [bounded owner fictional C6 smoke](docs/acceptance/BUILD125-BOUNDED-OWNER-SMOKE.md), C7 is a **preparatory readiness review only**. The [C7 packet](docs/CATALOGUE-A24C-C7-PRIVATE-TRIAL-READINESS.md) proposes a future **C7a owner-local read-only private v2 migration preview** (no export or commercial writes), followed only after separate approval by **C7b first real encrypted export/restore** with reviewed production cryptography, owner-held backups and recovery proof. **Neither is authorized now** by the generic approval to prepare C7. The owner must make separate explicit scope-specific decisions, and a new numbered D-026 should be recorded only when a real scope is approved.
 
