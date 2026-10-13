@@ -140,9 +140,9 @@ Merged [PR #254](https://github.com/shinobione/shinobiwan-studio/pull/254) at `7
 C7a/C7a.2 are published read-only owner-local source previews, not a registry migration. **Active gate: C7a.2 browser smoke** with owner-held v2, exact evidence/unbound detail, pagination and Reset; a privacy claim additionally needs controlled same-origin Network/Storage before/after. [Receipt](docs/acceptance/C7A2-DEPLOYED-CANDIDATE-CLOSEOUT-20261013.md). The [C7 consent contract](docs/CATALOGUE-A24C-C7-PRIVATE-TRIAL-READINESS.md) remains the stop for C7b: **no real encrypted export/restore, commercial registry promotion, automatic mapping or commercial writes**. No Build126 or Worker/R2/LaunchPAD mutation.
 
 
-### Build125 / C6 — full fictional commercial-registry browser recovery candidate
+### Historical Build125 / C6 — fictional browser recovery, now merged
 
-[PR #262](https://github.com/shinobione/shinobiwan-studio/pull/262) / [C6 contract](docs/CATALOGUE-BUILD125-C6-FICTIONAL-BROWSER-RECOVERY.md). Candidate only: hardcoded invented revision-1 registry plus rollback/foreign fixtures; actual browser download/open, explicit transient restore, idempotency, rollback/foreign/tamper rejection and automated Network/Storage privacy checks. No real Catalogue input path, persistent commercial registry, Worker/R2/LaunchPAD mutation or Build125 merge/deploy authorization. Owner DevTools privacy smoke remains pending.
+[PR #262](https://github.com/shinobione/shinobiwan-studio/pull/262) and [C6 contract](docs/CATALOGUE-BUILD125-C6-FICTIONAL-BROWSER-RECOVERY.md) are merged/deployed with [bounded owner lab acceptance](docs/acceptance/BUILD125-BOUNDED-OWNER-SMOKE.md). It remains invented-only, not commercial-source encryption or production persistence. Controlled shared-origin privacy before/after is still unverified. This is a historical reminder, not an active candidate.
 
 
 ### Catalogue C4 — private registry and encrypted recovery contract (fictional only)
