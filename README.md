@@ -14,7 +14,13 @@ For project continuation, read in order:
 
 Then verify real GitHub state before mutation.
 
-## Current accepted state
+## Current deployed Catalogue checkpoint — 2026-10-13
+
+**Studio v0.19.47 · Build125.** Catalogue **C7a (#265)** aggregate local v2 preview and **C7a.2 (#266)** human-review source/evidence dossiers have been merged and deployed on GitHub Pages, last merge `36f834462fdbac53f2a0bbc875596f529dc70cc8`; [Pages #280 SUCCESS](https://github.com/shinobione/shinobiwan-studio/actions/runs/37850765849), [CI #869 SUCCESS](https://github.com/shinobione/shinobiwan-studio/actions/runs/37834484112). C7a has bounded owner-video evidence; **C7a.2 REAL USER PASS remains pending**. The requested closeout is implementation/deployment-only, with no approval, new build number, private Registry, commercial save/export, Worker/R2 or automatic Track mapping. [Current project checkpoint](PROJECT_STATE.md) · [C7a.2 closeout](docs/acceptance/C7A2-DEPLOYED-CANDIDATE-CLOSEOUT-20261013.md).
+
+**Next:** owner-only read-only C7a.2 dossier/Reset smoke using local v2 source; **C7b first real encrypted export/restore remains behind its own STOP and permission.** Other user data on the shared GitHub Pages origin does not establish C7a.2 storage/privacy proof.
+
+## Historical Build122 acceptance (prior checkpoint)
 
 **Build122 / v0.19.44 — Catalogue A2.3 Slice 3 · bounded REAL USER PASS.** Owner-authorized [PR #248](https://github.com/shinobione/shinobiwan-studio/pull/248) merged at `58f976218600757632efd58e36b2c74a8a47fcef`; exact final candidate `881845487d3119f45814a0ade2e8b7ef7487c352` passed [CI #36338838575](https://github.com/shinobione/shinobiwan-studio/actions/runs/36338838575), and [Pages #36339663943](https://github.com/shinobione/shinobiwan-studio/actions/runs/36339663943) build/upload/deploy SUCCESS on the merge SHA. Shino reported eight live private-source checks PASS: Recording/ISRC/appearance/finding counts, factual filters/search/identity sorts, exact multi-Release evidence with unbound exclusion, transient Recording/Release/appearance/Back navigation, contextual/global QA and pagination, keyboard/focus/mobile/desktop, session/discard lifecycle, and DevTools no private-source upload/storage/IDs in routes/external artwork retrieval. [Bounded owner receipt](docs/acceptance/BUILD122-REAL-USER-PASS.md) · [original candidate handoff](docs/CATALOGUE-A2-3-SLICE3-VALIDATION.md).
 
